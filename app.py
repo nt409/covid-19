@@ -51,7 +51,6 @@ df = df.loc[:,'Age':'Pop']
 
 init_lr = params.fact_v[initial_lr]
 init_hr = params.fact_v[initial_hr]
-init_hl = min(init_lr,init_hr)
 
 
 def generate_table(dataframe, max_rows=10):
@@ -74,6 +73,9 @@ bar_width  = '100%'
 
 bar_non_crit_style = {'height': bar_height, 'width': bar_width, 'display': 'block' }
 
+
+preset_dict_high = {'Q': 0, 'MSD': 4, 'HL': 0, 'H': 0, 'N':6}
+preset_dict_low  = {'Q': 0, 'MSD': 4, 'HL': 5, 'H': 6, 'N':6}
 
 
 ########################################################################################################################
@@ -276,30 +278,15 @@ def time_exceeded_function(yy,tt):
 
 ########################################################################################################################
 def preset_strat(preset):
-    # month = [0,8]
-    # years  = 2
-    if preset=='Q':
-        lr = 0.05 # params.fact_v[1]
-        hr = 0.05 # params.fact_v[1]
-    elif preset=='MSD':
-        lr = 0.4 # params.fact_v[1]
-        hr = 0.4 # params.fact_v[1]
-    elif preset=='H':
-        lr = 1 # params.fact_v[1]
-        hr = 0.05 # params.fact_v[1]
-    elif preset=='HL':
-        lr = 0.75 # params.fact_v[1]
-        hr = 0.05 # params.fact_v[1]
-    elif preset=='N':
-        lr = 1 # params.fact_v[1]
-        hr = 1 # params.fact_v[1]
-        # month = [0,0]
+    if preset in preset_dict_high:
+        lr = params.fact_v[preset_dict_low[preset]]
+        hr = params.fact_v[preset_dict_high[preset]]
     else:
-        pass
+        lr = 1
+        hr = 1
     
-    hl = min(hr,lr)
 
-    return lr, hr, hl
+    return lr, hr
 
 ########################################################################################################################
 def human_format(num):
@@ -496,11 +483,11 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
 
     else:
         if which_plots=='two':
-            control_font_size = 35
+            control_font_size = 30
             yval_blue = 0.4
         else:
             yval_blue = 0.5
-            control_font_size = 40
+            control_font_size = 35
         text_angle_blue = -90
         xshift_use = 8
 
@@ -662,23 +649,46 @@ layout_intro = html.Div([dbc.Col([
         dbc.Tab(label='Definitions and Strategies', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_0', children=[
 
             dbc.Container(html.Div(style={'height':'5px'})),
-            html.H4('Introduction to the modelling study',className='display-4'),
+            html.H4('Overview',className='display-4'),
             html.Hr(className='my-2'),
             dbc.Col([
-            dcc.Markdown('''
+            
+            # To start calculating now, [**click here**](/inter). To look at real time data, [**click here**](/data). Details of the model structure are given [**here**](/model).
+            dbc.Row([
+            dbc.Button('Start Calculating', href='/inter', size='lg', color='success'),
+            dbc.Button('Real Time Data', href='/data', size='lg', color='warning'),
+            dbc.Button('Model Structure', href='/model', size='lg', color='danger'),
+            ],
+            justify='around',
+            style = {"margin-top": "25px", "margin-bottom": "15px"},
+            ),
+
+
+
+            dcc.Markdown('''            
+
+            To find out more about control of coronavirus, read on!
+
+            ''',style={'fontSize':24}),
+
+            html.Hr(className='my-2'),
+
+            dcc.Markdown('''            
+            # Introduction to the modelling study
+            
             This page is intended to help you understand:
 
             1. How the different ways to control COVID-19 work,
 
             2. Why it is essential that you follow the control measures.
 
-            But first, there are two vital concepts that you need to understand before we can fully explore how the control measures work.
+            But first, there are **two vital concepts** that you need to understand before we can fully explore how the control measures work.
 
             ### 1. Basic Reproduction Rate
 
             Any infectious disease requires both infectious individuals and susceptible individuals to be present in a population to spread. The higher the number of susceptible individuals, the faster it can spread since an infectious person can spread the disease to many susceptible people before recovering.
 
-            The average number of infections caused by a single infected person is known as the '**basic reproduction rate**,' *R*. If this number is less than 1 (each infected person infects less than one other on average) then the disease won't spread. If it is greater than 1 then the disease will spread. For COVID-19 most estimates for *R* are between 2 and 3.
+            The average number of infections caused by a single infected person is known as the '**basic reproduction rate**' (*R*). If this number is less than 1 (each infected person infects less than one other on average) then the disease won't spread. If it is greater than 1 then the disease will spread. For COVID-19 most estimates for *R* are between 2 and 3. We use the value *R*=2.4.
 
             ### 2. Herd Immunity
 
@@ -735,9 +745,6 @@ layout_intro = html.Div([dbc.Col([
 
 
             ''',style={'fontSize':20}),
-            dbc.Col([
-            dbc.Button('Start Calculating', href='/inter', size='lg', color='primary'),
-            ],width={'size':3,'offset':1}),
             ],
             width = {'size': 10}),
             # ,width = {'size': 10}),
@@ -747,13 +754,13 @@ layout_intro = html.Div([dbc.Col([
 
 
 
-        dbc.Tab(label='Control Case Studies', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_3', children=[
+        dbc.Tab(label='Control Case Study', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_3', children=[
             
 
 
 
             dbc.Container(html.Div(style={'height':'5px'})),
-            html.H4('Examples different control strategies',className='display-4'),
+            html.H4('Example control strategy',className='display-4'),
             html.Hr(className='my-2'),
             dbc.Col([
             dcc.Markdown('''
@@ -761,24 +768,38 @@ layout_intro = html.Div([dbc.Col([
 
             ### Protecting high risk (quarantine), mild social distancing of low risk vs 'do nothing'
 
-            The most effective way to protect high risk people is to let the low risk people get the disease and recover, increasing the levels of herd immunity within the population (and therefore ensuring future safety for the population) but minimally affecting the hospitalisation rate.
+            In the absence of a vaccine, the most effective way to protect high risk people is to let the low risk people get the disease and recover, increasing the levels of [**herd immunity**](/intro) within the population (and therefore ensuring future safety for the population) but minimally affecting the hospitalisation rate.
 
-            However, it is important that this is done in a careful fashion. There are very few ICU beds per 100,000 population in most healthcare systems. This means that any level of infection in the system leads to a risk that the epidemic could cause too many patients to need critical care.
+            However, it is important that this is done in a careful fashion. There are very few ICU beds per 100,000 population in most healthcare systems. This means that any level of infection in the system increases the risk of an epidemic that could cause too many patients to need critical care.
 
             ''',style={'fontSize':20}),
             
             dbc.Col([
-            dcc.Graph(id='line-plot-intro',style={'height': '55vh', 'display': 'block', 'width': '100%'}),
+            dcc.Graph(id='line-plot-intro',style={'height': '40vh', 'display': 'block', 'width': '100%'}),
+            html.Div(style={'height': '1vh'}),
+            dcc.Graph(id='line-plot-intro-2',style={'height': '40vh', 'display': 'block', 'width': '100%'}),
             ],
             width = {'size': 11,'offset':1}),
 
-            dbc.Col([
-            dbc.Button('Start Calculating', href='/inter', size='lg', color='primary'),
-            ],width={'size':3,'offset':1}),
-            ],
-            width = {'size': 10}),
-            # ,width = {'size': 10}),
+            dcc.Markdown('''
 
+            The dotted lines in these plots represents the outcome if not control is implemented. The solid lines represent the outcome if we protect the high risk (quarantine) and allow low risk to social distance. The result is an 83% reduction in deaths.
+
+            The control is in place for 9 months, starting after a month.
+
+            To simulate more strategies, press the button below!
+
+            ''',style={'fontSize':20}),
+
+            # dbc.Col([
+            dbc.Button('Start Calculating', href='/inter', size='lg', color='success'
+            ,style={'margin-top': '50px','margin-left': '50px'}
+            ),
+            ],
+            # width={'size':3,'offset':1},
+            width = {'size': 10}),
+            # ),
+            
     #end of tab 3
         ]),
 
@@ -806,13 +827,15 @@ layout_intro = html.Div([dbc.Col([
                     
                     2. Adjust the time for which control is applied.
 
+                    To start predicting the outcome of different strategies, press the button below!
 
                     ''',style={'fontSize':20}),
                     
                     dbc.Col([
-                    dbc.Button('Start Calculating', href='/inter', size='lg', color='primary'),
+                    dbc.Button('Start Calculating', href='/inter', size='lg', color='success'),
                     ],width={'size':3,'offset':1}),
                     ],
+                    style={'margin-top': '20px'},
                     width = {'size': 10}),
 
                         #end of tab 1
@@ -843,7 +866,9 @@ Results_explanation =  html.Div([
 
     Use the '**Model Structure**' options on the left to choose whether to include deaths or not.
 
-    Selecting '**Custom**' allows you to choose your own control measures. You can independently adjust the *infection rate* (how quickly the disease is transmitted between people) for each group. This corresponds to e.g. a lockdown for one group, and less strict measures for another. You may also directly compare the performance of two different custom strategies.
+    Selecting '**Custom**' allows you to choose your own control measures. You can independently adjust the *infection rate* (how quickly the disease is transmitted between people) for each group. This corresponds to e.g. a lockdown for one group, and less strict measures for another.
+    
+    You may also directly compare the performance of **two** different custom strategies (how one performs relative to the other).
 
     All infection rates are given relative to a baseline level (at 100%) for COVID-19.
 
@@ -899,8 +924,8 @@ layout_inter = html.Div([
                                                                                 id = 'preset',
                                                                                 options=[
                                                                                     {'label': 'Do Nothing', 'value': 'N'},
-                                                                                    {'label': 'Quarantine All', 'value': 'Q'},
                                                                                     {'label': 'Social Distancing', 'value': 'MSD'},
+                                                                                    {'label': 'Quarantine All', 'value': 'Q'},
                                                                                     {'label': 'Quarantine High Risk Only', 'value': 'H'},
                                                                                     {'label': 'Quarantine High Risk, Mild Social Distancing For Low Risk', 'value': 'HL'},
                                                                                     {'label': 'Custom', 'value': 'C'},
@@ -1001,6 +1026,7 @@ layout_inter = html.Div([
 
                                                                                     html.H6('Low Risk Infection Rate (%)'),
                                                                                     dcc.Slider(
+                                                                                        id='grey-lr-slider',
                                                                                         min=0,
                                                                                         max=len(params.fact_v)-1,
                                                                                         step = 1,
@@ -1011,6 +1037,7 @@ layout_inter = html.Div([
 
                                                                                     html.H6('High Risk Infection Rate (%)'),
                                                                                     dcc.Slider(
+                                                                                            id='grey-hr-slider',
                                                                                             min=0,
                                                                                             max=len(params.fact_v)-1,
                                                                                             step = 1,
@@ -1476,9 +1503,9 @@ top_banner = html.Div([
                         '''
                         An implementation of a model parameterised for COVID-19.
                         
-                        Have a look at the [**introduction**](/intro), experiment with the [**interactive model**](/inter), or look at the [**model structure**](/model).
+                        ## Read our [**introduction**](/intro), experiment with the [**interactive model**](/inter), explore [**real time data**](/data) or consider the [**model structure**](/model).
                         
-                        Authors: Nick Taylor and Daniel Muthukrishna
+                        Authors: Nick Taylor and Daniel Muthukrishna.
                         '''
                         ,style={'fontSize': 18}),
                         ]),
@@ -1544,6 +1571,20 @@ def display_page(pathname):
     else:
         return 'intro'
 
+
+
+
+@app.callback(
+            [Output('grey-lr-slider', 'value'),
+            Output('grey-hr-slider', 'value')],
+            [
+            Input('preset', 'value'),
+            ])
+def preset_sliders(preset):
+    if preset in preset_dict_low:
+        return preset_dict_low[preset], preset_dict_high[preset]
+    else: # 'N'
+        return 6,6
 
 ##############################################################################################################################
 @app.callback([Output('infections-linear', 'figure'),
@@ -1764,6 +1805,9 @@ def invisible_or_not(num,preset,hosp_cats):
         groups_radio = {'display': 'none'}
         says_strat_2 = {'display': 'none'}
 
+    if preset!='C':
+        says_strat_2 = {'display': 'none'}
+
     
 
     return [style_2,style,says_strat_2,strat_H, strat_L ,groups_radio,groups_checklist,options]
@@ -1788,9 +1832,8 @@ def find_sol(preset,years,month,lr,hr,lr2,hr2,num_strat,hosp):
     if preset=='C':
         lr = params.fact_v[int(lr)]
         hr = params.fact_v[int(hr)]
-        hl = min(hr,lr)
     else:
-        lr, hr, hl = preset_strat(preset)
+        lr, hr = preset_strat(preset)
         num_strat='one'
 
     if preset=='N':
@@ -1799,7 +1842,6 @@ def find_sol(preset,years,month,lr,hr,lr2,hr2,num_strat,hosp):
     
     lr2 = params.fact_v[int(lr2)]
     hr2 = params.fact_v[int(hr2)]
-    hl2 = min(hr2,lr2)
     
     crit = True
     deaths = False
@@ -1813,9 +1855,9 @@ def find_sol(preset,years,month,lr,hr,lr2,hr2,num_strat,hosp):
         months_controlled= None
 
     sols = []
-    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,beta_HL_factor=hl,t_control=months_controlled,critical=crit,death=deaths,T_stop=t_stop)) 
+    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,critical=crit,death=deaths,T_stop=t_stop)) 
     if num_strat=='two':
-        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,beta_HL_factor=hl2,t_control=months_controlled,critical=crit,death=deaths,T_stop=t_stop)) 
+        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,critical=crit,death=deaths,T_stop=t_stop)) 
     
     return sols # {'sols': sols}
 
@@ -1835,7 +1877,7 @@ def find_sol_do_noth(years,hosp):
     
     t_stop = 365*years
     
-    sol_do_nothing = simulator().run_model(beta_L_factor=1,beta_H_factor=1,beta_HL_factor=1,t_control=None,critical=crit,death=deaths,T_stop=t_stop)
+    sol_do_nothing = simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,critical=crit,death=deaths,T_stop=t_stop)
     
     return sol_do_nothing # {'do_nothing': sol_do_nothing}
 
@@ -1925,70 +1967,64 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
             ]),
 
             
+            # dbc
             dbc.Row([
-                dbc.Col([
-                    dbc.Card(
-                        [
-                            dbc.CardHeader(
-                                [
-                                html.H6('Infection rate (compared to baseline, during control period)'),
-                                html.Hr(className='my-2'),
 
-                                dbc.Row([
-                                html.H6('Low Risk'),
-                                html.H6('High Risk')],
-                                justify='around'
-                                ),
-                                ]
-                                ),
-                            dbc.CardBody(
-                                    [
-                                    dbc.Row([
-                                        html.H3('{0:,.0f}'.format(100*beta_L) + '%',className='card-title'),
-                                        html.H3('{0:,.0f}'.format(100*beta_H) + '%',className='card-title')],
-                                        justify='around'
-                                        )
-                                    ]
-                                ),
-                        ],color='light',
-                        outline=True,
-                    )
-                ],
-                width = 4
-                ),
                 dbc.Col([
-                    dbc.Card(
-                            [
-                                dbc.CardHeader(
-                                    [
-                                        html.H6('Time control is in place'),
-                                        html.Hr(className='my-2'),
-
-                                        dbc.Row([
-                                        html.H6('Months controlling'),
-                                        html.H6('Starting From')],
-                                        justify='around'
-                                        )
-                                    ]
-                                ),
-                                dbc.CardBody([
-                                dbc.Row([
-                                        html.H4(str(month[1]-month[0])+' Months',className='card-title'),
-                                        html.H4('Month ' + str(month[0]),className='card-title')],
-                                        justify='around'
-                                        )
-                                    ]),
-                                    
+                    dbc.Table(
                         
-                            ],
-                            color='light',
-                            outline=True,
-                        )
-                ],
-                width = 4
-                ),
-            ],justify='center',
-            # no_gutters=True,
+                        [
+                            html.Thead(
+                                html.Tr([
+                                html.Th(html.H5("Low Risk Infection Rate",style={'color':'white'})),
+                                html.Th(html.H5("High Risk Infection Rate",style={'color':'white'}))
+                                ])
+                                ),
+                        ]
+                        + [
+                            html.Tr(
+                                [
+                                    html.Td(html.H3('{0:,.0f}'.format(100*beta_H) + '%',style={'color':'white'})),
+                                    html.Td(html.H3('{0:,.0f}'.format(100*beta_L) + '%',style={'color':'white'}))
+                                    ]),
+                        ],
+                        bordered=True,
+                        dark=True,
+                        hover=True,
+                        responsive=True,
+                        striped=True,
+                    ),
+                ],width=6),
+
+                dbc.Col([
+                    dbc.Table(
+                        
+                        [
+                            html.Thead(
+                                html.Tr([
+                                html.Th(html.H5("Control Starts",style={'color':'white'})),
+                                html.Th(html.H5("Control Ends",style={'color':'white'}))
+                                ])
+                                ),
+                        ]
+                        + [
+                            html.Tr(
+                                [
+                                    html.Td(html.H3('Month ' + str(month[0]),style={'color':'white'})),
+                                    html.Td(html.H3('Month ' + str(month[1]),style={'color':'white'}))
+                                    ]),
+                        ],
+                        bordered=True,
+                        dark=True,
+                        hover=True,
+                        responsive=True,
+                        striped=True,
+                    ),
+                ],width=6),
+
+
+            ],
+            align='center',
             ),
 
             dbc.Container([
@@ -2058,32 +2094,41 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
 ########################################################################################################################
 
 
-@app.callback(Output('line-plot-intro', 'figure'),
+@app.callback(
+            [Output('line-plot-intro', 'figure'),
+            Output('line-plot-intro-2', 'figure')],
             [
             Input('intro-tabs', 'active_tab'),
             ],
             [
             State('hosp-cats', 'value'),
+            State('sol-calculated-do-nothing', 'data'),
             ])
-def intro_content(tab,hosp): #pathname
+def intro_content(tab,hosp,sol_do_n): 
         fig1 = dummy_figure
+        fig2 = dummy_figure
+
         # print(pathname,tab)
 
         if tab=='tab_3': # pathname=='/intro' and 
-            lr, hr, hl = preset_strat('HL')
-            output_use = ['S','I','R','C','H','D']
+            lr, hr = preset_strat('HL')
+            output_use = ['S','I','R']
+            output_use_2 = ['C','H','D']
             sols = []
-            month = [1,8]
+            month = [1,10]
             months_controlled = [30*i for i in month]
             year_to_run = 2
             
             deaths=False
             if 'True_deaths' in hosp:
                 deaths=True
-            sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,beta_HL_factor=hl,t_control=months_controlled,critical=True,death=deaths,T_stop=365*year_to_run)) 
-            fig1 = figure_generator(sols,month,output_use,['BR'],'True_deaths','one',['BR'],'all')
+            sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,critical=True,death=deaths,T_stop=365*year_to_run)) 
+            sols.append(sol_do_n)
+            fig1 = figure_generator(sols,month,output_use,['BR'],'True_deaths','two',['BR'],'all')
+            fig2 = figure_generator(sols,month,output_use_2,['BR'],'True_deaths','two',['BR'],'all')
+
         
-        return fig1
+        return fig1, fig2
 
 
 

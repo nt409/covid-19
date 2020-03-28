@@ -22,7 +22,7 @@ divider = -2
 
 # print()
 # exit()
-fact_v = np.concatenate([[0.01,0.05,0.1],np.linspace(0.25,2,8)]) # np.linspace(0.05,1.2,21) # [0.1,1,4] # np.linspace(0.05,8,11) #[0.05,1,10] #np.linspace(0.05,8,3) # [0.1,1,2,4] #np.linspace(0.5,4,5)
+fact_v = np.concatenate([[0.02,0.05,0.1],np.linspace(0.25,2,8)]) # np.linspace(0.05,1.2,21) # [0.1,1,4] # np.linspace(0.05,8,11) #[0.05,1,10] #np.linspace(0.05,8,3) # [0.1,1,2,4] #np.linspace(0.5,4,5)
 # fact_v = [0.05,1,1.5]
 months_run_for = 12
 

@@ -14,7 +14,7 @@ class simulator:
 #-----------------------------------------------------------------
         
     ##
-    def poly_solv_ode(self,t,y,beta_L_factor=1,beta_H_factor=1,beta_HL_factor=1,t_control=None,critical=True,death=True):
+    def poly_solv_ode(self,t,y,beta_L_factor=1,beta_H_factor=1,t_control=None,critical=True,death=True):
         ##
         S_L = y[params.S_L_ind]
         I_L = y[params.I_L_ind]
@@ -63,14 +63,14 @@ class simulator:
             C_H_to_R_H = C_H*params.crit_recovery
             C_H_to_D_H = C_H*params.crit_death
         
-        dydt = [-S_L*(params.beta*beta_L_factor*I_L + params.beta*beta_HL_factor*I_H), # dS
-                +S_L*(params.beta*beta_L_factor*I_L + params.beta*beta_HL_factor*I_H) - params.mu_L*I_L - params.gamma_L*I_L, # dI
+        dydt = [-S_L*( params.beta*beta_L_factor*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**0.5))*I_H ), # dS
+                +S_L*( params.beta*beta_L_factor*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**0.5))*I_H ) - params.mu_L*I_L - params.gamma_L*I_L, # dI
                 I_L*params.mu_L    + H_L*params.recover_L + death_on*C_L_to_R_L,            # dR
                 I_L*params.gamma_L - H_L*params.recover_L - H_L*params.crit_L,         # dH
                 H_L*params.crit_L  - death_on*(C_L_to_R_L + C_L_to_D_L),                          # dC
                 + death_on*C_L_to_D_L,                                                      # dD
-                -S_H*(params.beta*beta_HL_factor*I_L + params.beta*beta_H_factor*I_H), # dS
-                +S_H*(params.beta*beta_HL_factor*I_L + params.beta*beta_H_factor*I_H) - params.mu_H*I_H - params.gamma_H*I_H, # dI
+                -S_H*( (params.beta*((beta_H_factor*beta_L_factor)**0.5))*I_L + params.beta*beta_H_factor*I_H), # dS
+                +S_H*( (params.beta*((beta_H_factor*beta_L_factor)**0.5))*I_L + params.beta*beta_H_factor*I_H) - params.mu_H*I_H - params.gamma_H*I_H, # dI
                 I_H*params.mu_H    + H_H*params.recover_H  + death_on*C_H_to_R_H,           # dR
                 I_H*params.gamma_H - H_H*params.recover_H - H_H*params.crit_H,         # dH
                 H_H*params.crit_H  - death_on*(C_H_to_R_H + C_H_to_D_H),                          # dC
@@ -81,7 +81,7 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def poly_calc_ode(self,I0_L,I0_H,beta_L_factor,beta_H_factor,beta_HL_factor,t_control,critical,death,T_stop):
+    def poly_calc_ode(self,I0_L,I0_H,beta_L_factor,beta_H_factor,t_control,critical,death,T_stop):
 
         I_L_0 = I0_L
         S_L_0 = (1-params.hr_frac)*params.N - I_L_0
@@ -104,7 +104,7 @@ class simulator:
             0
             ]
 
-        sol = ode(self.poly_solv_ode,jac=None).set_integrator('dopri5').set_f_params(beta_L_factor,beta_H_factor,beta_HL_factor,t_control,critical,death)
+        sol = ode(self.poly_solv_ode,jac=None).set_integrator('dopri5').set_f_params(beta_L_factor,beta_H_factor,t_control,critical,death)
         
         tim = np.linspace(0,T_stop, 141) # use 141 time values
 
@@ -129,10 +129,10 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def run_model(self,I0_L=0.75*params.N*10**(-5),I0_H=0.25*params.N*10**(-5),beta_L_factor=1,beta_H_factor=1,beta_HL_factor=1,t_control=None,critical=True,death=True,T_stop=params.T_stop):
+    def run_model(self,I0_L=0.75*params.N*10**(-5),I0_H=0.25*params.N*10**(-5),beta_L_factor=1,beta_H_factor=1,t_control=None,critical=True,death=True,T_stop=params.T_stop):
         
-        y_out, tim = self.poly_calc_ode(I0_L=I0_L,I0_H=I0_H,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,beta_HL_factor=beta_HL_factor,t_control=t_control,critical=critical,death=death,T_stop=T_stop)
-        dicto = {'y': y_out,'t': tim,'beta_L': beta_L_factor,'beta_H': beta_H_factor, 'beta_HL': beta_HL_factor}
+        y_out, tim = self.poly_calc_ode(I0_L=I0_L,I0_H=I0_H,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,t_control=t_control,critical=critical,death=death,T_stop=T_stop)
+        dicto = {'y': y_out,'t': tim,'beta_L': beta_L_factor,'beta_H': beta_H_factor}
         return dicto
 #--------------------------------------------------------------------
 

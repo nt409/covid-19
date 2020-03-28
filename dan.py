@@ -116,7 +116,8 @@ colors = {
 
 
 
-layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-family': 'sans-serif'},
+layout_dan = html.Div()
+a =  html.Div(style={'backgroundColor': colors['background'], 'font-family': 'sans-serif'},
                       id='output-layout', children=[
     html.H2(
         children='COVID-19 Cases and Deaths',
