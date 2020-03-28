@@ -131,8 +131,10 @@ index = {'S': params.S_L_ind,
 ########################################################################################################################
 
 
-def Bar_chart_generator(data,data2 = None,name1=None,name2=None,text_addition=None,color=None,round_to=1,y_title=None,yax_tick_form=None,maxi=True,yax_font_size=None): # ,title_font_size=None): #title
-
+def Bar_chart_generator(data,data2 = None,name1=None,name2=None,preset=None,text_addition=None,color=None,round_to=1,y_title=None,yax_tick_form=None,maxi=True,yax_font_size=None,hover_form=None): # ,title_font_size=None): #title
+    # if preset is None:
+    #     preset = 'N'
+    
     multiplier_text = 1
     if yax_tick_form is not None: # in % case, corrects it
         multiplier_text = 100
@@ -158,44 +160,47 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,text_addition=No
         x = cats,
         y = data1,
         marker=dict(color=color),
-        name = name1
+        name = name1,
+        hovertemplate=hover_form
+        # hovertemplate = "{x}" + "{y:.2f}",
         # hovermode = False ,
-
     )
 
     traces = [trace0]
     
     # annots = []
 
-    i = 0
-    for yd, xd in zip(data1,cats):
-        # multiplier = (-1)**(i+1)
-        i +=1
-        yvalz = yd/2
-       
-        if not (multiplier_text*yd<0.2 and data2 is not None):
-            size_use1 = 22
-            color_use1 = 'black'
-            y_pos_use = 1.5*yvalz
+    if False:
+        i = 0
+        for yd, xd in zip(data1,cats):
+            # multiplier = (-1)**(i+1)
+            i +=1
+            yvalz = yd/2
+        
+            if not (multiplier_text*yd<0.2 and data2 is not None):
+                size_use1 = 22
+                color_use1 = 'black'
+                y_pos_use = 1.5*yvalz
 
-            if data2 is not None:
-                size_use1 = 14
-                color_use1 = 'white'
-                y_pos_use = yvalz
+                if data2 is not None:
+                    size_use1 = 14
+                    color_use1 = 'white'
+                    y_pos_use = yvalz
 
-            traces.append(go.Scatter(#xref='x', yref='y',
-            x= [xd],
-            y= [y_pos_use],
-            mode='text',
-            text = str(round(multiplier_text*yd,round_to)) + text_addition,
-            textfont = dict(color=color_use1,size=size_use1),
-            ))
+                traces.append(go.Scatter(#xref='x', yref='y',
+                x= [xd],
+                y= [y_pos_use],
+                mode='text',
+                text = str(round(multiplier_text*yd,round_to)) + text_addition,
+                textfont = dict(color=color_use1,size=size_use1),
+                ))
 
     
     if data2 is not None:
         traces.append(go.Bar(
         x = cats,
         y = data2,
+        hovertemplate=hover_form,
         name = name2)
         )
 
@@ -206,54 +211,61 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,text_addition=No
                    )
         show_ledge = True
         
-        i = 0
-        for yd, xd in zip(data2,cats):
-            space = data1[i]
-            yvalz = space + yd/2
-            traces.append(go.Scatter(
-                x= [xd],
-                y= [0.9*(yvalz+yd/2)],
-                mode='text',
-                text = str(round(multiplier_text*(data2[i]+data1[i]),round_to)) + text_addition,
-                textfont = dict(color='black',size=22),
-                showlegend=False
-                ))
-            i += 1
-            if multiplier_text*yd>=0.4:
-                # print(multiplier_text*yd)
+        if False:
+            i = 0
+            for yd, xd in zip(data2,cats):
+                space = data1[i]
+                yvalz = space + yd/2
                 traces.append(go.Scatter(
-                x= [xd],
-                y= [0.25*(yvalz+yd/2)],
-                mode='text',
-                text = str(round(multiplier_text*yd,round_to)) + text_addition,
-                # textfont_size
-                textfont = dict(color='white',size=14),
-                showlegend=False
-
-                ))
+                    x= [xd],
+                    y= [0.9*(yvalz+yd/2)],
+                    mode='text',
+                    text = str(round(multiplier_text*(data2[i]+data1[i]),round_to)) + text_addition,
+                    textfont = dict(color='black',size=22),
+                    showlegend=False
+                    ))
+                i += 1
+                if multiplier_text*yd>=0.4:
+                    traces.append(go.Scatter(
+                    x= [xd],
+                    y= [0.25*(yvalz+yd/2)],
+                    mode='text',
+                    text = str(round(multiplier_text*yd,round_to)) + text_addition,
+                    textfont = dict(color='white',size=14),
+                    showlegend=False
+                    ))
     else:
         ledge = None
         show_ledge = False
     
+
+    # cross
     if data2 is not None:
         data_use = [data1[i] + data2[i] for i in range(len(data1))] 
     else:
         data_use = data1
-
-    counter = 0
+    counter_bad = 0
+    counter_good = 0
     if len(data_use)>1:
         for i, dd in enumerate(data_use):
             if maxi and dd == max(data_use):
                 worst_cat = cats[i]
                 worst_cat_y = dd
-                counter += 1
+                counter_bad += 1
+            if maxi and dd == min(data_use):
+                best_cat = cats[i]
+                best_cat_y = dd
+                counter_good += 1
             if not maxi and dd == min(data_use):
                 worst_cat = cats[i]
                 worst_cat_y = dd
-                counter += 1
-
+                counter_bad += 1
+            if not maxi and dd == max(data_use):
+                best_cat = cats[i]
+                best_cat_y = dd
+                counter_good += 1
         
-        if counter<2:
+        if counter_bad<2:
             traces.append(go.Scatter(
                 x= [worst_cat],
                 y= [worst_cat_y/2],
@@ -267,6 +279,22 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,text_addition=No
                 hovertemplate='Worst Strategy',
                 showlegend=False,
                 name = worst_cat
+                # color='red'
+            ))
+        if counter_good<2:
+            traces.append(go.Scatter(
+                x= [best_cat],
+                y= [best_cat_y/2],
+                mode='markers',
+                marker_symbol = 'star',
+                marker_size = 30,
+                marker_line_width=1,
+                opacity=0.5,
+                marker_color = 'green',
+                marker_line_color = 'black',
+                hovertemplate='Best Strategy',
+                showlegend=False,
+                name = best_cat
                 # color='red'
             ))
 
@@ -783,13 +811,13 @@ layout_intro = html.Div([dbc.Col([
 
             ### 2. Herd Immunity
 
-            Once the number of susceptible people drops below a certain threshold (which is different for every disease, and depends on the basic reproductive rate), the population is no longer at risk of an epidemic (so any new infection introduced won't cause infection to spread through an entire population).
+            Once the number of susceptible people drops below a certain threshold (which is different for every disease, and in simpler models depends on the basic reproduction number), the population is no longer at risk of an epidemic (so any new infection introduced won't cause infection to spread through an entire population).
 
             Once the number of susceptible people has dropped below this threshold, the population is termed to have '**herd immunity**'. Herd immunity is either obtained through sufficiently many individuals catching the disease and developing personal immunity to it, or by vaccination.
 
-            For COVID-19, there is a safe herd immunity threshold of around 60% (=1-1/R), meaning that if 60% of the population develop immunity then the population is **safe** (no longer at risk of an epidemic).
+            For COVID-19, there is a safe herd immunity threshold of around 60% (=1-1/*R*), meaning that if 60% of the population develop immunity then the population is **safe** (no longer at risk of an epidemic).
 
-            Coronavirus is particularly dangerous because most countries have almost 0% immunity since the virus is so novel. Experts are still uncertain whether you can build immunity to the virus, but the drop in cases in China would suggest that you can. You would have seen people in populated areas getting reinfected which doesn't seem to have happened.
+            Coronavirus is particularly dangerous because most countries have almost 0% immunity since the virus is so novel. Experts are still uncertain whether you can build immunity to the virus, but the drop in cases in China would suggest that you can. Without immunity it would be expected that people in populated areas get reinfected, which doesn't seem to have happened.
 
 
             # Keys to a successful control strategy
@@ -818,8 +846,6 @@ layout_intro = html.Div([dbc.Col([
 
             However, in the absence of a vaccine these strategies do not ensure the safety of the population in future (goal 3), meaning that the population is still highly susceptible and greatly at risk of a future epidemic. This is because these strategies do not lead to any significant level of immunity within the population, so as soon as the measures are lifted the epidemic restarts.
 
-            [insert plot](/inter-model)
-
             COVID-19 spreads so rapidly that it is capable of quickly generating enough seriously ill patients to overwhelm the intensive care unit (ICU) capacity of most healthcase systems in the world. This is why most countries have opted for strategies that slow the infection rate.
 
             ### Protecting the high risk
@@ -829,8 +855,6 @@ layout_intro = html.Div([dbc.Col([
             The **interactive model** presented here is designed to show the value is protecting the high risk members of society. It is critically important that the high risk don't catch the disease.
 
             If 60% of the population catch the disease, but all are classified as low risk, then very few people will get seriously ill through the course of the epidemic. However, if a mixture of high and low risk individuals catch the disease, then many of the high risk individuals will develop serious illness as a result.
-
-            [insert plot]
 
             ###
 
@@ -884,7 +908,7 @@ layout_intro = html.Div([dbc.Col([
 
             # dbc.Col([
             dbc.Button('Start Calculating', href='/inter', size='lg', color='success'
-            ,style={'margin-top': '50px','margin-left': '50px'}
+            ,style={'margin-top': '1vh','margin-left': '2vw'}
             ),
             ],
             # width={'size':3,'offset':1},
@@ -1320,6 +1344,45 @@ layout_inter = html.Div([
 
                                                                                                                         html.H3('Strategy Outcome',id='bar_page_title',className="display-4"),
 
+                                                                                                            dbc.Col([
+                                                                                                                html.Div(
+                                                                                                                    [
+                                                                                                                    dbc.Row([
+                                                                                                                        html.H2('Total Deaths (Percentage)',id='bar-plot-1-out'),
+                                                                                                                        dbc.Spinner(html.Div(id="loading-bar-output-1")),
+                                                                                                                    ]),
+                                                                                                                    ],
+                                                                                                                    id='bar-plot-1-title',style={'color': 'blue','fontSize': 26, 'display':'inline-block'}),
+                                                                                                            ],width=6),
+
+
+                                                                                                            dbc.Row([
+                                                                                                                dbc.Col([
+                                                                                                                    dcc.Graph(id='bar-plot-1',style=bar_non_crit_style),
+                                                                                                                ],
+                                                                                                                align='center',
+                                                                                                                width=6),
+                                                                                                                dbc.Col([
+                                                                                                                    html.Div(id='saved-clicks',style={'display': 'none'}),
+                                                                                                                    dbc.Card([
+                                                                                                                        dbc.CardHeader(html.H2('Explanation - click on plot titles')),
+                                                                                                                        dbc.CardBody([
+                                                                                                                                html.Div(id='explanation'), #,style={'color': 'blue', 'fontSize': 18}
+                                                                                                                        ]
+                                                                                                                        )
+                                                                                                                    ],color='light'),
+                                                                                                                ],
+                                                                                                                align='top',
+                                                                                                                 width=6,#    align='start',
+                                                                                                                ),
+
+                                                                                                            
+                                                                                                            ],
+                                                                                                            style={'height':'40vh'}),
+
+                                                                                                            html.Hr(className='my-2'),
+
+
                                                                                                                         dbc.Row([
                                                                                                                             dbc.Col([
                                                                                                                                 html.Div(
@@ -1364,43 +1427,6 @@ layout_inter = html.Div([
                                                                                                             ),
 
 
-                                                                                                            dbc.Col([
-                                                                                                                html.Div(
-                                                                                                                    [
-                                                                                                                    dbc.Row([
-                                                                                                                        html.H2('Total Deaths (Percentage)',id='bar-plot-1-out'),
-                                                                                                                        dbc.Spinner(html.Div(id="loading-bar-output-1")),
-                                                                                                                    ]),
-                                                                                                                    ],
-                                                                                                                    id='bar-plot-1-title',style={'color': 'blue','fontSize': 26, 'display':'inline-block'}),
-                                                                                                            ],width=6),
-
-
-                                                                                                            dbc.Row([
-                                                                                                                dbc.Col([
-                                                                                                                    dcc.Graph(id='bar-plot-1',style=bar_non_crit_style),
-                                                                                                                ],
-                                                                                                                align='center',
-                                                                                                                width=6),
-                                                                                                                dbc.Col([
-                                                                                                                    html.Div(id='saved-clicks',style={'display': 'none'}),
-                                                                                                                    dbc.Card([
-                                                                                                                        dbc.CardHeader(html.H2('Explanation - click on plot titles')),
-                                                                                                                        dbc.CardBody([
-                                                                                                                                html.Div(id='explanation'), #,style={'color': 'blue', 'fontSize': 18}
-                                                                                                                        ]
-                                                                                                                        )
-                                                                                                                    ],color='light'),
-                                                                                                                ],
-                                                                                                                align='top',
-                                                                                                                 width=6,#    align='start',
-                                                                                                                ),
-
-                                                                                                            
-                                                                                                            ],
-                                                                                                            style={'height':'40vh'}),
-
-                                                                                                            html.Hr(className='my-2'),
                                                                                                                 
                                                                                                             dbc.Row([
                                                                                                                 dbc.Col([
@@ -1606,7 +1632,7 @@ navbar = html.Nav([
 
 # app.layout
         
-top_banner = html.Div([
+page_layout = html.Div([
     
     # dbc.Jumbotron([
 
@@ -1649,10 +1675,10 @@ top_banner = html.Div([
         # # page content
         dcc.Location(id='url', refresh=False),
 
-        # html.Footer(["Author: ",
-        #              html.A('Nick Taylor.') #, href='https://twitter.com/DanMuthukrishna'), ". ",
-        #             ],
-        #             style={'textAlign': 'center'}),
+        html.Footer(["Authors: ",
+                     html.A('Nick P. Taylor and Daniel Muthukrishna.') #, href='https://twitter.com/DanMuthukrishna'), ". ",
+                    ],
+                    style={'textAlign': 'center'}),
 
                     #  html.A('Source code', href='https://github.com/daniel-muthukrishna/covid19'), ". ",
                     #  "Data is taken from ",
@@ -1668,7 +1694,7 @@ top_banner = html.Div([
 
 
 
-app.layout = top_banner
+app.layout = page_layout
 
 
 
@@ -2619,11 +2645,11 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
                 if not deaths:
                     bar1_title = 'Maximum Percentage Of Population In Critical Care'
 
-                bar1 = Bar_chart_generator(crit_cap_data_L_3yr   ,text_addition='%'         ,y_title='Population'                                   ,yax_tick_form='.1%',data2  = crit_cap_data_H_3yr,name1='Low Risk',name2='High Risk',round_to=3) #,title_font_size=font_use) #2
-                bar2 = Bar_chart_generator(herd_list_3yr         ,text_addition='%'         ,y_title='Percentage of Safe Threshold'      ,color = 'mediumseagreen',yax_tick_form='.1%',maxi=False,yax_font_size=20)
-                bar3 = Bar_chart_generator(ICU_data_3yr          ,text_addition='x current' ,y_title='Multiple of Current Capacity'   ,color = 'powderblue')
-                bar4 = Bar_chart_generator(time_exceeded_data,text_addition=' Months'   ,y_title='Time (Months)'                  ,color = 'peachpuff')
-                bar5 = Bar_chart_generator(time_reached_data ,text_addition=' Months'   ,y_title='Time (Months)'                  ,color = 'lemonchiffon')
+                bar1 = Bar_chart_generator(crit_cap_data_L_3yr   ,text_addition='%'         , y_title='Population'  ,yax_tick_form='.1%',data2  = crit_cap_data_H_3yr,hover_form = '%{x}, %{y:.3%}',  name1='Low Risk',name2='High Risk',round_to=3) #,title_font_size=font_use) #2 # preset = preset,
+                bar2 = Bar_chart_generator(herd_list_3yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'    ,color = 'mediumseagreen',hover_form = '%{x}, %{y:.1%}<extra></extra>',yax_tick_form='.1%',maxi=False,yax_font_size=20) # preset = preset,
+                bar3 = Bar_chart_generator(ICU_data_3yr          ,text_addition='x current' , y_title='Multiple of Current Capacity'    ,color = 'powderblue'  ,hover_form = '%{x}, %{y:.1f}x Current<extra></extra>') # preset = preset,
+                bar4 = Bar_chart_generator(time_exceeded_data,text_addition=' Months'       , y_title='Time (Months)'                   ,color = 'peachpuff'   ,hover_form = '%{x}: %{y:.1f} Months<extra></extra>') # preset = preset,
+                bar5 = Bar_chart_generator(time_reached_data ,text_addition=' Months'       , y_title='Time (Months)'                   ,color = 'lemonchiffon',hover_form = '%{x}: %{y:.1f} Months<extra></extra>') # preset = preset,
 
             if deaths:
                 bar_on_or_off = None

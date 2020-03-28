@@ -116,8 +116,10 @@ colors = {
 
 
 
-layout_dan = html.Div()
-a =  html.Div(style={'backgroundColor': colors['background'], 'font-family': 'sans-serif'},
+# layout_dan = html.Div()
+
+# a = 
+layout_dan =  html.Div(style={'backgroundColor': colors['background'], 'font-family': 'sans-serif'},
                       id='output-layout', children=[
     html.H2(
         children='COVID-19 Cases and Deaths',
@@ -252,7 +254,8 @@ a =  html.Div(style={'backgroundColor': colors['background'], 'font-family': 'sa
         justify='start'),
         html.Hr(),
         html.Div(id='hidden-stored-data', style={'display': 'none'}),
-        html.Footer(["Author: ",
+        html.Footer([
+                    "Author: ",
                      html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'), ". ",
                      html.A('Source code', href='https://github.com/daniel-muthukrishna/covid19'), ". ",
                      "Data is taken from ",
