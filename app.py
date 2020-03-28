@@ -170,31 +170,6 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,preset=None,text
     
     # annots = []
 
-    if False:
-        i = 0
-        for yd, xd in zip(data1,cats):
-            # multiplier = (-1)**(i+1)
-            i +=1
-            yvalz = yd/2
-        
-            if not (multiplier_text*yd<0.2 and data2 is not None):
-                size_use1 = 22
-                color_use1 = 'black'
-                y_pos_use = 1.5*yvalz
-
-                if data2 is not None:
-                    size_use1 = 14
-                    color_use1 = 'white'
-                    y_pos_use = yvalz
-
-                traces.append(go.Scatter(#xref='x', yref='y',
-                x= [xd],
-                y= [y_pos_use],
-                mode='text',
-                text = str(round(multiplier_text*yd,round_to)) + text_addition,
-                textfont = dict(color=color_use1,size=size_use1),
-                ))
-
     
     if data2 is not None:
         traces.append(go.Bar(
@@ -210,30 +185,7 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,preset=None,text
                        y = 0.9
                    )
         show_ledge = True
-        
-        if False:
-            i = 0
-            for yd, xd in zip(data2,cats):
-                space = data1[i]
-                yvalz = space + yd/2
-                traces.append(go.Scatter(
-                    x= [xd],
-                    y= [0.9*(yvalz+yd/2)],
-                    mode='text',
-                    text = str(round(multiplier_text*(data2[i]+data1[i]),round_to)) + text_addition,
-                    textfont = dict(color='black',size=22),
-                    showlegend=False
-                    ))
-                i += 1
-                if multiplier_text*yd>=0.4:
-                    traces.append(go.Scatter(
-                    x= [xd],
-                    y= [0.25*(yvalz+yd/2)],
-                    mode='text',
-                    text = str(round(multiplier_text*yd,round_to)) + text_addition,
-                    textfont = dict(color='white',size=14),
-                    showlegend=False
-                    ))
+    
     else:
         ledge = None
         show_ledge = False
@@ -279,7 +231,6 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,preset=None,text
                 hovertemplate='Worst Strategy',
                 showlegend=False,
                 name = worst_cat
-                # color='red'
             ))
         if counter_good<2:
             traces.append(go.Scatter(
@@ -295,7 +246,6 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,preset=None,text
                 hovertemplate='Best Strategy',
                 showlegend=False,
                 name = best_cat
-                # color='red'
             ))
 
     layout = go.Layout(
