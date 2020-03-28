@@ -106,7 +106,7 @@ class simulator:
 
         sol = ode(self.poly_solv_ode,jac=None).set_integrator('dopri5').set_f_params(beta_L_factor,beta_H_factor,t_control,critical,death)
         
-        tim = np.linspace(0,T_stop, 141) # use 141 time values
+        tim = np.linspace(0,T_stop, 301) # use 141 time values
 
         # tim = np.linspace(0,10, 141)
         

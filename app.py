@@ -77,6 +77,50 @@ bar_non_crit_style = {'height': bar_height, 'width': bar_width, 'display': 'bloc
 preset_dict_high = {'Q': 0, 'MSD': 4, 'HL': 0, 'H': 0, 'N':6}
 preset_dict_low  = {'Q': 0, 'MSD': 4, 'HL': 5, 'H': 6, 'N':6}
 
+month_len = 365/12
+
+
+group_vec = ['BR','HR','LR']
+
+longname = {'S': 'Susceptible',
+        'I': 'Infected',
+        'R': 'Recovered',
+        'H': 'Hospitalised',
+        'C': 'Critical',
+        'D': 'Deaths',
+}
+
+linestyle = {'BR': 'solid',
+        'HR': 'dot',
+        'LR': 'dash'}
+group_strings = {'BR': ' Sum of Risk Groups',
+        'HR': ' High Risk',
+        'LR': ' Low Risk'}
+
+factor_L = {'BR': 1,
+        'HR': 0,
+        'LR': 1}
+
+factor_H = {'BR': 1,
+        'HR': 1,
+        'LR': 0}
+
+colors = {'S': 'blue',
+        'I': 'orange',
+        'R': 'green',
+        'H': 'red',
+        'C': 'black',
+        'D': 'purple',
+        }
+
+index = {'S': params.S_L_ind,
+        'I': params.I_L_ind,
+        'R': params.R_L_ind,
+        'H': params.H_L_ind,
+        'C': params.C_L_ind,
+        'D': params.D_L_ind,
+        }
+
 
 ########################################################################################################################
 
@@ -299,7 +343,7 @@ def human_format(num):
 
 
 ########################################################################################################################
-def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots):
+def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots,years=2):
     
     lines_to_plot = []
     ymax = 0
@@ -309,46 +353,6 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
     if 'True_deaths' in hosp:
         names.append('D')
 
-    group_vec = ['BR','HR','LR']
-
-    longname = {'S': 'Susceptible',
-            'I': 'Infected',
-            'R': 'Recovered',
-            'H': 'Hospitalised',
-            'C': 'Critical',
-            'D': 'Deaths',
-    }
-
-    linestyle = {'BR': 'solid',
-            'HR': 'dot',
-            'LR': 'dash'}
-    group_strings = {'BR': ' Sum of Risk Groups',
-            'HR': ' High Risk',
-            'LR': ' Low Risk'}
-    
-    factor_L = {'BR': 1,
-            'HR': 0,
-            'LR': 1}
-
-    factor_H = {'BR': 1,
-            'HR': 1,
-            'LR': 0}
-
-    colors = {'S': 'blue',
-            'I': 'orange',
-            'R': 'green',
-            'H': 'red',
-            'C': 'black',
-            'D': 'purple',
-            }
-    
-    index = {'S': params.S_L_ind,
-            'I': params.I_L_ind,
-            'R': params.R_L_ind,
-            'H': params.H_L_ind,
-            'C': params.C_L_ind,
-            'D': params.D_L_ind,
-            }
     
     
     if num_strat=='one':
@@ -364,6 +368,14 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
     
 
     linestyle_numst = ['solid','dash']
+    
+    len_data_points = len(sols[0]['t'])
+    len_to_plot = ceil(len_data_points*years/3)
+    
+    # if years==3:
+    #     len_to_plot = len_data_points
+    # else:
+        
 
     ii = -1
     for sol in sols:
@@ -380,15 +392,16 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
                             name_string = ': Strategy ' + str(ii+1) + '; ' + group_strings[group]
                             line_style_use = linestyle_numst[ii]
                         
-                        xx = [i/30 for i in sol['t']]
+                        xx = [i/month_len for i in sol['t']]
                         if group=='BR':
                             group_hover_str = ''
                         elif group=='HR':
                             group_hover_str = 'High Risk' + '<br>'
                         else:
                             group_hover_str = 'Low Risk' + '<br>'
+                        # print(xx[:len_to_plot])
 
-                        line =  {'x': xx, 'y': (factor_L[group]*sol['y'][index[name],:] + factor_H[group]*sol['y'][index[name] + params.number_compartments,:]),
+                        line =  {'x': xx[:len_to_plot], 'y': (factor_L[group]*sol['y'][index[name],:len_to_plot] + factor_H[group]*sol['y'][index[name] + params.number_compartments,:len_to_plot]),
                                 'hovertemplate': group_hover_str +
                                                  longname[name] + ': %{y}<br>' +
                                                  'Time: %{x:.1f} Months<extra></extra>',
@@ -423,9 +436,9 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
         shapez.append(dict(
                 # filled Blue Control Rectangle
                 type="rect",
-                x0= month[0], #30*
+                x0= month[0], #month_len*
                 y0=-1,
-                x1= month[1], #30*
+                x1= month[1], #month_len*
                 y1=yax['range'][1],
                 line=dict(
                     color="LightSkyBlue",
@@ -452,9 +465,9 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
             shapez.append(dict(
                     # filled Pink ICU Rectangle
                     type="rect",
-                    x0=c_min/30,
+                    x0=c_min/month_len,
                     y0=-1,
-                    x1=c_max/30,
+                    x1=c_max/month_len,
                     y1=yax['range'][1],
                     line=dict(
                         color="pink",
@@ -466,7 +479,7 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
                     yref = 'y'
                 ))
             annotz.append(dict(
-                    x  = 0.5*(c_min+c_max)/30,
+                    x  = 0.5*(c_min+c_max)/month_len,
                     y  = yval_pink,
                     text="ICU Capacity Exceeded",
                     textangle=-90,
@@ -574,11 +587,11 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
 
     # if True: # Months
     if max(sol['t'])>370:
-        xtext = [str(2*i) for i in range(1+floor(max(sol['t'])/60))]
-        xvals = [2*i for i in range(1+floor(max(sol['t'])/60))]
+        xtext = [str(2*i) for i in range(1+floor(max(sol['t'])/(2*month_len)))]
+        xvals = [2*i for i in range(1+floor(max(sol['t'])/(2*month_len)))]
     else:
-        xtext = [str(i) for i in range(1+floor(max(sol['t'])/30))]
-        xvals = [ i for i in range(1+floor(max(sol['t'])/30))]
+        xtext = [str(i) for i in range(1+floor(max(sol['t'])/month_len))]
+        xvals = [ i for i in range(1+floor(max(sol['t'])/month_len))]
     
     if yax['range'][1]>0.5:
         yax_form = '%'
@@ -587,7 +600,7 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
     else:
         yax_form = '.2%'
 
-
+    print((years/3)*max(sol['t'])/month_len)
     layout = go.Layout(
                     annotations=annotz,
                     shapes=shapez,
@@ -609,7 +622,7 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
                 #    yaxis_type="log",
                    yaxis_tickformat = yax_form,
                    xaxis= dict(
-                       range= [0,max(sol['t'])/30],
+                       range= [0, (years/3)*max(sol['t'])/month_len],
                         ticktext = xtext,
                         tickvals = xvals
                        ),
@@ -653,11 +666,10 @@ layout_intro = html.Div([dbc.Col([
             html.Hr(className='my-2'),
             dbc.Col([
             
-            # To start calculating now, [**click here**](/inter). To look at real time data, [**click here**](/data). Details of the model structure are given [**here**](/model).
             dbc.Row([
             dbc.Button('Start Calculating', href='/inter', size='lg', color='success'),
             dbc.Button('Real Time Data', href='/data', size='lg', color='warning'),
-            dbc.Button('Model Structure', href='/model', size='lg', color='danger'),
+            # dbc.Button('Model Structure', href='/model', size='lg', color='danger'),
             ],
             justify='around',
             style = {"margin-top": "25px", "margin-bottom": "15px"},
@@ -860,7 +872,7 @@ Results_explanation =  html.Div([
     '''
     ## Instructions
 
-    Use the '**Inputs**' on the left hand bar to adjust choice of control measures. You can adjust the control measures and the length of time that they are implemented, as well as the time frame which you are considering.
+    Use the '**Inputs**' on the left hand bar to adjust choice of control measures. You can adjust the control measures and the length of time that they are implemented.
 
     Use the '**Outputs**' box on the right if you'd like to adjust what the plot shows. You can choose whether to consider only one of the low or high risk groups, or plot both groups together, or plot all lines.
 
@@ -933,14 +945,6 @@ layout_inter = html.Div([
                                                                                 value= 'MSD'
                                                                             ),
 
-                                                                            html.H6('How Many Years To Run Model For'),
-                                                                            dcc.Slider(
-                                                                                id='years-slider',
-                                                                                min=1,
-                                                                                max=3,
-                                                                                marks={i: str(i) for i in range(1,4)},
-                                                                                value=2,
-                                                                            ),
                                                                             
                                                                             html.H6('Months of Control'),
                                                                             html.P('Modifies infection rates from baseline=100%',style={'fontSize': 13}),
@@ -1078,19 +1082,7 @@ layout_inter = html.Div([
 #########################################################################################################################################################
 
 
-                                                                            html.H3('Model Structure',style={'color': 'blue'}),
-
-                                                                            html.H6('Optional Hospital Categories'),
-
-                                                                            dbc.RadioItems(
-                                                                                id = 'hosp-cats',
-                                                                                options=[
-                                                                                    {'label': 'Critical Care', 'value': 'True_crit'},
-                                                                                    {'label': 'Critical Care and Death', 'value': 'True_deaths'},
-                                                                                ],
-                                                                                value='True_deaths'
-                                                                            ),
-
+                                                                        
 
                                                         
 
@@ -1267,6 +1259,11 @@ layout_inter = html.Div([
                                                                                                     # ]),
                                                                                             ]),
 #########################################################################################################################################################
+                                                                
+                                                                
+                                                                
+
+                                                                
                                                                 # tab 2
                                                                 dbc.Tab(label='Detailed Results', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='DPC',children=[
                                                                                     
@@ -1364,6 +1361,15 @@ layout_inter = html.Div([
                                                                                                                                                                         value= ['S','I','R'],
                                                                                                                                                                         labelStyle = {'display': 'inline-block'}
                                                                                                                                                                     ),
+                                                                                                                                                                    
+                                                                                                                                                        html.H6('Years To Plot'),
+                                                                                                                                                        dcc.Slider(
+                                                                                                                                                            id='years-slider',
+                                                                                                                                                            min=1,
+                                                                                                                                                            max=3,
+                                                                                                                                                            marks={i: str(i) for i in range(1,4)},
+                                                                                                                                                            value=2,
+                                                                                                                                                        ),
                                                                                                                                             ],width = 6),
 
                                                                                                                                     # end of row 1b
@@ -1379,6 +1385,43 @@ layout_inter = html.Div([
                                                                                                         ]), # row below graphs
                                                                                             
                                                                                                     ]),
+                                                                                                                dbc.Tab(label='Model Structure', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='model_s',children=[
+                                                                                                        
+                                                                                                                                                html.Div([
+                                                                                                                                                                # dbc.Col([
+                                                                                                                                                                    dbc.Jumbotron([
+                                                                                                                                                                    html.H1('Model Structure'),
+                                                                                                                                                                    html.Hr(),
+                                                                                                                                                                    dcc.Markdown(
+                                                                                                                                                                        '''
+                                                                                                                                                                    Description to go here
+
+                                                                                                                                                                    '''
+                                                                                                                                                                    ,style={'fontSize': 20}
+
+                                                                                                                                                                    ),
+                                                                                                                                                                    # html.H3('Model Structure',style={'color': 'blue'}),
+
+                                                                                                                                                                    html.H6('Optional Hospital Categories'),
+
+                                                                                                                                                                    dbc.RadioItems(
+                                                                                                                                                                        id = 'hosp-cats',
+                                                                                                                                                                        options=[
+                                                                                                                                                                            {'label': 'Critical Care', 'value': 'True_crit'},
+                                                                                                                                                                            {'label': 'Critical Care and Death', 'value': 'True_deaths'},
+                                                                                                                                                                        ],
+                                                                                                                                                                        value='True_deaths'
+                                                                                                                                                                    ),
+
+
+                                                                                                                                                                    
+                                                                                                                                                                    html.H4('Age Structure'),
+                                                                                                                                                                    generate_table(df),
+                                                                                                                                                                    ]),
+                                                                                                                                                            # ],width={'size':8,'offset':2}
+                                                                                                                                                            # ), 
+                                                                                                                                            ])
+                                                                                                                        ]),
 
                                                                                                 ]),
 
@@ -1425,27 +1468,6 @@ layout_data = html.Div([
                 #    ]),
                 ])
 
-layout_model_S = html.Div([
-                    dbc.Col([
-                        dbc.Jumbotron([
-                        html.H1('Model Structure'),
-                        html.Hr(),
-                        dcc.Markdown(
-                             '''
-                        Description to go here
-
-                        '''
-                        ,style={'fontSize': 20}
-
-                        ),
-
-                        
-                        html.H4('Age Structure'),
-                        generate_table(df),
-                        ]),
-                   ],width={'size':8,'offset':2}
-                   ), 
-])
 
 
 
@@ -1464,9 +1486,6 @@ navbar = html.Nav([
                 dcc.Tab(children=
                         layout_dan,
                         label='Real Time Global Data Feed',value='data'), #disabled=True),
-                dcc.Tab(children=
-                        layout_model_S,
-                        label='Model Structure',value='model'),
             ], id='main-tabs', value='intro'),
         ], style={'width': '100vw'},
         ),
@@ -1503,7 +1522,7 @@ top_banner = html.Div([
                         '''
                         An implementation of a model parameterised for COVID-19.
                         
-                        ## Read our [**introduction**](/intro), experiment with the [**interactive model**](/inter), explore [**real time data**](/data) or consider the [**model structure**](/model).
+                        ## Read our [**introduction**](/intro), experiment with the [**interactive model**](/inter), or explore [**real time data**](/data).
                         
                         Authors: Nick Taylor and Daniel Muthukrishna.
                         '''
@@ -1566,8 +1585,6 @@ def display_page(pathname):
         return 'interactive'
     elif pathname == '/data':
         return 'data'
-    elif pathname == '/model':
-        return 'model'
     else:
         return 'intro'
 
@@ -1818,7 +1835,7 @@ def invisible_or_not(num,preset,hosp_cats):
     Output('sol-calculated', 'data'),
     [
     Input('preset', 'value'),
-    Input('years-slider', 'value'),
+    # Input('years-slider', 'value'),
     Input('month-slider', 'value'),
     Input('low-risk-slider', 'value'),
     Input('high-risk-slider', 'value'),
@@ -1827,7 +1844,7 @@ def invisible_or_not(num,preset,hosp_cats):
     Input('number-strats-slider', 'value'),
     Input('hosp-cats', 'value'),
     ])
-def find_sol(preset,years,month,lr,hr,lr2,hr2,num_strat,hosp):
+def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,hosp): # years
     
     if preset=='C':
         lr = params.fact_v[int(lr)]
@@ -1848,9 +1865,11 @@ def find_sol(preset,years,month,lr,hr,lr2,hr2,num_strat,hosp):
     if 'True_deaths' in hosp:
         deaths = True
     
-    t_stop = 365*years
+    # t_stop = 365*years
+    t_stop = 365*3
 
-    months_controlled = [30*i for i in month]
+
+    months_controlled = [month_len*i for i in month]
     if month[0]==month[1]:
         months_controlled= None
 
@@ -1865,38 +1884,32 @@ def find_sol(preset,years,month,lr,hr,lr2,hr2,num_strat,hosp):
 @app.callback(
     Output('sol-calculated-do-nothing', 'data'),
     [
-    Input('years-slider', 'value'),
+    # Input('years-slider', 'value'),
     Input('hosp-cats', 'value'),
     ])
-def find_sol_do_noth(years,hosp):
+def find_sol_do_noth(hosp): # years
 
     crit = True
     deaths = False
     if 'True_deaths' in hosp:
         deaths = True
     
-    t_stop = 365*years
+    # t_stop = 365*years
+    t_stop = 365*3
+
     
     sol_do_nothing = simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,critical=crit,death=deaths,T_stop=t_stop)
     
     return sol_do_nothing # {'do_nothing': sol_do_nothing}
 
 ########################################################################################################################
-def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,hosp,time_in_years,number_strategies,which_strat):
+def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,hosp,number_strategies,which_strat):
     
     dat1 = 100*dat1
     dat2 = 100*dat2
 
-    years_str = str(int(time_in_years))
-    if time_in_years>1:
-        plural = 's'
-    else:
-        plural = ''
-    time_str = 'After ' + years_str + ' year' + plural
-    preamble = time_str + ', in the absence of a vaccine, when compared to doing nothing:' #  time_str + number + 
 
     on_or_off = {'display': 'block','textAlign': 'center'}
-
     if number_strategies=='one':
         num_st = ''
         if which_strat==2:
@@ -1917,9 +1930,9 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
     number_of_crit_or_dead_text = 'Reduction in ' + number_of_crit_or_dead_metric + ':' 
 
     if crit_text_on_or_off['display'] != 'none':
-        width = 3
-    else:
         width = 4
+    else:
+        width = 6
     
     color_death = 'success'
     if dat1<66:
@@ -1934,13 +1947,10 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
         color_herd = 'danger'
 
     color_ICU = 'success'
-    if dat3>10:
+    if dat3>5:
         color_ICU = 'warning'
-    if dat3>25:
+    if dat3>10:
         color_ICU = 'danger'
-
-
-
 
 
 
@@ -1949,22 +1959,28 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
     else:
         return dbc.Jumbotron(
             html.Div([
-            dbc.Col([
+            # dbc.Col([
 
 
                 
-            dbc.Container([
+            # dbc.Container([
             
-            dbc.Row([
-                html.H1(Outcome_title),
-            ],
-            justify='center'
-            ),
+                    dbc.Row([
+                        html.H1(Outcome_title),
+                    ],
+                    justify='center'
+                    ),
 
-            html.Div([
-            ],style={'height': '3vh'}
-            ),
-            ]),
+                    # html.Div([
+                    # ],style={'height': '3vh'}
+                    # ),
+                    # ]),
+
+                    dbc.Row([
+                        html.P('In the absence of a vaccine, when compared to doing nothing:', style={'fontSize': 18}),
+                    ],
+                    justify='center', style={'margin-top': '1vh', 'margin-bottom': '1vh'}
+                    ),
 
             
             # dbc
@@ -1973,20 +1989,34 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
                 dbc.Col([
                     dbc.Table(
                         
+                        # [
+                        #     html.Thead(
+                        #         html.Tr([ 
+                        #         html.Th(html.H5("Low Risk Infection Rate",style={'color':'white'})),
+                        #         html.Th(html.H5("High Risk Infection Rate",style={'color':'white'}))
+                        #         ])
+                        #         ),
+                        # ]
+                        # + 
                         [
-                            html.Thead(
-                                html.Tr([
-                                html.Th(html.H5("Low Risk Infection Rate",style={'color':'white'})),
-                                html.Th(html.H5("High Risk Infection Rate",style={'color':'white'}))
-                                ])
-                                ),
-                        ]
-                        + [
-                            html.Tr(
-                                [
-                                    html.Td(html.H3('{0:,.0f}'.format(100*beta_H) + '%',style={'color':'white'})),
-                                    html.Td(html.H3('{0:,.0f}'.format(100*beta_L) + '%',style={'color':'white'}))
+                        html.Tbody([
+                                html.Tr([ 
+                                    html.Td(html.H5("High Risk Infection Rate",style={'color':'white'})),
+                                    html.Td(html.H5('{0:,.0f}'.format(100*beta_H) + '%',style={'color':'white'}))
                                     ]),
+                                html.Tr([ 
+                                    html.Td(html.H5("Low Risk Infection Rate",style={'color':'white'})),
+                                    html.Td(html.H5('{0:,.0f}'.format(100*beta_L) + '%',style={'color':'white'}))
+                                ]),
+                                html.Tr([ 
+                                    html.Td(html.H5("Control Ends",style={'color':'white'})),
+                                    html.Td(html.H5('Month ' + str(month[1]),style={'color':'white'}))
+                                ]),
+                                html.Tr([ 
+                                    html.Td(html.H5("Control Starts",style={'color':'white'})),
+                                    html.Td(html.H5('Month ' + str(month[0]),style={'color':'white'}))
+                                ]),
+                            ]),
                         ],
                         bordered=True,
                         dark=True,
@@ -1994,90 +2024,109 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
                         responsive=True,
                         striped=True,
                     ),
-                ],width=6),
+                ],width=4),
 
                 dbc.Col([
-                    dbc.Table(
-                        
-                        [
-                            html.Thead(
-                                html.Tr([
-                                html.Th(html.H5("Control Starts",style={'color':'white'})),
-                                html.Th(html.H5("Control Ends",style={'color':'white'}))
-                                ])
+
+                                html.H4('After 1 year:'),
+                    
+                                dbc.Row([
+
+
+                                    dbc.Col([
+                                            dbc.Card(
+                                            [
+                                                dbc.CardHeader(number_of_crit_or_dead_text),
+                                                dbc.CardBody([html.H1(str(round(dat1,1))+'%',className='card-title')]),
+                                                dbc.CardFooter('compared to doing nothing'),
+                                        
+                                            ],color=color_death,inverse=True
+                                        )
+                                    ],width=width,style={'textAlign': 'center'}),
+                                    dbc.Col([
+                                        dbc.Card(
+                                            [
+                                                dbc.CardHeader('Herd immunity:'),
+                                                dbc.CardBody([html.H1(str(round(dat2,1))+'%',className='card-title')]),
+                                                dbc.CardFooter('of safe threshold'),
+                                        
+                                            ],color=color_herd,inverse=True
+                                        )
+                                    ],width=width,style={'textAlign': 'center'}),
+                                    dbc.Col([
+                                        dbc.Card(
+                                            [
+                                                dbc.CardHeader('ICU requirement:'),
+                                                dbc.CardBody([html.H1(str(round(dat3,1)) + 'x',className='card-title')]),
+                                                dbc.CardFooter('multiple of current capacity'),
+                                        
+                                            ],color=color_ICU,inverse=True
+                                        )
+                                    ],width=width,style=crit_text_on_or_off),
+                                ],style={'margin-top': '1vh', 'margin-bottom': '1vh'}
                                 ),
-                        ]
-                        + [
-                            html.Tr(
-                                [
-                                    html.Td(html.H3('Month ' + str(month[0]),style={'color':'white'})),
-                                    html.Td(html.H3('Month ' + str(month[1]),style={'color':'white'}))
-                                    ]),
-                        ],
-                        bordered=True,
-                        dark=True,
-                        hover=True,
-                        responsive=True,
-                        striped=True,
-                    ),
-                ],width=6),
+
+                                html.H4('After 2 years:'),
+
+                                dbc.Row([
+
+                                    dbc.Col([
+                                            dbc.Card(
+                                            [
+                                                dbc.CardHeader(number_of_crit_or_dead_text),
+                                                dbc.CardBody([html.H1(str(round(dat1,1))+'%',className='card-title')]),
+                                                dbc.CardFooter('compared to doing nothing'),
+                                        
+                                            ],color=color_death,inverse=True
+                                        )
+                                    ],width=width,style={'textAlign': 'center'}),
+                                    dbc.Col([
+                                        dbc.Card(
+                                            [
+                                                dbc.CardHeader('Herd immunity:'),
+                                                dbc.CardBody([html.H1(str(round(dat2,1))+'%',className='card-title')]),
+                                                dbc.CardFooter('of safe threshold'),
+                                        
+                                            ],color=color_herd,inverse=True
+                                        )
+                                    ],width=width,style={'textAlign': 'center'}),
+                                    dbc.Col([
+                                        dbc.Card(
+                                            [
+                                                dbc.CardHeader('ICU requirement:'),
+                                                dbc.CardBody([html.H1(str(round(dat3,1)) + 'x',className='card-title')]),
+                                                dbc.CardFooter('multiple of current capacity'),
+                                        
+                                            ],color=color_ICU,inverse=True
+                                        )
+                                    ],width=width,style=crit_text_on_or_off),
+                                ],style={'margin-top': '1vh', 'margin-bottom': '1vh'}
+                                ),
+                                
+
+
+
+                ],width=8),
 
 
             ],
             align='center',
             ),
 
-            dbc.Container([
-            html.Div([
-            ],style={'height': '1vh'}
-            ),
+            # dbc.Container([
+            # html.Div([
+            # ],style={'height': '1vh'}
+            # ),
             
-            dbc.Row([
-                html.H5(preamble),
-            ],
-            justify='center'
-            ),
 
-            html.Div([
-            ],style={'height': '1vh'}
-            ),
-            ]),
 
-            dbc.Row([
+            # html.Div([
+            # ],style={'height': '1vh'}
+            # ),
+            # ]),
 
-                dbc.Col([
-                        dbc.Card(
-                        [
-                            dbc.CardHeader(number_of_crit_or_dead_text),
-                            dbc.CardBody([html.H1(str(round(dat1,1))+'%',className='card-title')]),
-                            dbc.CardFooter('compared to doing nothing'),
-                    
-                        ],color=color_death,inverse=True
-                    )
-                ],width=width,style={'textAlign': 'center'}),
-                dbc.Col([
-                    dbc.Card(
-                        [
-                            dbc.CardHeader('Herd immunity:'),
-                            dbc.CardBody([html.H1(str(round(dat2,1))+'%',className='card-title')]),
-                            dbc.CardFooter('of safe threshold'),
-                    
-                        ],color=color_herd,inverse=True
-                    )
-                ],width=width,style={'textAlign': 'center'}),
-                dbc.Col([
-                    dbc.Card(
-                        [
-                            dbc.CardHeader('ICU requirement:'),
-                            dbc.CardBody([html.H1(str(round(dat3,1)) + 'x',className='card-title')]),
-                            dbc.CardFooter('multiple of current capacity'),
-                    
-                        ],color=color_ICU,inverse=True
-                    )
-                ],width=width,style=crit_text_on_or_off),
-            ],justify='center'),
             
-            ],),
+            # ],),
             ],style=on_or_off)
         )
 
@@ -2116,8 +2165,8 @@ def intro_content(tab,hosp,sol_do_n):
             output_use_2 = ['C','H','D']
             sols = []
             month = [1,10]
-            months_controlled = [30*i for i in month]
-            year_to_run = 2
+            months_controlled = [month_len*i for i in month]
+            year_to_run = 3
             
             deaths=False
             if 'True_deaths' in hosp:
@@ -2186,6 +2235,8 @@ def intro_content(tab,hosp,sol_do_n):
                 Input('groups-to-plot-radio','value'),                                      
                 Input('how-many-plots-slider','value'),
                 Input('categories-to-plot-checklist', 'value'),
+                Input('years-slider', 'value'),
+
 
                 ],
                [
@@ -2197,7 +2248,7 @@ def intro_content(tab,hosp,sol_do_n):
                 State('hosp-cats', 'value'),
                 State('number-strats-slider', 'value'),
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,sol_do_nothing,preset,month,hosp,num_strat): # pathname, tab_intro pathname
+def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,years,sol_do_nothing,preset,month,hosp,num_strat): # pathname, tab_intro pathname
 
 
 ########################################################################################################################
@@ -2241,11 +2292,11 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,s
             # bar plot data
             time_reached_data = []
             time_exceeded_data = []
-            crit_cap_data_L = []
-            crit_cap_data_H = []
-            crit_cap_quoted = []
-            ICU_data = []
-            herd_list = []
+            crit_cap_data_L_3yr = []
+            crit_cap_data_H_3yr = []
+            crit_cap_quoted_3yr = []
+            ICU_data_3yr = []
+            herd_list_3yr = []
         ########################################################################################################################
             #loop start
             if sols is not None and tab!='DPC':
@@ -2254,24 +2305,26 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,s
                         sol = sols[ii]
                         
                         yy = np.asarray(sol['y'])
+                        
+                        num_t_points = yy.shape[1]
 
                         if hosp=='True_deaths':
                             metric = 'deaths'
-                            metric_val_L = (yy[params.D_L_ind,-1])
-                            metric_val_H = (yy[params.D_H_ind,-1])
+                            metric_val_L = yy[params.D_L_ind,num_t_points-1]
+                            metric_val_H = yy[params.D_H_ind,num_t_points-1]
                         else:
                             metric = 'critical care cases'
-                            metric_val_L = (yy[params.C_L_ind,-1])
-                            metric_val_H = (yy[params.C_H_ind,-1])
+                            metric_val_L = yy[params.C_L_ind,num_t_points-1]
+                            metric_val_H = yy[params.C_H_ind,num_t_points-1]
 
 
-                        ICU_val = [yy[params.C_H_ind,i] + yy[params.C_L_ind,i] for i in range(yy.shape[1])]
+                        ICU_val = [yy[params.C_H_ind,i] + yy[params.C_L_ind,i] for i in range(num_t_points)]
                         ICU_val = max(ICU_val)/params.ICU_capacity
 
-                        crit_cap_data_L.append(metric_val_L)
-                        crit_cap_data_H.append(metric_val_H)
+                        crit_cap_data_L_3yr.append(metric_val_L)
+                        crit_cap_data_H_3yr.append(metric_val_H)
 
-                        ICU_data.append(ICU_val)
+                        ICU_data_3yr.append(ICU_val)
 
                         herd_lim = 1/(params.R_0)
 
@@ -2290,29 +2343,37 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,s
                                     time_exc = time_exc + c_high[-1] - c_low[-1]
                                 else:
                                     time_exc = time_exc + sol['t'][-1] - c_low[-1]
-                            time_exc = time_exc/30
+                            time_exc = time_exc/month_len
                         time_exceeded_data.append(time_exc)
                         ####
 
 
-                        herd_val = [yy[params.S_H_ind,i] + yy[params.S_L_ind,i] for i in range(yy.shape[1])]
+                        herd_val = [yy[params.S_H_ind,i] + yy[params.S_L_ind,i] for i in range(num_t_points)]
                         
-                        herd_list.append(min((1-herd_val[-1])/(1-herd_lim),1))
+                        herd_list_3yr.append(min((1-herd_val[-1])/(1-herd_lim),1))
                         
                         multiplier_95 = 0.95
                         threshold_herd_95 = (1-multiplier_95) + multiplier_95*herd_lim
                         if herd_val[-1] < threshold_herd_95:
                             herd_time_vec = [sol['t'][i] if herd_val[i] < threshold_herd_95 else 0 for i in range(len(herd_val))]
                             herd_time_vec = np.asarray(herd_time_vec)
-                            time_reached  = min(herd_time_vec[herd_time_vec>0])/30
+                            time_reached  = min(herd_time_vec[herd_time_vec>0])/month_len
                             time_reached_data.append(time_reached)
 
             # loop end
 
-                for jj in range(len(crit_cap_data_H)):
-                    crit_cap_quoted.append( (1 - (crit_cap_data_L[jj] + crit_cap_data_H[jj])/(crit_cap_data_L[-1] + crit_cap_data_H[-1]) ))
+                for jj in range(len(crit_cap_data_H_3yr)):
+                    crit_cap_quoted_3yr.append( (1 - (crit_cap_data_L_3yr[jj] + crit_cap_data_H_3yr[jj])/(crit_cap_data_L_3yr[-1] + crit_cap_data_H_3yr[-1]) ))
 
         ########################################################################################################################
+            # tab 0
+            if sols is not None and tab=='tab_0':
+
+                text_object_0 = [
+                    outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_3yr[0],herd_list_3yr[0],ICU_data_3yr[0],metric,hosp,number_strategies = num_strat,which_strat=1),
+                    html.Hr(),
+                    outcome_fn(month,sols[1]['beta_L'],sols[1]['beta_H'],crit_cap_quoted_3yr[1],herd_list_3yr[1],ICU_data_3yr[1],metric,hosp,number_strategies = num_strat,which_strat=2),
+                    ]
 
                 
 
@@ -2335,9 +2396,9 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,s
                 if not deaths:
                     bar1_title = 'Maximum Percentage Of Population In Critical Care'
 
-                bar1 = Bar_chart_generator(crit_cap_data_L   ,text_addition='%'         ,y_title='Population'                                   ,yax_tick_form='.1%',data2  = crit_cap_data_H,name1='Low Risk',name2='High Risk',round_to=3) #,title_font_size=font_use) #2
-                bar2 = Bar_chart_generator(herd_list         ,text_addition='%'         ,y_title='Percentage of Safe Threshold'      ,color = 'mediumseagreen',yax_tick_form='.1%',maxi=False,yax_font_size=20)
-                bar3 = Bar_chart_generator(ICU_data          ,text_addition='x current' ,y_title='Multiple of Current Capacity'   ,color = 'powderblue')
+                bar1 = Bar_chart_generator(crit_cap_data_L_3yr   ,text_addition='%'         ,y_title='Population'                                   ,yax_tick_form='.1%',data2  = crit_cap_data_H_3yr,name1='Low Risk',name2='High Risk',round_to=3) #,title_font_size=font_use) #2
+                bar2 = Bar_chart_generator(herd_list_3yr         ,text_addition='%'         ,y_title='Percentage of Safe Threshold'      ,color = 'mediumseagreen',yax_tick_form='.1%',maxi=False,yax_font_size=20)
+                bar3 = Bar_chart_generator(ICU_data_3yr          ,text_addition='x current' ,y_title='Multiple of Current Capacity'   ,color = 'powderblue')
                 bar4 = Bar_chart_generator(time_exceeded_data,text_addition=' Months'   ,y_title='Time (Months)'                  ,color = 'peachpuff')
                 bar5 = Bar_chart_generator(time_reached_data ,text_addition=' Months'   ,y_title='Time (Months)'                  ,color = 'lemonchiffon')
 
@@ -2348,18 +2409,6 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,s
 
 
         ########################################################################################################################
-            # tab 0
-            if sols is not None and tab=='tab_0':
-                n_years = floor(sol['t'][-1]/364)
-
-                text_object_0 = [
-                    outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted[0],herd_list[0],ICU_data[0],metric,hosp,n_years,number_strategies = num_strat,which_strat=1),
-                    # html.Hr(className='my-3'),
-                    outcome_fn(month,sols[1]['beta_L'],sols[1]['beta_H'],crit_cap_quoted[1],herd_list[1],ICU_data[1],metric,hosp,n_years,number_strategies = num_strat,which_strat=2),
-                    ]
-
-        ########################################################################################################################
-            # print(sols)
 
             if tab!='DPC':
                 fig1 = dummy_figure
@@ -2370,12 +2419,12 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,s
                 output_2 = [i for i in output if i in ['C','H','D']]
 
                 if len(output)>0:
-                    fig1 = figure_generator(sols[:-1],month,output,groups,hosp,num_strat,groups2,which_plots)
+                    fig1 = figure_generator(sols[:-1],month,output,groups,hosp,num_strat,groups2,which_plots,years)
                 else:
                     fig1 = dummy_figure
 
                 if len(output_2)>0:
-                    fig2 = figure_generator(sols[:-1],month,output_2,groups,hosp,num_strat,groups2,which_plots)
+                    fig2 = figure_generator(sols[:-1],month,output_2,groups,hosp,num_strat,groups2,which_plots,years)
                 else:
                     fig2 = dummy_figure
             
