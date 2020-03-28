@@ -68,7 +68,6 @@ frac_crit_H = sum(df2.weighted_crit_high)
 hosp_rate = 1/8
 death_rate = 1/8
 
-
 crit_L      = hosp_rate*frac_crit_L
 recover_L   = hosp_rate*(1-frac_crit_L)
 crit_H      = hosp_rate*frac_crit_H
@@ -124,6 +123,15 @@ class Parameters:
 
 
         self.number_compartments = number_compartments
+
+        # only for app
+        self.frac_hosp_L = frac_hosp_L
+        self.frac_hosp_H = frac_hosp_H
+        self.frac_crit_L = frac_crit_L
+        self.frac_crit_H = frac_crit_H
+        self.recovery_rate = recov_rate
+        self.hosp_rate = hosp_rate        
+        self.death_rate = death_rate
 
 
         self.S_L_ind = 0

@@ -41,13 +41,11 @@ class simulator:
         if t_control is None:
             beta_L_factor = 1
             beta_H_factor = 1
-            beta_HL_factor = 1
 
         if t_control is not None and len(t_control)>1:
             if t<t_control[0] or t>t_control[1]:
                 beta_L_factor = 1
                 beta_H_factor = 1
-                beta_HL_factor = 1
 
         if C_L>params.ICU_capacity:
             C_L_to_R_L = params.ICU_capacity*params.crit_recovery

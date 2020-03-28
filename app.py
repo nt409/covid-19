@@ -14,6 +14,9 @@ from plotly.validators.scatter.marker import SymbolValidator
 import copy
 from cov_functions import simulator
 import flask
+import base64
+import os
+
 
 
 
@@ -35,7 +38,16 @@ external_stylesheets = dbc.themes.CERULEAN
 # Cerulean is ok
 
 
+image_filename = 'C:/Users/user/Documents/Python/Coronavirus/covid-19/latex.png' # replace with your own image
+# setwd(covid-19)
+# image_filename = 'covid-19/latex.png' # replace with your own image
+
+encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+
 app = dash.Dash(__name__, external_stylesheets=[external_stylesheets])
+
+# mathjax = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
+# app.scripts.append_script({ 'external_url' : mathjax })
 server = app.server
 
 app.config.suppress_callback_exceptions = True
@@ -48,22 +60,17 @@ initial_month = 8
 
 df = copy.deepcopy(df2)
 df = df.loc[:,'Age':'Pop']
+df2 = df.loc[:,['Pop','Hosp','Crit']].astype(str) + '%'
+df = pd.concat([df.loc[:,'Age'],df2],axis=1)
+df = df.rename(columns={"Hosp": "Hospitalised", "Crit": "Requiring Critical Care", "Pop": "Population"})
 
 init_lr = params.fact_v[initial_lr]
 init_hr = params.fact_v[initial_hr]
 
 
 def generate_table(dataframe, max_rows=10):
-    return html.Table([
-        html.Thead(
-            html.Tr([html.Th(col) for col in dataframe.columns])
-        ),
-        html.Tbody([
-            html.Tr([
-                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-            ]) for i in range(min(len(dataframe), max_rows))
-        ])
-    ])
+    return dbc.Table.from_dataframe(df, striped=True, bordered = True, hover=True)
+
 
 dummy_figure = {'data': [], 'layout': {'template': 'simple_white'}}
 
@@ -513,7 +520,7 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
         else:
             control_font_size = 25
             yval_pink = 0.35
-            yval_blue = 0.89
+            yval_blue = 0.86
         text_angle_blue = None
         xshift_use = None
 
@@ -799,9 +806,9 @@ layout_intro = html.Div([dbc.Col([
 
             Social distancing, self isolation and quarantine strategies slow the rate of spread of the infection (termed the 'infection rate'). In doing so, we can reduce the load on the healthcare system (goal 2) and (in the short term) reduce the number of deaths.
 
-            This has been widely referred to as 'flattening the curve'; buying nations enough time to bulk out their healthcare capacity.
+            This has been widely referred to as 'flattening the curve'; buying nations enough time to bulk out their healthcare capacity. The stricter quarantines are the best way to minimise the death rate whilst they're in place. A vaccine can then be used to generate sufficient immunity.
 
-            However, in the absence of a vaccine these strategies do not ensure the safety of the population in future (goal 3), meaning that the population is still highly susceptible and greatly at risk of a future epidemic. This is because these strategies do not lead to any significant level of immunity within the population, so as soon as the measures are lifted the epidemic restarts.
+            However, in the absence of a vaccine these strategies do not ensure the safety of the population in future (goal 3), meaning that the population is still highly susceptible and greatly at risk of a future epidemic. This is because these strategies do not lead to any significant level of immunity within the population, so as soon as the measures are lifted the epidemic restarts. Further, strict quarantines carry a serious economic penalty.
 
             COVID-19 spreads so rapidly that it is capable of quickly generating enough seriously ill patients to overwhelm the intensive care unit (ICU) capacity of most healthcase systems in the world. This is why most countries have opted for strategies that slow the infection rate.
 
@@ -988,9 +995,9 @@ layout_inter = html.Div([
                                                                             
 
                                                                             
-                                                                            html.H3('Strategy'),
+                                                                            html.H3('Control Choice'),
 
-                                                                            html.H6('Strategy Choice'),
+                                                                            html.H6('Strategy'),
 
                                                                             dbc.RadioItems(
                                                                                 id = 'preset',
@@ -1235,6 +1242,33 @@ layout_inter = html.Div([
                                                                                     id="collapse-plots",
                                                                                     ),
 
+                                                                                    dbc.Button([
+                                                                                        'Hospital Categories',
+                                                                                        ],
+                                                                                        color='primary',
+                                                                                        className='mb-3',
+                                                                                        id="collapse-button-hospital",
+                                                                                        # style={'margin-top': '1vh'}
+                                                                                    ),
+                                                                                    
+                                                                                    dbc.Collapse(
+                                                                                            [
+                                                                                            # html.H6('Optional Hospital Categories'),
+
+                                                                                            dbc.RadioItems(
+                                                                                                id = 'hosp-cats',
+                                                                                                options=[
+                                                                                                    {'label': 'Critical Care', 'value': 'True_crit'},
+                                                                                                    {'label': 'Critical Care and Death', 'value': 'True_deaths'},
+                                                                                                ],
+                                                                                                value='True_deaths'
+                                                                                            ),
+                                                                                        ],
+                                                                                        id="collapse-hospital",
+                                                                                    ),
+
+
+
 
 
 #########################################################################################################################################################
@@ -1432,7 +1466,9 @@ layout_inter = html.Div([
                                                                                     
                                                                                                 html.H4('Strategy Outcome',id='line_page_title',className="display-4"),
                                                                                                 dbc.Row([
-                                                                                                        html.H3("Disease Progress Curves"),# style={'color':'blue'}),
+                                                                                                        html.H3("Disease Progress Curves",
+                                                                                                        style={'margin-left': '2vw', 'margin-bottom': '3vh','margin-top': '1vh'}
+                                                                                                        ),# style={'color':'blue'}),
 
                                                                                                         dbc.Spinner(html.Div(id="loading-line-output-1")),
                                                                                                         ],
@@ -1477,29 +1513,142 @@ layout_inter = html.Div([
                                                                                                                                                                     html.Hr(),
                                                                                                                                                                     dcc.Markdown(
                                                                                                                                                                         '''
-                                                                                                                                                                    Description to go here
+                                                                                                                                                                    We present a 
 
                                                                                                                                                                     '''
                                                                                                                                                                     ,style={'fontSize': 20}
 
                                                                                                                                                                     ),
+
+                                                                                                                                                                    html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()),
+                                                                                                                                                                    id='equations',
+                                                                                                                                                                    style={'width':'50vw'}
+                                                                                                                                                                    ),
+
                                                                                                                                                                     # html.H3('Model Structure',style={'color': 'blue'}),
 
-                                                                                                                                                                    html.H6('Optional Hospital Categories'),
+                                                                                                                                                                    # html.Hr(),
 
-                                                                                                                                                                    dbc.RadioItems(
-                                                                                                                                                                        id = 'hosp-cats',
-                                                                                                                                                                        options=[
-                                                                                                                                                                            {'label': 'Critical Care', 'value': 'True_crit'},
-                                                                                                                                                                            {'label': 'Critical Care and Death', 'value': 'True_deaths'},
-                                                                                                                                                                        ],
-                                                                                                                                                                        value='True_deaths'
+                                                                                                                                                                    html.Hr(),
+                                                                                                                                                                    
+
+
+                                                                                                                                                                    html.H3('Parameter Values'),
+
+                                                                                                                                                                    html.H4('Age Structure'),
+                                                                                                                                                                    generate_table(df),
+                                                                                                                                                                    
+                                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                                    The age data is taken from [**GOV.UK**](/https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](/https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf) (Ferguson et al.).
+
+                                                                                                                                                                    To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population.
+                                                                                                                                                                    
+                                                                                                                                                                    Setting the age split to be at 60 years gives us the following figures:
+                                                                                                                                                                    ''',
+                                                                                                                                                                    style={'margin-top': '2vh','margin-bottom': '2vh'}
                                                                                                                                                                     ),
 
 
-                                                                                                                                                                    
-                                                                                                                                                                    html.H4('Age Structure'),
-                                                                                                                                                                    generate_table(df),
+                                                                                                                                                                    dbc.Col([
+                                                                                                                                                                        dbc.Table(
+                                                                                                                                                                            [
+                                                                                                                                                                                html.Thead(
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                    html.Th("Parameter description"),
+                                                                                                                                                                                    html.Th("Symbol"),
+                                                                                                                                                                                    html.Th("Value"),
+                                                                                                                                                                                    html.Th("Source")
+                                                                                                                                                                                    ])
+                                                                                                                                                                                    ),
+                                                                                                                                                                            ]
+                                                                                                                                                                            + 
+                                                                                                                                                                            
+                                                                                                                                                                            [
+                                                                                                                                                                            html.Tbody([
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Probability high risk infection needs hospital care"),
+                                                                                                                                                                                        html.Td("h_H"),
+                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.frac_hosp_H)),
+                                                                                                                                                                                        html.Td(html.A('Age table above (which uses Imperial and GOV.UK data)'))
+                                                                                                                                                                                    ]),
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Probability low risk infection needs hospital care"),
+                                                                                                                                                                                        html.Td("h_L"),
+                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.frac_hosp_L)),
+                                                                                                                                                                                        html.Td(html.A('Age table above'))
+                                                                                                                                                                                    ]),
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Probability high risk hospital case needs critical care"),
+                                                                                                                                                                                        html.Td("c_H"),
+                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.frac_crit_H)),
+                                                                                                                                                                                        html.Td(html.A('Age table above'))
+                                                                                                                                                                                    ]),
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Probability low risk hospital case needs critical care"),
+                                                                                                                                                                                        html.Td("c_L"),
+                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.frac_crit_L)),
+                                                                                                                                                                                        html.Td(html.A('Age table above'))
+                                                                                                                                                                                    ]),
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Probability survive critical care"),
+                                                                                                                                                                                        html.Td("d"),
+                                                                                                                                                                                        html.Td(str(0.5)),
+                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf'))
+                                                                                                                                                                                    ]),
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Basic reproduction number"),
+                                                                                                                                                                                        html.Td("R0"),
+                                                                                                                                                                                        html.Td('{0:.1f}'.format(params.R_0)),
+                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf'))
+                                                                                                                                                                                    ]),
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Infection rate"),
+                                                                                                                                                                                        html.Td("beta"),
+                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.beta) + ' per day'),
+                                                                                                                                                                                        html.Td(html.A('=mu*R0'))
+                                                                                                                                                                                    ]),
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Average time infectious"),
+                                                                                                                                                                                        html.Td("1/mu"),
+                                                                                                                                                                                        html.Td('{0:.0f}'.format(1/params.recovery_rate) + ' Days'),
+                                                                                                                                                                                        html.Td(html.A('Anderson et al',href='https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30567-5/fulltext'))
+                                                                                                                                                                                    ]),
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Average time in hospital"),
+                                                                                                                                                                                        html.Td("1/alpha"),
+                                                                                                                                                                                        html.Td('{0:.0f}'.format(1/params.hosp_rate)  + ' Days'),
+                                                                                                                                                                                        html.Td(html.A('Ferguson et al.**',href='https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf'))
+                                                                                                                                                                                        ]),
+                                                                                                                                                                                    html.Tr([ 
+                                                                                                                                                                                        html.Td("Average time in critical care"),
+                                                                                                                                                                                        html.Td("1/nu"),
+                                                                                                                                                                                        html.Td('{0:.0f}'.format(1/params.death_rate)  + ' Days'),
+                                                                                                                                                                                        html.Td(html.A('Ferguson et al.**',href='https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf'))
+
+                                                                                                                                                                                    ]),
+                                                                                                                                                                                ]),
+                                                                                                                                                                            ],
+                                                                                                                                                                            bordered=True,
+                                                                                                                                                                            # dark=True,
+                                                                                                                                                                            hover=True,
+                                                                                                                                                                            responsive=True,
+                                                                                                                                                                            striped=True,
+                                                                                                                                                                        ),
+                                                                                                                                                                    ],
+                                                                                                                                                                    # width={'size': 12 }
+                                                                                                                                                                    ),
+
+                                                                                                                                                                    html.P('** the Imperial paper uses 8 days in hospital if critical care is not required (as do we). It uses 16 days (with 10 in ICU) if critical care is required. Instead, if critical care is required we use 8 days in hospital (non-ICU) and then either recovery or a further 8 in intensive care (leading to either recovery or death).',
+                                                                                                                                                                    style={'fontSize':12}),
+
+
+
+
+
+
+
+
+
                                                                                                                                                                     ]),
                                                                                                                                                             # ],width={'size':8,'offset':2}
                                                                                                                                                             # ), 
@@ -1601,6 +1750,7 @@ page_layout = html.Div([
                     className="display-4",
                     style={'margin-top': '2vh'}
                     ),
+
                     html.P('Disclaimer: this work is intended for educational purposes only and not decision making! There are many uncertainties in the COVID debate and there are limitations to the model.',
                     style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': 12}
                     ),
@@ -1705,6 +1855,17 @@ def toggle_collapse(n, is_open):
         return not is_open
     return is_open
 
+
+
+@app.callback(
+    Output("collapse-hospital", "is_open"),
+    [Input("collapse-button-hospital", "n_clicks")],
+    [State("collapse-hospital", "is_open")],
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 @app.callback(
     Output("collapse-plots", "is_open"),
