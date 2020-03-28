@@ -131,17 +131,14 @@ index = {'S': params.S_L_ind,
 ########################################################################################################################
 
 
-def Bar_chart_generator(data,data2 = None,name1=None,name2=None,preset=None,text_addition=None,color=None,round_to=1,y_title=None,yax_tick_form=None,maxi=True,yax_font_size=None,hover_form=None): # ,title_font_size=None): #title
+def Bar_chart_generator(data,data2 = None, data_group = None,name1=None,name2=None,preset=None,text_addition=None,color=None,y_title=None,yax_tick_form=None,maxi=True,yax_font_size=None,hover_form=None): # ,title_font_size=None): #title
     # if preset is None:
     #     preset = 'N'
     
-    multiplier_text = 1
-    if yax_tick_form is not None: # in % case, corrects it
-        multiplier_text = 100
-
-    # fontsize_use = None
     
-
+    ledge = None
+    show_ledge = False
+    
     if len(data)==2:
         cats = ['Strategy Choice','Do Nothing']
     else:
@@ -154,23 +151,33 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,preset=None,text
     cats  = [cats[i] for i in order_vec]
     if data2 is not None:
         data2 = [data2[i] for i in order_vec]
-        # fontsize_use = 22
-        
+    
+    if data_group is not None:
+        name1 = 'End of Year 1'
+
     trace0 = go.Bar(
         x = cats,
         y = data1,
         marker=dict(color=color),
         name = name1,
         hovertemplate=hover_form
-        # hovertemplate = "{x}" + "{y:.2f}",
-        # hovermode = False ,
     )
 
     traces = [trace0]
-    
-    # annots = []
+    barmode = None
+    if data_group is not None:
+        data_group = [data_group[i] for i in order_vec]
+        traces.append( go.Bar(
+            x = cats,
+            y = data_group,
+            # marker=dict(color=color),
+            name = 'End of Year 3',
+            hovertemplate=hover_form
+        ))
+        barmode='group'
+        show_ledge = True
 
-    
+
     if data2 is not None:
         traces.append(go.Bar(
         x = cats,
@@ -178,22 +185,23 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,preset=None,text
         hovertemplate=hover_form,
         name = name2)
         )
+        show_ledge = True
 
+    if show_ledge:
         ledge = dict(
                        font=dict(size=20),
                        x=1.1,
                        y = 0.9
                    )
-        show_ledge = True
     
-    else:
-        ledge = None
-        show_ledge = False
+        
     
 
     # cross
     if data2 is not None:
         data_use = [data1[i] + data2[i] for i in range(len(data1))] 
+    elif data_group is not None:
+        data_use = data_group
     else:
         data_use = data1
     counter_bad = 0
@@ -251,9 +259,10 @@ def Bar_chart_generator(data,data2 = None,name1=None,name2=None,preset=None,text
     layout = go.Layout(
                     autosize=True,
                     font = dict(size=18),
+                    barmode = barmode,
                     template="simple_white", #plotly_white",
                     yaxis_tickformat = yax_tick_form,
-                    barmode='stack',
+                    # barmode='stack',
                     legend = ledge,
                     yaxis = dict(
                         title = y_title,
@@ -448,7 +457,6 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
                             group_hover_str = 'High Risk' + '<br>'
                         else:
                             group_hover_str = 'Low Risk' + '<br>'
-                        # print(xx[:len_to_plot])
 
                         line =  {'x': xx[:len_to_plot], 'y': (factor_L[group]*sol['y'][index[name],:len_to_plot] + factor_H[group]*sol['y'][index[name] + params.number_compartments,:len_to_plot]),
                                 'hovertemplate': group_hover_str +
@@ -649,7 +657,6 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
     else:
         yax_form = '.2%'
 
-    # print((years/3)*max(sol['t'])/month_len)
     layout = go.Layout(
                     annotations=annotz,
                     shapes=shapez,
@@ -1382,7 +1389,7 @@ layout_inter = html.Div([
                                                                                                                 dbc.Col([
                                                                                                                     html.Div(
                                                                                                                             [dbc.Row([##
-                                                                                                                                html.H2('Herd Immunity At Final Time Value'),
+                                                                                                                                html.H2('Herd Immunity Threshold'),
                                                                                                                                 dbc.Spinner(html.Div(id="loading-bar-output-2")),
                                                                                                                             ]),##
                                                                                                                             ],
@@ -1592,7 +1599,10 @@ page_layout = html.Div([
                     # dbc.Container([
                     html.H4(children='Modelling control of COVID-19',
                     className="display-4",
-                    style={'margin-top': '2vh', 'margin-bottom': '1vh'}
+                    style={'margin-top': '2vh'}
+                    ),
+                    html.P('Disclaimer: this work is intended for educational purposes only and not decision making! There are many uncertainties in the COVID debate and there are limitations to the model.',
+                    style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': 12}
                     ),
                     # html.Hr(),
 
@@ -1724,7 +1734,6 @@ def toggle_collapse(n, is_open):
               [State('hidden-stored-data', 'children')] +
               [State(c_name, 'value') for c_name in COUNTRY_LIST])
 def update_plots(n_clicks, tab, start_date, end_date, show_exponential, normalise_by_pop, saved_json_data, *args):
-    # print(n_clicks, start_date, end_date, args)
     if True: # tab ==
         start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
         end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
@@ -2249,20 +2258,6 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
             align='center',
             ),
 
-            # dbc.Container([
-            # html.Div([
-            # ],style={'height': '1vh'}
-            # ),
-            
-
-
-            # html.Div([
-            # ],style={'height': '1vh'}
-            # ),
-            # ]),
-
-            
-            # ],),
             ],style=on_or_off)
         )
 
@@ -2293,9 +2288,8 @@ def intro_content(tab,hosp,sol_do_n):
         fig1 = dummy_figure
         fig2 = dummy_figure
 
-        # print(pathname,tab)
 
-        if tab=='tab_3': # pathname=='/intro' and 
+        if tab=='tab_3':
             lr, hr = preset_strat('HL')
             output_use = ['S','I','R']
             output_use_2 = ['C','H','D']
@@ -2432,7 +2426,6 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
         if sols is not None:
             sols.append(sol_do_nothing)
         
-            # print(sols)
             # bar plot data
             time_reached_data = []
             time_exceeded_data = []
@@ -2508,53 +2501,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
                         herd_list_1yr.append(herd_fraction_out) ##
 
 
-                        # if hosp=='True_deaths':
-                        #     metric_val_L_3yr = yy[params.D_L_ind,num_t_points-1]
-                        #     metric_val_H_3yr = yy[params.D_H_ind,num_t_points-1]
-                        # else:
-                        #     metric_val_L_3yr = yy[params.C_L_ind,num_t_points-1]
-                        #     metric_val_H_3yr = yy[params.C_H_ind,num_t_points-1]
-
-                #         ICU_val_3yr = [yy[params.C_H_ind,i] + yy[params.C_L_ind,i] for i in range(num_t_points)]
-                #         ICU_val_3yr = max(ICU_val_3yr)/params.ICU_capacity
-                #         crit_cap_data_L_3yr.append(metric_val_L_3yr)
-                #         crit_cap_data_H_3yr.append(metric_val_H_3yr)
-                #         ICU_data_3yr.append(ICU_val_3yr)
-
-                #         herd_lim = 1/(params.R_0)
-
-                #         ####
-                #         time_exc = 0
-
-                #         if 'True_deaths' in hosp: # num_strat=='one' and
-                #             tt = np.asarray(sol['t'])
-                #             c_low, c_high, ICU = time_exceeded_function(yy,tt)
-                        
-                #             time_exc = [c_high[jj] - c_low[jj] for jj in range(1,len(c_high)-1)]
-                #             time_exc = sum(time_exc)
-                            
-                #             if c_high[-1]>0:
-                #                 if c_high[-1]<=sol['t'][-1]:
-                #                     time_exc = time_exc + c_high[-1] - c_low[-1]
-                #                 else:
-                #                     time_exc = time_exc + sol['t'][-1] - c_low[-1]
-                #             time_exc = time_exc/month_len
-                #         time_exceeded_data.append(time_exc)
-                #         ####
-
-                # ###################################################################
-                #         herd_val_3yr = [yy[params.S_H_ind,i] + yy[params.S_L_ind,i] for i in range(num_t_points)]
-                #         herd_list_3yr.append(min((1-herd_val_3yr[-1])/(1-herd_lim),1))
-                        
-                        
-                #         multiplier_95 = 0.95
-                #         threshold_herd_95 = (1-multiplier_95) + multiplier_95*herd_lim
-                #         if herd_val_3yr[-1] < threshold_herd_95:
-                #             herd_time_vec = [sol['t'][i] if herd_val_3yr[i] < threshold_herd_95 else 0 for i in range(len(herd_val_3yr))]
-                #             herd_time_vec = np.asarray(herd_time_vec)
-                #             time_reached  = min(herd_time_vec[herd_time_vec>0])/month_len
-                #             time_reached_data.append(time_reached)
-
+             
             # loop end
 
                 for jj in range(len(crit_cap_data_H_3yr)):
@@ -2595,11 +2542,17 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
                 if not deaths:
                     bar1_title = 'Maximum Percentage Of Population In Critical Care'
 
-                bar1 = Bar_chart_generator(crit_cap_data_L_3yr   ,text_addition='%'         , y_title='Population'  ,yax_tick_form='.1%',data2  = crit_cap_data_H_3yr,hover_form = '%{x}, %{y:.3%}',  name1='Low Risk',name2='High Risk',round_to=3) #,title_font_size=font_use) #2 # preset = preset,
-                bar2 = Bar_chart_generator(herd_list_3yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'    ,color = 'mediumseagreen',hover_form = '%{x}, %{y:.1%}<extra></extra>',yax_tick_form='.1%',maxi=False,yax_font_size=20) # preset = preset,
-                bar3 = Bar_chart_generator(ICU_data_3yr          ,text_addition='x current' , y_title='Multiple of Current Capacity'    ,color = 'powderblue'  ,hover_form = '%{x}, %{y:.1f}x Current<extra></extra>') # preset = preset,
-                bar4 = Bar_chart_generator(time_exceeded_data,text_addition=' Months'       , y_title='Time (Months)'                   ,color = 'peachpuff'   ,hover_form = '%{x}: %{y:.1f} Months<extra></extra>') # preset = preset,
-                bar5 = Bar_chart_generator(time_reached_data ,text_addition=' Months'       , y_title='Time (Months)'                   ,color = 'lemonchiffon',hover_form = '%{x}: %{y:.1f} Months<extra></extra>') # preset = preset,
+
+
+                crit_cap_bar_1yr = [crit_cap_data_L_1yr[i] + crit_cap_data_H_1yr[i] for i in range(len(crit_cap_data_H_1yr))]
+                crit_cap_bar_3yr = [crit_cap_data_L_3yr[i] + crit_cap_data_H_3yr[i] for i in range(len(crit_cap_data_H_3yr))]
+
+
+                bar1 = Bar_chart_generator(crit_cap_bar_1yr      ,text_addition='%'         , y_title='Population'                    , hover_form = '%{x}, %{y:.3%}'                                                   ,data_group=crit_cap_bar_3yr, yax_tick_form='.1%') # name1='Low Risk',name2='High Risk'
+                bar2 = Bar_chart_generator(herd_list_1yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'  , hover_form = '%{x}, %{y:.1%}<extra></extra>'          ,color = 'mediumseagreen' ,data_group=herd_list_3yr,yax_tick_form='.1%',maxi=False,yax_font_size=20) # preset = preset,
+                bar3 = Bar_chart_generator(ICU_data_1yr          ,text_addition='x current' , y_title='Multiple of Current Capacity'  , hover_form = '%{x}, %{y:.1f}x Current<extra></extra>' ,color = 'powderblue'     ,data_group=ICU_data_3yr  ) # preset = preset,
+                bar4 = Bar_chart_generator(time_exceeded_data    ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'peachpuff'   ) # preset = preset,
+                bar5 = Bar_chart_generator(time_reached_data     ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'lemonchiffon') # preset = preset,
 
             if deaths:
                 bar_on_or_off = None
