@@ -23,6 +23,7 @@ import datetime
 import json
 
 
+
 ########################################################################################################################
 
 # external_stylesheets = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
@@ -33,17 +34,8 @@ external_stylesheets = dbc.themes.CERULEAN
 # UNITED
 # Cerulean is ok
 
-
-# image_filename = 'C:/Users/user/Documents/Python/Coronavirus/covid-19/latex.png' # replace with your own image
-# # setwd(covid-19)
-# # image_filename = 'covid-19/latex.png' # replace with your own image
-
-# encoded_image = base64.b64encode(open(image_filename, 'rb').read())
-
 app = dash.Dash(__name__, external_stylesheets=[external_stylesheets])
 
-mathjax = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
-app.scripts.append_script({ 'external_url' : mathjax })
 server = app.server
 
 app.config.suppress_callback_exceptions = True
@@ -841,11 +833,13 @@ layout_intro = html.Div([dbc.Col([
             dcc.Markdown('''
 
 
-            ### Protecting high risk (quarantine), mild social distancing of low risk vs 'do nothing'
+            ### Protecting high risk (quarantine), no change for low risk vs 'do nothing'
 
             In the absence of a vaccine, the most effective way to protect high risk people is to let the low risk people get the disease and recover, increasing the levels of [**herd immunity**](/intro) within the population (and therefore ensuring future safety for the population) but minimally affecting the hospitalisation rate.
 
-            However, it is important that this is done in a careful fashion. There are very few ICU beds per 100,000 population in most healthcare systems. This means that any level of infection in the system increases the risk of an epidemic that could cause too many patients to need critical care.
+            However, this is a risky strategy. There are very few ICU beds per 100,000 population in most healthcare systems. This means that any level of infection in the system increases the risk of an epidemic that could cause too many patients to need critical care.
+
+            A full quarantine would lead to a lower hospitalisation rate in the short term but more deaths in the long term without a vaccine. But with a vaccine the long term death rate can be minimised with a full quarantine followed by a widespread vaccination programme.
 
             ''',style={'fontSize':20}),
             
@@ -858,7 +852,7 @@ layout_intro = html.Div([dbc.Col([
 
             dcc.Markdown('''
 
-            The dotted lines in these plots represents the outcome if not control is implemented. The solid lines represent the outcome if we protect the high risk (quarantine) and allow low risk to social distance. The result is an 83% reduction in deaths.
+            The dotted lines in these plots represents the outcome if not control is implemented. The solid lines represent the outcome if we protect the high risk (quarantine) and allow low risk to social distance. The result is a 92% reduction in deaths.
 
             The control is in place for 9 months, starting after a month.
 
@@ -1022,7 +1016,7 @@ layout_inter = html.Div([
                                                                             dbc.Button([
                                                                             'Custom Options',
                                                                             ],
-                                                                            color='primary',
+                                                                            color='warning',
                                                                             className='mb-3',
                                                                             id="collapse-button-custom",
                                                                             style={'margin-top': '1vh'}
@@ -1145,7 +1139,7 @@ layout_inter = html.Div([
                                                                             dbc.Button([
                                                                                     'Plot Settings',
                                                                             ],
-                                                                            color='primary',
+                                                                            color='success',
                                                                             className='mb-3',
                                                                             id="collapse-button-plots",
                                                                             style={'display': 'none', 'margin-top': '1vh'}
@@ -1241,7 +1235,7 @@ layout_inter = html.Div([
                                                                                     dbc.Button([
                                                                                         'Hospital Categories',
                                                                                         ],
-                                                                                        color='primary',
+                                                                                        color='danger',
                                                                                         className='mb-3',
                                                                                         id="collapse-button-hospital",
                                                                                         # style={'margin-top': '1vh'}
@@ -1508,27 +1502,57 @@ layout_inter = html.Div([
                                                                                                                                                                     html.H1('Model Structure'),
                                                                                                                                                                     html.Hr(),
                                                                                                                                                                     dcc.Markdown(
-                                                                                                                                                                    r'''
-                                                                                                                                                                    We present a 
+                                                                                                                                                                    '''
+                                                                                                                                                                    We present a compartmental model for COVID-19, split by risk categories. The model is very simplistic but still captures the basic spread mechanism. It is far simpler than the [Imperial College model](/https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf), but it uses similar parameter values and can capture much of the relevant information in terms of how effective control will be.
 
-                                                                                                                                                                    $$
-                                                                                                                                                                    \begin{aligned}
-                                                                                                                                                                    \nabla \cdot \mathbf{E} &= \frac {\rho} {\varepsilon_0} \\
-                                                                                                                                                                    \nabla \cdot \mathbf{B} &= 0 \\
-                                                                                                                                                                    \nabla \times \mathbf{E} &= -\frac{\partial \mathbf{B}} {\partial t} \\
-                                                                                                                                                                    \nabla \times \mathbf{B} &= \mu_0\left(\mathbf{J} + \varepsilon_0 \frac{\partial \mathbf{E}} {\partial t} \right)
-                                                                                                                                                                    \end{aligned}
-                                                                                                                                                                    $$
-
+                                                                                                                                                                    The system of ODEs used is shown below for one of the two age classes
                                                                                                                                                                     '''
                                                                                                                                                                     ,style={'fontSize': 20}
 
                                                                                                                                                                     ),
 
-                                                                                                                                                                    # html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()),
-                                                                                                                                                                    # id='equations',
-                                                                                                                                                                    # style={'width':'50vw'}
-                                                                                                                                                                    # ),
+
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585425042/latex_lwjrqo.png',
+                                                                                                                                                                    style={'width':'30vw'}
+                                                                                                                                                                    ),
+
+                                                                                                                                                                    dcc.Markdown(
+                                                                                                                                                                    '''
+                                                                                                                                                                    Here the infection term is given by one of the following (depending on whether we are calculating for the Low Risk class or the High Risk class):
+                                                                                                                                                                    '''
+                                                                                                                                                                    ,style={'fontSize': 20,'margin-top': '1vh'}
+
+                                                                                                                                                                    ),
+                                                                                                                                                                    
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585431998/lat2_thgwfh.png',
+                                                                                                                                                                    style={'height':'60px','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
+                                                                                                                                                                    ),
+
+                                                                                                                                                                    dcc.Markdown(
+                                                                                                                                                                    '''
+                                                                                                                                                                    
+                                                                                                                                                                    The weight terms (e.g.  
+                                                                                                                                                                    '''
+                                                                                                                                                                    ,style={'fontSize': 20, 'margin-top': '1vh' , 'display': 'inline-block'}
+
+                                                                                                                                                                    ),
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585432145/weight_jgoojk.png',
+                                                                                                                                                                    style={'height':'14px','display': 'inline-block', 'margin-left': '5px','margin-right': '5px'}
+                                                                                                                                                                    ),
+                                                                                                                                                                    dcc.Markdown(
+                                                                                                                                                                    '''
+                                                                                                                                                                    ) vary depending on the control applied. If no control is applied both equal 1.
+                                                                                                                                                                    '''
+                                                                                                                                                                    ,style={'fontSize': 20,'display': 'inline-block'}
+                                                                                                                                                                    ),
+                                                                                                                                                                    dcc.Markdown(
+                                                                                                                                                                    '''
+                                                                                                                                                                    However, if control of 0.5 is applied to the low risk group, then the infection rate between the low risk and high risk groups decreases by 50%. The infection rate between people in the low risk group decreases by 0.5*x*0.5 = 0.25. The infection rate between people in the high risk group is unaffected.
+                                                                                                                                                                    
+                                                                                                                                                                    '''
+                                                                                                                                                                    ,style={'fontSize': 20,'display': 'inline-block'}
+                                                                                                                                                                    ),
+
 
                                                                                                                                                                     # html.H3('Model Structure',style={'color': 'blue'}),
 
@@ -2456,7 +2480,7 @@ def intro_content(tab,hosp,sol_do_n):
 
 
         if tab=='tab_3':
-            lr, hr = preset_strat('HL')
+            lr, hr = preset_strat('H')
             output_use = ['S','I','R']
             output_use_2 = ['C','H','D']
             sols = []

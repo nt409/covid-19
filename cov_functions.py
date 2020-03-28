@@ -61,14 +61,14 @@ class simulator:
             C_H_to_R_H = C_H*params.crit_recovery
             C_H_to_D_H = C_H*params.crit_death
         
-        dydt = [-S_L*( params.beta*beta_L_factor*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**0.5))*I_H ), # dS
-                +S_L*( params.beta*beta_L_factor*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**0.5))*I_H ) - params.mu_L*I_L - params.gamma_L*I_L, # dI
+        dydt = [-S_L*( params.beta*(beta_L_factor**2)*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**1))*I_H ), # dS
+                +S_L*( params.beta*(beta_L_factor**2)*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**1))*I_H ) - params.mu_L*I_L - params.gamma_L*I_L, # dI
                 I_L*params.mu_L    + H_L*params.recover_L + death_on*C_L_to_R_L,            # dR
                 I_L*params.gamma_L - H_L*params.recover_L - H_L*params.crit_L,         # dH
                 H_L*params.crit_L  - death_on*(C_L_to_R_L + C_L_to_D_L),                          # dC
                 + death_on*C_L_to_D_L,                                                      # dD
-                -S_H*( (params.beta*((beta_H_factor*beta_L_factor)**0.5))*I_L + params.beta*beta_H_factor*I_H), # dS
-                +S_H*( (params.beta*((beta_H_factor*beta_L_factor)**0.5))*I_L + params.beta*beta_H_factor*I_H) - params.mu_H*I_H - params.gamma_H*I_H, # dI
+                -S_H*( (params.beta*((beta_H_factor*beta_L_factor)**1))*I_L + params.beta*(beta_H_factor**2)*I_H), # dS
+                +S_H*( (params.beta*((beta_H_factor*beta_L_factor)**1))*I_L + params.beta*(beta_H_factor**2)*I_H) - params.mu_H*I_H - params.gamma_H*I_H, # dI
                 I_H*params.mu_H    + H_H*params.recover_H  + death_on*C_H_to_R_H,           # dR
                 I_H*params.gamma_H - H_H*params.recover_H - H_H*params.crit_H,         # dH
                 H_H*params.crit_H  - death_on*(C_H_to_R_H + C_H_to_D_H),                          # dC
