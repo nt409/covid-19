@@ -14,10 +14,6 @@ from plotly.validators.scatter.marker import SymbolValidator
 import copy
 from cov_functions import simulator
 import flask
-import base64
-import os
-
-
 
 
 from dan import layout_dan, COUNTRY_LIST, colours
@@ -38,16 +34,16 @@ external_stylesheets = dbc.themes.CERULEAN
 # Cerulean is ok
 
 
-image_filename = 'C:/Users/user/Documents/Python/Coronavirus/covid-19/latex.png' # replace with your own image
-# setwd(covid-19)
-# image_filename = 'covid-19/latex.png' # replace with your own image
+# image_filename = 'C:/Users/user/Documents/Python/Coronavirus/covid-19/latex.png' # replace with your own image
+# # setwd(covid-19)
+# # image_filename = 'covid-19/latex.png' # replace with your own image
 
-encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+# encoded_image = base64.b64encode(open(image_filename, 'rb').read())
 
 app = dash.Dash(__name__, external_stylesheets=[external_stylesheets])
 
-# mathjax = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
-# app.scripts.append_script({ 'external_url' : mathjax })
+mathjax = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML'
+app.scripts.append_script({ 'external_url' : mathjax })
 server = app.server
 
 app.config.suppress_callback_exceptions = True
@@ -1512,18 +1508,27 @@ layout_inter = html.Div([
                                                                                                                                                                     html.H1('Model Structure'),
                                                                                                                                                                     html.Hr(),
                                                                                                                                                                     dcc.Markdown(
-                                                                                                                                                                        '''
+                                                                                                                                                                    r'''
                                                                                                                                                                     We present a 
+
+                                                                                                                                                                    $$
+                                                                                                                                                                    \begin{aligned}
+                                                                                                                                                                    \nabla \cdot \mathbf{E} &= \frac {\rho} {\varepsilon_0} \\
+                                                                                                                                                                    \nabla \cdot \mathbf{B} &= 0 \\
+                                                                                                                                                                    \nabla \times \mathbf{E} &= -\frac{\partial \mathbf{B}} {\partial t} \\
+                                                                                                                                                                    \nabla \times \mathbf{B} &= \mu_0\left(\mathbf{J} + \varepsilon_0 \frac{\partial \mathbf{E}} {\partial t} \right)
+                                                                                                                                                                    \end{aligned}
+                                                                                                                                                                    $$
 
                                                                                                                                                                     '''
                                                                                                                                                                     ,style={'fontSize': 20}
 
                                                                                                                                                                     ),
 
-                                                                                                                                                                    html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()),
-                                                                                                                                                                    id='equations',
-                                                                                                                                                                    style={'width':'50vw'}
-                                                                                                                                                                    ),
+                                                                                                                                                                    # html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()),
+                                                                                                                                                                    # id='equations',
+                                                                                                                                                                    # style={'width':'50vw'}
+                                                                                                                                                                    # ),
 
                                                                                                                                                                     # html.H3('Model Structure',style={'color': 'blue'}),
 
