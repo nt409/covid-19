@@ -73,6 +73,12 @@ bar_width  = '100%'
 
 bar_non_crit_style = {'height': bar_height, 'width': bar_width, 'display': 'block' }
 
+presets_dict = {'MSD': 'Social Distancing',
+                'N': 'Do Nothing',
+                'Q': 'Quarantine All',
+                'H': 'Quarantine High Risk Only',
+                'HL': 'Quarantine High Risk, Mild Social Distancing For Low Risk',
+                'C': 'Custom'}
 
 preset_dict_high = {'Q': 0, 'MSD': 4, 'HL': 0, 'H': 0, 'N':6}
 preset_dict_low  = {'Q': 0, 'MSD': 4, 'HL': 5, 'H': 6, 'N':6}
@@ -331,6 +337,71 @@ def preset_strat(preset):
     
 
     return lr, hr
+
+
+
+
+########################################################################################################################
+def extract_info(yy,tt,t_index,deaths):
+###################################################################
+    # find percentage deaths/critical care
+    if deaths:
+        metric_val_L_3yr = yy[params.D_L_ind,t_index-1]
+        metric_val_H_3yr = yy[params.D_H_ind,t_index-1]
+    else:
+        metric_val_L_3yr = yy[params.C_L_ind,t_index-1]
+        metric_val_H_3yr = yy[params.C_H_ind,t_index-1]
+
+###################################################################
+    ICU_val_3yr = [yy[params.C_H_ind,i] + yy[params.C_L_ind,i] for i in range(t_index)]
+    ICU_val_3yr = max(ICU_val_3yr)/params.ICU_capacity
+
+###################################################################
+    # find what fraction of herd immunity safe threshold reached
+    herd_val_3yr = [yy[params.S_H_ind,i] + yy[params.S_L_ind,i] for i in range(t_index)]
+    
+    herd_lim = 1/(params.R_0)
+
+    herd_fraction_out = min((1-herd_val_3yr[-1])/(1-herd_lim),1)
+
+###################################################################
+    # find time ICU capacity exceeded
+
+    time_exc = 0
+
+    if deaths:
+        c_low, c_high, ICU = time_exceeded_function(yy,tt)
+    
+        time_exc = [c_high[jj] - c_low[jj] for jj in range(1,len(c_high)-1)]
+        time_exc = sum(time_exc)
+        
+        if c_high[-1]>0:
+            if c_high[-1]<=tt[-1]:
+                time_exc = time_exc + c_high[-1] - c_low[-1]
+            else:
+                time_exc = time_exc + tt[-1] - c_low[-1]
+        time_exc = time_exc/month_len
+    
+
+
+    
+###################################################################
+    # find herd immunity time till reached
+    
+    multiplier_95 = 0.95
+    threshold_herd_95 = (1-multiplier_95) + multiplier_95*herd_lim
+    
+    time_reached = 50 # i.e never reached unless below satisfied
+    if herd_val_3yr[-1] < threshold_herd_95:
+        herd_time_vec = [tt[i] if herd_val_3yr[i] < threshold_herd_95 else 0 for i in range(len(herd_val_3yr))]
+        herd_time_vec = np.asarray(herd_time_vec)
+        time_reached  = min(herd_time_vec[herd_time_vec>0])/month_len
+        
+    return metric_val_L_3yr, metric_val_H_3yr, ICU_val_3yr, herd_fraction_out, time_exc, time_reached
+
+
+
+
 
 ########################################################################################################################
 def human_format(num):
@@ -600,7 +671,7 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
     else:
         yax_form = '.2%'
 
-    print((years/3)*max(sol['t'])/month_len)
+    # print((years/3)*max(sol['t'])/month_len)
     layout = go.Layout(
                     annotations=annotz,
                     shapes=shapez,
@@ -667,11 +738,19 @@ layout_intro = html.Div([dbc.Col([
             dbc.Col([
             
             dbc.Row([
+            dbc.Col([
+            html.P('Click below to use the interactive model:',style={'fontSize':18}),
             dbc.Button('Start Calculating', href='/inter', size='lg', color='success'),
+            ],width=6
+            ),
+            dbc.Col([
+            html.P('Click below to view the global data feed:',style={'fontSize':18}),
             dbc.Button('Real Time Data', href='/data', size='lg', color='warning'),
+            ],width=6
+            ),
             # dbc.Button('Model Structure', href='/model', size='lg', color='danger'),
             ],
-            justify='around',
+            justify='center',
             style = {"margin-top": "25px", "margin-bottom": "15px"},
             ),
 
@@ -696,26 +775,26 @@ layout_intro = html.Div([dbc.Col([
 
             But first, there are **two vital concepts** that you need to understand before we can fully explore how the control measures work.
 
-            ### 1. Basic Reproduction Rate
+            ### 1. Basic Reproduction Number
 
-            Any infectious disease requires both infectious individuals and susceptible individuals to be present in a population to spread. The higher the number of susceptible individuals, the faster it can spread since an infectious person can spread the disease to many susceptible people before recovering.
+            Any infectious disease requires both infectious individuals and susceptible individuals to be present in a population to spread. The higher the number of susceptible individuals, the faster it can spread since an infectious person can spread the disease to more susceptible people before recovering.
 
-            The average number of infections caused by a single infected person is known as the '**basic reproduction rate**' (*R*). If this number is less than 1 (each infected person infects less than one other on average) then the disease won't spread. If it is greater than 1 then the disease will spread. For COVID-19 most estimates for *R* are between 2 and 3. We use the value *R*=2.4.
+            The average number of infections caused by a single infected person is known as the '**basic reproduction number**' (*R*). If this number is less than 1 (each infected person infects less than one other on average) then the disease won't spread. If it is greater than 1 then the disease will spread. For COVID-19 most estimates for *R* are between 2 and 3. We use the value *R*=2.4.
 
             ### 2. Herd Immunity
 
-            Once the number of susceptible people drops below a certain threshold (which is different for every disease, and depends on the basic reproductive rate), the population is no longer at risk of an epidemic (so any new infection introduced won't cause a infection to spread through an entire population).
+            Once the number of susceptible people drops below a certain threshold (which is different for every disease, and depends on the basic reproductive rate), the population is no longer at risk of an epidemic (so any new infection introduced won't cause infection to spread through an entire population).
 
             Once the number of susceptible people has dropped below this threshold, the population is termed to have '**herd immunity**'. Herd immunity is either obtained through sufficiently many individuals catching the disease and developing personal immunity to it, or by vaccination.
 
-            For COVID-19, the herd immunity threshold is around 60%, meaning that if 60% of the population develop immunity then the population is **safe** (no longer at risk of an epidemic).
+            For COVID-19, there is a safe herd immunity threshold of around 60% (=1-1/R), meaning that if 60% of the population develop immunity then the population is **safe** (no longer at risk of an epidemic).
 
-            Coronavirus is particularly dangerous because most countries have almost 0% immunity since the virus is so novel.
+            Coronavirus is particularly dangerous because most countries have almost 0% immunity since the virus is so novel. Experts are still uncertain whether you can build immunity to the virus, but the drop in cases in China would suggest that you can. You would have seen people in populated areas getting reinfected which doesn't seem to have happened.
 
 
             # Keys to a successful control strategy
 
-            There are three main goals a control strategy set out to achieve:
+            There are three main goals a control strategy sets out to achieve:
 
             1. Reduce the number of deaths caused by the pandemic,
 
@@ -787,9 +866,9 @@ layout_intro = html.Div([dbc.Col([
             ''',style={'fontSize':20}),
             
             dbc.Col([
-            dcc.Graph(id='line-plot-intro',style={'height': '40vh', 'display': 'block', 'width': '100%'}),
+            dcc.Graph(id='line-plot-intro',style={'height': '55vh', 'display': 'block', 'width': '100%'}),
             html.Div(style={'height': '1vh'}),
-            dcc.Graph(id='line-plot-intro-2',style={'height': '40vh', 'display': 'block', 'width': '100%'}),
+            dcc.Graph(id='line-plot-intro-2',style={'height': '55vh', 'display': 'block', 'width': '100%'}),
             ],
             width = {'size': 11,'offset':1}),
 
@@ -874,7 +953,7 @@ Results_explanation =  html.Div([
 
     Use the '**Inputs**' on the left hand bar to adjust choice of control measures. You can adjust the control measures and the length of time that they are implemented.
 
-    Use the '**Outputs**' box on the right if you'd like to adjust what the plot shows. You can choose whether to consider only one of the low or high risk groups, or plot both groups together, or plot all lines.
+    Use the '**Plot Settings**' button on the left if you'd like to adjust what the plot shows. You can choose whether to consider only one of the low or high risk groups, or plot both groups together, or plot all lines.
 
     Use the '**Model Structure**' options on the left to choose whether to include deaths or not.
 
@@ -890,7 +969,7 @@ Results_explanation =  html.Div([
     
     We consider the effect of control in the **absence** of a vaccine. Of course, if a vaccine were introduced this would greatly help reduce the damage caused by COVID-19, and would further promote the use of the quarantine strategy before relying on the vaccine to generate [**herd immunity**](/intro).
 
-    You can see how quickly the ICU capacity could be overthrown. You can also see how important it is to protect the high risk group (potentially by specifically reducing their transmission rate whilst allowing infection to spread more freely through lower risk groups).
+    You can see how quickly the ICU capacity could be overwhelmed. You can also see how important it is to protect the high risk group (potentially by specifically reducing their transmission rate whilst allowing infection to spread more freely through lower risk groups).
 
     For further explanation, read the [**Introduction**](/intro).
     
@@ -928,26 +1007,20 @@ layout_inter = html.Div([
                                                                             
 
                                                                             
-                                                                            html.H2('Inputs', style={'color': 'blue'}),
+                                                                            html.H3('Strategy'),
 
                                                                             html.H6('Strategy Choice'),
 
                                                                             dbc.RadioItems(
                                                                                 id = 'preset',
-                                                                                options=[
-                                                                                    {'label': 'Do Nothing', 'value': 'N'},
-                                                                                    {'label': 'Social Distancing', 'value': 'MSD'},
-                                                                                    {'label': 'Quarantine All', 'value': 'Q'},
-                                                                                    {'label': 'Quarantine High Risk Only', 'value': 'H'},
-                                                                                    {'label': 'Quarantine High Risk, Mild Social Distancing For Low Risk', 'value': 'HL'},
-                                                                                    {'label': 'Custom', 'value': 'C'},
-                                                                                ],
+                                                                                options=[{'label': presets_dict[key],
+                                                                                'value': key} for key in presets_dict],
                                                                                 value= 'MSD'
                                                                             ),
 
                                                                             
                                                                             html.H6('Months of Control'),
-                                                                            html.P('Modifies infection rates from baseline=100%',style={'fontSize': 13}),
+                                                                            # html.P('Modifies infection rates from baseline=100%',style={'fontSize': 13}),
                                                                             dcc.RangeSlider(
                                                                                         id='month-slider',
                                                                                         min=0,
@@ -962,121 +1035,225 @@ layout_inter = html.Div([
 
 
 
-                                                                            html.H4('Custom Options', style={'color': 'blue'}),
+                                                                            dbc.Button([
+                                                                            'Custom Options',
+                                                                            ],
+                                                                            color='primary',
+                                                                            className='mb-3',
+                                                                            id="collapse-button-custom",
+                                                                            style={'margin-top': '1vh'}
+                                                                            ),
+                                                                            
+                                                                            dbc.Collapse(
+                                                                                [
 
-                                                                            html.H6('Number Of Strategies'),
 
-                                                                            html.Div([
-                                                                                    dbc.RadioItems(
-                                                                                    id = 'number-strats-slider',
-                                                                                    options=[
-                                                                                        {'label': 'One', 'value': 'one'},
-                                                                                        {'label': 'Two', 'value': 'two'}, #, 'disabled': True},
+                                                                                            html.H6('Number Of Strategies'),
+
+                                                                                            html.Div([
+                                                                                                    dbc.RadioItems(
+                                                                                                    id = 'number-strats-slider',
+                                                                                                    options=[
+                                                                                                        {'label': 'One', 'value': 'one'},
+                                                                                                        {'label': 'Two', 'value': 'two'}, #, 'disabled': True},
+                                                                                                    ],
+                                                                                                    value= 'one',
+                                                                                                    inline=True
+                                                                                                    # labelStyle={'display': 'inline-block'}
+                                                                                                    ),
+
+                                                                                                    
+                                                                                                    
+                                                                                                    html.Div(id='strat-lr-infection'),
+                                                                                                                                        
+                                                                                                    
+                                                                                                    dcc.Slider(
+                                                                                                        id='low-risk-slider',
+                                                                                                        min=0,
+                                                                                                        max=len(params.fact_v)-1,
+                                                                                                        step = 1,
+                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                        value=initial_lr,
+                                                                                                    ),
+
+
+                                                                                                    html.Div(id='strat-hr-infection'),
+                                                                                                    
+                                                                                                    dcc.Slider(
+                                                                                                            id='high-risk-slider',
+                                                                                                            min=0,
+                                                                                                            max=len(params.fact_v)-1,
+                                                                                                            step = 1,
+                                                                                                            marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                            value=initial_hr,
+                                                                                                            ),
+                                                                                            ],id='things-not-grey'),
+
+
+                                                                                            html.Div([
+                                                                                                
+                                                                                                    dbc.RadioItems(
+                                                                                                    options=[
+                                                                                                        {'label': 'One', 'value': 'one','disabled': True},
+                                                                                                        {'label': 'Two', 'value': 'two','disabled': True}, #, 'disabled': True},
+                                                                                                    ],
+                                                                                                    value= 'one',
+                                                                                                    inline=True
+                                                                                                    ),
+                                                                                                        
+
+                                                                                                    html.H6('Low Risk Infection Rate (%)'),
+                                                                                                    dcc.Slider(
+                                                                                                        id='grey-lr-slider',
+                                                                                                        min=0,
+                                                                                                        max=len(params.fact_v)-1,
+                                                                                                        step = 1,
+                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                        value=initial_lr,
+                                                                                                        disabled=True
+                                                                                                    ),
+
+                                                                                                    html.H6('High Risk Infection Rate (%)'),
+                                                                                                    dcc.Slider(
+                                                                                                            id='grey-hr-slider',
+                                                                                                            min=0,
+                                                                                                            max=len(params.fact_v)-1,
+                                                                                                            step = 1,
+                                                                                                            marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                            value=initial_hr,
+                                                                                                            disabled=True
+                                                                                                            ),
+                                                                                                            
+                                                                                            ],id='things-grey'),
+
+
+                                                                                            html.Div([
+                                                                                                    html.H6('Strategy Two: Low Risk Infection Rate (%)'),
+
+                                                                                                    dcc.Slider(
+                                                                                                        id='low-risk-slider-2',
+                                                                                                        min=0,
+                                                                                                        max=len(params.fact_v)-1,
+                                                                                                        step = 1,
+                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                        value=6,
+                                                                                                    ),
+
+                                                                                                    html.H6('Strategy Two: High Risk Infection Rate (%)'),
+                                                                                                
+                                                                                                    dcc.Slider(
+                                                                                                        id='high-risk-slider-2',
+                                                                                                        min=0,
+                                                                                                        max=len(params.fact_v)-1,
+                                                                                                        step = 1,
+                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                        value=6,
+                                                                                                        ),
+                                                                                            ],id='strat-2-id'),
+                                                                
+                                                                                ],
+                                                                                # dbc.Card(dbc.CardBody("This content is hidden in the collapse-custom")),
+                                                                                id="collapse-custom",
+                                                                            ),
+
+
+
+                                                                            dbc.Button([
+                                                                                    'Plot Settings',
+                                                                            ],
+                                                                            color='primary',
+                                                                            className='mb-3',
+                                                                            id="collapse-button-plots",
+                                                                            style={'display': 'none', 'margin-top': '1vh'}
+                                                                            ),
+                                                                            
+                                                                            dbc.Collapse(
+                                                                                [
+                        
+                                                                                                        html.Div([
+                                                                                                        # html.H2('Plot Settings',style={'color': 'blue'}),
+
+                                                                                                                    # start of row 1b
+                                                                                                                    # dbc.Row([
+
+                                                                                                                            # start of col 1b
+                                                                                                                            # dbc.Col([
+                                                                                                                                                    html.H6('Years To Plot'),
+                                                                                                                                                    dcc.Slider(
+                                                                                                                                                        id='years-slider',
+                                                                                                                                                        min=1,
+                                                                                                                                                        max=3,
+                                                                                                                                                        marks={i: str(i) for i in range(1,4)},
+                                                                                                                                                        value=2,
+                                                                                                                                                    ),
+
+                                                                                                                                                    html.H6('How Many Plots'),
+                                                                                                                                                    dbc.RadioItems(
+                                                                                                                                                        id='how-many-plots-slider',
+                                                                                                                                                        options=[
+                                                                                                                                                            {'label': 'One Plot', 'value': 'all'},
+                                                                                                                                                            # {'label': 'One Plot: Hospital Categories', 'value': 'hosp'},
+                                                                                                                                                            {'label': 'Two Plots (Different Axis Scales)', 'value': 'two'},
+                                                                                                                                                        ],
+                                                                                                                                                        value= 'all',
+                                                                                                                                                        labelStyle = {'display': 'inline-block'}
+                                                                                                                                                    ),
+
+
+                                                                                                                                                        html.H6('Groups To Plot'),
+                                                                                                                                                        dbc.Checklist(
+                                                                                                                                                            id = 'groups-checklist-to-plot',
+                                                                                                                                                            options=[
+                                                                                                                                                                {'label': 'Both Risk Groups (Sum Of)', 'value': 'BR'},
+                                                                                                                                                                {'label': 'High Risk Group', 'value': 'HR'},
+                                                                                                                                                                {'label': 'Low Risk Group', 'value': 'LR'},
+                                                                                                                                                            ],
+                                                                                                                                                            value= ['BR'],
+                                                                                                                                                            labelStyle = {'display': 'inline-block'}
+                                                                                                                                                        ),
+
+
+                                                                                                                                                        dbc.RadioItems(
+                                                                                                                                                            id = 'groups-to-plot-radio',
+                                                                                                                                                            options=[
+                                                                                                                                                                {'label': 'Both Risk Groups (Sum Of)', 'value': 'BR'},
+                                                                                                                                                                {'label': 'High Risk Group', 'value': 'HR'},
+                                                                                                                                                                {'label': 'Low Risk Group', 'value': 'LR'},
+                                                                                                                                                            ],
+                                                                                                                                                            value= 'BR',
+                                                                                                                                                            labelStyle = {'display': 'inline-block'}
+                                                                                                                                                        ),
+
+                                                                                                                                            # ],width = 6),
+                                                                                                                                            # dbc.Col([
+
+                                                                                                                                                        html.H6('Categories To Plot'),
+
+                                                                                                                                                        dbc.Checklist(id='categories-to-plot-checklist',
+                                                                                                                                                                        options=[
+                                                                                                                                                                            {'label': 'Susceptible', 'value': 'S'},
+                                                                                                                                                                            {'label': 'Infected', 'value': 'I'},
+                                                                                                                                                                            {'label': 'Recovered', 'value': 'R'},
+                                                                                                                                                                            {'label': 'Hospitalised', 'value': 'H'},
+                                                                                                                                                                            {'label': 'Critical Care', 'value': 'C'},
+                                                                                                                                                                            {'label': 'Deaths', 'value': 'D'},
+                                                                                                                                                                        ],
+                                                                                                                                                                        value= ['S','I','R'],
+                                                                                                                                                                        labelStyle = {'display': 'inline-block'}
+                                                                                                                                                                    ),
+                                                                                                                                                                    
+                                                                                                                                            # ],width = 6),
+
+                                                                                                                                    # end of row 1b
+                                                                                                                                    # ]),
+
+                                                                                                                    ],id='outputs-div',
+                                                                                                                    
+                                                                                                                    ),
                                                                                     ],
-                                                                                    value= 'one',
-                                                                                    inline=True
-                                                                                    # labelStyle={'display': 'inline-block'}
+                                                                                    id="collapse-plots",
                                                                                     ),
 
-                                                                                    
-                                                                                    
-                                                                                    html.Div(id='strat-lr-infection'),
-                                                                                                                        
-                                                                                    
-                                                                                    dcc.Slider(
-                                                                                        id='low-risk-slider',
-                                                                                        min=0,
-                                                                                        max=len(params.fact_v)-1,
-                                                                                        step = 1,
-                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                        value=initial_lr,
-                                                                                    ),
-
-
-                                                                                    html.Div(id='strat-hr-infection'),
-                                                                                    
-                                                                                    dcc.Slider(
-                                                                                            id='high-risk-slider',
-                                                                                            min=0,
-                                                                                            max=len(params.fact_v)-1,
-                                                                                            step = 1,
-                                                                                            marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                            value=initial_hr,
-                                                                                            ),
-                                                                            ],id='things-not-grey'),
-
-
-                                                                            html.Div([
-                                                                                
-                                                                                    dbc.RadioItems(
-                                                                                    options=[
-                                                                                        {'label': 'One', 'value': 'one','disabled': True},
-                                                                                        {'label': 'Two', 'value': 'two','disabled': True}, #, 'disabled': True},
-                                                                                    ],
-                                                                                    value= 'one',
-                                                                                    inline=True
-                                                                                    ),
-                                                                                        
-                                                                                    # html.H6('Months of Control (modifying infection rates from baseline=100%)'),
-                                                                                    # dcc.RangeSlider(
-                                                                                    #     min=0,
-                                                                                    #     max=floor(params.months_run_for),
-                                                                                    #     step=1,
-                                                                                    #     # pushable=0,
-                                                                                    #     marks={i: str(i) for i in range(0,floor(params.months_run_for)+1,2)},
-                                                                                    #     value=[1,initial_month],
-                                                                                    #     disabled = True
-                                                                                    # ),
-
-                                                                                    html.H6('Low Risk Infection Rate (%)'),
-                                                                                    dcc.Slider(
-                                                                                        id='grey-lr-slider',
-                                                                                        min=0,
-                                                                                        max=len(params.fact_v)-1,
-                                                                                        step = 1,
-                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                        value=initial_lr,
-                                                                                        disabled=True
-                                                                                    ),
-
-                                                                                    html.H6('High Risk Infection Rate (%)'),
-                                                                                    dcc.Slider(
-                                                                                            id='grey-hr-slider',
-                                                                                            min=0,
-                                                                                            max=len(params.fact_v)-1,
-                                                                                            step = 1,
-                                                                                            marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                            value=initial_hr,
-                                                                                            disabled=True
-                                                                                            ),
-                                                                                            
-                                                                            ],id='things-grey'),
-
-
-                                                                            html.Div([
-                                                                                    html.H6('Strategy Two: Low Risk Infection Rate (%)'),
-
-                                                                                    dcc.Slider(
-                                                                                        id='low-risk-slider-2',
-                                                                                        min=0,
-                                                                                        max=len(params.fact_v)-1,
-                                                                                        step = 1,
-                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                        value=6,
-                                                                                    ),
-
-                                                                                    html.H6('Strategy Two: High Risk Infection Rate (%)'),
-                                                                                
-                                                                                    dcc.Slider(
-                                                                                        id='high-risk-slider-2',
-                                                                                        min=0,
-                                                                                        max=len(params.fact_v)-1,
-                                                                                        step = 1,
-                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                        value=6,
-                                                                                        ),
-                                                                            ],id='strat-2-id'),
-                                                
 
 
 #########################################################################################################################################################
@@ -1124,11 +1301,11 @@ layout_inter = html.Div([
                                         children=[
 
                                         # tab 0
-                                        dbc.Tab(label='Strategy Outcome',
+                                        dbc.Tab(label='Overview',
                                          label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_0', children = [html.Div(id = 'text-tab-0'),]),
 #########################################################################################################################################################
                                         # tab 1
-                                        dbc.Tab(label='Graphs', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_1', children = [
+                                        dbc.Tab(label='Bar Graphs', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_1', children = [
                                                                                                 # dbc.Jumbotron([
 
 
@@ -1140,6 +1317,9 @@ layout_inter = html.Div([
 
 
                                                                                                             html.Div([
+
+                                                                                                                        html.H3('Strategy Outcome',id='bar_page_title',className="display-4"),
+
                                                                                                                         dbc.Row([
                                                                                                                             dbc.Col([
                                                                                                                                 html.Div(
@@ -1265,10 +1445,12 @@ layout_inter = html.Div([
 
                                                                 
                                                                 # tab 2
-                                                                dbc.Tab(label='Detailed Results', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='DPC',children=[
+                                                                dbc.Tab(label='Results and Explanation', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='DPC',children=[
                                                                                     
+                                                                                                html.H4('Strategy Outcome',id='line_page_title',className="display-4"),
                                                                                                 dbc.Row([
-                                                                                                        html.H1("Strategy Choice: Disease Progress Curves", className="display-4"),# style={'color':'blue'}),
+                                                                                                        html.H3("Disease Progress Curves"),# style={'color':'blue'}),
+
                                                                                                         dbc.Spinner(html.Div(id="loading-line-output-1")),
                                                                                                         ],
                                                                                                         # justify='center',
@@ -1278,107 +1460,25 @@ layout_inter = html.Div([
                                                                                                 
                                                                                                 dcc.Graph(id='line-plot-1',style={'display': 'none'}),
 
+                                                                                                dbc.Container([html.Div([],style={'height': '3vh'})]),
+
                                                                                                 dcc.Graph(id='line-plot-2',style={'display': 'none'}),
 
-                                                                                                dbc.Container([html.Div([],style={'height': '3vh'})]),
+                                                                                                dbc.Container([html.Div([],style={'height': '1vh'})]),
                                                                                                 html.Hr(className='my-2'),
-                                                                                                dbc.Container([html.Div([],style={'height': '3vh'})]),
+                                                                                                dbc.Container([html.Div([],style={'height': '2vh'})]),
 
                                                                                                 
                                                                                                 dbc.Row([
 
-                                                                                                    dbc.Col([
+                                                                                                    # dbc.Col([
                                                                                                     # dbc.Jumbotron([
                                                                                                         Results_explanation,
                                                                                                     # ]),
-                                                                                                    ],width=8),
+                                                                                                    # ],width=8),
 
                                                             ####################################################################################
                                                             ####################################################################################
-                                                                                                    dbc.Col([
-                                                                                                    # dbc.Jumbotron([
-                                                                                                                                                                
-                                                                                                        html.Div([
-                                                                                                        html.H2('Outputs',style={'color': 'blue'}),
-
-                                                                                                                    # start of row 1b
-                                                                                                                    dbc.Row([
-
-                                                                                                                            # start of col 1b
-                                                                                                                            dbc.Col([
-
-                                                                                                                                                    html.H6('How Many Plots'),
-                                                                                                                                                    dbc.RadioItems(
-                                                                                                                                                        id='how-many-plots-slider',
-                                                                                                                                                        options=[
-                                                                                                                                                            {'label': 'One Plot', 'value': 'all'},
-                                                                                                                                                            # {'label': 'One Plot: Hospital Categories', 'value': 'hosp'},
-                                                                                                                                                            {'label': 'Two Plots (Different Axis Scales)', 'value': 'two'},
-                                                                                                                                                        ],
-                                                                                                                                                        value= 'all',
-                                                                                                                                                        labelStyle = {'display': 'inline-block'}
-                                                                                                                                                    ),
-
-
-                                                                                                                                                        html.H6('Groups To Plot'),
-                                                                                                                                                        dbc.Checklist(
-                                                                                                                                                            id = 'groups-checklist-to-plot',
-                                                                                                                                                            options=[
-                                                                                                                                                                {'label': 'Both Risk Groups (Sum Of)', 'value': 'BR'},
-                                                                                                                                                                {'label': 'High Risk Group', 'value': 'HR'},
-                                                                                                                                                                {'label': 'Low Risk Group', 'value': 'LR'},
-                                                                                                                                                            ],
-                                                                                                                                                            value= ['BR'],
-                                                                                                                                                            labelStyle = {'display': 'inline-block'}
-                                                                                                                                                        ),
-
-
-                                                                                                                                                        dbc.RadioItems(
-                                                                                                                                                            id = 'groups-to-plot-radio',
-                                                                                                                                                            options=[
-                                                                                                                                                                {'label': 'Both Risk Groups (Sum Of)', 'value': 'BR'},
-                                                                                                                                                                {'label': 'High Risk Group', 'value': 'HR'},
-                                                                                                                                                                {'label': 'Low Risk Group', 'value': 'LR'},
-                                                                                                                                                            ],
-                                                                                                                                                            value= 'BR',
-                                                                                                                                                            labelStyle = {'display': 'inline-block'}
-                                                                                                                                                        ),
-
-                                                                                                                                            ],width = 6),
-                                                                                                                                            dbc.Col([
-
-                                                                                                                                                        html.H6('Categories To Plot'),
-
-                                                                                                                                                        dbc.Checklist(id='categories-to-plot-checklist',
-                                                                                                                                                                        options=[
-                                                                                                                                                                            {'label': 'Susceptible', 'value': 'S'},
-                                                                                                                                                                            {'label': 'Infected', 'value': 'I'},
-                                                                                                                                                                            {'label': 'Recovered', 'value': 'R'},
-                                                                                                                                                                            {'label': 'Hospitalised', 'value': 'H'},
-                                                                                                                                                                            {'label': 'Critical Care', 'value': 'C'},
-                                                                                                                                                                            {'label': 'Deaths', 'value': 'D'},
-                                                                                                                                                                        ],
-                                                                                                                                                                        value= ['S','I','R'],
-                                                                                                                                                                        labelStyle = {'display': 'inline-block'}
-                                                                                                                                                                    ),
-                                                                                                                                                                    
-                                                                                                                                                        html.H6('Years To Plot'),
-                                                                                                                                                        dcc.Slider(
-                                                                                                                                                            id='years-slider',
-                                                                                                                                                            min=1,
-                                                                                                                                                            max=3,
-                                                                                                                                                            marks={i: str(i) for i in range(1,4)},
-                                                                                                                                                            value=2,
-                                                                                                                                                        ),
-                                                                                                                                            ],width = 6),
-
-                                                                                                                                    # end of row 1b
-                                                                                                                                    ]),
-
-                                                                                                                    ],id='outputs-div'),
-                                                                                                                # ]),
-
-                                                                                                                ],width=4),
 
                                                                 ####################################################################################
                                                                 ####################################################################################
@@ -1514,20 +1614,24 @@ top_banner = html.Div([
             dbc.Row([
                 dbc.Col([
                     # dbc.Container([
-                    html.H4(children='Modelling control of COVID-19',className="display-4"),
-                    html.Hr(),
+                    html.H4(children='Modelling control of COVID-19',
+                    className="display-4",
+                    style={'margin-top': '2vh', 'margin-bottom': '1vh'}
+                    ),
+                    # html.Hr(),
 
-                    html.Div([
-                        dcc.Markdown(
-                        '''
-                        An implementation of a model parameterised for COVID-19.
+                    # html.Div([
+                    #     dcc.Markdown(
+                    #     '''
+                    #     An implementation of a model parameterised for COVID-19.
                         
-                        ## Read our [**introduction**](/intro), experiment with the [**interactive model**](/inter), or explore [**real time data**](/data).
+                    #     ## Read our [**introduction**](/intro), experiment with the [**interactive model**](/inter), or explore [**real time data**](/data).
                         
-                        Authors: Nick Taylor and Daniel Muthukrishna.
-                        '''
-                        ,style={'fontSize': 18}),
-                        ]),
+                    #     Authors: Nick Taylor and Daniel Muthukrishna.
+                    #     '''
+                    #     ,style={'fontSize': 18}),
+                    #     ]),
+
                     # ],fluid=True)
                     # html.P(,
                     # className="lead"),
@@ -1601,7 +1705,30 @@ def preset_sliders(preset):
     if preset in preset_dict_low:
         return preset_dict_low[preset], preset_dict_high[preset]
     else: # 'N'
-        return 6,6
+        return preset_dict_low['N'], preset_dict_high['N']
+
+
+
+@app.callback(
+    Output("collapse-custom", "is_open"),
+    [Input("collapse-button-custom", "n_clicks")],
+    [State("collapse-custom", "is_open")],
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+
+@app.callback(
+    Output("collapse-plots", "is_open"),
+    [Input("collapse-button-plots", "n_clicks")],
+    [State("collapse-plots", "is_open")],
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 ##############################################################################################################################
 @app.callback([Output('infections-linear', 'figure'),
@@ -1903,10 +2030,13 @@ def find_sol_do_noth(hosp): # years
     return sol_do_nothing # {'do_nothing': sol_do_nothing}
 
 ########################################################################################################################
-def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,hosp,number_strategies,which_strat):
+def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_stat_2nd,herd_stat_2nd,dat3_2nd,number_of_crit_or_dead_metric,hosp,preset,number_strategies,which_strat):
     
-    dat1 = 100*dat1
-    dat2 = 100*dat2
+    death_stat_1st = 100*death_stat_1st
+    herd_stat_1st = 100*herd_stat_1st
+
+    death_stat_2nd = 100*death_stat_2nd
+    herd_stat_2nd = 100*herd_stat_2nd
 
 
     on_or_off = {'display': 'block','textAlign': 'center'}
@@ -1916,11 +2046,12 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
             on_or_off = {'display': 'none'}
     else:
         num_st = 'One '
+    strat_name = presets_dict[preset]
 
     if which_strat==1:
-        Outcome_title = 'Strategy ' + num_st + 'Outcome'
+        Outcome_title = strat_name + ' Strategy ' + num_st + 'Outcome'
     else:
-        Outcome_title = 'Strategy Two Outcome'
+        Outcome_title = strat_name + ' Strategy Two Outcome'
     
     if 'True_crit' in hosp:
         crit_text_on_or_off   = {'display': 'none'}
@@ -1934,23 +2065,52 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
     else:
         width = 6
     
-    color_death = 'success'
-    if dat1<66:
-        color_death = 'warning'
-    if dat1<33:
-        color_death = 'danger'
+    death_thresh1 = 66
+    death_thresh2 = 33
 
-    color_herd = 'success'
-    if dat2<66:
-        color_herd = 'warning'
-    if dat2<33:
-        color_herd = 'danger'
+    herd_thresh1 = 66
+    herd_thresh2 = 33
 
-    color_ICU = 'success'
-    if dat3>5:
-        color_ICU = 'warning'
-    if dat3>10:
-        color_ICU = 'danger'
+    ICU_thresh1 = 5
+    ICU_thresh2 = 10
+
+    color_1st_death = 'success'
+    if death_stat_1st<death_thresh1:
+        color_1st_death = 'warning'
+    if death_stat_1st<death_thresh2:
+        color_1st_death = 'danger'
+
+    color_1st_herd = 'success'
+    if herd_stat_1st<herd_thresh1:
+        color_1st_herd = 'warning'
+    if herd_stat_1st<herd_thresh2:
+        color_1st_herd = 'danger'
+
+    color_1st_ICU = 'success'
+    if dat3_1st>ICU_thresh1:
+        color_1st_ICU = 'warning'
+    if dat3_1st>ICU_thresh2:
+        color_1st_ICU = 'danger'
+
+    
+    color_2nd_death = 'success'
+    if death_stat_2nd<death_thresh2:
+        color_2nd_death = 'warning'
+    if death_stat_2nd<death_thresh1:
+        color_2nd_death = 'danger'
+
+    color_2nd_herd = 'success'
+    if herd_stat_2nd<herd_thresh1:
+        color_2nd_herd = 'warning'
+    if herd_stat_2nd<herd_thresh2:
+        color_2nd_herd = 'danger'
+
+    color_2nd_ICU = 'success'
+    if dat3_2nd>ICU_thresh1:
+        color_2nd_ICU = 'warning'
+    if dat3_2nd>ICU_thresh2:
+        color_2nd_ICU = 'danger'
+
 
 
 
@@ -2009,12 +2169,12 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
                                     html.Td(html.H5('{0:,.0f}'.format(100*beta_L) + '%',style={'color':'white'}))
                                 ]),
                                 html.Tr([ 
-                                    html.Td(html.H5("Control Ends",style={'color':'white'})),
-                                    html.Td(html.H5('Month ' + str(month[1]),style={'color':'white'}))
-                                ]),
-                                html.Tr([ 
                                     html.Td(html.H5("Control Starts",style={'color':'white'})),
                                     html.Td(html.H5('Month ' + str(month[0]),style={'color':'white'}))
+                                ]),
+                                html.Tr([ 
+                                    html.Td(html.H5("Control Ends",style={'color':'white'})),
+                                    html.Td(html.H5('Month ' + str(month[1]),style={'color':'white'}))
                                 ]),
                             ]),
                         ],
@@ -2037,33 +2197,33 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
                                             dbc.Card(
                                             [
                                                 dbc.CardHeader(number_of_crit_or_dead_text),
-                                                dbc.CardBody([html.H1(str(round(dat1,1))+'%',className='card-title')]),
+                                                dbc.CardBody([html.H1(str(round(death_stat_1st,1))+'%',className='card-title')]),
                                                 dbc.CardFooter('compared to doing nothing'),
                                         
-                                            ],color=color_death,inverse=True
+                                            ],color=color_1st_death,inverse=True
                                         )
                                     ],width=width,style={'textAlign': 'center'}),
                                     dbc.Col([
                                         dbc.Card(
                                             [
                                                 dbc.CardHeader('Herd immunity:'),
-                                                dbc.CardBody([html.H1(str(round(dat2,1))+'%',className='card-title')]),
+                                                dbc.CardBody([html.H1(str(round(herd_stat_1st,1))+'%',className='card-title')]),
                                                 dbc.CardFooter('of safe threshold'),
                                         
-                                            ],color=color_herd,inverse=True
+                                            ],color=color_1st_herd,inverse=True
                                         )
                                     ],width=width,style={'textAlign': 'center'}),
                                     dbc.Col([
                                         dbc.Card(
                                             [
                                                 dbc.CardHeader('ICU requirement:'),
-                                                dbc.CardBody([html.H1(str(round(dat3,1)) + 'x',className='card-title')]),
+                                                dbc.CardBody([html.H1(str(round(dat3_1st,1)) + 'x',className='card-title')]),
                                                 dbc.CardFooter('multiple of current capacity'),
                                         
-                                            ],color=color_ICU,inverse=True
+                                            ],color=color_1st_ICU,inverse=True
                                         )
                                     ],width=width,style=crit_text_on_or_off),
-                                ],style={'margin-top': '1vh', 'margin-bottom': '1vh'}
+                                ],style={'margin-top': '2vh', 'margin-bottom': '2vh'}
                                 ),
 
                                 html.H4('After 2 years:'),
@@ -2074,33 +2234,33 @@ def outcome_fn(month,beta_L,beta_H,dat1,dat2,dat3,number_of_crit_or_dead_metric,
                                             dbc.Card(
                                             [
                                                 dbc.CardHeader(number_of_crit_or_dead_text),
-                                                dbc.CardBody([html.H1(str(round(dat1,1))+'%',className='card-title')]),
+                                                dbc.CardBody([html.H1(str(round(death_stat_2nd,1))+'%',className='card-title')]),
                                                 dbc.CardFooter('compared to doing nothing'),
                                         
-                                            ],color=color_death,inverse=True
+                                            ],color=color_2nd_death,inverse=True
                                         )
                                     ],width=width,style={'textAlign': 'center'}),
                                     dbc.Col([
                                         dbc.Card(
                                             [
                                                 dbc.CardHeader('Herd immunity:'),
-                                                dbc.CardBody([html.H1(str(round(dat2,1))+'%',className='card-title')]),
+                                                dbc.CardBody([html.H1(str(round(herd_stat_2nd,1))+'%',className='card-title')]),
                                                 dbc.CardFooter('of safe threshold'),
                                         
-                                            ],color=color_herd,inverse=True
+                                            ],color=color_2nd_herd,inverse=True
                                         )
                                     ],width=width,style={'textAlign': 'center'}),
                                     dbc.Col([
                                         dbc.Card(
                                             [
                                                 dbc.CardHeader('ICU requirement:'),
-                                                dbc.CardBody([html.H1(str(round(dat3,1)) + 'x',className='card-title')]),
+                                                dbc.CardBody([html.H1(str(round(dat3_2nd,1)) + 'x',className='card-title')]),
                                                 dbc.CardFooter('multiple of current capacity'),
                                         
-                                            ],color=color_ICU,inverse=True
+                                            ],color=color_2nd_ICU,inverse=True
                                         )
                                     ],width=width,style=crit_text_on_or_off),
-                                ],style={'margin-top': '1vh', 'margin-bottom': '1vh'}
+                                ],style={'margin-top': '2vh', 'margin-bottom': '2vh'}
                                 ),
                                 
 
@@ -2192,6 +2352,9 @@ def intro_content(tab,hosp,sol_do_n):
 
 @app.callback([
                 Output('text-tab-0', 'children'),
+                Output('bar_page_title', 'children'),
+                Output('line_page_title', 'children'),
+
 
                 Output('bar-plot-1', 'figure'),
                 Output('bar-plot-2', 'figure'),
@@ -2205,6 +2368,7 @@ def intro_content(tab,hosp,sol_do_n):
                 Output('loading-bar-output-4','children'),
                 Output('loading-bar-output-5','children'),
 
+                Output('collapse-button-plots', 'style'),
 
                 Output('line-plot-1', 'figure'),
                 Output('line-plot-2', 'figure'),
@@ -2260,7 +2424,11 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
     bar4 = dummy_figure
     bar5 = dummy_figure
 
+    
+    Strat_outcome_title = presets_dict[preset] + ' Strategy Outcome'
 
+
+    outputs_style = {'display': 'none'}
 
     fig1 = dummy_figure
     fig2 = dummy_figure
@@ -2297,72 +2465,127 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
             crit_cap_quoted_3yr = []
             ICU_data_3yr = []
             herd_list_3yr = []
+
+
+            crit_cap_data_L_1yr = []
+            crit_cap_data_H_1yr = []
+            crit_cap_quoted_1yr = []
+            ICU_data_1yr = []
+            herd_list_1yr = []
+
+            crit_cap_data_L_2yr = []
+            crit_cap_data_H_2yr = []
+            crit_cap_quoted_2yr = []
+            ICU_data_2yr = []
+            herd_list_2yr = []
+
+            crit_cap_data_L_3yr = []
+            crit_cap_data_H_3yr = []
+            crit_cap_quoted_3yr = []
+            ICU_data_3yr = []
+            herd_list_3yr = []
         ########################################################################################################################
             #loop start
             if sols is not None and tab!='DPC':
+
+                if deaths:
+                    metric = 'deaths'
+                else:
+                    metric = 'critical care cases'
+
+
                 for ii in range(len(sols)):
                     if sols[ii] is not None:
                         sol = sols[ii]
                         
                         yy = np.asarray(sol['y'])
+                        tt = np.asarray(sol['t'])
+
                         
                         num_t_points = yy.shape[1]
-
-                        if hosp=='True_deaths':
-                            metric = 'deaths'
-                            metric_val_L = yy[params.D_L_ind,num_t_points-1]
-                            metric_val_H = yy[params.D_H_ind,num_t_points-1]
-                        else:
-                            metric = 'critical care cases'
-                            metric_val_L = yy[params.C_L_ind,num_t_points-1]
-                            metric_val_H = yy[params.C_H_ind,num_t_points-1]
-
-
-                        ICU_val = [yy[params.C_H_ind,i] + yy[params.C_L_ind,i] for i in range(num_t_points)]
-                        ICU_val = max(ICU_val)/params.ICU_capacity
-
-                        crit_cap_data_L_3yr.append(metric_val_L)
-                        crit_cap_data_H_3yr.append(metric_val_H)
-
-                        ICU_data_3yr.append(ICU_val)
-
-                        herd_lim = 1/(params.R_0)
-
-                        ####
-                        time_exc = 0
-
-                        if 'True_deaths' in hosp: # num_strat=='one' and
-                            tt = np.asarray(sol['t'])
-                            c_low, c_high, ICU = time_exceeded_function(yy,tt)
+                        # extract_info(yy,num_t_points,deaths)
+                        metric_val_L_3yr, metric_val_H_3yr, ICU_val_3yr, herd_fraction_out, time_exc, time_reached = extract_info(yy,tt,num_t_points,deaths)
                         
-                            time_exc = [c_high[jj] - c_low[jj] for jj in range(1,len(c_high)-1)]
-                            time_exc = sum(time_exc)
+                        crit_cap_data_L_3yr.append(metric_val_L_3yr) #
+                        crit_cap_data_H_3yr.append(metric_val_H_3yr) #
+                        ICU_data_3yr.append(ICU_val_3yr)
+                        herd_list_3yr.append(herd_fraction_out) ##
+                        time_exceeded_data.append(time_exc) ##
+                        time_reached_data.append(time_reached) ##
+
+
+                        num_t_2yr = ceil(2*num_t_points/3)
+                        metric_val_L_2yr, metric_val_H_2yr, ICU_val_2yr, herd_fraction_out = extract_info(yy,tt,num_t_2yr,deaths)[:4]
+
+                        crit_cap_data_L_2yr.append(metric_val_L_2yr) #
+                        crit_cap_data_H_2yr.append(metric_val_H_2yr) #
+                        ICU_data_2yr.append(ICU_val_2yr)
+                        herd_list_2yr.append(herd_fraction_out) ##
+
+
+                        num_t_1yr = ceil(num_t_points/3)
+                        metric_val_L_1yr, metric_val_H_1yr, ICU_val_1yr, herd_fraction_out = extract_info(yy,tt,num_t_1yr,deaths)[:4]
+
+                        crit_cap_data_L_1yr.append(metric_val_L_1yr) #
+                        crit_cap_data_H_1yr.append(metric_val_H_1yr) #
+                        ICU_data_1yr.append(ICU_val_1yr)
+                        herd_list_1yr.append(herd_fraction_out) ##
+
+
+                        # if hosp=='True_deaths':
+                        #     metric_val_L_3yr = yy[params.D_L_ind,num_t_points-1]
+                        #     metric_val_H_3yr = yy[params.D_H_ind,num_t_points-1]
+                        # else:
+                        #     metric_val_L_3yr = yy[params.C_L_ind,num_t_points-1]
+                        #     metric_val_H_3yr = yy[params.C_H_ind,num_t_points-1]
+
+                #         ICU_val_3yr = [yy[params.C_H_ind,i] + yy[params.C_L_ind,i] for i in range(num_t_points)]
+                #         ICU_val_3yr = max(ICU_val_3yr)/params.ICU_capacity
+                #         crit_cap_data_L_3yr.append(metric_val_L_3yr)
+                #         crit_cap_data_H_3yr.append(metric_val_H_3yr)
+                #         ICU_data_3yr.append(ICU_val_3yr)
+
+                #         herd_lim = 1/(params.R_0)
+
+                #         ####
+                #         time_exc = 0
+
+                #         if 'True_deaths' in hosp: # num_strat=='one' and
+                #             tt = np.asarray(sol['t'])
+                #             c_low, c_high, ICU = time_exceeded_function(yy,tt)
+                        
+                #             time_exc = [c_high[jj] - c_low[jj] for jj in range(1,len(c_high)-1)]
+                #             time_exc = sum(time_exc)
                             
-                            if c_high[-1]>0:
-                                if c_high[-1]<=sol['t'][-1]:
-                                    time_exc = time_exc + c_high[-1] - c_low[-1]
-                                else:
-                                    time_exc = time_exc + sol['t'][-1] - c_low[-1]
-                            time_exc = time_exc/month_len
-                        time_exceeded_data.append(time_exc)
-                        ####
+                #             if c_high[-1]>0:
+                #                 if c_high[-1]<=sol['t'][-1]:
+                #                     time_exc = time_exc + c_high[-1] - c_low[-1]
+                #                 else:
+                #                     time_exc = time_exc + sol['t'][-1] - c_low[-1]
+                #             time_exc = time_exc/month_len
+                #         time_exceeded_data.append(time_exc)
+                #         ####
 
-
-                        herd_val = [yy[params.S_H_ind,i] + yy[params.S_L_ind,i] for i in range(num_t_points)]
+                # ###################################################################
+                #         herd_val_3yr = [yy[params.S_H_ind,i] + yy[params.S_L_ind,i] for i in range(num_t_points)]
+                #         herd_list_3yr.append(min((1-herd_val_3yr[-1])/(1-herd_lim),1))
                         
-                        herd_list_3yr.append(min((1-herd_val[-1])/(1-herd_lim),1))
                         
-                        multiplier_95 = 0.95
-                        threshold_herd_95 = (1-multiplier_95) + multiplier_95*herd_lim
-                        if herd_val[-1] < threshold_herd_95:
-                            herd_time_vec = [sol['t'][i] if herd_val[i] < threshold_herd_95 else 0 for i in range(len(herd_val))]
-                            herd_time_vec = np.asarray(herd_time_vec)
-                            time_reached  = min(herd_time_vec[herd_time_vec>0])/month_len
-                            time_reached_data.append(time_reached)
+                #         multiplier_95 = 0.95
+                #         threshold_herd_95 = (1-multiplier_95) + multiplier_95*herd_lim
+                #         if herd_val_3yr[-1] < threshold_herd_95:
+                #             herd_time_vec = [sol['t'][i] if herd_val_3yr[i] < threshold_herd_95 else 0 for i in range(len(herd_val_3yr))]
+                #             herd_time_vec = np.asarray(herd_time_vec)
+                #             time_reached  = min(herd_time_vec[herd_time_vec>0])/month_len
+                #             time_reached_data.append(time_reached)
 
             # loop end
 
                 for jj in range(len(crit_cap_data_H_3yr)):
+                    crit_cap_quoted_1yr.append( (1 - (crit_cap_data_L_1yr[jj] + crit_cap_data_H_1yr[jj])/(crit_cap_data_L_1yr[-1] + crit_cap_data_H_1yr[-1]) ))
+
+                    crit_cap_quoted_2yr.append( (1 - (crit_cap_data_L_2yr[jj] + crit_cap_data_H_2yr[jj])/(crit_cap_data_L_2yr[-1] + crit_cap_data_H_2yr[-1]) ))
+
                     crit_cap_quoted_3yr.append( (1 - (crit_cap_data_L_3yr[jj] + crit_cap_data_H_3yr[jj])/(crit_cap_data_L_3yr[-1] + crit_cap_data_H_3yr[-1]) ))
 
         ########################################################################################################################
@@ -2370,9 +2593,9 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
             if sols is not None and tab=='tab_0':
 
                 text_object_0 = [
-                    outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_3yr[0],herd_list_3yr[0],ICU_data_3yr[0],metric,hosp,number_strategies = num_strat,which_strat=1),
+                    outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[0],herd_list_2yr[0],ICU_data_2yr[0],metric,hosp,preset,number_strategies = num_strat,which_strat=1),
                     html.Hr(),
-                    outcome_fn(month,sols[1]['beta_L'],sols[1]['beta_H'],crit_cap_quoted_3yr[1],herd_list_3yr[1],ICU_data_3yr[1],metric,hosp,number_strategies = num_strat,which_strat=2),
+                    outcome_fn(month,sols[1]['beta_L'],sols[1]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[1],herd_list_2yr[1],ICU_data_2yr[1],metric,hosp,preset,number_strategies = num_strat,which_strat=2),
                     ]
 
                 
@@ -2417,6 +2640,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
             if sols is not None and tab=='DPC':
                 output_2 = [i for i in output if i in ['C','H','D']]
+                outputs_style = {'display': 'block'}
 
                 if len(output)>0:
                     fig1 = figure_generator(sols[:-1],month,output,groups,hosp,num_strat,groups2,which_plots,years)
@@ -2431,7 +2655,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
         ##############
 
             fig_height = '55vh'
-            fig_height_2 = '40vh'
+            fig_height_2 = '50vh'
             fig_width = '95%'
 
             if which_plots=='all':
@@ -2447,6 +2671,8 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
     return [
     text_object_0,
+    Strat_outcome_title,
+    Strat_outcome_title,
     bar1,
     bar2,
     bar3,
@@ -2457,6 +2683,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
     html.Div(), # 
     html.Div(), # 
     html.Div(), # 
+    outputs_style,
     fig1,
     fig2,
     html.Div(),
