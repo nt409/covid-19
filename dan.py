@@ -138,7 +138,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                           "margin-left": "5px", "margin-right": "15px"}),
             html.Div(style={'margin-top': '10px'}),
             html.Div([
-                dcc.Checklist(
+                dbc.Checklist(
                     id=c_name,
                     options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(),
                               'value': c_name}],
@@ -175,14 +175,14 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                 ),
             ], style={'display': 'inline-block', 'horizontal-align': 'center', 'textAlign': 'center',
                       "margin-bottom": "15px",}),
-            dcc.Checklist(
+            dbc.Checklist(
                 id='show-exponential-check',
                 options=[{'label': "Show exponential fits?", 'value': 'exponential'}],
                 value=['exponential'],
                 style={'textAlign': 'center', "margin-bottom": "0px"},
                 inputStyle={"margin-right": "5px"}
             ),
-            dcc.Checklist(
+            dbc.Checklist(
                 id='normalise-check',
                 options=[{'label': "Normalise by population?", 'value': 'normalise'}],
                 value=[],
