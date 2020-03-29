@@ -118,8 +118,7 @@ colors = {
 
 # layout_dan = html.Div()
 
-# a = 
-#  =
+# layout_dan 
 layout_dan =  html.Div(style={'backgroundColor': colors['background'], 'font-family': 'sans-serif'},
                       id='output-layout', children=[
     html.H2(

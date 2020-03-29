@@ -68,11 +68,11 @@ bar_width  =  '100'
 
 bar_non_crit_style = {'height': bar_height, 'width': bar_width, 'display': 'block' }
 
-presets_dict = {'MSD': 'Social Distancing',
-                'N': 'Do Nothing',
-                'Q': 'Quarantine All',
-                'H': 'Quarantine High Risk Only',
+presets_dict = {'N': 'Do Nothing',
+                'MSD': 'Social Distancing',
                 'HL': 'Quarantine High Risk, Mild Social Distancing For Low Risk',
+                'Q': 'Quarantine All',
+                'H': 'Quarantine High Risk, No Social Distancing For Low Risk',
                 'C': 'Custom'}
 
 preset_dict_high = {'Q': 0, 'MSD': 4, 'HL': 0, 'H': 0, 'N':6}
@@ -510,14 +510,14 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
             
     if ICU:
         if which_plots=='two':
-            control_font_size = font_size*(20/24) # '10em'
-            ICU_font_size = font_size*(16/24) # '10em'
+            control_font_size = font_size*(14/24) # '10em'
+            ICU_font_size = font_size*(14/24) # '10em'
 
             yval_pink = 0.3
             yval_blue = 0.82
         else:
-            control_font_size = font_size*(25/24) #'11em'
-            ICU_font_size = font_size*(20/24) # '10em'
+            control_font_size = font_size*(18/24) #'11em'
+            ICU_font_size = font_size*(18/24) # '10em'
 
             yval_pink = 0.35
             yval_blue = 0.86
@@ -538,29 +538,44 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
                         width=0,
                     ),
                     fillcolor="pink",
-                    opacity=0.3,
+                    opacity=0.5,
                     xref = 'x',
                     yref = 'y'
                 ))
-            # annotz.append(dict(
-            lines_to_plot.append(dict(
-                    type='scatter',
+            annotz.append(dict(
                     x  = 0.5*(c_min+c_max)/month_len,
-                    y  = params.ICU_capacity, #yval_pink,
-                    mode='text',
-                    text="ICU",
-                    hoverinfo='ICU Capacity Exceeded',
-                    # showarrow=False,
+                    y  = yval_pink,
+                    text="ICU<br>" + " Capacity<br>" + " Exceeded",
+                    # hoverinfo='ICU Capacity Exceeded',
+                    showarrow=False,
                     textangle= 0,
-                    textfont=dict(
+                    font=dict(
                         size= ICU_font_size,
                         color="purple"
                     ),
-                    opacity=1,
+                    opacity=0.4,
                     # xshift= +8,
-                    # xref = 'x',
-                    # yref = 'paper',
+                    xref = 'x',
+                    yref = 'paper',
             ))
+            # # lines_to_plot.append(dict(
+            #         type='scatter',
+            #         x  = 0.5*(c_min+c_max)/month_len,
+            #         y  = params.ICU_capacity, #yval_pink,
+            #         mode='text',
+            #         text="ICU",
+            #         hoverinfo='ICU Capacity Exceeded',
+            #         # showarrow=False,
+            #         textangle= 0,
+            #         textfont=dict(
+            #             size= ICU_font_size,
+            #             color="purple"
+            #         ),
+            #         opacity=1,
+            #         # xshift= +8,
+            #         # xref = 'x',
+            #         # yref = 'paper',
+            # ))
         
 
     else:
@@ -580,15 +595,15 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
         annotz.append(dict(
                 x  = max(0.5*(month[0]+month[1]), 0.5),
                 y  = yval_blue,
-                text="Control",
+                text="Control<br>" + " In <br>" + " Place",
                 # hoverinfo='Control In Place',
-                textangle=text_angle_blue,
+                textangle=0,#text_angle_blue,
                 font=dict(
                     size= control_font_size,
                     color="blue"
                 ),
                 showarrow=False,
-                opacity=0.2,
+                opacity=0.4,
                 xshift= xshift_use,
                 xref = 'x',
                 yref = 'paper',
@@ -617,21 +632,21 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
             hovertemplate= 'ICU Capacity: %{y}',
             name= 'ICU Capacity'))
     
-    if 'S' in output and ymax>0.40:
-        lines_to_plot.append(
-            dict(
-            type='scatter',
-            x=[-0.01,max(sol['t'])+1], y=[1/params.R_0,1/params.R_0],
-            mode='lines',
-            opacity=0.4,
-            legendgroup='thresholds',
-            line=dict(
-            color= 'blue',
-            dash = 'dash'
-            ),
-            hovertemplate= 'Safe Threshold; Susceptible Population<br>' +
-                            'Less Than: %{y}',
-            name= 'Herd Immunity Safe Threshold'))
+    # if 'S' in output and ymax>0.40:
+    #     lines_to_plot.append(
+    #         dict(
+    #         type='scatter',
+    #         x=[-0.01,max(sol['t'])+1], y=[1/params.R_0,1/params.R_0],
+    #         mode='lines',
+    #         opacity=0.4,
+    #         legendgroup='thresholds',
+    #         line=dict(
+    #         color= 'blue',
+    #         dash = 'dash'
+    #         ),
+    #         hovertemplate= 'Safe Threshold; Susceptible Population<br>' +
+    #                         'Less Than: %{y}',
+    #         name= 'Herd Immunity Safe Threshold'))
 
     lines_to_plot.append(
     dict(
@@ -727,7 +742,9 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
 
 
 ########################################################################################################################
-layout_intro = html.Div([dbc.Col([
+layout_intro = html.Div([
+    dbc.Row([
+    dbc.Col([
                             dbc.Jumbotron([##
                                 html.Div( [
 
@@ -1016,7 +1033,12 @@ style={'fontSize': '2vh'}
 )
 
     ])##  # end of jumbotron
-],width={'size':8,'offset':2})])
+],
+width=12,
+xl=8
+),],
+justify='center')
+])
 
 
 Results_explanation =  html.Div([
@@ -1436,7 +1458,7 @@ layout_inter = html.Div([
 
 
                         ],
-                        width = 2,
+                        width = 3,
                         ),
                         # end of first col
 
@@ -1465,7 +1487,7 @@ layout_inter = html.Div([
 
                                         # tab 0
                                         dbc.Tab(label='Overview',
-                                         label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', children = [html.Div(id = 'text-tab-0'),]),
+                                         label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', children = [html.Div(id = 'text-tab-0'),]), # ,style={'margin-left':'1px', 'margin-right': '1px'}
 #########################################################################################################################################################
                                         # tab 1
                                         dbc.Tab(label='Bar Graphs', label_style={"color": "#00AEF9" , 'fontSize':'120%' }, tab_id='tab_1', children = [
@@ -1509,7 +1531,7 @@ layout_inter = html.Div([
                                                                                                                 
                                                                                                                 ],
                                                                                                                 width = 12,
-                                                                                                                md = 6,
+                                                                                                                xl = 6,
                                                                                                                 # style={'display': 'inline-block'}
                                                                                                                 ),
 
@@ -1530,7 +1552,7 @@ layout_inter = html.Div([
                                                                                                                 ],
                                                                                                                 align='center',
                                                                                                                 width = 12,
-                                                                                                                md = 6,
+                                                                                                                xl = 6,
                                                                                                                 # width=6
                                                                                                                 ),
                                                                                                                 
@@ -1564,7 +1586,7 @@ layout_inter = html.Div([
                                                                                                                                 align='center',
                                                                                                                                 
                                                                                                                                 width = 12,
-                                                                                                                                md = 6,
+                                                                                                                                xl = 6,
                                                                                                                                 ),
 
                                                                                                                                 dbc.Col([
@@ -1580,7 +1602,7 @@ layout_inter = html.Div([
                                                                                                                                 ],
                                                                                                                                 align='center',
                                                                                                                                 width = 12,
-                                                                                                                                md = 6,
+                                                                                                                                xl = 6,
                                                                                                                                 ),
                                                                                                                     ],
                                                                                                                     # style={'height': 2*bar_height}
@@ -1613,7 +1635,7 @@ layout_inter = html.Div([
                                                                                                             ],
                                                                                                             align='center',
                                                                                                             width = 12,
-                                                                                                            md = 6,
+                                                                                                            xl = 6,
                                                                                                             ),
 
 
@@ -1634,7 +1656,7 @@ layout_inter = html.Div([
                                                                                                             ],
                                                                                                             align='center',
                                                                                                             width=12,
-                                                                                                            md = 6,
+                                                                                                            xl = 6,
                                                                                                             ),
 
                                                                                                     ],
@@ -1709,6 +1731,12 @@ layout_inter = html.Div([
 
                                                                                                                                                                     It is intended solely as an illustrative, rather than predictive tool. We plan to increase the sophistication of the model and to update parameters as more (and better) data become available to us. In particular we will shortly be adding the real time global data feed as an input into the model, so that the simulation initial conditions will be based on current data.
 
+                                                                                                                                                                    We have two risk categories: high and low. Susceptible people get infected after contact with an infected person (from either risk category). A fraction of infected people (*h*) are hospitalised and the rest recover. Of these hospitalised cases, a fraction (*c*) require critical care and the rest recover. Of those in critical care, a fraction (*d*) die and the rest recover.
+
+                                                                                                                                                                    The recovery fractions depend on which risk category the individual is in.
+
+                                                                                                                                                                
+
                                                                                                                                                                     '''
 
                                                                                                                                                                     ),
@@ -1717,7 +1745,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     dbc.Row([
                                                                                                                                                                     html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585498493/Capture_yl2c6f.png',
-                                                                                                                                                                    style={'width':'60%','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
+                                                                                                                                                                    style={'width':'90%','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
                                                                                                                                                                     ),
                                                                                                                                                                     ],
                                                                                                                                                                     justify='center'
@@ -1725,7 +1753,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     dbc.Row([
                                                                                                                                                                     html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585498493/model_ddd3um.png',
-                                                                                                                                                                    style={'width':'60%','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
+                                                                                                                                                                    style={'width':'90%','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
                                                                                                                                                                     ),
 
                                                                                                                                                                     ],
@@ -1893,10 +1921,12 @@ layout_inter = html.Div([
 
 
                                         
-                                    ],width=11),
+                                    ],
+                                    width=11
+                                    ),
 
                         ],
-                        width=10)
+                        width=9)
                         # end of col 2
 
 
@@ -1905,7 +1935,8 @@ layout_inter = html.Div([
 ########################################################################################################################
 
 
-    ]
+    ],
+    no_gutters=True,
     )],
     style={'fontSize' : '2vh'}
     )
@@ -1962,7 +1993,7 @@ navbar = html.Nav([
                         style={'fontSize':'2vh'}
                         ), #disabled=True),
             ], id='main-tabs', value='intro'),
-        ], style={'width': '100vw'},
+        ], style={'width': '100vw'}, # , 'display': 'flex', 'justifyContent': 'center'},
         ),
     ],)
 
@@ -2042,7 +2073,7 @@ page_layout = html.Div([
         
 
         ],
-        # style={'fontSize': '2vh'}
+        # style={'padding': '5%'}
         )
 ##
 ########################################################################################################################
@@ -2512,7 +2543,7 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
         # ],width=True)
     ],
     no_gutters=True,
-    style={'margin-top': '2vh', 'margin-bottom': '2vh','fontSize':'100%'})
+    style={'margin-top': '2vh', 'margin-bottom': '2vh','fontSize':'75%'})
 
 
 
@@ -2624,7 +2655,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
                     # ]),
 
                     dbc.Row([
-                        html.P('In the absence of a vaccine, when compared to doing nothing:', style={'fontSize': '100%'}),
+                        html.P('In the absence of a vaccine, when compared to doing nothing.', style={'fontSize': '100%'}),
                     ],
                     justify='center', style={'margin-top': '1vh', 'margin-bottom': '1vh'}
                     ),
@@ -2677,7 +2708,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
                     ),
                 ],
                 width=12,
-                md = 4,
+                xl = 4,
                 ),
             
                 dbc.Tooltip(
@@ -2703,7 +2734,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
                 ],
                 width=12,
-                md=8
+                xl=8
                 ),
 
 
