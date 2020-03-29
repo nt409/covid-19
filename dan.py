@@ -138,7 +138,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                           "margin-left": "5px", "margin-right": "15px"}),
             html.Div(style={'margin-top': '10px'}),
             html.Div([
-                dcc.Checklist(
+                dbc.Checklist(
                     id=c_name,
                     options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(),
                               'value': c_name}],

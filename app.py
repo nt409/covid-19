@@ -2194,7 +2194,7 @@ def toggle_collapse(n, is_open):
               [State('hidden-stored-data', 'children')] +
               [State(c_name, 'value') for c_name in COUNTRY_LIST])
 def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop, saved_json_data, *args):
-    # print(n_clicks, start_date, end_date, args)
+    print(n_clicks, start_date, end_date, args)
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
@@ -2342,7 +2342,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                     double_time = 'no growth'
                 else:
                     double_time = fr'{np.log(2) / b:.1f} days to double'
-                label = fr'{c.upper():<10s}: {np.exp(b):.2f}^t ({double_time})'
+                label = fr'{c.upper():<10s}: 2^(t/{np.log(2)/b:.1f}) ({double_time})'
             else:
                 label = fr'{c.upper():<10s}'
 
