@@ -2177,154 +2177,269 @@ def toggle_collapse(n, is_open):
     return [is_open, color]
 
 ##############################################################################################################################
-@app.callback([Output('infections-linear', 'figure'),
-               Output('infections-log', 'figure'),
-               Output('deaths-linear', 'figure'),
-               Output('deaths-log', 'figure'),
-               Output('active-linear', 'figure'),
-               Output('active-log', 'figure'),
+
+
+@app.callback([Output('infections-plot', 'figure'),
+               Output('deaths-plot', 'figure'),
+               Output('active-plot', 'figure'),
+               Output('daily-plot', 'figure'),
+               Output('new-vs-total-cases', 'figure'),
                Output('hidden-stored-data', 'children'),
-               Output("loading-icon", "children")],
+               Output("loading-icon", "children"),],
               [Input('button-plot', 'n_clicks'),
-                Input('main-tabs', 'value'),
                Input('start-date', 'date'),
                Input('end-date', 'date'),
                Input('show-exponential-check', 'value'),
                Input('normalise-check', 'value')],
               [State('hidden-stored-data', 'children')] +
               [State(c_name, 'value') for c_name in COUNTRY_LIST])
-def update_plots(n_clicks, tab, start_date, end_date, show_exponential, normalise_by_pop, saved_json_data, *args):
-    if True: # tab ==
-        start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
-        end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop, saved_json_data, *args):
+    print(n_clicks, start_date, end_date, args)
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
-        country_names = []
-        for country in args:
-            country_names.extend(country)
+    country_names = []
+    for country in args:
+        country_names.extend(country)
 
-        if saved_json_data is None:
-            country_data = {}
+    if saved_json_data is None:
+        country_data = {}
+    else:
+        country_data = json.loads(saved_json_data)
+
+    for i, country in enumerate(country_names):
+        if country not in country_data.keys():
+            data = get_data(country)
+            country_data[country] = data
+
+    out = []
+    for title in ['Cases', 'Deaths', 'Currently Infected', 'Daily New Cases']:
+        if normalise_by_pop:
+            axis_title = f"{title} (% of population)"
         else:
-            country_data = json.loads(saved_json_data)
+            axis_title = title
+        figs = []
 
-        for i, country in enumerate(country_names):
-            if country not in country_data.keys():
-                data = get_data(country)
-                country_data[country] = data
+        layout_normal = {
+            'yaxis': {'title': axis_title, 'type': 'linear', 'showgrid': True},
+            'showlegend': True,
+            'margin': {'l': 50, 'b': 100, 't': 0, 'r': 0},
+            'updatemenus': [
+                dict(
+                    buttons=list([
+                        dict(
+                            args=["yaxis", {'title': axis_title, 'type': 'linear', 'showgrid': True}],
+                            label="Linear",
+                            method="relayout"
+                        ),
+                        dict(
+                            args=["yaxis", {'title': axis_title, 'type': 'log', 'showgrid': True}],
+                            label="Logarithmic",
+                            method="relayout"
+                        )
+                    ]),
+                    direction="down",
+                    pad={"r": 10, "t": 10, "b": 10},
+                    showactive=True,
+                    x=0.,
+                    xanchor="left",
+                    y=1.2,
+                    yanchor="top"
+                ),
+            ]
+        }
 
-        out = []
-        for title in ['Cases', 'Deaths', 'Currently Infected']:
-            if normalise_by_pop:
-                axis_title = f"{title} (% of population)"
+        layout_daily_plot = copy.deepcopy(layout_normal)
+        layout_daily_plot['updatemenus'].append(
+            dict(
+                buttons=list([
+                    dict(
+                        args=[{"visible": [False, False] + [False, False, True]*len(country_names) if show_exponential else [False] + [False, True]*len(country_names)}],
+                        label="Bar",
+                        method="update"
+                    ),
+                    dict(
+                        args=[{"visible": [True, True] + [True, True, False]*len(country_names) if show_exponential else [True] + [True, False]*len(country_names)}],
+                        label="Scatter",
+                        method="update"
+                    )
+                ]),
+                direction="down",
+                pad={"r": 10, "t": 10, "b": 10},
+                showactive=True,
+                x=0.2,
+                xanchor="left",
+                y=1.2,
+                yanchor="top"
+                ),
+            )
+
+        if show_exponential:
+            figs.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
+                                   y=[0],
+                                   mode='lines',
+                                   line={'color': 'black', 'dash': 'dash'},
+                                   showlegend=True,
+                                   visible=False if title == 'Daily New Cases' else True,
+                                   name=fr'Best exponential fits',
+                                   yaxis='y1',
+                                   legendgroup='group2', ))
+            label = fr'COUNTRY : best fit (doubling time)'
+        else:
+            label = fr'COUNTRY'
+        figs.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
+                               y=[0],
+                               mode='lines+markers',
+                               line={'color': 'black'},
+                               showlegend=True,
+                               visible=False if title == 'Daily New Cases' else True,
+                               name=label,
+                               yaxis='y1',
+                               legendgroup='group2', ))
+
+        for i, c in enumerate(country_names):
+            if country_data[c] is None:
+                print("Cannot retrieve data from country:", c)
+                continue
+            if title == 'Daily New Cases':
+                dates = country_data[c]['Cases']['dates'][1:]
+                xdata = np.arange(len(dates))
+                ydata = np.diff(np.array(country_data[c]['Cases']['data']).astype('float'))
+            elif title not in country_data[c]:
+                continue
             else:
-                axis_title = title
-            fig_linear = []
-            fig_log = []
-
-            layout_linear = {
-                'yaxis': {'title': axis_title, 'type': 'linear', 'showgrid': True},
-                'showlegend': True,
-            }
-            layout_log = {
-                'yaxis': {'title': axis_title, 'type': 'log', 'showgrid': True},
-                'showlegend': True,
-            }
-
-            for fig in [fig_linear, fig_log]:
-                if show_exponential:
-                    fig.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
-                                        y=[0],
-                                        mode='lines',
-                                        line={'color': 'black', 'dash': 'dash'},
-                                        showlegend=True,
-                                        name=fr'Best exponential fits',
-                                        yaxis='y1',
-                                        legendgroup='group2', ))
-                    label = fr'COUNTRY : best fit (doubling time)'
-                else:
-                    label = fr'COUNTRY'
-                fig.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
-                                    y=[0],
-                                    mode='lines+markers',
-                                    line={'color': 'black'},
-                                    showlegend=True,
-                                    name=label,
-                                    yaxis='y1',
-                                    legendgroup='group2', ))
-
-            for i, c in enumerate(country_names):
-                if title not in country_data[c]:
-                    continue
-                if country_data[c] is None:
-                    print("Cannot retrieve data from country:", c)
-                    continue
-
                 dates = country_data[c][title]['dates']
                 xdata = np.arange(len(dates))
                 ydata = country_data[c][title]['data']
                 ydata = np.array(ydata).astype('float')
 
-                if normalise_by_pop:
-                    ydata = ydata/POPULATIONS[c] * 100
+            if normalise_by_pop:
+                ydata = ydata/POPULATIONS[c] * 100
 
-                date_objects = []
-                for date in dates:
-                    date_objects.append(datetime.datetime.strptime(date, '%Y-%m-%d').date())
-                date_objects = np.asarray(date_objects)
+            date_objects = []
+            for date in dates:
+                date_objects.append(datetime.datetime.strptime(date, '%Y-%m-%d').date())
+            date_objects = np.asarray(date_objects)
 
-                model_date_mask = (date_objects <= end_date) & (date_objects >= start_date)
+            model_date_mask = (date_objects <= end_date) & (date_objects >= start_date)
 
-                model_dates = []
-                model_xdata = []
-                date = start_date
-                d_idx = min(xdata[model_date_mask])
-                while date <= end_date:
-                    model_dates.append(date)
-                    model_xdata.append(d_idx)
-                    date += datetime.timedelta(days=1)
-                    d_idx += 1
-                model_xdata = np.array(model_xdata)
+            model_dates = []
+            model_xdata = []
+            date = start_date
+            d_idx = min(xdata[model_date_mask])
+            while date <= end_date:
+                model_dates.append(date)
+                model_xdata.append(d_idx)
+                date += datetime.timedelta(days=1)
+                d_idx += 1
+            model_xdata = np.array(model_xdata)
 
-                b, logA = np.polyfit(xdata[model_date_mask], np.log(ydata[model_date_mask]), 1)
-                # log_yfit = b * xdata[model_date_mask] + logA
-                lin_yfit = np.exp(logA) * np.exp(b * model_xdata)
+            b, logA = np.polyfit(xdata[model_date_mask], np.log(ydata[model_date_mask]), 1)
+            lin_yfit = np.exp(logA) * np.exp(b * model_xdata)
 
-                if show_exponential:
-                    if np.log(2) / b >= 1000:
-                        double_time = 'no growth'
-                    else:
-                        double_time = fr'{np.log(2) / b:.1f} days to double'
-                    label = fr'{c.upper():<10s}: {np.exp(b):.2f}^t ({double_time})'
+            if show_exponential:
+                if np.log(2) / b > 1000 or np.log(2) / b < 0:
+                    double_time = 'no growth'
                 else:
-                    label = fr'{c.upper():<10s}'
-                for fig in [fig_linear, fig_log]:
-                    fig.append(go.Scatter(x=date_objects,
-                                        y=ydata,
-                                        mode='lines+markers',
-                                        marker={'color': colours[i]},
-                                        line={'color': colours[i]},
-                                        showlegend=True,
-                                        name=label,
-                                        yaxis='y1',
-                                        legendgroup='group1', ))
-                    if show_exponential:
-                        fig.append(go.Scatter(x=model_dates,
-                                            y=lin_yfit,
-                                            mode='lines',
-                                            line={'color': colours[i], 'dash': 'dash'},
-                                            showlegend=False,
-                                            name=fr'Model {c.upper():<10s}',
-                                            yaxis='y1',
-                                            legendgroup='group1', ))
+                    double_time = fr'{np.log(2) / b:.1f} days to double'
+                label = fr'{c.upper():<10s}: {np.exp(b):.2f}^t ({double_time})'
+            else:
+                label = fr'{c.upper():<10s}'
 
-            out.append({'data': fig_linear, 'layout': layout_linear})
-            out.append({'data': fig_log, 'layout': layout_log})
+            figs.append(go.Scatter(x=date_objects,
+                                   y=ydata,
+                                   mode='lines+markers',
+                                   marker={'color': colours[i]},
+                                   line={'color': colours[i]},
+                                   showlegend=True,
+                                   visible=False if title == 'Daily New Cases' else True,
+                                   name=label,
+                                   yaxis='y1',
+                                   legendgroup='group1', ))
 
-        out.append(json.dumps(country_data))
-        out.append(None)
+            if show_exponential:
+                if np.log(2) / b < 0:
+                    continue
+                figs.append(go.Scatter(x=model_dates,
+                                       y=lin_yfit,
+                                       mode='lines',
+                                       line={'color': colours[i], 'dash': 'dash'},
+                                       showlegend=False,
+                                       visible=False if title == 'Daily New Cases' else True,
+                                       name=fr'Model {c.upper():<10s}',
+                                       yaxis='y1',
+                                       legendgroup='group1', ))
+
+            if title in ['Daily New Cases']:
+                figs.append(go.Bar(x=date_objects,
+                                   y=ydata,
+                                   showlegend=True,
+                                   visible=True if title == 'Daily New Cases' else True,
+                                   name=label,
+                                   marker={'color': colours[i]},
+                                   yaxis='y1',
+                                   legendgroup='group1'))
+                layout_out = copy.deepcopy(layout_daily_plot)
+            else:
+                layout_out = copy.deepcopy(layout_normal)
+
+        out.append({'data': figs, 'layout': layout_out})
+
+    # Plot 'New Cases vs Total Cases'
+    fig_new_vs_total = []
+    for i, c in enumerate(country_names):
+        l = 7  # Number of days to look back
+        cases = np.array(country_data[c]['Cases']['data']).astype('float')
+        xdata = np.copy(cases[l:])
+        ydata = np.diff(cases)
+        len_ydata = len(ydata)
+
+        # Compute new cases over the past l days
+        ydata = np.sum([np.array(ydata[i:i + l]) for i in range(len_ydata) if i <= (len_ydata - l)], axis=1)
+
+        dates = country_data[c]['Cases']['dates'][l:]
+        date_objects = []
+        for date in dates:
+            date_objects.append(datetime.datetime.strptime(date, '%Y-%m-%d').date())
+        date_objects = np.asarray(date_objects)
+
+        mask = xdata > 100
+        xdata = xdata[mask]
+        ydata = ydata[mask]
+        date_objects = date_objects[mask]
+
+        if normalise_by_pop:
+            xdata = xdata / POPULATIONS[c] * 100
+            ydata = ydata / POPULATIONS[c] * 100
+
+        fig_new_vs_total.append(go.Scatter(x=xdata,
+                                           y=ydata,
+                                           hovertext=[f"Date: {d.strftime('%d-%b-%Y')}" for d in date_objects],
+                                           mode='lines+markers',
+                                           marker={'color': colours[i]},
+                                           line={'color': colours[i]},
+                                           showlegend=True,
+                                           name=fr'{c.upper():<10s}',
+                                           yaxis='y1',
+                                           legendgroup='group1', ))
+    if normalise_by_pop:
+        yaxis_title = f'New Cases (% of population) per week (log scale)'  # {l} days'
+        xaxis_title = 'Total Cases (% of population) (log scale)'
+    else:
+        yaxis_title = f'New Cases per week'  # {l} days)'
+        xaxis_title = 'Total Cases'
+    layout_new_vs_total = {
+        'yaxis': {'title': yaxis_title, 'type': 'log', 'showgrid': True},
+        'xaxis': {'title': xaxis_title, 'type': 'log', 'showgrid': True},
+        'showlegend': True,
+        'margin': {'l': 50, 'b': 100, 't': 50, 'r': 0},
+    }
+    out.append({'data': fig_new_vs_total, 'layout': layout_new_vs_total})
+
+    out.append(json.dumps(country_data))
+    out.append(None)
 
     return out
-
 
 ##################################################################################################################################
 
