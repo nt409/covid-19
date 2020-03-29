@@ -127,8 +127,8 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def run_model(self,I0_L=0.75*params.N*10**(-5),I0_H=0.25*params.N*10**(-5),beta_L_factor=1,beta_H_factor=1,t_control=None,critical=True,death=True,T_stop=params.T_stop):
-        
+    def run_model(self,I0_L=(1-params.hr_frac)*(params.initial_infections/params.UK_population)*params.N,I0_H=params.hr_frac*(params.initial_infections/params.UK_population)*params.N,beta_L_factor=1,beta_H_factor=1,t_control=None,critical=True,death=True,T_stop=params.T_stop):
+        # print(I0_H*60*10**6,I0_L*60*10**6,params.hr_frac)
         y_out, tim = self.poly_calc_ode(I0_L=I0_L,I0_H=I0_H,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,t_control=t_control,critical=critical,death=death,T_stop=T_stop)
         dicto = {'y': y_out,'t': tim,'beta_L': beta_L_factor,'beta_H': beta_H_factor}
         return dicto

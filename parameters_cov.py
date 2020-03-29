@@ -94,6 +94,7 @@ hospital_production_rate = 8*10**(-3)
 ICU_factor = 1
 ICU_capacity = ICU_factor*8/100000 # 0.001 #  8/100000 # = 0.00008
 
+initial_infections = 625
 UK_population = 60 * 10**(6)
 
 
@@ -120,6 +121,7 @@ class Parameters:
         self.months_run_for = months_run_for
         self.R_0 = R_0
         self.UK_population = UK_population
+        self.initial_infections = initial_infections
 
 
         self.number_compartments = number_compartments
