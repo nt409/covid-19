@@ -1745,7 +1745,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     dbc.Row([
                                                                                                                                                                     html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585498493/Capture_yl2c6f.png',
-                                                                                                                                                                    style={'width':'90%','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
+                                                                                                                                                                    style={'max-width':'90%','height': 'auto', 'display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
                                                                                                                                                                     ),
                                                                                                                                                                     ],
                                                                                                                                                                     justify='center'
@@ -1753,7 +1753,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     dbc.Row([
                                                                                                                                                                     html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585498493/model_ddd3um.png',
-                                                                                                                                                                    style={'width':'90%','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
+                                                                                                                                                                    style={'max-width':'90%','height': 'auto','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
                                                                                                                                                                     ),
 
                                                                                                                                                                     ],
@@ -2543,7 +2543,7 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
         # ],width=True)
     ],
     no_gutters=True,
-    style={'margin-top': '2vh', 'margin-bottom': '2vh','fontSize':'75%'})
+    style={'margin-top': '2vh', 'margin-bottom': '2vh','fontSize':'65%'})
 
 
 
