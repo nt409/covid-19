@@ -2024,6 +2024,9 @@ page_layout = html.Div([
                     className="display-4",
                     style={'margin-top': '2vh','fontSize': '7vh'}
                     ),
+                    html.P('Best viewed in landscape mode',
+                    style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '2vh'}
+                    ),
 
                     html.P('Disclaimer: this work is intended for educational purposes only and not decision making. There are many uncertainties in the COVID debate and there are limitations to the model.',
                     style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '1.5vh'}
