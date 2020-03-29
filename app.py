@@ -656,6 +656,7 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
                     annotations=annotz,
                     shapes=shapez,
                     template="simple_white",
+                    # autosize=False,
                     font = dict(size=24),
                     legend = dict(
                        font=dict(size=16),
@@ -710,25 +711,33 @@ layout_intro = html.Div([dbc.Col([
              children = [
                 
 
-        dbc.Tab(label='Definitions and Strategies', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_0', children=[
+        dbc.Tab(label='Definitions and Strategies', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', children=[
 
-            dbc.Container(html.Div(style={'height':'5px'})),
-            html.H4('Overview',className='display-4'),
+            html.H3('Overview',className='display-4',
+            style = {'margin-top': '1vh', 'fontSize': '300%'}),
             html.Hr(className='my-2'),
+
             dbc.Col([
             
             dbc.Row([
             dbc.Col([
-            html.P('Click below to use the interactive model:',style={'fontSize':18}),
-            dbc.Button('Start Calculating', href='/inter', size='lg', color='success'),
+            html.P('Click below to use the interactive model:',
+            style={'fontSize':'110%'}
+            ),
+            dbc.Button('Start Calculating', href='/inter', size='lg', color='success',
+            style={'fontSize':'110%'}
+            ),
             ],width=6
             ),
             dbc.Col([
-            html.P('Click below to view the global data feed:',style={'fontSize':18}),
-            dbc.Button('Real Time Data', href='/data', size='lg', color='warning'),
+            html.P('Click below to view the global data feed:',
+            style={'fontSize':'110%'}
+            ),
+            dbc.Button('Real Time Data', href='/data', size='lg', color='warning',
+            style={'fontSize':'110%'}
+            ),
             ],width=6
             ),
-            # dbc.Button('Model Structure', href='/model', size='lg', color='danger'),
             ],
             justify='center',
             style = {"margin-top": "25px", "margin-bottom": "15px"},
@@ -740,12 +749,16 @@ layout_intro = html.Div([dbc.Col([
 
             To find out more about control of coronavirus, read on!
 
-            ''',style={'fontSize':24}),
+            ''',
+            style={'fontSize':'120%'}
+            ),
 
             html.Hr(className='my-2'),
+            
+            html.H4('Introduction to the modelling study',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
 
             dcc.Markdown('''            
-            # Introduction to the modelling study
             
             This page is intended to help you understand:
 
@@ -754,14 +767,22 @@ layout_intro = html.Div([dbc.Col([
             2. Why it is essential that you follow the control measures.
 
             But first, there are **two vital concepts** that you need to understand before we can fully explore how the control measures work.
+            '''),
+            
+            html.H4('1. Basic Reproduction Number',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
 
-            ### 1. Basic Reproduction Number
-
+            dcc.Markdown('''            
             Any infectious disease requires both infectious individuals and susceptible individuals to be present in a population to spread. The higher the number of susceptible individuals, the faster it can spread since an infectious person can spread the disease to more susceptible people before recovering.
 
             The average number of infections caused by a single infected person is known as the '**basic reproduction number**' (*R*). If this number is less than 1 (each infected person infects less than one other on average) then the disease won't spread. If it is greater than 1 then the disease will spread. For COVID-19 most estimates for *R* are between 2 and 3. We use the value *R*=2.4.
+            '''),
 
-            ### 2. Herd Immunity
+            html.H4('2. Herd Immunity',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
+            
+            dcc.Markdown('''            
+
 
             Once the number of susceptible people drops below a certain threshold (which is different for every disease, and in simpler models depends on the basic reproduction number), the population is no longer at risk of an epidemic (so any new infection introduced won't cause infection to spread through an entire population).
 
@@ -770,10 +791,14 @@ layout_intro = html.Div([dbc.Col([
             For COVID-19, there is a safe herd immunity threshold of around 60% (=1-1/*R*), meaning that if 60% of the population develop immunity then the population is **safe** (no longer at risk of an epidemic).
 
             Coronavirus is particularly dangerous because most countries have almost 0% immunity since the virus is so novel. Experts are still uncertain whether you can build immunity to the virus, but the drop in cases in China would suggest that you can. Without immunity it would be expected that people in populated areas get reinfected, which doesn't seem to have happened.
+            
+            A further concern arises over whether the virus is likely to mutate. However it is still useful to consider the best way to managing each strain.
+            '''),
 
+            html.H4('Keys to a successful control strategy',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
 
-            # Keys to a successful control strategy
-
+            dcc.Markdown('''            
             There are three main goals a control strategy sets out to achieve:
 
             1. Reduce the number of deaths caused by the pandemic,
@@ -785,12 +810,16 @@ layout_intro = html.Div([dbc.Col([
             An ideal strategy achieves all of the above whilst also minimally disrupting the daily lives of the population.
 
             However, controlling COVID-19 is a difficult task, so there is no perfect strategy. We will explore the advantages and disadvantages of each strategy.
+            '''),
+
+            html.H4('Strategies',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
+            
+            html.H4('Reducing the infection rate',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
 
 
-
-            # Strategies
-
-            ### Reducing the infection rate
+            dcc.Markdown('''            
 
             Social distancing, self isolation and quarantine strategies slow the rate of spread of the infection (termed the 'infection rate'). In doing so, we can reduce the load on the healthcare system (goal 2) and (in the short term) reduce the number of deaths.
 
@@ -799,21 +828,30 @@ layout_intro = html.Div([dbc.Col([
             However, in the absence of a vaccine these strategies do not ensure the safety of the population in future (goal 3), meaning that the population is still highly susceptible and greatly at risk of a future epidemic. This is because these strategies do not lead to any significant level of immunity within the population, so as soon as the measures are lifted the epidemic restarts. Further, strict quarantines carry a serious economic penalty.
 
             COVID-19 spreads so rapidly that it is capable of quickly generating enough seriously ill patients to overwhelm the intensive care unit (ICU) capacity of most healthcase systems in the world. This is why most countries have opted for strategies that slow the infection rate.
+            '''),
+            # dcc.Markdown('''            
 
-            ### Protecting the high risk
 
+            html.H4('Protecting the high risk',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
+
+            
+
+
+            dcc.Markdown('''            
             One notable feature of COVID-19 is that it puts particular demographics within society at greater risk. The elderly and the immunosuppressed are particularly at risk of serious illness caused by coronavirus.
 
             The **interactive model** presented here is designed to show the value is protecting the high risk members of society. It is critically important that the high risk don't catch the disease.
 
             If 60% of the population catch the disease, but all are classified as low risk, then very few people will get seriously ill through the course of the epidemic. However, if a mixture of high and low risk individuals catch the disease, then many of the high risk individuals will develop serious illness as a result.
 
-            ###
 
+            ''',
+            ),
+            # style={'fontSize':'100%'}
 
-            ''',style={'fontSize':20}),
             ],
-            width = {'size': 10}),
+            width = True), # {'size': 10}),
             # ,width = {'size': 10}),
 
     #end of tab 2
@@ -821,19 +859,24 @@ layout_intro = html.Div([dbc.Col([
 
 
 
-        dbc.Tab(label='Control Case Study', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_3', children=[
+        dbc.Tab(label='Control Case Study', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_3', children=[
             
 
 
 
-            dbc.Container(html.Div(style={'height':'5px'})),
-            html.H4('Example control strategy',className='display-4'),
+            html.Div([
+                
+            html.H3('Example control strategy',className='display-4',
+            style = {'margin-top': '1vh', 'fontSize': '300%'}),
+
             html.Hr(className='my-2'),
+
             dbc.Col([
+
+            html.H4("Protecting high risk (quarantine), no change for low risk vs 'do nothing'",
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
+
             dcc.Markdown('''
-
-
-            ### Protecting high risk (quarantine), no change for low risk vs 'do nothing'
 
             In the absence of a vaccine, the most effective way to protect high risk people is to let the low risk people get the disease and recover, increasing the levels of [**herd immunity**](/intro) within the population (and therefore ensuring future safety for the population) but minimally affecting the hospitalisation rate.
 
@@ -841,14 +884,27 @@ layout_intro = html.Div([dbc.Col([
 
             A full quarantine would lead to a lower hospitalisation rate in the short term but more deaths in the long term without a vaccine. But with a vaccine the long term death rate can be minimised with a full quarantine followed by a widespread vaccination programme.
 
-            ''',style={'fontSize':20}),
+            ''',
+            # style={'fontSize':'2vh'}
+            ),
             
             dbc.Col([
-            dcc.Graph(id='line-plot-intro',style={'height': '55vh', 'display': 'block', 'width': '100%'}),
+            dcc.Graph(id='line-plot-intro',style={'height': '50vh', 'display': 'block', 'width': '100%'}),
             html.Div(style={'height': '1vh'}),
-            dcc.Graph(id='line-plot-intro-2',style={'height': '55vh', 'display': 'block', 'width': '100%'}),
+            
+            # dbc.Container([
+
+            dcc.Graph(id='line-plot-intro-2',
+            style={'height': '50vh', 'display': 'block', 'width': '100%'}),
+            # style={'height': '100%', 'display': 'block', 'width': '100%'}),
+            # ],
+            # style={'height': '55vh', 'width': '100%'}
+            # )
+
             ],
-            width = {'size': 11,'offset':1}),
+            # width = {'size': 11,'offset':1}
+            width=True
+            ),
 
             dcc.Markdown('''
 
@@ -858,28 +914,40 @@ layout_intro = html.Div([dbc.Col([
 
             To simulate more strategies, press the button below!
 
-            ''',style={'fontSize':20}),
+            ''',
+            # style={'fontSize':'2vh'}
+            ),
 
             # dbc.Col([
             dbc.Button('Start Calculating', href='/inter', size='lg', color='success'
-            ,style={'margin-top': '1vh','margin-left': '2vw'}
+            ,style={'margin-top': '1vh','margin-left': '2vw', 'fontSize': '100%'}
             ),
             ],
             # width={'size':3,'offset':1},
-            width = {'size': 10}),
-            # ),
+            width = True, # {'size': 12},
+            # style = {'margin-left':'1vh','margin-right':'1vh'}
+
+            ),
+            ],
+            style={'margin-top': '1vh', 'margin-bottom': '1vh'}
+            ),
             
     #end of tab 3
         ]),
 
-        dbc.Tab(label='How to use', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_1', children=[
+        dbc.Tab(label='How to use', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_1', children=[
                     
 
 
 
-                    dbc.Container(html.Div(style={'height':'5px'})),
-                    html.H4('How to use the interactive model',className='display-4'),
+                    # dbc.Container(html.Div(style={'height':'5px'})),
+                    html.H3('How to use the interactive model',className='display-4',
+                    style = {'margin-top': '1vh', 'fontSize': '300%'}),
+
+                    # html.H4('How to use the interactive model',className='display-4'),
+                    
                     html.Hr(className='my-2'),
+                    
                     dbc.Col([
                     dcc.Markdown('''
 
@@ -898,14 +966,19 @@ layout_intro = html.Div([dbc.Col([
 
                     To start predicting the outcome of different strategies, press the button below!
 
-                    ''',style={'fontSize':20}),
+                    ''',
+                    # style={'fontSize':20}
+                    ),
                     
-                    dbc.Col([
-                    dbc.Button('Start Calculating', href='/inter', size='lg', color='success'),
-                    ],width={'size':3,'offset':1}),
+                    # dbc.Col([
+                    dbc.Button('Start Calculating', href='/inter', size='lg', color='success',
+                    style={'margin-top': '1vh','margin-left': '2vw', 'fontSize': '100%'}
+                    ),
+                    # ],width={'size':3,'offset':1},
+                    # ),
                     ],
-                    style={'margin-top': '20px'},
-                    width = {'size': 10}),
+                    style={'margin-top': '1vh'},
+                    width = True),
 
                         #end of tab 1
                     ]),
@@ -913,7 +986,9 @@ layout_intro = html.Div([dbc.Col([
             
     #end of tabs
     ])
-])
+],
+style={'fontSize': '1.8vh'}
+)
 
     ])##  # end of jumbotron
 ],width={'size':8,'offset':2})])
@@ -1307,10 +1382,10 @@ layout_inter = html.Div([
 
                                         # tab 0
                                         dbc.Tab(label='Overview',
-                                         label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_0', children = [html.Div(id = 'text-tab-0'),]),
+                                         label_style={"color": "#00AEF9"}, tab_id='tab_0', children = [html.Div(id = 'text-tab-0'),]), # , 'fontSize':20
 #########################################################################################################################################################
                                         # tab 1
-                                        dbc.Tab(label='Bar Graphs', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='tab_1', children = [
+                                        dbc.Tab(label='Bar Graphs', label_style={"color": "#00AEF9" }, tab_id='tab_1', children = [ # 'fontSize':20
                                                                                                 # dbc.Jumbotron([
 
 
@@ -1333,7 +1408,7 @@ layout_inter = html.Div([
                                                                                                                         dbc.Spinner(html.Div(id="loading-bar-output-1")),
                                                                                                                     ]),
                                                                                                                     ],
-                                                                                                                    id='bar-plot-1-title',style={'color': 'blue','fontSize': 26, 'display':'inline-block'}),
+                                                                                                                    id='bar-plot-1-title',style={'color': 'blue', 'display':'inline-block'}), # 'fontSize': 26,
                                                                                                             ],width=6),
 
 
@@ -1372,7 +1447,7 @@ layout_inter = html.Div([
                                                                                                                                         dbc.Spinner(html.Div(id="loading-bar-output-3")),
                                                                                                                                     ]),##
                                                                                                                                     ],
-                                                                                                                                    id='bar-plot-3-title',style={'color': 'blue','fontSize': 26, 'display':'inline-block'}),
+                                                                                                                                    id='bar-plot-3-title',style={'color': 'blue', 'display':'inline-block'}), # 'fontSize': 26,
                                                                                                                             ],
                                                                                                                             width=6),
                                                                                                                             dbc.Col([
@@ -1382,7 +1457,7 @@ layout_inter = html.Div([
                                                                                                                                         dbc.Spinner(html.Div(id="loading-bar-output-4")),
                                                                                                                                     ]),##
                                                                                                                                     ],
-                                                                                                                                    id='bar-plot-4-title',style={'color': 'blue','fontSize': 26, 'display':'inline-block'}),
+                                                                                                                                    id='bar-plot-4-title',style={'color': 'blue', 'display':'inline-block'}), # 'fontSize': 26,
                                                                                                                             ],
                                                                                                                             
                                                                                                                             width=6),
@@ -1417,7 +1492,7 @@ layout_inter = html.Div([
                                                                                                                                 dbc.Spinner(html.Div(id="loading-bar-output-2")),
                                                                                                                             ]),##
                                                                                                                             ],
-                                                                                                                    id='bar-plot-2-title',style={'color': 'blue','fontSize': 26, 'display':'inline-block'}),
+                                                                                                                    id='bar-plot-2-title',style={'color': 'blue', 'display':'inline-block'}), # 'fontSize': 26,
                                                                                                                 ],width=6),
                                                                                                                 dbc.Col([
                                                                                                                     html.Div(
@@ -1426,7 +1501,7 @@ layout_inter = html.Div([
                                                                                                                                 dbc.Spinner(html.Div(id="loading-bar-output-5")),
                                                                                                                             ]),##
                                                                                                                             ],
-                                                                                                                        id='bar-plot-5-title',style={'color': 'blue','fontSize': 26, 'display':'inline-block'}),
+                                                                                                                        id='bar-plot-5-title',style={'color': 'blue', 'display':'inline-block'}), # 'fontSize': 26,
                                                                                                                 ],width=6),
                                                                                                             ]),
 
@@ -1452,7 +1527,7 @@ layout_inter = html.Div([
 
                                                                 
                                                                 # tab 2
-                                                                dbc.Tab(label='Results and Explanation', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='DPC',children=[
+                                                                dbc.Tab(label='Results and Explanation', label_style={"color": "#00AEF9"}, tab_id='DPC',children=[ # , 'fontSize':20
                                                                                     
                                                                                                 html.H4('Strategy Outcome',id='line_page_title',className="display-4"),
                                                                                                 dbc.Row([
@@ -1494,7 +1569,7 @@ layout_inter = html.Div([
                                                                                                         ]), # row below graphs
                                                                                             
                                                                                                     ]),
-                                                                                                                dbc.Tab(label='Model Structure', label_style={"color": "#00AEF9", 'fontSize':20}, tab_id='model_s',children=[
+                                                                                                                dbc.Tab(label='Model Structure', label_style={"color": "#00AEF9"}, tab_id='model_s',children=[ # 'fontSize':20
                                                                                                         
                                                                                                                                                 html.Div([
                                                                                                                                                                 # dbc.Col([
@@ -1507,7 +1582,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     The system of ODEs used is shown below for one of the two age classes
                                                                                                                                                                     '''
-                                                                                                                                                                    ,style={'fontSize': 20}
+                                                                                                                                                                    # ,style={'fontSize': 20}
 
                                                                                                                                                                     ),
 
@@ -1520,7 +1595,7 @@ layout_inter = html.Div([
                                                                                                                                                                     '''
                                                                                                                                                                     Here the infection term is given by one of the following (depending on whether we are calculating for the Low Risk class or the High Risk class):
                                                                                                                                                                     '''
-                                                                                                                                                                    ,style={'fontSize': 20,'margin-top': '1vh'}
+                                                                                                                                                                    ,style={'margin-top': '1vh'} # 'fontSize': 20,
 
                                                                                                                                                                     ),
                                                                                                                                                                     
@@ -1533,7 +1608,7 @@ layout_inter = html.Div([
                                                                                                                                                                     
                                                                                                                                                                     The weight terms (e.g.  
                                                                                                                                                                     '''
-                                                                                                                                                                    ,style={'fontSize': 20, 'margin-top': '1vh' , 'display': 'inline-block'}
+                                                                                                                                                                    ,style={'margin-top': '1vh' , 'display': 'inline-block'} # 'fontSize': 20, 
 
                                                                                                                                                                     ),
                                                                                                                                                                     html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585432145/weight_jgoojk.png',
@@ -1543,14 +1618,14 @@ layout_inter = html.Div([
                                                                                                                                                                     '''
                                                                                                                                                                     ) vary depending on the control applied. If no control is applied both equal 1.
                                                                                                                                                                     '''
-                                                                                                                                                                    ,style={'fontSize': 20,'display': 'inline-block'}
+                                                                                                                                                                    ,style={'display': 'inline-block'} # 'fontSize': 20,
                                                                                                                                                                     ),
                                                                                                                                                                     dcc.Markdown(
                                                                                                                                                                     '''
                                                                                                                                                                     However, if control of 0.5 is applied to the low risk group, then the infection rate between the low risk and high risk groups decreases by 50%. The infection rate between people in the low risk group decreases by 0.5*x*0.5 = 0.25. The infection rate between people in the high risk group is unaffected.
                                                                                                                                                                     
                                                                                                                                                                     '''
-                                                                                                                                                                    ,style={'fontSize': 20,'display': 'inline-block'}
+                                                                                                                                                                    ,style={'display': 'inline-block'} # 'fontSize': 20,
                                                                                                                                                                     ),
 
 
@@ -1668,7 +1743,7 @@ layout_inter = html.Div([
                                                                                                                                                                     ),
 
                                                                                                                                                                     html.P('** the Imperial paper uses 8 days in hospital if critical care is not required (as do we). It uses 16 days (with 10 in ICU) if critical care is required. Instead, if critical care is required we use 8 days in hospital (non-ICU) and then either recovery or a further 8 in intensive care (leading to either recovery or death).',
-                                                                                                                                                                    style={'fontSize':12}),
+                                                                                                                                                                    style={'fontSize':'50%'}),
 
 
 
@@ -1740,13 +1815,19 @@ navbar = html.Nav([
             dcc.Tabs([
                 dcc.Tab(children=
                         layout_intro,
-                        label='Introduction',value='intro'), #
+                        label='Introduction',value='intro',
+                        style={'fontSize':'2vh'}
+                        ), #
                 dcc.Tab(children=
                         layout_inter,
-                        label='Interactive Model',value='interactive'),
+                        label='Interactive Model',value='interactive',
+                        style={'fontSize':'2vh'}
+                        ),
                 dcc.Tab(children=
                         layout_dan,
-                        label='Real Time Global Data Feed',value='data'), #disabled=True),
+                        label='Real Time Global Data Feed',value='data',
+                        style={'fontSize':'2vh'}
+                        ), #disabled=True),
             ], id='main-tabs', value='intro'),
         ], style={'width': '100vw'},
         ),
@@ -1775,13 +1856,13 @@ page_layout = html.Div([
             dbc.Row([
                 dbc.Col([
                     # dbc.Container([
-                    html.H4(children='Modelling control of COVID-19',
+                    html.H3(children='Modelling control of COVID-19',
                     className="display-4",
-                    style={'margin-top': '2vh'}
+                    style={'margin-top': '2vh','fontSize': '5vh'}
                     ),
 
-                    html.P('Disclaimer: this work is intended for educational purposes only and not decision making! There are many uncertainties in the COVID debate and there are limitations to the model.',
-                    style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': 12}
+                    html.P('Disclaimer: this work is intended for educational purposes only and not decision making. There are many uncertainties in the COVID debate and there are limitations to the model.',
+                    style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '1.5vh'}
                     ),
                     # html.Hr(),
 
@@ -1800,7 +1881,9 @@ page_layout = html.Div([
                     # ],fluid=True)
                     # html.P(,
                     # className="lead"),
-                ],width={'size':10,'offset':1}),
+                ],width=True,
+                style={'margin-left': '10vh'}
+                ),
             ],
             align="start",
             style={'backgroundColor': '#EEEEEE'}
@@ -1817,7 +1900,7 @@ page_layout = html.Div([
         html.Footer(["Authors: ",
                      html.A('Nick P. Taylor and Daniel Muthukrishna.') #, href='https://twitter.com/DanMuthukrishna'), ". ",
                     ],
-                    style={'textAlign': 'center'}),
+                    style={'textAlign': 'center', 'fontSize': '1.6vh'}),
 
                     #  html.A('Source code', href='https://github.com/daniel-muthukrishna/covid19'), ". ",
                     #  "Data is taken from ",
@@ -1825,7 +1908,9 @@ page_layout = html.Div([
                     #  html.A("John Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
         
 
-        ])
+        ],
+        # style={'fontSize': '2vh'}
+        )
 ##
 ########################################################################################################################
 
