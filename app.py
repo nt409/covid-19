@@ -2342,7 +2342,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                     double_time = 'no growth'
                 else:
                     double_time = fr'{np.log(2) / b:.1f} days to double'
-                label = fr'{c.upper():<10s}: {np.exp(b):.2f}^t ({double_time})'
+                label = fr'{c.upper():<10s}: {np.exp(b)/np.log(2):.2f}^t ({double_time})'
             else:
                 label = fr'{c.upper():<10s}'
 
