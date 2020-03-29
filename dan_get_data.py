@@ -1,4 +1,4 @@
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 from collections import Counter
 
 from dan_constants import COUNTRY_NAME_TO_CODE, MONTHS_DICT
@@ -63,8 +63,8 @@ def get_data_from_worldometer(country_name):
         url = 'https://www.worldometers.info/coronavirus/'
     else:
         url = base_url + country_name
-    f = urlopen(url)
-    webpage = f.read()
+    req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    webpage = urlopen(req).read()
     dates = str(webpage).split('categories: ')[1].split('\\n')[0].replace('[', '').replace(']', '').replace('"','').replace('},', '').replace('},', '').replace('  ', '').split(',')
 
     # Convert dates

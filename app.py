@@ -1110,7 +1110,7 @@ layout_inter = html.Div([
                                                                             
                                                                             html.H4(
                                                                                 html.Span(
-                                                                                        'Control Choice',
+                                                                                        'Pick Your Strategy',
                                                                                         id="tooltip-cont-choice",
                                                                                         style={"textDecoration": "underline", "cursor": "pointer"},
                                                                                 )
@@ -1121,7 +1121,7 @@ layout_inter = html.Div([
                                                                                 target="tooltip-cont-choice",
                                                                             ),
 
-                                                                            html.H6('Strategy',style={'fontSize': '120%'}),
+                                                                            html.H6('1. Control Type',style={'fontSize': '120%'}),
                                                                             
 
                                                                             html.Div([
@@ -1136,7 +1136,7 @@ layout_inter = html.Div([
                                                                             ),
 
                                                                             
-                                                                            html.H6('Months of Control',style={'fontSize': '120%'}),
+                                                                            html.H6('2. Months of Control',style={'fontSize': '120%'}),
                                                                             html.Div([
                                                                             dcc.RangeSlider(
                                                                                         id='month-slider',
@@ -1502,10 +1502,7 @@ layout_inter = html.Div([
 
 
 
-                                                                                                            html.H4('Strategy Outcome',id='bar_page_title',className="display-4",style={'fontSize': '300%', 'margin-bottom': '2vh'}),
-
-                                                                                                            # dbc.Col([
-                                                                                                            # ],width=6),
+                                                                                        html.H4('Strategy Outcome',id='bar_page_title',className="display-4",style={'fontSize': '300%', 'textAlign': 'center', 'margin-bottom': '2vh'}),
 
 
                     
@@ -1675,10 +1672,13 @@ layout_inter = html.Div([
                                                                 # tab 2
                                                                 dbc.Tab(label='Results and Explanation', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='DPC',children=[
                                                                                     
-                                                                                                html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%'}),
+                                                                                                html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
+
+                                                                                                html.Hr(),
+
                                                                                                 dbc.Row([
                                                                                                         html.H4("Disease Progress Curves",
-                                                                                                        style={'margin-left': '2vw', 'margin-bottom': '3vh','margin-top': '1vh','fontSize': '200%'}
+                                                                                                        style={'margin-bottom': '3vh','margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
                                                                                                         ),# style={'color':'blue'}),
 
                                                                                                         dbc.Spinner(html.Div(id="loading-line-output-1")),
@@ -2107,7 +2107,7 @@ def display_page(pathname):
     elif pathname == '/data':
         return 'data'
     else:
-        return 'intro'
+        return 'interactive'
 
 
 
@@ -2177,154 +2177,269 @@ def toggle_collapse(n, is_open):
     return [is_open, color]
 
 ##############################################################################################################################
-@app.callback([Output('infections-linear', 'figure'),
-               Output('infections-log', 'figure'),
-               Output('deaths-linear', 'figure'),
-               Output('deaths-log', 'figure'),
-               Output('active-linear', 'figure'),
-               Output('active-log', 'figure'),
+
+
+@app.callback([Output('infections-plot', 'figure'),
+               Output('deaths-plot', 'figure'),
+               Output('active-plot', 'figure'),
+               Output('daily-plot', 'figure'),
+               Output('new-vs-total-cases', 'figure'),
                Output('hidden-stored-data', 'children'),
-               Output("loading-icon", "children")],
+               Output("loading-icon", "children"),],
               [Input('button-plot', 'n_clicks'),
-                Input('main-tabs', 'value'),
                Input('start-date', 'date'),
                Input('end-date', 'date'),
                Input('show-exponential-check', 'value'),
                Input('normalise-check', 'value')],
               [State('hidden-stored-data', 'children')] +
               [State(c_name, 'value') for c_name in COUNTRY_LIST])
-def update_plots(n_clicks, tab, start_date, end_date, show_exponential, normalise_by_pop, saved_json_data, *args):
-    if True: # tab ==
-        start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
-        end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop, saved_json_data, *args):
+    # print(n_clicks, start_date, end_date, args)
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
-        country_names = []
-        for country in args:
-            country_names.extend(country)
+    country_names = []
+    for country in args:
+        country_names.extend(country)
 
-        if saved_json_data is None:
-            country_data = {}
+    if saved_json_data is None:
+        country_data = {}
+    else:
+        country_data = json.loads(saved_json_data)
+
+    for i, country in enumerate(country_names):
+        if country not in country_data.keys():
+            data = get_data(country)
+            country_data[country] = data
+
+    out = []
+    for title in ['Cases', 'Deaths', 'Currently Infected', 'Daily New Cases']:
+        if normalise_by_pop:
+            axis_title = f"{title} (% of population)"
         else:
-            country_data = json.loads(saved_json_data)
+            axis_title = title
+        figs = []
 
-        for i, country in enumerate(country_names):
-            if country not in country_data.keys():
-                data = get_data(country)
-                country_data[country] = data
+        layout_normal = {
+            'yaxis': {'title': axis_title, 'type': 'linear', 'showgrid': True},
+            'showlegend': True,
+            'margin': {'l': 50, 'b': 100, 't': 0, 'r': 0},
+            'updatemenus': [
+                dict(
+                    buttons=list([
+                        dict(
+                            args=["yaxis", {'title': axis_title, 'type': 'linear', 'showgrid': True}],
+                            label="Linear",
+                            method="relayout"
+                        ),
+                        dict(
+                            args=["yaxis", {'title': axis_title, 'type': 'log', 'showgrid': True}],
+                            label="Logarithmic",
+                            method="relayout"
+                        )
+                    ]),
+                    direction="down",
+                    pad={"r": 10, "t": 10, "b": 10},
+                    showactive=True,
+                    x=0.,
+                    xanchor="left",
+                    y=1.2,
+                    yanchor="top"
+                ),
+            ]
+        }
 
-        out = []
-        for title in ['Cases', 'Deaths', 'Currently Infected']:
-            if normalise_by_pop:
-                axis_title = f"{title} (% of population)"
+        layout_daily_plot = copy.deepcopy(layout_normal)
+        layout_daily_plot['updatemenus'].append(
+            dict(
+                buttons=list([
+                    dict(
+                        args=[{"visible": [False, False] + [False, False, True]*len(country_names) if show_exponential else [False] + [False, True]*len(country_names)}],
+                        label="Bar",
+                        method="update"
+                    ),
+                    dict(
+                        args=[{"visible": [True, True] + [True, True, False]*len(country_names) if show_exponential else [True] + [True, False]*len(country_names)}],
+                        label="Scatter",
+                        method="update"
+                    )
+                ]),
+                direction="down",
+                pad={"r": 10, "t": 10, "b": 10},
+                showactive=True,
+                x=0.2,
+                xanchor="left",
+                y=1.2,
+                yanchor="top"
+                ),
+            )
+
+        if show_exponential:
+            figs.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
+                                   y=[0],
+                                   mode='lines',
+                                   line={'color': 'black', 'dash': 'dash'},
+                                   showlegend=True,
+                                   visible=False if title == 'Daily New Cases' else True,
+                                   name=fr'Best exponential fits',
+                                   yaxis='y1',
+                                   legendgroup='group2', ))
+            label = fr'COUNTRY : best fit (doubling time)'
+        else:
+            label = fr'COUNTRY'
+        figs.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
+                               y=[0],
+                               mode='lines+markers',
+                               line={'color': 'black'},
+                               showlegend=True,
+                               visible=False if title == 'Daily New Cases' else True,
+                               name=label,
+                               yaxis='y1',
+                               legendgroup='group2', ))
+
+        for i, c in enumerate(country_names):
+            if country_data[c] is None:
+                print("Cannot retrieve data from country:", c)
+                continue
+            if title == 'Daily New Cases':
+                dates = country_data[c]['Cases']['dates'][1:]
+                xdata = np.arange(len(dates))
+                ydata = np.diff(np.array(country_data[c]['Cases']['data']).astype('float'))
+            elif title not in country_data[c]:
+                continue
             else:
-                axis_title = title
-            fig_linear = []
-            fig_log = []
-
-            layout_linear = {
-                'yaxis': {'title': axis_title, 'type': 'linear', 'showgrid': True},
-                'showlegend': True,
-            }
-            layout_log = {
-                'yaxis': {'title': axis_title, 'type': 'log', 'showgrid': True},
-                'showlegend': True,
-            }
-
-            for fig in [fig_linear, fig_log]:
-                if show_exponential:
-                    fig.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
-                                        y=[0],
-                                        mode='lines',
-                                        line={'color': 'black', 'dash': 'dash'},
-                                        showlegend=True,
-                                        name=fr'Best exponential fits',
-                                        yaxis='y1',
-                                        legendgroup='group2', ))
-                    label = fr'COUNTRY : best fit (doubling time)'
-                else:
-                    label = fr'COUNTRY'
-                fig.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
-                                    y=[0],
-                                    mode='lines+markers',
-                                    line={'color': 'black'},
-                                    showlegend=True,
-                                    name=label,
-                                    yaxis='y1',
-                                    legendgroup='group2', ))
-
-            for i, c in enumerate(country_names):
-                if title not in country_data[c]:
-                    continue
-                if country_data[c] is None:
-                    print("Cannot retrieve data from country:", c)
-                    continue
-
                 dates = country_data[c][title]['dates']
                 xdata = np.arange(len(dates))
                 ydata = country_data[c][title]['data']
                 ydata = np.array(ydata).astype('float')
 
-                if normalise_by_pop:
-                    ydata = ydata/POPULATIONS[c] * 100
+            if normalise_by_pop:
+                ydata = ydata/POPULATIONS[c] * 100
 
-                date_objects = []
-                for date in dates:
-                    date_objects.append(datetime.datetime.strptime(date, '%Y-%m-%d').date())
-                date_objects = np.asarray(date_objects)
+            date_objects = []
+            for date in dates:
+                date_objects.append(datetime.datetime.strptime(date, '%Y-%m-%d').date())
+            date_objects = np.asarray(date_objects)
 
-                model_date_mask = (date_objects <= end_date) & (date_objects >= start_date)
+            model_date_mask = (date_objects <= end_date) & (date_objects >= start_date)
 
-                model_dates = []
-                model_xdata = []
-                date = start_date
-                d_idx = min(xdata[model_date_mask])
-                while date <= end_date:
-                    model_dates.append(date)
-                    model_xdata.append(d_idx)
-                    date += datetime.timedelta(days=1)
-                    d_idx += 1
-                model_xdata = np.array(model_xdata)
+            model_dates = []
+            model_xdata = []
+            date = start_date
+            d_idx = min(xdata[model_date_mask])
+            while date <= end_date:
+                model_dates.append(date)
+                model_xdata.append(d_idx)
+                date += datetime.timedelta(days=1)
+                d_idx += 1
+            model_xdata = np.array(model_xdata)
 
-                b, logA = np.polyfit(xdata[model_date_mask], np.log(ydata[model_date_mask]), 1)
-                # log_yfit = b * xdata[model_date_mask] + logA
-                lin_yfit = np.exp(logA) * np.exp(b * model_xdata)
+            b, logA = np.polyfit(xdata[model_date_mask], np.log(ydata[model_date_mask]), 1)
+            lin_yfit = np.exp(logA) * np.exp(b * model_xdata)
 
-                if show_exponential:
-                    if np.log(2) / b >= 1000:
-                        double_time = 'no growth'
-                    else:
-                        double_time = fr'{np.log(2) / b:.1f} days to double'
-                    label = fr'{c.upper():<10s}: {np.exp(b):.2f}^t ({double_time})'
+            if show_exponential:
+                if np.log(2) / b > 1000 or np.log(2) / b < 0:
+                    double_time = 'no growth'
                 else:
-                    label = fr'{c.upper():<10s}'
-                for fig in [fig_linear, fig_log]:
-                    fig.append(go.Scatter(x=date_objects,
-                                        y=ydata,
-                                        mode='lines+markers',
-                                        marker={'color': colours[i]},
-                                        line={'color': colours[i]},
-                                        showlegend=True,
-                                        name=label,
-                                        yaxis='y1',
-                                        legendgroup='group1', ))
-                    if show_exponential:
-                        fig.append(go.Scatter(x=model_dates,
-                                            y=lin_yfit,
-                                            mode='lines',
-                                            line={'color': colours[i], 'dash': 'dash'},
-                                            showlegend=False,
-                                            name=fr'Model {c.upper():<10s}',
-                                            yaxis='y1',
-                                            legendgroup='group1', ))
+                    double_time = fr'{np.log(2) / b:.1f} days to double'
+                label = fr'{c.upper():<10s}: {np.exp(b):.2f}^t ({double_time})'
+            else:
+                label = fr'{c.upper():<10s}'
 
-            out.append({'data': fig_linear, 'layout': layout_linear})
-            out.append({'data': fig_log, 'layout': layout_log})
+            figs.append(go.Scatter(x=date_objects,
+                                   y=ydata,
+                                   mode='lines+markers',
+                                   marker={'color': colours[i]},
+                                   line={'color': colours[i]},
+                                   showlegend=True,
+                                   visible=False if title == 'Daily New Cases' else True,
+                                   name=label,
+                                   yaxis='y1',
+                                   legendgroup='group1', ))
 
-        out.append(json.dumps(country_data))
-        out.append(None)
+            if show_exponential:
+                if np.log(2) / b < 0:
+                    continue
+                figs.append(go.Scatter(x=model_dates,
+                                       y=lin_yfit,
+                                       mode='lines',
+                                       line={'color': colours[i], 'dash': 'dash'},
+                                       showlegend=False,
+                                       visible=False if title == 'Daily New Cases' else True,
+                                       name=fr'Model {c.upper():<10s}',
+                                       yaxis='y1',
+                                       legendgroup='group1', ))
+
+            if title in ['Daily New Cases']:
+                figs.append(go.Bar(x=date_objects,
+                                   y=ydata,
+                                   showlegend=True,
+                                   visible=True if title == 'Daily New Cases' else True,
+                                   name=label,
+                                   marker={'color': colours[i]},
+                                   yaxis='y1',
+                                   legendgroup='group1'))
+                layout_out = copy.deepcopy(layout_daily_plot)
+            else:
+                layout_out = copy.deepcopy(layout_normal)
+
+        out.append({'data': figs, 'layout': layout_out})
+
+    # Plot 'New Cases vs Total Cases'
+    fig_new_vs_total = []
+    for i, c in enumerate(country_names):
+        l = 7  # Number of days to look back
+        cases = np.array(country_data[c]['Cases']['data']).astype('float')
+        xdata = np.copy(cases[l:])
+        ydata = np.diff(cases)
+        len_ydata = len(ydata)
+
+        # Compute new cases over the past l days
+        ydata = np.sum([np.array(ydata[i:i + l]) for i in range(len_ydata) if i <= (len_ydata - l)], axis=1)
+
+        dates = country_data[c]['Cases']['dates'][l:]
+        date_objects = []
+        for date in dates:
+            date_objects.append(datetime.datetime.strptime(date, '%Y-%m-%d').date())
+        date_objects = np.asarray(date_objects)
+
+        mask = xdata > 100
+        xdata = xdata[mask]
+        ydata = ydata[mask]
+        date_objects = date_objects[mask]
+
+        if normalise_by_pop:
+            xdata = xdata / POPULATIONS[c] * 100
+            ydata = ydata / POPULATIONS[c] * 100
+
+        fig_new_vs_total.append(go.Scatter(x=xdata,
+                                           y=ydata,
+                                           hovertext=[f"Date: {d.strftime('%d-%b-%Y')}" for d in date_objects],
+                                           mode='lines+markers',
+                                           marker={'color': colours[i]},
+                                           line={'color': colours[i]},
+                                           showlegend=True,
+                                           name=fr'{c.upper():<10s}',
+                                           yaxis='y1',
+                                           legendgroup='group1', ))
+    if normalise_by_pop:
+        yaxis_title = f'New Cases (% of population) per week (log scale)'  # {l} days'
+        xaxis_title = 'Total Cases (% of population) (log scale)'
+    else:
+        yaxis_title = f'New Cases per week'  # {l} days)'
+        xaxis_title = 'Total Cases'
+    layout_new_vs_total = {
+        'yaxis': {'title': yaxis_title, 'type': 'log', 'showgrid': True},
+        'xaxis': {'title': xaxis_title, 'type': 'log', 'showgrid': True},
+        'showlegend': True,
+        'margin': {'l': 50, 'b': 100, 't': 50, 'r': 0},
+    }
+    out.append({'data': fig_new_vs_total, 'layout': layout_new_vs_total})
+
+    out.append(json.dumps(country_data))
+    out.append(None)
 
     return out
-
 
 ##################################################################################################################################
 
@@ -2546,7 +2661,7 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
         # ],width=True)
     ],
     no_gutters=True,
-    style={'margin-top': '2vh', 'margin-bottom': '2vh','fontSize':'65%'})
+    style={'margin-top': '2vh', 'margin-bottom': '2vh','fontSize':'75%'})
 
 
 
@@ -2638,8 +2753,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
     if on_or_off['display']=='none':
         return None
     else:
-        return dbc.Jumbotron(
-            html.Div([
+        return html.Div([
             # dbc.Col([
 
 
@@ -2669,8 +2783,16 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
                 dbc.Col([
                     dbc.Table(
-                        
                         [
+                            html.Thead(
+                                html.Tr([ 
+                                html.Th("Strategy variable"),
+                                html.Th("Value")
+                                ])
+                                ),
+                        ]
+                        +
+                        [ 
                         html.Tbody([
                                 html.Tr([ 
                                     html.Td(html.H5(["High Risk ",
@@ -2683,24 +2805,36 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
                                     html.Td(html.H5('{0:,.0f}'.format(100*beta_H) + '%',style={'color': 'white', 'fontSize': '100%'}))
                                     ]),
                                 html.Tr([ 
-                                    html.Td(html.H5("Low Risk Infection Rate",style={'color': 'white', 'fontSize': '100%'})),
+                                    html.Td(html.H5(["Low Risk ",
+                                    html.Span(
+                                            "Infection Rate",
+                                            id="tooltip-lr",
+                                            style={"textDecoration": "underline", "cursor": "pointer"},
+                                        ),
+                                        ],style={'color': 'white', 'fontSize': '100%'})),
                                     html.Td(html.H5('{0:,.0f}'.format(100*beta_L) + '%',style={'color': 'white', 'fontSize': '100%'}))
                                 ]),
                                 html.Tr([ 
-                                    html.Td(html.H5("Control Starts",style={'color': 'white', 'fontSize': '100%'})),
                                     html.Td(html.H5([
                                         html.Span(
-                                            'Month ' + str(month[0]),
+                                            'Control Starts',
                                             id="tooltip-month",
                                             style={"textDecoration": "underline", "cursor": "pointer"},
                                         ),
-                                        ],style={'color': 'white', 'fontSize': '100%'}))
+                                        ],style={'color': 'white', 'fontSize': '100%'})),
+                                    html.Td(html.H5('Month ' + str(month[0]),style={'color': 'white', 'fontSize': '100%'}))
                                 ]),
                                 html.Tr([ 
-                                    html.Td(html.H5("Control Ends",style={'color': 'white', 'fontSize': '100%'})),
+                                    html.Td(html.H5([
+                                        html.Span(
+                                            'Control Ends',
+                                            id="tooltip-month2",
+                                            style={"textDecoration": "underline", "cursor": "pointer"},
+                                        ),
+                                    ],style={'color': 'white', 'fontSize': '100%'})),
                                     html.Td(html.H5('Month ' + str(month[1]),style={'color': 'white', 'fontSize': '100%'}))
                                 ]),
-                            ]),
+                        ]),
                         ],
                         bordered=True,
                         dark=True,
@@ -2710,18 +2844,27 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
                     style={'margin-bottom': '2vh'} # 'margin-left': '1vh', 'margin-right': '1vh', 
                     ),
                 ],
-                width=12,
-                xl = 4,
+                width={'size': 8, 'offset': 2},
+                # xl = 4,
                 ),
             
                 dbc.Tooltip(
-                    "The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Control Choice' bar on the left to adjust.",
+                    "The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.",
                     target="tooltip-hr",
+                ),
+                dbc.Tooltip(
+                    "The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.",
+                    target="tooltip-lr",
                 ),
                 
                 dbc.Tooltip(
-                    "Use the 'Control Choice' bar on the left to adjust when we start controlling the epidemic. When control is not in place the infection rates remain at a baseline level (100%). When control is in place the infection rates are modified (by an amount depending on the choice of control)",
+                    "Use the 'Months of Control' option in the lefthand bar to adjust when we start controlling the epidemic. When control is not in place the infection rates remain at a baseline level (100%). When control is in place the infection rates are modified (by an amount depending on the choice of control)",
                     target="tooltip-month",
+                ),
+
+                dbc.Tooltip(
+                    "Use the 'Months of Control' option in the lefthand bar to adjust when we start controlling the epidemic. When control is not in place the infection rates remain at a baseline level (100%). When control is in place the infection rates are modified (by an amount depending on the choice of control)",
+                    target="tooltip-month2",
                 ),
             
                 dbc.Col([
@@ -2737,7 +2880,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
                 ],
                 width=12,
-                xl=8
+                # xl=8
                 ),
 
 
@@ -2746,7 +2889,6 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
             ),
 
             ],style=on_or_off)
-        )
 
 
 
@@ -3003,6 +3145,22 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
             if sols is not None and tab=='tab_0':
 
                 text_object_0 = html.Div([
+                    dcc.Markdown('''
+                    
+                    In this section we find an overview of the outcome of your choice of strategy.
+
+                    **Firstly**, pick the **type of control**.
+
+                    **Secondly**, pick the **control timings**.
+
+                    The other options are optional custom choices that you may choose to investigate further or ignore altogether.
+
+                    ''',
+                    style = {'margin-top': '2vh', 'textAlign': 'center'}
+                    ),
+
+                    html.Hr(),
+
                     outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[0],herd_list_2yr[0],ICU_data_2yr[0],metric,hosp,preset,number_strategies = num_strat,which_strat=1),
                     html.Hr(),
                     outcome_fn(month,sols[1]['beta_L'],sols[1]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[1],herd_list_2yr[1],ICU_data_2yr[1],metric,hosp,preset,number_strategies = num_strat,which_strat=2),
