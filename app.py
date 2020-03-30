@@ -2231,6 +2231,8 @@ def display_page(pathname):
         return 'interactive'
     elif pathname == '/data':
         return 'data'
+    elif pathname == '/intro':
+        return 'intro'
     else:
         return 'interactive'
 
