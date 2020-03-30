@@ -1569,11 +1569,9 @@ layout_inter = html.Div([
 
                                                     dcc.Markdown('''
                                                     
-                                                    *Click/hover on underlined text to find out more.*
-
-                                                    In this Section we find a prediction for the outcome of your choice of strategy. Strategy choice involves choosing a means of controlling the disease.
-
-                                                    **Control** is framed in terms of the *infection rate* of the disease (how quickly the disease is transmitted between people).
+                                                    *In this Section we find a prediction for the outcome of your choice of strategy.*
+                                                    
+                                                    **Strategy choice** involves choosing a means of controlling the disease. **Control** is framed in terms of the *infection rate* of the disease (how quickly the disease is transmitted between people).
                                                     
                                                     The ways we can currently control COVID-19 is by **reducing** the infection rate (slowing down how fast the virus spreads).
 
@@ -1905,14 +1903,17 @@ layout_inter = html.Div([
                                                                                                                                                                     html.Hr(),
                                                                                                                                                                     dcc.Markdown(
                                                                                                                                                                     '''
-                                                                                                                                                                    We present a compartmental model for COVID-19, split by risk categories. The model is very simplistic but still captures the basic spread mechanism. It is far simpler than the [Imperial College model](/https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf), but it uses similar parameter values and can capture much of the relevant information in terms of how effective control will be.
+                                                                                                                                                                    *Underlying all of the predictions is a mathematical model. In this Section we explain how the mathematical model works.*
 
-                                                                                                                                                                    It is intended solely as an illustrative, rather than predictive tool. We plan to increase the sophistication of the model and to update parameters as more (and better) data become available to us. In particular we will shortly be adding the real time global data feed as an input into the model, so that the simulation initial conditions will be based on current data.
+                                                                                                                                                                    We present a compartmental model for COVID-19, split by risk categories. That is to say that everyone in the population is **categorised** based on **disease status** (susceptible/ infected/ recovered/ hospitalised/ critical care/ dead) and based on **COVID risk**.
+                                                                                                                                                                    
+                                                                                                                                                                    The model is very simplistic but still captures the basic spread mechanism. It is far simpler than the [Imperial College model](/https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf), but it uses similar parameter values and can capture much of the relevant information in terms of how effective control will be.
 
-                                                                                                                                                                    We have two risk categories: high and low. Susceptible people get infected after contact with an infected person (from either risk category). A fraction of infected people (*h*) are hospitalised and the rest recover. Of these hospitalised cases, a fraction (*c*) require critical care and the rest recover. Of those in critical care, a fraction (*d*) die and the rest recover.
+                                                                                                                                                                    It is intended solely as an illustrative, rather than predictive, tool. We plan to increase the sophistication of the model and to update parameters as more (and better) data become available to us. In particular we will shortly be adding the real time global data feed as an input into the model, so that the simulation initial conditions will be based on current data.
+
+                                                                                                                                                                    We have **two risk categories**: high and low. **Susceptible** people get **infected** after contact with an infected person (from either risk category). A fraction of infected people (*h*) are **hospitalised** and the rest **recover**. Of these hospitalised cases, a fraction (*c*) require **critical care** and the rest recover. Of those in critical care, a fraction (*d*) **die** and the rest recover.
 
                                                                                                                                                                     The recovery fractions depend on which risk category the individual is in.
-
                                                                                                                                                                 
 
                                                                                                                                                                     '''
@@ -1929,6 +1930,14 @@ layout_inter = html.Div([
                                                                                                                                                                     justify='center'
                                                                                                                                                                     ),
 
+                                                                                                                                                                    dcc.Markdown('''
+
+                                                                                                                                                                    The selection of risk categories is done in the crudest way possible - an age split at 60 years (based on the age structure data below). A more nuanced split would give a more effective control result, since there are older people who are at low risk and younger people who are at high risk. In many cases, these people will have a good idea of which risk category they belong to.
+
+                                                                                                                                                                    *For the more mathematically inclined reader, a translation of the above into a mathematical system is described below.*
+
+                                                                                                                                                                    ''',style={'margin-top' : '2vh','margin-bottom' : '2vh'}),
+
                                                                                                                                                                     dbc.Row([
                                                                                                                                                                     html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585498493/model_ddd3um.png',
                                                                                                                                                                     style={'max-width':'90%','height': 'auto','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
@@ -1940,8 +1949,6 @@ layout_inter = html.Div([
 
                                                                                                                                                                     dcc.Markdown('''
 
-                                                                                                                                                                    The selection of risk categories is done in the crudest way possible - an age split at 60 years (based on the age structure data below). A more nuanced split would give a more effective control result, since there are older people who are at low risk and younger people who are at high risk. In many cases, these people will have a good idea of which risk category they belong to.
-
                                                                                                                                                                     The model uses a weighted average across the age classes below and above 60 to calculate the probability of a member of each class getting hospitalised or needing critical care.
                                                                                                                                                                     '''),
 
@@ -1952,19 +1959,6 @@ layout_inter = html.Div([
 
 
                                                                                                                                                                     html.H4('Parameter Values',style={'fontSize': '200%'}),
-
-                                                                                                                                                                    html.H4('Age Structure',style={'fontSize': '180%'}),
-                                                                                                                                                                    generate_table(df),
-                                                                                                                                                                    
-                                                                                                                                                                    dcc.Markdown('''
-                                                                                                                                                                    The age data is taken from [**GOV.UK**](/https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](/https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf) (Ferguson et al.).
-
-                                                                                                                                                                    To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population.
-                                                                                                                                                                    
-                                                                                                                                                                    Setting the age split to be at 60 years gives us the following figures:
-                                                                                                                                                                    ''',
-                                                                                                                                                                    style={'margin-top': '2vh','margin-bottom': '2vh'}
-                                                                                                                                                                    ),
 
 
                                                                                                                                                                     dbc.Col([
@@ -1987,25 +1981,25 @@ layout_inter = html.Div([
                                                                                                                                                                                         html.Td("Probability high risk infection needs hospital care"),
                                                                                                                                                                                         html.Td("h_H"),
                                                                                                                                                                                         html.Td('{0:.3f}'.format(params.frac_hosp_H)),
-                                                                                                                                                                                        html.Td(html.A('Age table above (which uses Imperial and GOV.UK data)'))
+                                                                                                                                                                                        html.Td(html.A('Age table below (which uses Imperial and GOV.UK data)'))
                                                                                                                                                                                     ]),
                                                                                                                                                                                     html.Tr([ 
                                                                                                                                                                                         html.Td("Probability low risk infection needs hospital care"),
                                                                                                                                                                                         html.Td("h_L"),
                                                                                                                                                                                         html.Td('{0:.3f}'.format(params.frac_hosp_L)),
-                                                                                                                                                                                        html.Td(html.A('Age table above'))
+                                                                                                                                                                                        html.Td(html.A('Age table below'))
                                                                                                                                                                                     ]),
                                                                                                                                                                                     html.Tr([ 
                                                                                                                                                                                         html.Td("Probability high risk hospital case needs critical care"),
                                                                                                                                                                                         html.Td("c_H"),
                                                                                                                                                                                         html.Td('{0:.3f}'.format(params.frac_crit_H)),
-                                                                                                                                                                                        html.Td(html.A('Age table above'))
+                                                                                                                                                                                        html.Td(html.A('Age table below'))
                                                                                                                                                                                     ]),
                                                                                                                                                                                     html.Tr([ 
                                                                                                                                                                                         html.Td("Probability low risk hospital case needs critical care"),
                                                                                                                                                                                         html.Td("c_L"),
                                                                                                                                                                                         html.Td('{0:.3f}'.format(params.frac_crit_L)),
-                                                                                                                                                                                        html.Td(html.A('Age table above'))
+                                                                                                                                                                                        html.Td(html.A('Age table below'))
                                                                                                                                                                                     ]),
                                                                                                                                                                                     html.Tr([ 
                                                                                                                                                                                         html.Td("Probability survive critical care"),
@@ -2078,6 +2072,20 @@ layout_inter = html.Div([
                                                                                                                                                                     html.P('** the Imperial paper uses 8 days in hospital if critical care is not required (as do we). It uses 16 days (with 10 in ICU) if critical care is required. Instead, if critical care is required we use 8 days in hospital (non-ICU) and then either recovery or a further 8 in intensive care (leading to either recovery or death).',
                                                                                                                                                                     style={'fontSize':'80%'}),
 
+                                                                                                                                                                    html.H4('Age Structure',style={'fontSize': '150%'}),
+                                                                                                                                                                    
+                                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                                    The age data is taken from [**GOV.UK**](/https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](/https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf) (Ferguson et al.).
+
+                                                                                                                                                                    To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population.
+
+                                                                                                                                                                    *The table below shows the age structure data that was used to calculate these weighted averages across the low risk category (under 60) and high risk (over 60) category.*
+                                                                                                                                                                    
+                                                                                                                                                                    ''',
+                                                                                                                                                                    style={'margin-top': '2vh','margin-bottom': '2vh'}
+                                                                                                                                                                    ),
+
+                                                                                                                                                                    generate_table(df),
 
 
 
@@ -2207,7 +2215,7 @@ page_layout = html.Div([
                     style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '2vh'}
                     ),
 
-                    html.P('Disclaimer: this work is intended for educational purposes only and not decision making. There are many uncertainties in the COVID debate and there are limitations to the model.',
+                    html.P('Disclaimer: this work is intended for educational purposes only and not decision making. There are many uncertainties in the COVID debate. The model is intended soley as an illustrative, rather than predictive, tool.',
                     style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '1.5vh'}
                     ),
 
@@ -3354,6 +3362,8 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
             if sols is not None and button_id=='SO_dd': # tab = tab_0
 
                 strategy_outcome_text = html.Div([
+                    
+                    dcc.Markdown('''*Click/hover on underlined text to find out more.*''',style={'fontSize': '100%','textAlign' : 'center'}),
 
                     outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[0],herd_list_2yr[0],ICU_data_2yr[0],metric,hosp,preset,number_strategies = num_strat,which_strat=1),
                     html.Hr(),
