@@ -109,21 +109,25 @@ app = dash.Dash(external_stylesheets=[dbc.themes.FLATLY])
 server = app.server
 
 colors = {
-    'background': '#FFFFFF',
+    'background': '#EEEEEE',
     'text': '#111111'
 }
 
 layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-family': 'sans-serif'},
                       id='output-layout', children=[
-    html.H2(
+    html.H4(
         children='COVID-19 Cases and Deaths',
+        className = 'display-4',
         style={
             'textAlign': 'center',
-            'color': colors['text'],
-            'margin-top': '17px'
+            'fontSize': '300%',
+            # 'color': colors['text'],
+            'margin-top': '1vh'
         }
     ),
+    
     html.Hr(),
+
     html.Div([
         html.Div([
             html.Button(
@@ -222,14 +226,15 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                   'textAlign': 'center', "margin-left": "0px"}),
         html.Hr(),
         html.Div(id='hidden-stored-data', style={'display': 'none'}),
-        html.Footer(["Author: ",
-                     html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'), ". ",
-                     html.A('Source code', href='https://github.com/daniel-muthukrishna/covid19'), ". ",
-                     html.Br(),
-                     "Data is taken from ",
-                     html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
-                     html.A("John Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."],
-                    style={'textAlign': 'center', 'color': colors['text'], "margin-bottom": "40px"}),
+    #     html.Footer(["Author: ",
+    #                  html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'), ". ",
+    #                  html.A('Source code', href='https://github.com/daniel-muthukrishna/covid19'), ". ",
+    #                  html.Br(),
+    #                  "Data is taken from ",
+    #                  html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
+    #                  html.A("John Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."],
+    #                 style={'textAlign': 'center', 'color': colors['text'], "margin-bottom": "40px"}),
+
     ], style={'horizontal-align': 'center', 'textAlign': 'center'}),
 ])
 

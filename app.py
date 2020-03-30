@@ -1092,7 +1092,7 @@ justify='center')
 
 
 Results_intro =  html.Div([
-    html.H4("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
+    html.H4("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center','margin-top': '1vh'}),
 
     html.Hr(),
 
@@ -1102,11 +1102,11 @@ Results_intro =  html.Div([
 
     Use the '**Plot Settings**' button on the left if you'd like to adjust what the plot shows. You can choose whether to consider only one of the low or high risk groups, or plot both groups together, or plot all lines.
 
-    Use the '**Model Structure**' options on the left to choose whether to include deaths or not.
-
     Selecting '**Custom**' allows you to choose your own control measures. You can independently adjust the *infection rate* (how quickly the disease is transmitted between people) for each group. This corresponds to e.g. a lockdown for one group, and less strict measures for another.
-    
+
     You may also directly compare the performance of **two** different custom strategies (how one performs relative to the other).
+    
+    Use the '**Hospital Categories**' options on the left to choose which hospitalisation categories to include.
 
     All infection rates are given relative to a baseline level (at 100%) for COVID-19.
 
@@ -1166,7 +1166,7 @@ layout_inter = html.Div([
 
                                                                             html.Hr(),
                                                                             
-                                                                            html.P('Hover/click on the underlined text to find out more.',style={'fontSize': '100%'}),
+                                                                            dcc.Markdown('''*Hover/click on the underlined text to find out more*.''',style={'fontSize': '100%'}),
 
                                                                             html.Div(style={'display': 'none'},id='spacer'),
                                                                             
@@ -1860,10 +1860,11 @@ layout_inter = html.Div([
                                                                                                         
                                                                                                                                                 html.Div([
                                                                                                                                                                 # dbc.Col([
-                                                                                                                                                                    dbc.Jumbotron([
+                                                                                                                                                                    # dbc.Jumbotron([
 
                                                                                                                                                                     html.H4('Model Structure',
-                                                                                                                                                                    style = {'margin-top': '1vh', 'fontSize': '300%'}),
+                                                                                                                                                                    className = 'display-4',
+                                                                                                                                                                    style = {'margin-top': '1vh', 'textAlign': 'center', 'fontSize': '300%'}),
 
                                                                                                                                                                     html.Hr(),
                                                                                                                                                                     dcc.Markdown(
@@ -2049,7 +2050,7 @@ layout_inter = html.Div([
 
 
 
-                                                                                                                                                                    ]),
+                                                                                                                                                                    # ]),
                                                                                                                                                                     
 
                                                                                                                                                             # ],width={'size':8,'offset':2}
@@ -2165,7 +2166,8 @@ page_layout = html.Div([
                     className="display-4",
                     style={'margin-top': '2vh','fontSize': '7vh'}
                     ),
-                    html.P('Best viewed in landscape mode. Hover over underlined text for more details.',
+                    dcc.Markdown(
+                    '''*Best viewed in landscape mode. Hover over underlined text for more details*.''',
                     style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '2vh'}
                     ),
 
@@ -3283,7 +3285,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
                     The other options are optional custom choices that you may choose to investigate further or ignore altogether.
 
-                    Click/hover on underlined text to find out more.
+                    *Click/hover on underlined text to find out more.*
 
                     ''',
                     style = {'margin-top': '2vh', 'textAlign': 'center'}
