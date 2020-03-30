@@ -1093,9 +1093,6 @@ justify='center')
 
 
 Results_interpretation =  html.Div([
-    html.H4("Interpretation", className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
-    
-    html.Hr(),
     
     dcc.Markdown('''
 
@@ -1879,6 +1876,7 @@ results_col = html.Div([
 Instructions_layout = html.Div([html.H4("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center','margin-top': '1vh'}),
                                              
                                                     html.Hr(),
+                                                    dbc.Jumbotron([
 
                                                     # html.Div([
                                                     dcc.Markdown(['''
@@ -1893,7 +1891,8 @@ Instructions_layout = html.Div([html.H4("Instructions", className="display-4",st
 
                                                     '''],
                                                     style = {'margin-top': '2vh', 'textAlign': 'center'}
-                                                    )
+                                                    ),
+                                                    ]),
                                     ])
 
 
@@ -1945,48 +1944,23 @@ layout_inter = html.Div([
 
 
                                                     Instructions_layout,
-                                                    # ],
-                                                    # style={'width': '60%','textAlign': 'center'}
-                                                    # ),
-                                                    # dcc.Markdown('''*Hover/click on the buttons to find out more*.''',style={'fontSize': '100%', 'margin-bottom': '5vh'}),
-
-
-
-                                                    # *All infection rates are given relative to a baseline level (at 100%) for COVID-19*.
-                                                    # ### To pick your strategy:
-
-                                                    # 1. Pick the **type of control**.
-
-                                                    # 2. Pick the **control timings**.
-
-                                                    # The other options are optional custom choices that you may choose to investigate further or ignore altogether.
-                                                    # html.Hr(),
-                                                    # Use the '**Inputs**' on the left hand bar to adjust choice of control measures. You can adjust the control measures and the length of time that they are implemented.
-                                                    # Use the '**Plot Settings**' button on the left if you'd like to adjust what the plot shows. You can choose whether to consider only one of the low or high risk groups, or plot both groups together, or plot all lines.
-                                                    # Selecting '**Custom**' allows you to choose your own control measures. You can independently adjust the *infection rate* (how quickly the disease is transmitted between people) for each group. This corresponds to e.g. a lockdown for one group, and less strict measures for another.
-                                                    # You may also directly compare the performance of **two** different custom strategies (how one performs relative to the other).
-                                                    # Use the '**Hospital Categories**' options on the left to choose which hospitalisation categories to include.
-                                                    # You can independently adjust the *infection rate* (how quickly the disease is transmitted between people) for each group. This corresponds to e.g. a lockdown for one group, and less strict measures for another.
-
-                                                    # dcc.Markdown(
 
                                                     html.Hr(),
 
-                                                    # html.H4('Results',className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
                                                     html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
 
                                              
+                                             
                                                     html.Hr(),
 
-                                             
                                                     # html.Hr(),
 
                                                 dbc.Row([
             
                                                         dbc.Col([
-                                                            html.Div(
-                                                            style={'height': '10vh','backgroundColor': '#EEEEEE'}
-                                                            ),
+                                                            # html.Div(
+                                                            # style={'height': '10vh'}
+                                                            # ),
                                                             dbc.Jumbotron([
                                                                 inputs_col,
                                                             ]),
@@ -2019,8 +1993,13 @@ layout_inter = html.Div([
                                              ##################################################################################################
                                                     
                                                     html.Hr(style={'margin-top': '3vh', 'margin-bottom': '2vh'}),
+    
+                                                    html.H4("Interpretation", className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
+                                                    html.Hr(),
 
+                                                    dbc.Jumbotron([
                                                     Results_interpretation,
+                                                    ]),
 
                                              
                                              
@@ -2257,7 +2236,7 @@ layout_inter = html.Div([
 
 
                         ],
-                        style= {'width': '90%', 'margin-left': '5vw', 'margin-right': '5vw', 'margin-bottom': '5vh'}
+                        style= {'width': '90%', 'backgroundColor': '#f2f2f2', 'margin-left': '5vw', 'margin-right': '5vw', 'margin-bottom': '5vh'}
                         ),
 
                         # ],
@@ -2374,7 +2353,7 @@ page_layout = html.Div([
                 ),
             ],
             align="start",
-            style={'backgroundColor': '#EEEEEE'}
+            style={'backgroundColor': '#f2f2f2'}
             ),
 
         # ]),
