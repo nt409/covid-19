@@ -2492,11 +2492,22 @@ def toggle_collapse(n, is_open):
                Input('start-date', 'date'),
                Input('end-date', 'date'),
                Input('show-exponential-check', 'value'),
-               Input('normalise-check', 'value')],
+               Input('normalise-check', 'value'),
+               Input('align-cases-check', 'value'),
+               Input('align-cases-input', 'value'),
+               Input('align-deaths-check', 'value'),
+               Input('align-deaths-input', 'value'),
+               Input('align-active-cases-check', 'value'),
+               Input('align-active-cases-input', 'value'),
+               Input('align-daily-cases-check', 'value'),
+               Input('align-daily-cases-input', 'value'),
+               ],
               [State('hidden-stored-data', 'children')] +
               [State(c_name, 'value') for c_name in COUNTRY_LIST])
-def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop, saved_json_data, *args):
-    # print(n_clicks, start_date, end_date, args)
+def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop,
+                 align_cases_check, align_cases_input, align_deaths_check, align_deaths_input, align_active_cases_check,
+                 align_active_cases_input, align_daily_cases_check, align_daily_cases_input, saved_json_data, *args):
+    print(n_clicks, start_date, end_date, args)
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
@@ -2520,10 +2531,26 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
             axis_title = f"{title} (% of population)"
         else:
             axis_title = title
+
+        if title == 'Cases':
+            align_countries = align_cases_check
+            align_input = align_cases_input
+        elif title == 'Deaths':
+            align_countries = align_deaths_check
+            align_input = align_deaths_input
+        elif title == 'Currently Infected':
+            align_countries = align_active_cases_check
+            align_input = align_active_cases_input
+        elif title == 'Daily New Cases':
+            align_countries = align_daily_cases_check
+            align_input = align_daily_cases_input
+
         figs = []
 
         layout_normal = {
             'yaxis': {'title': axis_title, 'type': 'linear', 'showgrid': True},
+            'xaxis': {'title': f'Days since the total confirmed cases reached {align_input}' if align_countries else '',
+                      'showgrid': True},
             'showlegend': True,
             'margin': {'l': 50, 'b': 100, 't': 0, 'r': 0},
             'updatemenus': [
@@ -2577,24 +2604,24 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
             )
 
         if show_exponential:
-            figs.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
+            figs.append(go.Scatter(x=[datetime.date(2020, 2, 20)] if not align_countries else [0],
                                    y=[0],
                                    mode='lines',
                                    line={'color': 'black', 'dash': 'dash'},
                                    showlegend=True,
-                                   visible=False if title == 'Daily New Cases' else True,
+                                   visible=False if title == 'Daily New Cases' else 'legendonly',
                                    name=fr'Best exponential fits',
                                    yaxis='y1',
                                    legendgroup='group2', ))
             label = fr'COUNTRY : best fit (doubling time)'
         else:
             label = fr'COUNTRY'
-        figs.append(go.Scatter(x=[datetime.date(2020, 2, 20)],
+        figs.append(go.Scatter(x=[datetime.date(2020, 2, 20)] if not align_countries else [0],
                                y=[0],
                                mode='lines+markers',
                                line={'color': 'black'},
                                showlegend=True,
-                               visible=False if title == 'Daily New Cases' else True,
+                               visible=False if title == 'Daily New Cases' else 'legendonly',
                                name=label,
                                yaxis='y1',
                                legendgroup='group2', ))
@@ -2615,13 +2642,24 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                 ydata = country_data[c][title]['data']
                 ydata = np.array(ydata).astype('float')
 
-            if normalise_by_pop:
-                ydata = ydata/POPULATIONS[c] * 100
-
             date_objects = []
             for date in dates:
                 date_objects.append(datetime.datetime.strptime(date, '%Y-%m-%d').date())
             date_objects = np.asarray(date_objects)
+
+            if align_countries:
+                if title in ['Cases', 'Deaths']:
+                    idx_when_n_cases = np.abs(ydata - align_input).argmin()
+                elif title in ['Currently Infected', 'Daily New Cases']:
+                    ydata_cases = np.array(country_data[c]['Cases']['data']).astype('float')
+                    idx_when_n_cases = np.abs(ydata_cases - align_input).argmin()
+                    if title == 'Daily New Cases':
+                        idx_when_n_cases -= 1
+
+                xdata = xdata - idx_when_n_cases
+
+            if normalise_by_pop:
+                ydata = ydata/POPULATIONS[c] * 100
 
             model_date_mask = (date_objects <= end_date) & (date_objects >= start_date)
 
@@ -2644,12 +2682,13 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                     double_time = 'no growth'
                 else:
                     double_time = fr'{np.log(2) / b:.1f} days to double'
-                label = fr'{c.upper():<10s}: 2^(t/{np.log(2)/b:.1f}) ({double_time})'
+                label = fr'{c.upper():<10s}: {np.exp(b):.2f}^t ({double_time})'
             else:
                 label = fr'{c.upper():<10s}'
 
-            figs.append(go.Scatter(x=date_objects,
+            figs.append(go.Scatter(x=date_objects if not align_countries else xdata,
                                    y=ydata,
+                                   hovertext=[f"Date: {d.strftime('%d-%b-%Y')}" for d in date_objects] if align_countries else '',
                                    mode='lines+markers',
                                    marker={'color': colours[i]},
                                    line={'color': colours[i]},
@@ -2662,8 +2701,9 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
             if show_exponential:
                 if np.log(2) / b < 0:
                     continue
-                figs.append(go.Scatter(x=model_dates,
+                figs.append(go.Scatter(x=model_dates if not align_countries else model_xdata,
                                        y=lin_yfit,
+                                       hovertext=[f"Date: {d.strftime('%d-%b-%Y')}" for d in model_dates] if align_countries else '',
                                        mode='lines',
                                        line={'color': colours[i], 'dash': 'dash'},
                                        showlegend=False,
@@ -2673,8 +2713,9 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                                        legendgroup='group1', ))
 
             if title in ['Daily New Cases']:
-                figs.append(go.Bar(x=date_objects,
+                figs.append(go.Bar(x=date_objects if not align_countries else xdata,
                                    y=ydata,
+                                   hovertext=[f"Date: {d.strftime('%d-%b-%Y')}" for d in date_objects] if align_countries else '',
                                    showlegend=True,
                                    visible=True if title == 'Daily New Cases' else True,
                                    name=label,
@@ -2742,6 +2783,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
     out.append(None)
 
     return out
+
 
 ##################################################################################################################################
 
