@@ -1092,7 +1092,7 @@ justify='center')
 
 
 Results_intro =  html.Div([
-    html.H4("Instructions", className="display-4",style={'fontSize': '300%'}),
+    html.H4("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
 
     html.Hr(),
 
@@ -1114,7 +1114,7 @@ Results_intro =  html.Div([
 ])
 
 Results_interpretation =  html.Div([
-    html.H4("Interpretation", className="display-4",style={'fontSize': '300%'}),
+    html.H4("Interpretation", className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
     
     html.Hr(),
     
