@@ -2170,7 +2170,7 @@ navbar = html.Nav([
                         label='Real Time Global Data Feed',value='data',
                         style={'fontSize':'2vh'}
                         ), #disabled=True),
-            ], id='main-tabs', value='intro'),
+            ], id='main-tabs', value='inter'),
         ], style={'width': '100vw'}, # , 'display': 'flex', 'justifyContent': 'center'},
         ),
     ],)
