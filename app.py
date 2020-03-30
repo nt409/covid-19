@@ -1579,228 +1579,335 @@ layout_inter = html.Div([
 
                                         # tab 0
                                         dbc.Tab(label='Overview',
-                                         label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', children = [html.Div(id = 'text-tab-0'),]), # ,style={'margin-left':'1px', 'margin-right': '1px'}
-#########################################################################################################################################################
-                                        # tab 1
-                                        dbc.Tab(label='Bar Graphs', label_style={"color": "#00AEF9" , 'fontSize':'120%' }, tab_id='tab_1', children = [
-                                                                                                # dbc.Jumbotron([
+                                         label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', 
+                                         children = [
+
+                                             
+                                                    dcc.Markdown('''
+                                                    
+                                                    In this section we find an overview of the outcome of your choice of strategy.
+
+                                                    1. Pick the **type of control**.
+
+                                                    2. Pick the **control timings**.
+
+                                                    The other options are optional custom choices that you may choose to investigate further or ignore altogether.
+
+                                                    *Click/hover on underlined text to find out more.*
+
+                                                    ''',
+                                                    style = {'margin-top': '2vh'}
+                                                    ),
+
+                                                    html.Hr(),
+                                                    
+                                                    dbc.Row([
+                                                        Results_intro,
+                                                    ],justify='center'),
+
+                                                    html.Hr(),
+
+                                                    # html.H4('Results',className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
+                                                    html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
+
+                                             
+                                                    html.Hr(),
+
+                                                    dbc.DropdownMenu(
+                                                        label="Type of Result",
+                                                        bs_size="lg",
+                                                        color='success',
+                                                        # id = 'dropdown',
+                                                        children=[
+                                                            dbc.DropdownMenuItem("Disease Progress Curves",header=True),
+                                                            dbc.DropdownMenuItem("See detailed curves describing the outcome of your choice of strategy",id='DPC_dd',active=True),
+                                                            dbc.DropdownMenuItem(divider=True),
+                                                            dbc.DropdownMenuItem("Bar Charts",header=True),
+                                                            dbc.DropdownMenuItem("See some key outcomes plotted to describe the outcome of your choice of strategy",id='BC_dd'),
+                                                            dbc.DropdownMenuItem(divider=True),
+                                                            dbc.DropdownMenuItem("Strategy Overview",header=True),
+                                                            dbc.DropdownMenuItem("Show a broad overview of the outcome of your choice of strategy",id='SO_dd'),
+                                                        ],
+                                                        className="mb-3",
+                                                        style = {'margin-top': '2vh', 'margin-bottom': '2vh', 'textAlign': 'center'}
+                                                    ),
+                                             
+                                             
+                                             #################################################################################################
+                                             
+                                                    # html.Div(id='bc-content',children=[
+                                                        html.Div([
+                                                                        dcc.Markdown('''
+                                                                        In this section we present some bar charts to illustrate the effectiveness of each strategy choice.
+                                                                        
+                                                                        Again, choose your strategy using the bar on the left.
+                                                                        ''',style = {'textAlign': 'center', 'margin-top': '2vh'}),
+                                                                        
+                                                                        # html.Hr(),
+
+                                                                        # html.H4('Strategy Outcome',id='bar_page_title',className="display-4",style={'fontSize': '300%', 'textAlign': 'center', 'margin-top': '1vh', 'margin-bottom': '2vh'}),
+                                                                        
+                                                                        html.Hr(),
+
+                                                                        dcc.Markdown('''
+                                                                        *Hover/click on each plot title for an explanation*.
+                                                                        ''',style = {'textAlign': 'center'}),
 
 
 
+                                                                        dbc.Col([
 
+                                                                                                dbc.Col([
+                                                                                                    html.Div(
+                                                                                                        [
+                                                                                                        dbc.Row([
+                                                                                                            html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                html.Span([##
+                                                                                                                html.Div('Total Deaths (Percentage)',style= {'textAlign': 'center'},id='bar-plot-1-out'),
+                                                                                                                ],##
+                                                                                                                id="tooltip-bar1",style={"textDecoration": "underline", "cursor": "pointer"}),
+                                                                                                            ]),
+                                                                                                            dbc.Spinner(html.Div(id="loading-bar-output-1")),
+                                                                                                        ]
+                                                                                                        ,justify='center'),
+                                                                                                        ],
+                                                                                                        id='bar-plot-1-title',style={ 'display':'block', 'textAlign': 'left'}),
 
+                                                                                                        dcc.Graph(id='bar-plot-1',style=bar_non_crit_style),
+                                                                                                
+                                                                                                ],
+                                                                                                align='center',
+                                                                                                width = 12,
+                                                                                                # xl = 6,
+                                                                                                # width=6
+                                                                                                ),
+                                                                                                
 
-
-
-                                                                                        dcc.Markdown('''
-                                                                                        In this section we present some bar charts to illustrate the effectiveness of each strategy choice.
-                                                                                        
-                                                                                        Again, choose your strategy using the bar on the left.
-                                                                                        ''',style = {'textAlign': 'center', 'margin-top': '2vh'}),
-                                                                                        
+                                                                                                
                                                                                         html.Hr(),
 
-                                                                                        html.H4('Strategy Outcome',id='bar_page_title',className="display-4",style={'fontSize': '300%', 'textAlign': 'center', 'margin-top': '1vh', 'margin-bottom': '2vh'}),
-                                                                                        
-                                                                                        html.Hr(),
-
-                                                                                        dcc.Markdown('''
-                                                                                        Hover/click on each plot title for an explanation.
-                                                                                        ''',style = {'textAlign': 'center'}),
 
 
-                    
-                                                                                        dbc.Col([
+                                                                                        html.Div([
+                                                                                                            dbc.Col([
 
-                                                                                                                dbc.Col([
-                                                                                                                # html.Div([
-                                                                                                                    html.Div(
-                                                                                                                        [
-                                                                                                                        dbc.Row([
-                                                                                                                            html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
-                                                                                                                                html.Span([##
-                                                                                                                                html.Div('Total Deaths (Percentage)',style= {'textAlign': 'center'},id='bar-plot-1-out'),
-                                                                                                                                ],##
-                                                                                                                                id="tooltip-bar1",style={"textDecoration": "underline", "cursor": "pointer"}),
-                                                                                                                            ]),
-                                                                                                                            dbc.Spinner(html.Div(id="loading-bar-output-1")),
-                                                                                                                        ]
-                                                                                                                        ,justify='center'),
-                                                                                                                        ],
-                                                                                                                        id='bar-plot-1-title',style={ 'display':'block', 'textAlign': 'left'}),
+                                                                                                                            html.Div(
+                                                                                                                                [dbc.Row([##
+                                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                                        html.Span([##
+                                                                                                                                        html.Div('Peak ICU Bed Capacity Requirement',style= {'textAlign': 'center'},id='bar-plot-3-out'),
+                                                                                                                                        ],##
+                                                                                                                                        id="tooltip-bar3",style={"textDecoration": "underline", "cursor": "pointer"}),
+                                                                                                                                    ]),
+                                                                                                                                    dbc.Spinner(html.Div(id="loading-bar-output-3")),
+                                                                                                                                ],
+                                                                                                                                justify='center'),##
+                                                                                                                                ],
+                                                                                                                                id='bar-plot-3-title', style={'display':'block'}),
 
-                                                                                                                        dcc.Graph(id='bar-plot-1',style=bar_non_crit_style),
+                                                                                                                                dcc.Graph(id='bar-plot-3',style=bar_non_crit_style),
+                                                                                                                            
                                                                                                                 
                                                                                                                 ],
                                                                                                                 align='center',
+                                                                                                                
                                                                                                                 width = 12,
                                                                                                                 # xl = 6,
-                                                                                                                # width=6
                                                                                                                 ),
-                                                                                                                
-
-                                                                                                                
-                                                                                                        html.Hr(),
-
-
-
-                                                                                                        html.Div([
-                                                                                                                            dbc.Col([
-
-                                                                                                                                            html.Div(
-                                                                                                                                                [dbc.Row([##
-                                                                                                                                                    # html.H4(style={'fontSize': '180%'}, children = 'Peak ICU Bed Capacity Requirement'),
-                                                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
-                                                                                                                                                        html.Span([##
-                                                                                                                                                        html.Div('Peak ICU Bed Capacity Requirement',style= {'textAlign': 'center'},id='bar-plot-3-out'),
-                                                                                                                                                        ],##
-                                                                                                                                                        id="tooltip-bar3",style={"textDecoration": "underline", "cursor": "pointer"}),
-                                                                                                                                                    ]),
-                                                                                                                                                    dbc.Spinner(html.Div(id="loading-bar-output-3")),
-                                                                                                                                                ],
-                                                                                                                                                justify='center'),##
-                                                                                                                                                ],
-                                                                                                                                                id='bar-plot-3-title', style={'display':'block'}),
-
-                                                                                                                                                dcc.Graph(id='bar-plot-3',style=bar_non_crit_style),
-                                                                                                                                            
-                                                                                                                                
-                                                                                                                                ],
-                                                                                                                                align='center',
-                                                                                                                                
-                                                                                                                                width = 12,
-                                                                                                                                # xl = 6,
-                                                                                                                                ),
-
-                                                                                                                            html.Hr(),
-
-
-                                                                                                                                dbc.Col([
-                                                                                                                                            html.Div(
-                                                                                                                                                    [dbc.Row([##
-                                                                                                                                                        # html.H4(style={'fontSize': '180%'}, children = 'Time ICU Bed Capacity Exceeded'),
-                                                                                                                                                        html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
-                                                                                                                                                            html.Span([##
-                                                                                                                                                            html.Div('Time ICU Bed Capacity Exceeded',style= {'textAlign': 'center'},id='bar-plot-4-out'),
-                                                                                                                                                            ],##
-                                                                                                                                                        id="tooltip-bar4",style={"textDecoration": "underline", "cursor": "pointer"}),
-                                                                                                                                                        ]),
-                                                                                                                                                        
-                                                                                                                                                        dbc.Spinner(html.Div(id="loading-bar-output-4")),
-                                                                                                                                                    ],
-                                                                                                                                                    justify='center'),##
-                                                                                                                                                    ],
-                                                                                                                                            id='bar-plot-4-title',style={'display':'block'}),
-
-                                                                                                                                            dcc.Graph(id='bar-plot-4',style=bar_non_crit_style),
-                                                                                                                                ],
-                                                                                                                                align='center',
-                                                                                                                                width = 12,
-                                                                                                                                # xl = 6,
-                                                                                                                                ),
-                                                                                                                    # ],
-                                                                                                                    # style={'height': 2*bar_height}
-                                                                                                                    # ),
-                                                                                                                            
-                                                                                                                    html.Hr(),
-
-                                                                                                            ],
-                                                                                                            id = 'bar-plots-crit'
-                                                                                                            ),
-
-
-                                                                                                                
-                                                                                                    # dbc.Row([
-
-
-                                                                                                            dbc.Col([
-                                                                                                                        html.Div(
-                                                                                                                                [dbc.Row([##
-                                                                                                                                    # html.H4(style={'fontSize': '180%'}, children = 'Herd Immunity Threshold'),
-                                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
-                                                                                                                                        html.Span([##
-                                                                                                                                        html.Div('Herd Immunity Threshold',style= {'textAlign': 'center'},id='bar-plot-2-out'),
-                                                                                                                                    ],##
-                                                                                                                                    id="tooltip-bar2",style={"textDecoration": "underline", "cursor": "pointer"}),
-                                                                                                                                    ]),
-
-                                                                                                                                    dbc.Spinner(html.Div(id="loading-bar-output-2")),
-                                                                                                                                ],
-                                                                                                                            justify='center'),##
-                                                                                                                                ],
-                                                                                                                        id='bar-plot-2-title',style={ 'display':'block'}),
-
-                                                                                                                        dcc.Graph(id='bar-plot-2',style=bar_non_crit_style),
-                                                                                                                        
-
-                                                                                                            
-                                                                                                            ],
-                                                                                                            align='center',
-                                                                                                            width = 12,
-                                                                                                            # xl = 6,
-                                                                                                            ),
 
                                                                                                             html.Hr(),
 
 
-                                                                                                            dbc.Col([
-                                                                                                                    
-                                                                                                                    html.Div(
-                                                                                                                            [dbc.Row([##
-
-                                                                                                                                # html.H4(style={'fontSize': '180%'}, children = 'Time Until Herd Immunity Threshold Reached'),
-                                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                dbc.Col([
+                                                                                                                            html.Div(
+                                                                                                                                    [dbc.Row([##
+                                                                                                                                        html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
                                                                                                                                             html.Span([##
-                                                                                                                                            html.Div('Time Until Herd Immunity Threshold Reached',style= {'textAlign': 'center'},id='bar-plot-5-out'),
-                                                                                                                                        ],##
-                                                                                                                                    id="tooltip-bar5",style={"textDecoration": "underline", "cursor": "pointer"}),
-                                                                                                                                    ]),
-                                                                                                                                    dbc.Spinner(html.Div(id="loading-bar-output-5")),
-                                                                                                                            ],
-                                                                                                                            justify='center'
-                                                                                                                            ),##
-                                                                                                                            ],
-                                                                                                                    id='bar-plot-5-title',style={ 'display':'block'}),
+                                                                                                                                            html.Div('Time ICU Bed Capacity Exceeded',style= {'textAlign': 'center'},id='bar-plot-4-out'),
+                                                                                                                                            ],##
+                                                                                                                                        id="tooltip-bar4",style={"textDecoration": "underline", "cursor": "pointer"}),
+                                                                                                                                        ]),
+                                                                                                                                        
+                                                                                                                                        dbc.Spinner(html.Div(id="loading-bar-output-4")),
+                                                                                                                                    ],
+                                                                                                                                    justify='center'),##
+                                                                                                                                    ],
+                                                                                                                            id='bar-plot-4-title',style={'display':'block'}),
 
-                                                                                                                    dcc.Graph(id='bar-plot-5',style=bar_non_crit_style),
-                                                                                                                    
-
-                                                                                                            
-                                                                                                            ],
-                                                                                                            align='center',
-                                                                                                            width=12,
-                                                                                                            # xl = 6,
-                                                                                                            ),
-
-                                                                                                        dbc.Tooltip(
-                                                                                                                txt1,
-                                                                                                                target="tooltip-bar1",
-                                                                                                        ),
-                                                                                                        dbc.Tooltip(
-                                                                                                                txt2,
-                                                                                                                target="tooltip-bar2",
-                                                                                                        ),
-                                                                                                        dbc.Tooltip(
-                                                                                                                txt3,
-                                                                                                                target="tooltip-bar3",
-                                                                                                        ),
-                                                                                                        dbc.Tooltip(
-                                                                                                                txt4,
-                                                                                                                target="tooltip-bar4",
-                                                                                                        ),
-                                                                                                        dbc.Tooltip(
-                                                                                                                txt5,
-                                                                                                                target="tooltip-bar5",
-                                                                                                        ),
-
-
+                                                                                                                            dcc.Graph(id='bar-plot-4',style=bar_non_crit_style),
+                                                                                                                ],
+                                                                                                                align='center',
+                                                                                                                width = 12,
+                                                                                                                # xl = 6,
+                                                                                                                ),
                                                                                                     # ],
                                                                                                     # style={'height': 2*bar_height}
                                                                                                     # ),
+                                                                                                            
+                                                                                                    html.Hr(),
+
+                                                                                            ],
+                                                                                            id = 'bar-plots-crit'
+                                                                                            ),
 
 
-                                                                                        ],width=True),
-                                                                        ]),
+                                                                                                
+                                                                                    # dbc.Row([
+
+
+                                                                                            dbc.Col([
+                                                                                                        html.Div(
+                                                                                                                [dbc.Row([##
+                                                                                                                    # html.H4(style={'fontSize': '180%'}, children = 'Herd Immunity Threshold'),
+                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                        html.Span([##
+                                                                                                                        html.Div('Herd Immunity Threshold',style= {'textAlign': 'center'},id='bar-plot-2-out'),
+                                                                                                                    ],##
+                                                                                                                    id="tooltip-bar2",style={"textDecoration": "underline", "cursor": "pointer"}),
+                                                                                                                    ]),
+
+                                                                                                                    dbc.Spinner(html.Div(id="loading-bar-output-2")),
+                                                                                                                ],
+                                                                                                            justify='center'),##
+                                                                                                                ],
+                                                                                                        id='bar-plot-2-title',style={ 'display':'block'}),
+
+                                                                                                        dcc.Graph(id='bar-plot-2',style=bar_non_crit_style),
+                                                                                                        
+
+                                                                                            
+                                                                                            ],
+                                                                                            align='center',
+                                                                                            width = 12,
+                                                                                            # xl = 6,
+                                                                                            ),
+
+                                                                                            html.Hr(),
+
+
+                                                                                            dbc.Col([
+                                                                                                    
+                                                                                                    html.Div(
+                                                                                                            [dbc.Row([##
+
+                                                                                                                # html.H4(style={'fontSize': '180%'}, children = 'Time Until Herd Immunity Threshold Reached'),
+                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                            html.Span([##
+                                                                                                                            html.Div('Time Until Herd Immunity Threshold Reached',style= {'textAlign': 'center'},id='bar-plot-5-out'),
+                                                                                                                        ],##
+                                                                                                                    id="tooltip-bar5",style={"textDecoration": "underline", "cursor": "pointer"}),
+                                                                                                                    ]),
+                                                                                                                    dbc.Spinner(html.Div(id="loading-bar-output-5")),
+                                                                                                            ],
+                                                                                                            justify='center'
+                                                                                                            ),##
+                                                                                                            ],
+                                                                                                    id='bar-plot-5-title',style={ 'display':'block'}),
+
+                                                                                                    dcc.Graph(id='bar-plot-5',style=bar_non_crit_style),
+                                                                                                    
+
+                                                                                            
+                                                                                            ],
+                                                                                            align='center',
+                                                                                            width=12,
+                                                                                            # xl = 6,
+                                                                                            ),
+
+                                                                                        dbc.Tooltip(
+                                                                                                txt1,
+                                                                                                target="tooltip-bar1",
+                                                                                        ),
+                                                                                        dbc.Tooltip(
+                                                                                                txt2,
+                                                                                                target="tooltip-bar2",
+                                                                                        ),
+                                                                                        dbc.Tooltip(
+                                                                                                txt3,
+                                                                                                target="tooltip-bar3",
+                                                                                        ),
+                                                                                        dbc.Tooltip(
+                                                                                                txt4,
+                                                                                                target="tooltip-bar4",
+                                                                                        ),
+                                                                                        dbc.Tooltip(
+                                                                                                txt5,
+                                                                                                target="tooltip-bar5",
+                                                                                        ),
+                                                                                        
+
+
+
+                                                                        ],width=True),
+                                                                    ],id='bc-content'),
+
+                                                    # ],style={'display': 'none'}),
+                                                                                        
+                                                    html.Div(id='DPC-content',children=[
+                                                                html.Hr(),
+
+                                                                dbc.Row([
+                                                                        html.H4("Disease Progress Curves",
+                                                                        style={'margin-bottom': '3vh','margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
+                                                                        ),# style={'color':'blue'}),
+
+                                                                        dbc.Spinner(html.Div(id="loading-line-output-1")),
+                                                                        ],
+                                                                        # justify='center',
+                                                                        # style={'height':'6vh'}
+                                                                ),
+
+                                                                
+                                                                dcc.Graph(id='line-plot-1',style={'display': 'none'}),
+
+                                                                dbc.Container([html.Div([],style={'height': '3vh'})]),
+
+                                                                dcc.Graph(id='line-plot-2',style={'display': 'none'}),
+
+                                                                dbc.Container([html.Div([],style={'height': '1vh'})]),
+                                                                html.Hr(className='my-2'),
+                                                                dbc.Container([html.Div([],style={'height': '2vh'})]),
+
+                                                    ]),
+                                             
+                                                    html.Div(id = 'strategy-outcome-content',style={'display': 'none'}),
+                                                    
+                                                    
+                                                    
+                                                    
+                                                    
+                                                    
+                                             ##################################################################################################
+                                                    
+                                                    html.Hr(),
+
+                                                    dbc.Row([
+                                                        Results_interpretation,
+                                                    ],justify='center'),
+
+                                             
+                                             
+                                             
+
+
+                                         ]
+                                         ),
+#########################################################################################################################################################
+                                        # # tab 1
+                                        # dbc.Tab(label='Bar Graphs', label_style={"color": "#00AEF9" , 'fontSize':'120%' }, tab_id='tab_1', children = [
+                                        #                                                         dbc.Jumbotron([
+
+
+                                                                                            
+
+
+
+
+
+
+
+                                                                                        
+                                        #                                 ]),
 #########################################################################################################################################################
                                                                 
                                                                 
@@ -1808,54 +1915,54 @@ layout_inter = html.Div([
 
                                                                 
                                                                 # tab 2
-                                                                dbc.Tab(label='Results and Explanation', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='DPC',children=[
+                                                            #     dbc.Tab(label='Results and Explanation', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='DPC',children=[
                                     
                                     
-                                                                                                dbc.Row([
-                                                                                                        Results_intro,
-                                                                                                    ],justify='center'),
+                                                            #                                     dbc.Row([
+                                                            #                                             Results_intro,
+                                                            #                                         ],justify='center'),
 
-                                                                                                html.Hr(),
+                                                            #                                     html.Hr(),
 
                                                                                     
-                                                                                                html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
+                                                            #                                     # html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
 
-                                                                                                html.Hr(),
+                                                            #                                     html.Hr(),
 
-                                                                                                dbc.Row([
-                                                                                                        html.H4("Disease Progress Curves",
-                                                                                                        style={'margin-bottom': '3vh','margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
-                                                                                                        ),# style={'color':'blue'}),
+                                                            #                                     dbc.Row([
+                                                            #                                             html.H4("Disease Progress Curves",
+                                                            #                                             style={'margin-bottom': '3vh','margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
+                                                            #                                             ),# style={'color':'blue'}),
 
-                                                                                                        dbc.Spinner(html.Div(id="loading-line-output-1")),
-                                                                                                        ],
-                                                                                                        # justify='center',
-                                                                                                        # style={'height':'6vh'}
-                                                                                                ),
-
-                                                                                                
-                                                                                                dcc.Graph(id='line-plot-1',style={'display': 'none'}),
-
-                                                                                                dbc.Container([html.Div([],style={'height': '3vh'})]),
-
-                                                                                                dcc.Graph(id='line-plot-2',style={'display': 'none'}),
-
-                                                                                                dbc.Container([html.Div([],style={'height': '1vh'})]),
-                                                                                                html.Hr(className='my-2'),
-                                                                                                dbc.Container([html.Div([],style={'height': '2vh'})]),
+                                                            #                                             dbc.Spinner(html.Div(id="loading-line-output-1")),
+                                                            #                                             ],
+                                                            #                                             # justify='center',
+                                                            #                                             # style={'height':'6vh'}
+                                                            #                                     ),
 
                                                                                                 
-                                                                                                dbc.Row([
-                                                                                                        Results_interpretation,
-                                                                                                    ],justify='center'),
+                                                            #                                     dcc.Graph(id='line-plot-1',style={'display': 'none'}),
 
-                                                            ####################################################################################
-                                                            ####################################################################################
+                                                            #                                     dbc.Container([html.Div([],style={'height': '3vh'})]),
 
-                                                                ####################################################################################
-                                                                ####################################################################################
+                                                            #                                     dcc.Graph(id='line-plot-2',style={'display': 'none'}),
+
+                                                            #                                     dbc.Container([html.Div([],style={'height': '1vh'})]),
+                                                            #                                     html.Hr(className='my-2'),
+                                                            #                                     dbc.Container([html.Div([],style={'height': '2vh'})]),
+
+                                                                                                
+                                                            #                                     dbc.Row([
+                                                            #                                             Results_interpretation,
+                                                            #                                         ],justify='center'),
+
+                                                            # ####################################################################################
+                                                            # ####################################################################################
+
+                                                            #     ####################################################################################
+                                                            #     ####################################################################################
                                                                                             
-                                                                                                    ]),
+                                                            #                                         ]),
                                                                                                                 dbc.Tab(label='Model Structure', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='model_s',children=[
                                                                                                         
                                                                                                                                                 html.Div([
@@ -2814,9 +2921,9 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
     strat_name = presets_dict[preset]
 
     if which_strat==1:
-        Outcome_title = strat_name + ' Strategy ' + num_st + 'Outcome'
+        Outcome_title = strat_name + ' Strategy ' + num_st
     else:
-        Outcome_title = strat_name + ' Strategy Two Outcome'
+        Outcome_title = strat_name + ' Strategy Two'
     
     if 'True_crit' in hosp:
         crit_text_on_or_off   = {'display': 'none'}
@@ -2890,7 +2997,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
             # dbc.Container([
             
                     dbc.Row([
-                        html.H4(Outcome_title,className='display-4',style={'fontSize':'300%'}),
+                        html.H3(Outcome_title,style={'fontSize':'200%'}),
                     ],
                     justify='center'
                     ),
@@ -3024,6 +3131,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 ########################################################################################################################
 
 
+# bar_children = 
 
 
 
@@ -3079,8 +3187,13 @@ def intro_content(tab,hosp,sol_do_n):
 
 
 @app.callback([ Output('spacer', 'style'),
-                Output('text-tab-0', 'children'),
-                Output('bar_page_title', 'children'),
+
+                Output('DPC-content', 'style'),
+                Output('bc-content', 'style'),
+                Output('strategy-outcome-content', 'style'),
+
+                Output('strategy-outcome-content', 'children'),
+                # Output('bar_page_title', 'children'),
                 Output('line_page_title', 'children'),
 
 
@@ -3117,6 +3230,12 @@ def intro_content(tab,hosp,sol_do_n):
                 ],
                 [
                 Input('interactive-tabs', 'active_tab'),
+                Input('DPC_dd', 'n_clicks'),
+                Input('BC_dd', 'n_clicks'),
+                Input('SO_dd', 'n_clicks'),
+
+
+
                 Input('main-tabs', 'value'),
 
                 
@@ -3140,11 +3259,33 @@ def intro_content(tab,hosp,sol_do_n):
                 State('hosp-cats', 'value'),
                 State('number-strats-slider', 'value'),
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,years,sol_do_nothing,preset,month,hosp,num_strat): # pathname, tab_intro pathname
+def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sols,groups,groups2,which_plots,output,years,sol_do_nothing,preset,month,hosp,num_strat): # pathname, tab_intro pathname
+
+    ctx = dash.callback_context
+    
+    DPC_style = {'display' : 'none'}
+    SO_style = {'display' : 'none'}
+    BC_style = {'display': 'none'}
+
+    if not ctx.triggered:
+        button_id = "DPC_dd"
+    else:
+        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    
+    if button_id == 'BC_dd':
+        BC_style = {'display': 'block'}
+    elif button_id == 'SO_dd':
+        SO_style = {'display': 'block'}
+    else: # 'DPC
+        DPC_style = {'display': 'block'}
+        button_id = 'DPC_dd' # in case wasn't
+
+    
+
 
 
 ########################################################################################################################
-    text_object_0 = ['']
+    strategy_outcome_text = ['']
     spacer_style = {'display': 'none'}
 
     bar1 = dummy_figure
@@ -3214,7 +3355,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
             herd_list_3yr = []
         ########################################################################################################################
             #loop start
-            if sols is not None and tab!='DPC':
+            if sols is not None and button_id!='DPC_dd': # tab = DPC
 
                 if deaths:
                     metric = 'deaths'
@@ -3272,26 +3413,9 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
         ########################################################################################################################
             # tab 0
-            if sols is not None and tab=='tab_0':
+            if sols is not None and button_id=='SO_dd': # tab = tab_0
 
-                text_object_0 = html.Div([
-                    dcc.Markdown('''
-                    
-                    In this section we find an overview of the outcome of your choice of strategy.
-
-                    **Firstly**, pick the **type of control**.
-
-                    **Secondly**, pick the **control timings**.
-
-                    The other options are optional custom choices that you may choose to investigate further or ignore altogether.
-
-                    *Click/hover on underlined text to find out more.*
-
-                    ''',
-                    style = {'margin-top': '2vh', 'textAlign': 'center'}
-                    ),
-
-                    html.Hr(),
+                strategy_outcome_text = html.Div([
 
                     outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[0],herd_list_2yr[0],ICU_data_2yr[0],metric,hosp,preset,number_strategies = num_strat,which_strat=1),
                     html.Hr(),
@@ -3309,14 +3433,14 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
         ########################################################################################################################
             bar1_title = 'Total Deaths (Percentage)'
 
-            if tab!='tab_1':
+            if button_id!='BC_dd': # tab!='tab_1':
                 bar1 = dummy_figure
                 bar2 = dummy_figure
                 bar3 = dummy_figure
                 bar4 = dummy_figure
                 bar5 = dummy_figure
 
-            if sols is not None and tab=='tab_1':
+            if sols is not None and button_id=='BC_dd': # tab=='tab_1':
 
                 if not deaths:
                     bar1_title = 'Maximum Percentage Of Population In Critical Care'
@@ -3341,12 +3465,12 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
         ########################################################################################################################
 
-            if tab!='DPC':
+            if button_id!='DPC_dd': # tab!='DPC':
                 fig1 = dummy_figure
                 fig2 = dummy_figure
 
 
-            if sols is not None and tab=='DPC':
+            if sols is not None and button_id=='DPC_dd':
                 spacer_style = {'height': '60vh', 'display': 'block'}
                 output_2 = [i for i in output if i in ['C','H','D']]
                 outputs_style = {'display': 'block', 'fontSize': '110%'}
@@ -3380,8 +3504,11 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
     return [
     spacer_style,
-    text_object_0,
-    Strat_outcome_title,
+    DPC_style,
+    BC_style,
+    SO_style,
+    strategy_outcome_text,
+    # Strat_outcome_title,
     Strat_outcome_title,
     bar1,
     bar2,
