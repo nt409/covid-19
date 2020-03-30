@@ -134,13 +134,17 @@ index = {'S': params.S_L_ind,
 ########################################################################################################################
 
 txt1 = dcc.Markdown('''
+    #### Total Deaths/Critical Care
 
-    This plot shows a prediction for the number of deaths caused by the epidemic in the absence of a vaccine. It also shows the split between the deaths in the high and low risk groups.
+    This plot shows a prediction for the number of deaths (*or critical care depending on hospital category settings*) caused by the epidemic in the absence of a vaccine. It also shows the split between the deaths in the high and low risk groups.
     
     Most outcomes result in a much higher proportion of high risk deaths, so it is critical that any strategy should protect the high risk.
 
-    ''',style={'fontSize': '2vh' })
+    Quarantine/lockdown strategies are very effective at slowing the death rate, but only work whilst they're in place (or until a vaccine is produced).
+
+    ''',style={'fontSize': '1.4vh' })
 txt2 = dcc.Markdown('''
+    #### Herd immunity threshold
 
     This plot shows how close to the 60% population immunity the strategy gets.
     
@@ -148,22 +152,25 @@ txt2 = dcc.Markdown('''
 
     The optimal outcome is obtained by making sure the 60% that do get the infection are from the low risk group.
 
-    ''',style={'fontSize': '1.7vh' })
+    ''',style={'fontSize': '1.4vh' })
 txt3 = dcc.Markdown('''
+    #### ICU capacity
 
     This plot shows the maximum ICU capacity needed.
     
     Better strategies reduce the load on the healthcare system by reducing the numbers requiring Intensive Care at any one time.
 
-    ''',style={'fontSize': '2vh' })
+    ''',style={'fontSize': '1.4vh' })
 txt4 = dcc.Markdown('''
+    #### ICU capacity (time exceeded)
 
     This plot shows the length of time for which ICU capacity is exceeded, over the calculated number of years.
 
     Better strategies will exceed the ICU capacity for shorter lengths of time.
 
-    ''',style={'fontSize': '2vh' })
+    ''',style={'fontSize': '1.4vh' })
 txt5 = dcc.Markdown('''
+    #### Time to herd immunity
 
     This plot shows the length of time until the safe threshold for population immunity is 95% reached.
     
@@ -171,7 +178,7 @@ txt5 = dcc.Markdown('''
 
     The longer it takes to reach this safety threshold, the longer the population must continue control measures because it is at risk of a further epidemic.
 
-    ''',style={'fontSize': '1.7vh' })
+    ''',style={'fontSize': '1.4vh' })
 
 ########################################################################################################################
 
@@ -381,6 +388,105 @@ def preset_strat(preset):
     return lr, hr
 
 
+
+def strat_table(month,beta_H,beta_L,N_sols,i):
+        if N_sols==2:
+            if i==1:
+                Value_string = 'Value, Strategy One'
+            else:
+                Value_string = 'Value, Strategy Two'
+
+        else:
+            Value_string = 'Value'
+
+        
+        return html.Div([dbc.Table(
+                        [
+                            html.Thead(
+                                html.Tr([ 
+                                html.Th("Strategy variable"),
+                                html.Th(Value_string)
+                                ])
+                                ),
+                        ]
+                        +
+                        [ 
+                        html.Tbody([
+                                html.Tr([ 
+                                    html.Td(html.H5(["High Risk ",
+                                        html.Span(
+                                            "Infection Rate",
+                                            id="tooltip-hr",
+                                            style={"textDecoration": "underline", "cursor": "pointer"},
+                                        ),
+                                        ],style={'color': 'white', 'fontSize': '100%'})),
+                                    html.Td(html.H5('{0:,.0f}'.format(100*beta_H) + '%',style={'color': 'white', 'fontSize': '100%'}))
+                                    ]),
+                                html.Tr([ 
+                                    html.Td(html.H5(["Low Risk ",
+                                    html.Span(
+                                            "Infection Rate",
+                                            id="tooltip-lr",
+                                            style={"textDecoration": "underline", "cursor": "pointer"},
+                                        ),
+                                        ],style={'color': 'white', 'fontSize': '100%'})),
+                                    html.Td(html.H5('{0:,.0f}'.format(100*beta_L) + '%',style={'color': 'white', 'fontSize': '100%'}))
+                                ]),
+                                html.Tr([ 
+                                    html.Td(html.H5([
+                                        html.Span(
+                                            'Control Starts',
+                                            id="tooltip-month",
+                                            style={"textDecoration": "underline", "cursor": "pointer"},
+                                        ),
+                                        ],style={'color': 'white', 'fontSize': '100%'})),
+                                    html.Td(html.H5('Month ' + str(month[0]),style={'color': 'white', 'fontSize': '100%'}))
+                                ]),
+                                html.Tr([ 
+                                    html.Td(html.H5([
+                                        html.Span(
+                                            'Control Ends',
+                                            id="tooltip-month2",
+                                            style={"textDecoration": "underline", "cursor": "pointer"},
+                                        ),
+                                    ],style={'color': 'white', 'fontSize': '100%'})),
+                                    html.Td(html.H5('Month ' + str(month[1]),style={'color': 'white', 'fontSize': '100%'}))
+                                ]),
+                        ]),
+                        ],
+                        bordered=True,
+                        dark=True,
+                        hover=True,
+                        responsive=True,
+                        striped=True,
+                    style={'margin-bottom': '2vh'} # 'margin-left': '1vh', 'margin-right': '1vh', 
+                    ),
+
+                    dbc.Tooltip(
+                    "The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.",
+                    target="tooltip-hr",
+                    placement='right'
+                    ),
+                    dbc.Tooltip(
+                    "The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.",
+                    target="tooltip-lr",
+                    placement='right'
+                    ),
+
+                    dbc.Tooltip(
+                    "Use the 'Months of Control' option in the left-hand bar to adjust when we start controlling the epidemic. When control is not in place the infection rates remain at a baseline level (100%). When control is in place the infection rates are modified (by an amount depending on the choice of control)",
+                    target="tooltip-month",
+                    placement='right'
+                    ),
+
+                    dbc.Tooltip(
+                    "Use the 'Months of Control' option in the left-hand bar to adjust when we start controlling the epidemic. When control is not in place the infection rates remain at a baseline level (100%). When control is in place the infection rates are modified (by an amount depending on the choice of control)",
+                    target="tooltip-month2",
+                    placement='right'
+                    ),
+                    ],
+                    style={'fontSize': '1.6vh'}
+                    )
 
 
 ########################################################################################################################
@@ -1100,7 +1206,7 @@ Results_interpretation =  html.Div([
     
     We consider the effect of control in the **absence** of a vaccine. Of course, if a vaccine were introduced this would greatly help reduce the damage caused by COVID-19, and would further promote the use of the quarantine strategy before relying on the vaccine to generate [**herd immunity**](/intro).
 
-    You can see how quickly the ICU capacity could be overwhelmed. You can also see how important it is to protect the high risk group (potentially by specifically reducing their transmission rate whilst allowing infection to spread more freely through lower risk groups).
+    You can see how quickly the ICU capacity (relating to the number of intensive care beds available) could be overwhelmed. You can also see how important it is to **protect the high risk group** (potentially by specifically reducing their transmission rate whilst allowing infection to spread more freely through lower risk groups).
 
     For further explanation, read the [**Background**](/intro).
     
@@ -1168,11 +1274,11 @@ inputs_col = html.Div([
                                                                                 placement='right',
                                                                             ),
 
-                                                                            html.H6(
+                                                                            html.H6(['1. ',
                                                                                 html.Span(
-                                                                                        '1. Control Type',
+                                                                                        'Control Type',
                                                                                         style={"textDecoration": "underline"}, # , 'color': 'white'
-                                                                                ),
+                                                                                )],
                                                                                 id='tooltip-control',
                                                                                 style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
 
@@ -1195,13 +1301,13 @@ inputs_col = html.Div([
                                                                             
 
                                                                             html.Div([
-                                                                                dcc.Dropdown(
+                                                                                dbc.RadioItems(
                                                                                     id = 'preset',
                                                                                     options=[{'label': presets_dict[key],
                                                                                     'value': key} for key in presets_dict],
                                                                                     value= 'MSD',
-                                                                                    clearable=False,
-                                                                                    multi=False
+                                                                                    # clearable=False,
+                                                                                    # multi=False
 
                                                                                 ),
                                                                             ],
@@ -1253,7 +1359,7 @@ inputs_col = html.Div([
                                                                                 '''
                                                                                 #### Custom Options
 
-                                                                                Use this to choose your own custom strategy. You can compare two strategies directly or consider one only.
+                                                                                Use this to choose your own custom strategy (you must first select 'custom' in the 'Control Type' selector above). You can compare two strategies directly or consider one only.
                                                                                 
                                                                                 The choice consists of selecting whether to accelerate or decelerate spread of COVID-19 (using the 'infection rate' sliders).
                                                                                 
@@ -1557,9 +1663,12 @@ inputs_col = html.Div([
                                                                                         id="collapse-hospital",
                                                                                         is_open=False,
                                                                                     ),
-
-
-
+                  
+                  
+                  
+                  
+                  
+                  
 
 
 #########################################################################################################################################################
@@ -1626,6 +1735,8 @@ results_col = html.Div([
                                                             className="mb-3",
                                                             style = {'margin-top': '2vh', 'margin-bottom': '2vh', 'textAlign': 'center'}
                                                         ),
+                                                        
+
                                              
                                                     # html.Div(id='bc-content',children=[
                                                         html.Div([
@@ -1654,9 +1765,14 @@ results_col = html.Div([
                                                                                                         [
                                                                                                         dbc.Row([
                                                                                                             html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                dbc.Button([
                                                                                                                 html.Span([##
                                                                                                                 html.Div('Total Deaths (Percentage)',style= {'textAlign': 'center'},id='bar-plot-1-out'),
                                                                                                                 ],##
+                                                                                                                ),
+                                                                                                                ],
+                                                                                                                color='info',
+                                                                                                                size = 'lg',
                                                                                                                 id="tooltip-bar1",style={"textDecoration": "underline", "cursor": "pointer"}),
                                                                                                             ]),
                                                                                                             dbc.Spinner(html.Div(id="loading-bar-output-1")),
@@ -1686,9 +1802,13 @@ results_col = html.Div([
                                                                                                                             html.Div(
                                                                                                                                 [dbc.Row([##
                                                                                                                                     html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                                        dbc.Button([
                                                                                                                                         html.Span([##
                                                                                                                                         html.Div('Peak ICU Bed Capacity Requirement',style= {'textAlign': 'center'},id='bar-plot-3-out'),
-                                                                                                                                        ],##
+                                                                                                                                        ]),##
+                                                                                                                                        ],
+                                                                                                                                        color='info',
+                                                                                                                                        size = 'lg',
                                                                                                                                         id="tooltip-bar3",style={"textDecoration": "underline", "cursor": "pointer"}),
                                                                                                                                     ]),
                                                                                                                                     dbc.Spinner(html.Div(id="loading-bar-output-3")),
@@ -1714,9 +1834,13 @@ results_col = html.Div([
                                                                                                                             html.Div(
                                                                                                                                     [dbc.Row([##
                                                                                                                                         html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                                            dbc.Button([
                                                                                                                                             html.Span([##
                                                                                                                                             html.Div('Time ICU Bed Capacity Exceeded',style= {'textAlign': 'center'},id='bar-plot-4-out'),
-                                                                                                                                            ],##
+                                                                                                                                            ]),##
+                                                                                                                                            ],
+                                                                                                                                            color='info',
+                                                                                                                                            size = 'lg',
                                                                                                                                         id="tooltip-bar4",style={"textDecoration": "underline", "cursor": "pointer"}),
                                                                                                                                         ]),
                                                                                                                                         
@@ -1748,9 +1872,13 @@ results_col = html.Div([
                                                                                                                 [dbc.Row([##
                                                                                                                     # html.H4(style={'fontSize': '180%'}, children = 'Herd Immunity Threshold'),
                                                                                                                     html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                        dbc.Button([
                                                                                                                         html.Span([##
                                                                                                                         html.Div('Herd Immunity Threshold',style= {'textAlign': 'center'},id='bar-plot-2-out'),
-                                                                                                                    ],##
+                                                                                                                    ]),##
+                                                                                                                    ],
+                                                                                                                    color='info',
+                                                                                                                    size = 'lg',
                                                                                                                     id="tooltip-bar2",style={"textDecoration": "underline", "cursor": "pointer"}),
                                                                                                                     ]),
 
@@ -1780,9 +1908,13 @@ results_col = html.Div([
 
                                                                                                                 # html.H4(style={'fontSize': '180%'}, children = 'Time Until Herd Immunity Threshold Reached'),
                                                                                                                     html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                            dbc.Button([
                                                                                                                             html.Span([##
                                                                                                                             html.Div('Time Until Herd Immunity Threshold Reached',style= {'textAlign': 'center'},id='bar-plot-5-out'),
-                                                                                                                        ],##
+                                                                                                                        ]),##
+                                                                                                                        ],
+                                                                                                                    color='info',
+                                                                                                                    size = 'lg',
                                                                                                                     id="tooltip-bar5",style={"textDecoration": "underline", "cursor": "pointer"}),
                                                                                                                     ]),
                                                                                                                     dbc.Spinner(html.Div(id="loading-bar-output-5")),
@@ -1861,6 +1993,15 @@ results_col = html.Div([
                                                     ]),
                                              
                                                     html.Div(id = 'strategy-outcome-content',style={'display': 'none'}),
+
+                                                    html.Div(style= {'height': '2vh'}),
+
+                                                    dbc.Col([
+                                                                html.Div(id='strategy-table'),
+                                                            ],
+                                                            width={'size': 8, 'offset': 2},
+                                                            # xl = 4,
+                                                    ),
                                                     
                                                     
                                                 ])
@@ -3145,91 +3286,6 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
             # dbc
             dbc.Row([
 
-                dbc.Col([
-                    dbc.Table(
-                        [
-                            html.Thead(
-                                html.Tr([ 
-                                html.Th("Strategy variable"),
-                                html.Th("Value")
-                                ])
-                                ),
-                        ]
-                        +
-                        [ 
-                        html.Tbody([
-                                html.Tr([ 
-                                    html.Td(html.H5(["High Risk ",
-                                        html.Span(
-                                            "Infection Rate",
-                                            id="tooltip-hr",
-                                            style={"textDecoration": "underline", "cursor": "pointer"},
-                                        ),
-                                        ],style={'color': 'white', 'fontSize': '100%'})),
-                                    html.Td(html.H5('{0:,.0f}'.format(100*beta_H) + '%',style={'color': 'white', 'fontSize': '100%'}))
-                                    ]),
-                                html.Tr([ 
-                                    html.Td(html.H5(["Low Risk ",
-                                    html.Span(
-                                            "Infection Rate",
-                                            id="tooltip-lr",
-                                            style={"textDecoration": "underline", "cursor": "pointer"},
-                                        ),
-                                        ],style={'color': 'white', 'fontSize': '100%'})),
-                                    html.Td(html.H5('{0:,.0f}'.format(100*beta_L) + '%',style={'color': 'white', 'fontSize': '100%'}))
-                                ]),
-                                html.Tr([ 
-                                    html.Td(html.H5([
-                                        html.Span(
-                                            'Control Starts',
-                                            id="tooltip-month",
-                                            style={"textDecoration": "underline", "cursor": "pointer"},
-                                        ),
-                                        ],style={'color': 'white', 'fontSize': '100%'})),
-                                    html.Td(html.H5('Month ' + str(month[0]),style={'color': 'white', 'fontSize': '100%'}))
-                                ]),
-                                html.Tr([ 
-                                    html.Td(html.H5([
-                                        html.Span(
-                                            'Control Ends',
-                                            id="tooltip-month2",
-                                            style={"textDecoration": "underline", "cursor": "pointer"},
-                                        ),
-                                    ],style={'color': 'white', 'fontSize': '100%'})),
-                                    html.Td(html.H5('Month ' + str(month[1]),style={'color': 'white', 'fontSize': '100%'}))
-                                ]),
-                        ]),
-                        ],
-                        bordered=True,
-                        dark=True,
-                        hover=True,
-                        responsive=True,
-                        striped=True,
-                    style={'margin-bottom': '2vh'} # 'margin-left': '1vh', 'margin-right': '1vh', 
-                    ),
-                ],
-                width={'size': 8, 'offset': 2},
-                # xl = 4,
-                ),
-            
-                dbc.Tooltip(
-                    "The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.",
-                    target="tooltip-hr",
-                ),
-                dbc.Tooltip(
-                    "The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.",
-                    target="tooltip-lr",
-                ),
-                
-                dbc.Tooltip(
-                    "Use the 'Months of Control' option in the left-hand bar to adjust when we start controlling the epidemic. When control is not in place the infection rates remain at a baseline level (100%). When control is in place the infection rates are modified (by an amount depending on the choice of control)",
-                    target="tooltip-month",
-                ),
-
-                dbc.Tooltip(
-                    "Use the 'Months of Control' option in the left-hand bar to adjust when we start controlling the epidemic. When control is not in place the infection rates remain at a baseline level (100%). When control is in place the infection rates are modified (by an amount depending on the choice of control)",
-                    target="tooltip-month2",
-                ),
             
                 dbc.Col([
 
@@ -3315,7 +3371,7 @@ def intro_content(tab,hosp,sol_do_n):
 
 
 @app.callback([ 
-                # Output('spacer', 'style'),
+                Output('strategy-table', 'children'),
 
                 Output('DPC-content', 'style'),
                 Output('bc-content', 'style'),
@@ -3418,6 +3474,7 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
         DPC_active = True
 
     
+    
 
 
 
@@ -3490,6 +3547,13 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
             crit_cap_quoted_3yr = []
             ICU_data_3yr = []
             herd_list_3yr = []
+            tables = []
+            for ii in range(len(sols)):
+                if sols[ii] is not None and ii<len(sols)-1:
+                    # print(ii,len(sols))
+                    sol = sols[ii]
+                    table_out = strat_table(month,sol['beta_H'],sol['beta_L'],len(sols)-1,ii+1)
+                    tables.append(table_out)
         ########################################################################################################################
             #loop start
             if sols is not None and button_id!='DPC_dd': # tab = DPC
@@ -3637,12 +3701,15 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
             if which_plots=='two':
                 line_plot_style_1 = {'height': fig_height_2, 'width': fig_width, 'display': 'block'}
                 line_plot_style_2 = {'height': fig_height_2, 'width': fig_width, 'display': 'block'}
+
+            # print(tables)
                 
 
 ########################################################################################################################
 
     return [
     # spacer_style,
+    tables,
     DPC_style,
     BC_style,
     SO_style,
