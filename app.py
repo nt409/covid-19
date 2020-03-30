@@ -1091,16 +1091,13 @@ justify='center')
 ])
 
 
-Results_explanation =  html.Div([
-    html.H4("Instructions and Interpretation", className="display-4",style={'fontSize': '300%'}),
-    # html.Hr(className='my-2'), # didn't work??
-    html.Hr(className='my-2'),
+Results_intro =  html.Div([
+    html.H4("Instructions", className="display-4",style={'fontSize': '300%'}),
 
+    html.Hr(),
 
     dcc.Markdown(
     '''
-    ## Instructions
-
     Use the '**Inputs**' on the left hand bar to adjust choice of control measures. You can adjust the control measures and the length of time that they are implemented.
 
     Use the '**Plot Settings**' button on the left if you'd like to adjust what the plot shows. You can choose whether to consider only one of the low or high risk groups, or plot both groups together, or plot all lines.
@@ -1113,7 +1110,15 @@ Results_explanation =  html.Div([
 
     All infection rates are given relative to a baseline level (at 100%) for COVID-19.
 
-    ## Interpretation
+    '''),
+])
+
+Results_interpretation =  html.Div([
+    html.H4("Interpretation", className="display-4",style={'fontSize': '300%'}),
+    
+    html.Hr(),
+    
+    dcc.Markdown('''
 
     The plots will show a prediction for how coronavirus will affect the population. It is assumed that control measures are in place for a **maximum of one year**.
     
@@ -1149,16 +1154,23 @@ layout_inter = html.Div([
 
                                                         # start of col 1a
                                                         dbc.Col([
-                                                                    dbc.Container([
-                                                                    html.Div([
-                                                                    ],style={'height': '2vh'}
-                                                                    ),
-                                                                    ]),
+                                                                    # dbc.Container([
+                                                                    # html.Div([
+                                                                    # ],style={'height': '2vh'}
+                                                                    # ),
+                                                                    # ]),
 
                                                                     dbc.Jumbotron([
                                                                             
+                                                                            
 
+                                                                            html.Hr(),
+                                                                            
                                                                             html.P('Hover/click on the underlined text to find out more.',style={'fontSize': '100%'}),
+
+                                                                            html.Div(style={'display': 'none'},id='spacer'),
+                                                                            
+                                                                            html.Hr(),
 
                                                                             html.H4(
                                                                                 html.Span(
@@ -1208,6 +1220,8 @@ layout_inter = html.Div([
                                                                             ],
                                                                             style={'fontSize': '180%'},
                                                                             ),
+                                                                            html.Hr(),
+
                                                                                     
         ###################################
 
@@ -1357,6 +1371,8 @@ layout_inter = html.Div([
                                                                             ),
 
 
+                                                                            html.Hr(),
+
                                                                             dbc.Button([
                                                                                 html.Span(
                                                                                         'Plot Settings',
@@ -1466,10 +1482,12 @@ layout_inter = html.Div([
                                                                                                                     ],id='outputs-div',
                                                                                                                     
                                                                                                                     ),
+                                                                                                                    html.Hr(),
                                                                                     ],
                                                                                     id="collapse-plots",
                                                                                     is_open=False,
                                                                                     ),
+
 
                                                                                     dbc.Button([
                                                                                         html.Span(
@@ -1574,9 +1592,17 @@ layout_inter = html.Div([
 
 
 
+                                                                                        dcc.Markdown('''
+                                                                                        In this section we present some bar charts to illustrate the effectiveness of each strategy choice.
+                                                                                        
+                                                                                        Again, choose your strategy using the bar on the left.
+                                                                                        ''',style = {'textAlign': 'center', 'margin-top': '2vh'}),
+                                                                                        
+                                                                                        html.Hr(),
 
-
-                                                                                        html.H4('Strategy Outcome',id='bar_page_title',className="display-4",style={'fontSize': '300%', 'textAlign': 'center', 'margin-bottom': '2vh'}),
+                                                                                        html.H4('Strategy Outcome',id='bar_page_title',className="display-4",style={'fontSize': '300%', 'textAlign': 'center', 'margin-top': '1vh', 'margin-bottom': '2vh'}),
+                                                                                        
+                                                                                        html.Hr(),
 
                                                                                         dcc.Markdown('''
                                                                                         Hover/click on each plot title for an explanation.
@@ -1585,35 +1611,6 @@ layout_inter = html.Div([
 
                     
                                                                                         dbc.Col([
-                                                                                                # dbc.Row([
-                                                                                                        # dbc.Row([
-
-
-
-                                                                                                                # dbc.Col([
-                                                                                                                # # html.Div([
-                                                                                                                #         html.Div(id='saved-clicks',style={'display': 'none'}),
-                                                                                                                #         dbc.Card([
-                                                                                                                #             dbc.CardHeader(html.H4(style={'fontSize': '180%'}, children = 'Explanation (click on plot titles)')),
-                                                                                                                #             dbc.CardBody([
-                                                                                                                #                     html.Div(id='explanation'),
-                                                                                                                #             ]
-                                                                                                                #             )
-                                                                                                                #         ],
-                                                                                                                #         color='light',
-                                                                                                                #         style = {'height': '90%', 'margin-bottom': '3vh'}
-                                                                                                                #         ),
-                                                                                                                
-                                                                                                                # ],
-                                                                                                                # width = 12,
-                                                                                                                # ),
-                                                                                                                # xl = 6,
-                                                                                                                # style={'display': 'inline-block'}
-                                                                                                                
-
-
-                                                                                                                # explan = dcc.Markdown('''Click on the titles of each graph for an explanation of each plot''',style={'fontSize': '2vh'})
-                                                                                                                
 
                                                                                                                 dbc.Col([
                                                                                                                 # html.Div([
@@ -1642,17 +1639,13 @@ layout_inter = html.Div([
                                                                                                                 ),
                                                                                                                 
 
-                                                                                                        # ],
-                                                                                                        # # style={'height': 2*bar_height}
-                                                                                                        # ),
                                                                                                                 
                                                                                                         html.Hr(),
 
 
 
                                                                                                         html.Div([
-                                                                                                                    # dbc.Row([
-                                                                                                                                dbc.Col([
+                                                                                                                            dbc.Col([
 
                                                                                                                                             html.Div(
                                                                                                                                                 [dbc.Row([##
@@ -1678,6 +1671,9 @@ layout_inter = html.Div([
                                                                                                                                 width = 12,
                                                                                                                                 # xl = 6,
                                                                                                                                 ),
+
+                                                                                                                            html.Hr(),
+
 
                                                                                                                                 dbc.Col([
                                                                                                                                             html.Div(
@@ -1743,6 +1739,8 @@ layout_inter = html.Div([
                                                                                                             width = 12,
                                                                                                             # xl = 6,
                                                                                                             ),
+
+                                                                                                            html.Hr(),
 
 
                                                                                                             dbc.Col([
@@ -1811,6 +1809,14 @@ layout_inter = html.Div([
                                                                 
                                                                 # tab 2
                                                                 dbc.Tab(label='Results and Explanation', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='DPC',children=[
+                                    
+                                    
+                                                                                                dbc.Row([
+                                                                                                        Results_intro,
+                                                                                                    ],justify='center'),
+
+                                                                                                html.Hr(),
+
                                                                                     
                                                                                                 html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
 
@@ -1840,19 +1846,14 @@ layout_inter = html.Div([
 
                                                                                                 
                                                                                                 dbc.Row([
-
-                                                                                                    # dbc.Col([
-                                                                                                    # dbc.Jumbotron([
-                                                                                                        Results_explanation,
-                                                                                                    # ]),
-                                                                                                    # ],width=8),
+                                                                                                        Results_interpretation,
+                                                                                                    ],justify='center'),
 
                                                             ####################################################################################
                                                             ####################################################################################
 
                                                                 ####################################################################################
                                                                 ####################################################################################
-                                                                                                        ]), # row below graphs
                                                                                             
                                                                                                     ]),
                                                                                                                 dbc.Tab(label='Model Structure', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='model_s',children=[
@@ -2164,30 +2165,14 @@ page_layout = html.Div([
                     className="display-4",
                     style={'margin-top': '2vh','fontSize': '7vh'}
                     ),
-                    html.P('Best viewed in landscape mode',
+                    html.P('Best viewed in landscape mode. Hover over underlined text for more details.',
                     style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '2vh'}
                     ),
 
                     html.P('Disclaimer: this work is intended for educational purposes only and not decision making. There are many uncertainties in the COVID debate and there are limitations to the model.',
                     style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '1.5vh'}
                     ),
-                    # html.Hr(),
 
-                    # html.Div([
-                    #     dcc.Markdown(
-                    #     '''
-                    #     An implementation of a model parameterised for COVID-19.
-                        
-                    #     ## Read our [**introduction**](/intro), experiment with the [**interactive model**](/inter), or explore [**real time data**](/data).
-                        
-                    #     Authors: Nick Taylor and Daniel Muthukrishna.
-                    #     '''
-                    #     ,style={'fontSize': 18}),
-                    #     ]),
-
-                    # ],fluid=True)
-                    # html.P(,
-                    # className="lead"),
                 ],width=True,
                 style={'margin-left': '10vh'}
                 ),
@@ -2204,15 +2189,15 @@ page_layout = html.Div([
         # # page content
         dcc.Location(id='url', refresh=False),
 
-        html.Footer(["Authors: ",
-                     html.A('Nick P. Taylor and Daniel Muthukrishna.') #, href='https://twitter.com/DanMuthukrishna'), ". ",
+        html.Footer(["Authors: Nick P. Taylor and ",
+                     html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'), ". ",
+                     html.A('Source code', href='https://github.com/nt409/covid-19'), ". ",
+                     "Data is taken from ",
+                     html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
+                     html.A("John Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
                     ],
                     style={'textAlign': 'center', 'fontSize': '1.6vh'}),
 
-                    #  html.A('Source code', href='https://github.com/daniel-muthukrishna/covid19'), ". ",
-                    #  "Data is taken from ",
-                    #  html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
-                    #  html.A("John Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
         
 
         ],
@@ -2334,7 +2319,7 @@ def toggle_collapse(n, is_open):
               [State('hidden-stored-data', 'children')] +
               [State(c_name, 'value') for c_name in COUNTRY_LIST])
 def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop, saved_json_data, *args):
-    print(n_clicks, start_date, end_date, args)
+    # print(n_clicks, start_date, end_date, args)
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
@@ -3089,7 +3074,7 @@ def intro_content(tab,hosp,sol_do_n):
 
 
 
-@app.callback([
+@app.callback([ Output('spacer', 'style'),
                 Output('text-tab-0', 'children'),
                 Output('bar_page_title', 'children'),
                 Output('line_page_title', 'children'),
@@ -3156,6 +3141,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
 ########################################################################################################################
     text_object_0 = ['']
+    spacer_style = {'display': 'none'}
 
     bar1 = dummy_figure
     bar2 = dummy_figure
@@ -3357,6 +3343,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
 
             if sols is not None and tab=='DPC':
+                spacer_style = {'height': '60vh', 'display': 'block'}
                 output_2 = [i for i in output if i in ['C','H','D']]
                 outputs_style = {'display': 'block', 'fontSize': '110%'}
 
@@ -3388,6 +3375,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 ########################################################################################################################
 
     return [
+    spacer_style,
     text_object_0,
     Strat_outcome_title,
     Strat_outcome_title,
