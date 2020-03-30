@@ -109,7 +109,7 @@ app = dash.Dash(external_stylesheets=[dbc.themes.FLATLY])
 server = app.server
 
 colors = {
-    'background': '#EEEEEE',
+    'background': '#f4f6f7',
     'text': '#111111'
 }
 

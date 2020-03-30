@@ -30,7 +30,7 @@ import json
 external_stylesheets = dbc.themes.CERULEAN
 # JOURNAL
 # MINTY
-# SIMPLEX
+# SIMPLEX - not red danger
 # UNITED
 # Cerulean is ok
 
@@ -1876,23 +1876,43 @@ results_col = html.Div([
 Instructions_layout = html.Div([html.H4("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center','margin-top': '1vh'}),
                                              
                                                     html.Hr(),
-                                                    dbc.Jumbotron([
+                                                    # dbc.Jumbotron([
 
-                                                    # html.Div([
-                                                    dcc.Markdown(['''
+                                                    # dcc.Markdown('''
                                                     
+
+                                                    # ''',
+                                                    # style = {'margin-top': '2vh', 'textAlign': 'center'}
+                                                    # ),
+
+                                                    # dbc.Col([
+                                                    dcc.Markdown('''
+
                                                     *In this Section we find a **prediction** for the outcome of your choice of strategy. **Strategy choice** involves choosing a means of **controlling** the disease.*
-                                                    
-                                                    1. **Pick your strategy** (bar on the left)
+
+                                                    1. **Pick your strategy** (bar below)
                                                     
                                                     2. Choose which **results** to display (button below).
 
                                                     *Hover/click on the buttons to find out more*.
-
-                                                    '''],
-                                                    style = {'margin-top': '2vh', 'textAlign': 'center'}
+                                                    '''
+                                                    ,style = {'margin-top': '2vh', 'textAlign': 'left'}
                                                     ),
-                                                    ]),
+
+                                                    # ],
+                                                    # width = {'size':8, 'offset':2}
+                                                    # ),
+
+
+                                                    # dcc.Markdown('''
+
+
+                                                    # ''',
+                                                    # style = {'margin-top': '2vh', 'textAlign': 'center'}
+                                                    # ),
+
+                                                    # ]),
+                                                    
                                     ])
 
 
@@ -1997,9 +2017,9 @@ layout_inter = html.Div([
                                                     html.H4("Interpretation", className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
                                                     html.Hr(),
 
-                                                    dbc.Jumbotron([
+                                                    # dbc.Jumbotron([
                                                     Results_interpretation,
-                                                    ]),
+                                                    # ]),
 
                                              
                                              
@@ -2236,7 +2256,7 @@ layout_inter = html.Div([
 
 
                         ],
-                        style= {'width': '90%', 'backgroundColor': '#f2f2f2', 'margin-left': '5vw', 'margin-right': '5vw', 'margin-bottom': '5vh'}
+                        style= {'width': '90%', 'backgroundColor': '#f4f6f7', 'margin-left': '5vw', 'margin-right': '5vw', 'margin-bottom': '5vh'}
                         ),
 
                         # ],
@@ -2353,7 +2373,7 @@ page_layout = html.Div([
                 ),
             ],
             align="start",
-            style={'backgroundColor': '#f2f2f2'}
+            style={'backgroundColor': '#e9ecef'}
             ),
 
         # ]),
