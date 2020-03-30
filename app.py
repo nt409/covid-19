@@ -1091,28 +1091,6 @@ justify='center')
 ])
 
 
-Results_intro =  html.Div([
-    html.H4("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center','margin-top': '1vh'}),
-
-    html.Hr(),
-
-    dcc.Markdown(
-    '''
-    Use the '**Inputs**' on the left hand bar to adjust choice of control measures. You can adjust the control measures and the length of time that they are implemented.
-
-    Use the '**Plot Settings**' button on the left if you'd like to adjust what the plot shows. You can choose whether to consider only one of the low or high risk groups, or plot both groups together, or plot all lines.
-
-    Selecting '**Custom**' allows you to choose your own control measures. You can independently adjust the *infection rate* (how quickly the disease is transmitted between people) for each group. This corresponds to e.g. a lockdown for one group, and less strict measures for another.
-
-    You may also directly compare the performance of **two** different custom strategies (how one performs relative to the other).
-    
-    Use the '**Hospital Categories**' options on the left to choose which hospitalisation categories to include.
-
-    All infection rates are given relative to a baseline level (at 100%) for COVID-19.
-
-    '''),
-])
-
 Results_interpretation =  html.Div([
     html.H4("Interpretation", className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
     
@@ -1165,10 +1143,12 @@ layout_inter = html.Div([
                                                                             
 
                                                                             html.Hr(),
-                                                                            
-                                                                            dcc.Markdown('''*Hover/click on the underlined text to find out more*.''',style={'fontSize': '100%'}),
 
-                                                                            html.Div(style={'display': 'none'},id='spacer'),
+                                                                            dcc.Markdown('''*Scroll Down*.''',style={'fontSize': '100%', 'margin-top': '15vh'}),
+                                                                            
+                                                                            html.Div(style={'height': '45vh', 'display': 'block'},id='spacer'),
+
+                                                                            dcc.Markdown('''*Hover/click on the underlined text to find out more*.''',style={'fontSize': '100%', 'margin-bottom': '5vh'}),
                                                                             
                                                                             html.Hr(),
 
@@ -1578,14 +1558,28 @@ layout_inter = html.Div([
                                         children=[
 
                                         # tab 0
-                                        dbc.Tab(label='Overview',
+                                        dbc.Tab(label='Model Output',
                                          label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', 
                                          children = [
 
+
+                                                    html.H4("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center','margin-top': '1vh'}),
                                              
+                                                    html.Hr(),
+
                                                     dcc.Markdown('''
                                                     
-                                                    In this section we find an overview of the outcome of your choice of strategy.
+                                                    *Click/hover on underlined text to find out more.*
+
+                                                    In this Section we find a prediction for the outcome of your choice of strategy. Strategy choice involves choosing a means of controlling the disease.
+
+                                                    **Control** is framed in terms of the *infection rate* of the disease (how quickly the disease is transmitted between people).
+                                                    
+                                                    The ways we can currently control COVID-19 is by **reducing** the infection rate (slowing down how fast the virus spreads).
+
+                                                    We consider control of **two risk groups**; high risk and low risk. High risk groups are more likely to get seriously ill if they catch the disease.
+
+                                                    ### To pick your strategy:
 
                                                     1. Pick the **type of control**.
 
@@ -1593,17 +1587,23 @@ layout_inter = html.Div([
 
                                                     The other options are optional custom choices that you may choose to investigate further or ignore altogether.
 
-                                                    *Click/hover on underlined text to find out more.*
+                                                    For further explanation, read the [**Introduction**](/intro).
+
+                                                    *All infection rates are given relative to a baseline level (at 100%) for COVID-19*.
 
                                                     ''',
                                                     style = {'margin-top': '2vh'}
                                                     ),
 
-                                                    html.Hr(),
-                                                    
-                                                    dbc.Row([
-                                                        Results_intro,
-                                                    ],justify='center'),
+                                                    # html.Hr(),
+                                                    # Use the '**Inputs**' on the left hand bar to adjust choice of control measures. You can adjust the control measures and the length of time that they are implemented.
+                                                    # Use the '**Plot Settings**' button on the left if you'd like to adjust what the plot shows. You can choose whether to consider only one of the low or high risk groups, or plot both groups together, or plot all lines.
+                                                    # Selecting '**Custom**' allows you to choose your own control measures. You can independently adjust the *infection rate* (how quickly the disease is transmitted between people) for each group. This corresponds to e.g. a lockdown for one group, and less strict measures for another.
+                                                    # You may also directly compare the performance of **two** different custom strategies (how one performs relative to the other).
+                                                    # Use the '**Hospital Categories**' options on the left to choose which hospitalisation categories to include.
+                                                    # You can independently adjust the *infection rate* (how quickly the disease is transmitted between people) for each group. This corresponds to e.g. a lockdown for one group, and less strict measures for another.
+
+                                                    # dcc.Markdown(
 
                                                     html.Hr(),
 
@@ -1632,22 +1632,23 @@ layout_inter = html.Div([
                                                         style = {'margin-top': '2vh', 'margin-bottom': '2vh', 'textAlign': 'center'}
                                                     ),
                                              
+                                                    html.Hr(),
                                              
                                              #################################################################################################
                                              
                                                     # html.Div(id='bc-content',children=[
                                                         html.Div([
-                                                                        dcc.Markdown('''
-                                                                        In this section we present some bar charts to illustrate the effectiveness of each strategy choice.
+                                                                        # dcc.Markdown('''
+                                                                        # In this section we present some bar charts to illustrate the effectiveness of each strategy choice.
                                                                         
-                                                                        Again, choose your strategy using the bar on the left.
-                                                                        ''',style = {'textAlign': 'center', 'margin-top': '2vh'}),
+                                                                        # Again, choose your strategy using the bar on the left.
+                                                                        # ''',style = {'textAlign': 'center', 'margin-top': '2vh'}),
                                                                         
                                                                         # html.Hr(),
 
                                                                         # html.H4('Strategy Outcome',id='bar_page_title',className="display-4",style={'fontSize': '300%', 'textAlign': 'center', 'margin-top': '1vh', 'margin-bottom': '2vh'}),
                                                                         
-                                                                        html.Hr(),
+                                                                        # html.Hr(),
 
                                                                         dcc.Markdown('''
                                                                         *Hover/click on each plot title for an explanation*.
@@ -1740,9 +1741,6 @@ layout_inter = html.Div([
                                                                                                                 width = 12,
                                                                                                                 # xl = 6,
                                                                                                                 ),
-                                                                                                    # ],
-                                                                                                    # style={'height': 2*bar_height}
-                                                                                                    # ),
                                                                                                             
                                                                                                     html.Hr(),
 
@@ -1752,7 +1750,6 @@ layout_inter = html.Div([
 
 
                                                                                                 
-                                                                                    # dbc.Row([
 
 
                                                                                             dbc.Col([
@@ -1814,6 +1811,8 @@ layout_inter = html.Div([
                                                                                             # xl = 6,
                                                                                             ),
 
+                                                                                            html.Hr(),
+
                                                                                         dbc.Tooltip(
                                                                                                 txt1,
                                                                                                 target="tooltip-bar1",
@@ -1844,16 +1843,16 @@ layout_inter = html.Div([
                                                     # ],style={'display': 'none'}),
                                                                                         
                                                     html.Div(id='DPC-content',children=[
-                                                                html.Hr(),
+                                                                # html.Hr(),
 
                                                                 dbc.Row([
                                                                         html.H4("Disease Progress Curves",
-                                                                        style={'margin-bottom': '3vh','margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
+                                                                        style={'margin-bottom': '3vh', 'textAlign': 'center' ,'margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
                                                                         ),# style={'color':'blue'}),
 
                                                                         dbc.Spinner(html.Div(id="loading-line-output-1")),
                                                                         ],
-                                                                        # justify='center',
+                                                                        justify='center',
                                                                         # style={'height':'6vh'}
                                                                 ),
 
@@ -1879,7 +1878,7 @@ layout_inter = html.Div([
                                                     
                                              ##################################################################################################
                                                     
-                                                    html.Hr(),
+                                                    # html.Hr(),
 
                                                     dbc.Row([
                                                         Results_interpretation,
@@ -1893,76 +1892,6 @@ layout_inter = html.Div([
                                          ]
                                          ),
 #########################################################################################################################################################
-                                        # # tab 1
-                                        # dbc.Tab(label='Bar Graphs', label_style={"color": "#00AEF9" , 'fontSize':'120%' }, tab_id='tab_1', children = [
-                                        #                                                         dbc.Jumbotron([
-
-
-                                                                                            
-
-
-
-
-
-
-
-                                                                                        
-                                        #                                 ]),
-#########################################################################################################################################################
-                                                                
-                                                                
-                                                                
-
-                                                                
-                                                                # tab 2
-                                                            #     dbc.Tab(label='Results and Explanation', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='DPC',children=[
-                                    
-                                    
-                                                            #                                     dbc.Row([
-                                                            #                                             Results_intro,
-                                                            #                                         ],justify='center'),
-
-                                                            #                                     html.Hr(),
-
-                                                                                    
-                                                            #                                     # html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
-
-                                                            #                                     html.Hr(),
-
-                                                            #                                     dbc.Row([
-                                                            #                                             html.H4("Disease Progress Curves",
-                                                            #                                             style={'margin-bottom': '3vh','margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
-                                                            #                                             ),# style={'color':'blue'}),
-
-                                                            #                                             dbc.Spinner(html.Div(id="loading-line-output-1")),
-                                                            #                                             ],
-                                                            #                                             # justify='center',
-                                                            #                                             # style={'height':'6vh'}
-                                                            #                                     ),
-
-                                                                                                
-                                                            #                                     dcc.Graph(id='line-plot-1',style={'display': 'none'}),
-
-                                                            #                                     dbc.Container([html.Div([],style={'height': '3vh'})]),
-
-                                                            #                                     dcc.Graph(id='line-plot-2',style={'display': 'none'}),
-
-                                                            #                                     dbc.Container([html.Div([],style={'height': '1vh'})]),
-                                                            #                                     html.Hr(className='my-2'),
-                                                            #                                     dbc.Container([html.Div([],style={'height': '2vh'})]),
-
-                                                                                                
-                                                            #                                     dbc.Row([
-                                                            #                                             Results_interpretation,
-                                                            #                                         ],justify='center'),
-
-                                                            # ####################################################################################
-                                                            # ####################################################################################
-
-                                                            #     ####################################################################################
-                                                            #     ####################################################################################
-                                                                                            
-                                                            #                                         ]),
                                                                                                                 dbc.Tab(label='Model Structure', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='model_s',children=[
                                                                                                         
                                                                                                                                                 html.Div([
@@ -2995,12 +2924,12 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
                 
             # dbc.Container([
-            
                     dbc.Row([
                         html.H3(Outcome_title,style={'fontSize':'200%'}),
                     ],
                     justify='center'
                     ),
+                    html.Hr(),
 
                     # html.Div([
                     # ],style={'height': '3vh'}
@@ -3186,11 +3115,15 @@ def intro_content(tab,hosp,sol_do_n):
 
 
 
-@app.callback([ Output('spacer', 'style'),
+@app.callback([ 
+                # Output('spacer', 'style'),
 
                 Output('DPC-content', 'style'),
                 Output('bc-content', 'style'),
                 Output('strategy-outcome-content', 'style'),
+                Output('DPC_dd', 'active'),
+                Output('BC_dd', 'active'),
+                Output('SO_dd', 'active'),
 
                 Output('strategy-outcome-content', 'children'),
                 # Output('bar_page_title', 'children'),
@@ -3264,21 +3197,26 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
     ctx = dash.callback_context
     
     DPC_style = {'display' : 'none'}
-    SO_style = {'display' : 'none'}
     BC_style = {'display': 'none'}
+    SO_style = {'display' : 'none'}
 
     if not ctx.triggered:
         button_id = "DPC_dd"
     else:
         button_id = ctx.triggered[0]["prop_id"].split(".")[0]
-    
+    DPC_active = False
+    BC_active  = False
+    SO_active  = False
     if button_id == 'BC_dd':
         BC_style = {'display': 'block'}
+        BC_active = True
     elif button_id == 'SO_dd':
         SO_style = {'display': 'block'}
+        SO_active = True
     else: # 'DPC
         DPC_style = {'display': 'block'}
         button_id = 'DPC_dd' # in case wasn't
+        DPC_active = True
 
     
 
@@ -3286,7 +3224,7 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
 
 ########################################################################################################################
     strategy_outcome_text = ['']
-    spacer_style = {'display': 'none'}
+    # spacer_style = {'display': 'none'}
 
     bar1 = dummy_figure
     bar2 = dummy_figure
@@ -3471,7 +3409,7 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
 
 
             if sols is not None and button_id=='DPC_dd':
-                spacer_style = {'height': '60vh', 'display': 'block'}
+                # spacer_style = {'height': '60vh', 'display': 'block'}
                 output_2 = [i for i in output if i in ['C','H','D']]
                 outputs_style = {'display': 'block', 'fontSize': '110%'}
 
@@ -3503,10 +3441,13 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
 ########################################################################################################################
 
     return [
-    spacer_style,
+    # spacer_style,
     DPC_style,
     BC_style,
     SO_style,
+    DPC_active,
+    BC_active,
+    SO_active,
     strategy_outcome_text,
     # Strat_outcome_title,
     Strat_outcome_title,

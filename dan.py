@@ -128,6 +128,20 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
     
     html.Hr(),
 
+    dcc.Markdown(
+    '''
+    
+    *This section enables you to compare different countries' reported cases and deaths in real-time, and predict future numbers assuming exponential growth.*
+
+    *Soon this will be integrated with the full predictive model allowing you to make control predictions for different countries.*
+
+    ''',
+    style={'textAlign': 'center'}
+    ),
+
+    html.Hr(),
+
+
     html.Div([
         html.Div([
             html.Button(
