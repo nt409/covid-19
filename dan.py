@@ -174,6 +174,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                     max_date_allowed=datetime.date(2022, 1, 1),
                     initial_visible_month=datetime.date.today() - datetime.timedelta(days=7),
                     date=datetime.date.today() - datetime.timedelta(days=7),
+                    display_format='D-MMM-YYYY',
                     style={'textAlign': 'center'}
                 ),
             ], style={'display': 'inline-block', 'horizontal-align': 'center', 'textAlign': 'center'}),
@@ -186,6 +187,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                     max_date_allowed=datetime.date(2022, 1, 1),
                     initial_visible_month=datetime.date.today(),
                     date=datetime.date.today(),
+                    display_format='D-MMM-YYYY',
                     style={'textAlign': 'center'}
                 ),
             ], style={'display': 'inline-block', 'horizontal-align': 'center', 'textAlign': 'center',
@@ -303,15 +305,23 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
             html.H3(children='New Cases vs Total Cases', style={'textAlign': 'center', 'color': colors['text'],
                                                     'margin-top': '10px'}),
             dcc.Graph(id='new-vs-total-cases'),
-            html.I("Some countries do not have available data for the number of Active Cases. ",
-                   style={'textAlign': 'center', 'color': colors['text']}),
-            html.I("The models assume exponential growth - social distancing, quarantining, herd immunity, "
-                   "and other factors will slow down the predicted trajectories. ",
-                   style={'textAlign': 'center', 'color': colors['text']}),
-            html.I("The last plot is an informative way to compare how each country was increasing when they had "
-                   "different numbers of total cases (each point is a different day); countries that fall below "
-                   "the general linear line on the log-log plot are reducing their growth rate of COVID-19 cases.",
-                   style={'textAlign': 'center', 'color': colors['text']}),
+            html.Li(html.I(
+                "Caution should be applied when directly comparing the number of confirmed cases of each country. "
+                "Different countries have different testing rates, and may underestimate the number of cases "
+                "by varying amounts."),
+                style={'textAlign': 'left', 'color': colors['text']}),
+            html.Li(html.I(
+                "The models assume exponential growth - social distancing, quarantining, herd immunity, "
+                "and other factors will slow down the predicted trajectories. "),
+                style={'textAlign': 'left', 'color': colors['text']}),
+            html.Li(html.I(
+                "Some countries do not have available data for the number of Active Cases. "),
+                style={'textAlign': 'left', 'color': colors['text']}),
+            html.Li(html.I(
+                "The last plot is an informative way to compare how each country was increasing when they had "
+                "different numbers of total cases (each point is a different day); countries that fall below "
+                "the general linear line on the log-log plot are reducing their growth rate of COVID-19 cases."),
+                style={'textAlign': 'left', 'color': colors['text']}),
         ], style={'width': '75%', 'display': 'inline-block', 'vertical-align': 'top', 'horizontal-align': 'center',
                   'textAlign': 'center', "margin-left": "0px"}),
         html.Hr(),
