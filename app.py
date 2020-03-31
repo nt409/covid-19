@@ -303,13 +303,18 @@ def Bar_chart_generator(data,data2 = None, data_group = None,name1=None,name2=No
             traces.append(go.Scatter(
                 x= [best_cat],
                 y= [best_cat_y/2],
-                mode='markers',
-                marker_symbol = 'star',
-                marker_size = (30/20)*font_size,
-                marker_line_width=1,
                 opacity=0.5,
-                marker_color = 'green',
-                marker_line_color = 'black',
+                # mode='markers',
+                # marker_symbol = 'star', # 'star # U+2705
+                # marker_line_width=1,
+                # marker_color = 'green',
+                # marker_line_color = 'black',
+                
+                mode = 'text',
+                text = [r'✅'],
+
+                textfont= dict(size= (30/20)*font_size),
+
                 hovertemplate='Best Strategy',
                 showlegend=False,
                 name = best_cat
@@ -423,32 +428,32 @@ def strat_table(month,beta_H,beta_L,N_sols,i):
                                     html.Td(html.H5('{0:,.0f}'.format(100*beta_H) + '%',style={'color': 'white', 'fontSize': '100%'}))
                                     ]),
                                 html.Tr([ 
-                                    html.Td(html.H5(["Low Risk ",
-                                    html.Span(
-                                            "Infection Rate",
-                                            id="tooltip-lr",
-                                            style={"textDecoration": "underline", "cursor": "pointer"},
-                                        ),
+                                    html.Td(html.H5(["Low Risk Infection Rate",
+                                    # html.Span(
+                                            # "Infection Rate",
+                                            # id="tooltip-lr",
+                                            # style={"textDecoration": "underline", "cursor": "pointer"},
+                                        # ),
                                         ],style={'color': 'white', 'fontSize': '100%'})),
                                     html.Td(html.H5('{0:,.0f}'.format(100*beta_L) + '%',style={'color': 'white', 'fontSize': '100%'}))
                                 ]),
                                 html.Tr([ 
-                                    html.Td(html.H5([
-                                        html.Span(
-                                            'Control Starts',
-                                            id="tooltip-month",
-                                            style={"textDecoration": "underline", "cursor": "pointer"},
-                                        ),
+                                    html.Td(html.H5(['Control Starts',
+                                        # html.Span(
+                                        #     'Control Starts',
+                                        #     id="tooltip-month",
+                                        #     style={"textDecoration": "underline", "cursor": "pointer"},
+                                        # ),
                                         ],style={'color': 'white', 'fontSize': '100%'})),
                                     html.Td(html.H5('Month ' + str(month[0]),style={'color': 'white', 'fontSize': '100%'}))
                                 ]),
                                 html.Tr([ 
-                                    html.Td(html.H5([
-                                        html.Span(
-                                            'Control Ends',
-                                            id="tooltip-month2",
-                                            style={"textDecoration": "underline", "cursor": "pointer"},
-                                        ),
+                                    html.Td(html.H5([ #'Control Ends',
+                                            html.Span(
+                                                'Control Ends',
+                                                id="tooltip-month",
+                                                style={"textDecoration": "underline", "cursor": "pointer"},
+                                            ),
                                     ],style={'color': 'white', 'fontSize': '100%'})),
                                     html.Td(html.H5('Month ' + str(month[1]),style={'color': 'white', 'fontSize': '100%'}))
                                 ]),
@@ -463,27 +468,37 @@ def strat_table(month,beta_H,beta_L,N_sols,i):
                     ),
 
                     dbc.Tooltip(
-                    "The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.",
+                    dcc.Markdown(
+                    '''
+                    #### Infection Rate
+                    
+                    The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.
+                    '''
+                    ),
                     target="tooltip-hr",
-                    placement='right'
-                    ),
-                    dbc.Tooltip(
-                    "The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.",
-                    target="tooltip-lr",
-                    placement='right'
+                    style={'min-width': '30vw'},
+                    placement='bottom'
                     ),
 
                     dbc.Tooltip(
-                    "Use the 'Months of Control' option in the left-hand bar to adjust when we start controlling the epidemic. When control is not in place the infection rates remain at a baseline level (100%). When control is in place the infection rates are modified (by an amount depending on the choice of control)",
+                    dcc.Markdown(
+                    '''
+                    #### Control Timings
+                    
+                    Use the 'Months of Control' option in the left-hand bar to adjust when we start controlling the epidemic.
+                    
+                    When control is in place the infection rates are modified (by an amount depending on the choice of control)
+                    
+                    When control is not in place the infection rates remain at a baseline level (100%).
+                    '''
+                    ),
                     target="tooltip-month",
-                    placement='right'
+                    placement='top',
+                    style={'min-width': '35vw'}
                     ),
 
-                    dbc.Tooltip(
-                    "Use the 'Months of Control' option in the left-hand bar to adjust when we start controlling the epidemic. When control is not in place the infection rates remain at a baseline level (100%). When control is in place the infection rates are modified (by an amount depending on the choice of control)",
-                    target="tooltip-month2",
-                    placement='right'
-                    ),
+
+
                     ],
                     style={'fontSize': '1.6vh'}
                     )
@@ -1264,13 +1279,14 @@ inputs_col = html.Div([
 
                                                                                 1. Pick the **type of control**.
 
-                                                                                2. Pick the **control timings**.
+                                                                                2. Pick the **control timings** (how long control is applied for and when it starts).
 
                                                                                 *The other options below are optional custom choices that you may choose to investigate further or ignore altogether*.
 
                                                                                 '''
                                                                                 ),
                                                                                 target="tooltip-cont-choice",
+                                                                                style={'min-width': '20vw'},
                                                                                 placement='right',
                                                                             ),
 
@@ -1287,15 +1303,14 @@ inputs_col = html.Div([
 
                                                                                 #### Control
                                                                                 
-                                                                                **Control** is framed in terms of the **infection rate** of the disease (how quickly the disease is transmitted between people).
+                                                                                The type of **control** determines how much we can reduce the **infection rate** of the disease (how quickly the disease is transmitted between people).
                                                                                 
-                                                                                The ways we can currently control COVID-19 is by **reducing** the infection rate (slowing down how fast the virus spreads).
-
                                                                                 We consider control of **two risk groups**; high risk and low risk. High risk groups are more likely to get seriously ill if they catch the disease.
 
                                                                                 *For further explanation, read the [**Background**](/intro)*.
                                                                                 '''),
                                                                                 target="tooltip-control",
+                                                                                style={'min-width': '30vw'},
                                                                                 placement='right',
                                                                             ),
                                                                             
@@ -1367,6 +1382,7 @@ inputs_col = html.Div([
                                                                                 '''
                                                                                 ),
                                                                                 target="tooltip-custom",
+                                                                                style={'min-width': '30vw'},
                                                                                 placement='right',
                                                                             ),
 
@@ -1522,6 +1538,7 @@ inputs_col = html.Div([
                                                                                 )
                                                                                 ,
                                                                                 target="tooltip-plot",
+                                                                                style={'min-width': '30vw'},
                                                                                 placement='right',
                                                                             ),
                                                                             
@@ -1644,6 +1661,7 @@ inputs_col = html.Div([
 
                                                                                     ),
                                                                                         target="tooltip-hosp",
+                                                                                        style={'min-width': '20vw'},
                                                                                         placement='right',
                                                                                     ),
                                                                                     
@@ -1931,42 +1949,50 @@ results_col = html.Div([
                                                                                             ],
                                                                                             align='center',
                                                                                             width=12,
-                                                                                            # xl = 6,
                                                                                             ),
 
-                                                                                            # html.Hr(),
 
                                                                                         dbc.Tooltip(
                                                                                                 txt1,
                                                                                                 target="tooltip-bar1",
+                                                                                                style={'min-width': '20vw'},
+                                                                                                placement = 'left'
+
                                                                                         ),
                                                                                         dbc.Tooltip(
                                                                                                 txt2,
                                                                                                 target="tooltip-bar2",
+                                                                                                style={'min-width': '20vw'},
+                                                                                                placement = 'left'
                                                                                         ),
                                                                                         dbc.Tooltip(
                                                                                                 txt3,
                                                                                                 target="tooltip-bar3",
+                                                                                                style={'min-width': '20vw'},
+                                                                                                placement = 'left'
                                                                                         ),
                                                                                         dbc.Tooltip(
                                                                                                 txt4,
                                                                                                 target="tooltip-bar4",
+                                                                                                style={'min-width': '20vw'},
+                                                                                                placement = 'left'
                                                                                         ),
                                                                                         dbc.Tooltip(
                                                                                                 txt5,
                                                                                                 target="tooltip-bar5",
+                                                                                                style={'min-width': '20vw'},
+                                                                                                placement = 'left'
                                                                                         ),
                                                                                         
 
 
 
                                                                         ],width=True),
-                                                                    ],id='bc-content'),
+                                                                    ],id='bc-content',
+                                                                    style={'display': 'none'}),
 
-                                                    # ],style={'display': 'none'}),
                                                                                         
                                                     html.Div(id='DPC-content',children=[
-                                                                # html.Hr(),
 
                                                                 dbc.Row([
                                                                         html.H4("Disease Progress Curves",
@@ -1986,9 +2012,6 @@ results_col = html.Div([
 
                                                                 dcc.Graph(id='line-plot-2',style={'display': 'none'}),
 
-                                                                # dbc.Container([html.Div([],style={'height': '1vh'})]),
-                                                                # html.Hr(className='my-2'),
-                                                                # dbc.Container([html.Div([],style={'height': '2vh'})]),
 
                                                     ]),
                                              
@@ -2019,14 +2042,7 @@ Instructions_layout = html.Div([html.H4("Instructions", className="display-4",st
                                                     html.Hr(),
                                                     # dbc.Jumbotron([
 
-                                                    # dcc.Markdown('''
-                                                    
 
-                                                    # ''',
-                                                    # style = {'margin-top': '2vh', 'textAlign': 'center'}
-                                                    # ),
-
-                                                    # dbc.Col([
                                                     dcc.Markdown('''
 
                                                     *In this Section we find a **prediction** for the outcome of your choice of strategy. **Strategy choice** involves choosing a means of **controlling** the disease.*
@@ -2040,19 +2056,6 @@ Instructions_layout = html.Div([html.H4("Instructions", className="display-4",st
                                                     ,style = {'margin-top': '2vh', 'textAlign': 'left'}
                                                     ),
 
-                                                    # ],
-                                                    # width = {'size':8, 'offset':2}
-                                                    # ),
-
-
-                                                    # dcc.Markdown('''
-
-
-                                                    # ''',
-                                                    # style = {'margin-top': '2vh', 'textAlign': 'center'}
-                                                    # ),
-
-                                                    # ]),
                                                     
                                     ])
 
@@ -2505,7 +2508,7 @@ page_layout = html.Div([
                     style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '2vh'}
                     ),
 
-                    html.P('Disclaimer: this work is intended for educational purposes only and not decision making. There are many uncertainties in the COVID debate. The model is intended soley as an illustrative, rather than predictive, tool.',
+                    html.P('Disclaimer: this work is intended for educational purposes only and not decision making. There are many uncertainties in the COVID debate. The model is intended solely as an illustrative, rather than predictive, tool.',
                     style={'margin-top': '1vh','margin-bottom': '1vh','fontSize': '1.5vh'}
                     ),
 
@@ -2668,7 +2671,7 @@ def toggle_collapse(n, is_open):
 def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop,
                  align_cases_check, align_cases_input, align_deaths_check, align_deaths_input, align_active_cases_check,
                  align_active_cases_input, align_daily_cases_check, align_daily_cases_input, saved_json_data, *args):
-    print(n_clicks, start_date, end_date, args)
+    # print(n_clicks, start_date, end_date, args)
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
@@ -3118,8 +3121,16 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
             ],width=width,style={'textAlign': 'center'}),
 
             dbc.Tooltip(
-                "This box shows the reduction in deaths (or critical care cases, depending on settings) due to the control strategy choice.",
+                dcc.Markdown(
+                '''
+                #### Reduction in deaths
+
+                This box shows the reduction in deaths (or critical care cases, depending on settings) due to the control strategy choice.
+                '''
+                ),
                 target="tooltip-dead",
+                style={'min-width': '20vw'},
+                placement = 'top'
             ),
 
             dbc.Col([
@@ -3140,8 +3151,16 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
             ],width=width,style=crit_text_on_or_off),
 
             dbc.Tooltip(
-                "COVID-19 can cause a large number of serious illnesses very quickly. This box shows the extent to which the NHS capacity would be overwhelmed by the strategy choice (if nothing was done to increase capacity).",
+                dcc.Markdown(
+                '''
+                #### ICU requirement
+
+                COVID-19 can cause a large number of serious illnesses very quickly. This box shows the extent to which the NHS capacity would be overwhelmed by the strategy choice (if nothing was done to increase capacity).
+                '''
+                ),
                 target="tooltip-ICU",
+                style={'min-width': '20vw'},
+                placement = 'top'
             ),
             dbc.Col([
             dbc.Card(
@@ -3160,8 +3179,18 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
             )
             ],width=width,style={'textAlign': 'center'}),
             dbc.Tooltip(
-                "This box shows how close to the safety threshold for herd immunity we got. If we reached (or exceeded) the threshold it will say 100%. However, this is the least important goal since an uncontrolled pandemic will reach safe levels of immunity very quickly, but cause lots of serious illness in doing so.",
+                dcc.Markdown(
+                '''
+                #### Herd immunity
+
+                This box shows how close to the safety threshold for herd immunity we got. If we reached (or exceeded) the threshold it will say 100%.
+                
+                However, this is the least important goal since an uncontrolled pandemic will reach safe levels of immunity very quickly, but cause lots of serious illness in doing so.
+                '''
+                ),
                 target="tooltip-herd",
+                style={'min-width': '20vw'},
+                placement = 'top'
             ),
         # ],width=True)
     ],
@@ -3517,6 +3546,7 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
             deaths = True
 
 
+        tables = []
         if sols is not None:
             sols.append(sol_do_nothing)
         
@@ -3547,7 +3577,6 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
             crit_cap_quoted_3yr = []
             ICU_data_3yr = []
             herd_list_3yr = []
-            tables = []
             for ii in range(len(sols)):
                 if sols[ii] is not None and ii<len(sols)-1:
                     # print(ii,len(sols))
