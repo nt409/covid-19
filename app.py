@@ -421,10 +421,11 @@ def strat_table(month,beta_H,beta_L,N_sols,i):
                                     html.Td(html.H5(["High Risk ",
                                         html.Span(
                                             "Infection Rate",
-                                            id="tooltip-hr",
-                                            style={"textDecoration": "underline", "cursor": "pointer"},
+                                            style={"textDecoration": "underline"},
                                         ),
-                                        ],style={'color': 'white', 'fontSize': '100%'})),
+                                        ],
+                                        id="tooltip-hr",
+                                        style={'color': 'white', 'fontSize': '100%', "cursor": "pointer"})),
                                     html.Td(html.H5('{0:,.0f}'.format(100*beta_H) + '%',style={'color': 'white', 'fontSize': '100%'}))
                                     ]),
                                 html.Tr([ 
@@ -451,10 +452,11 @@ def strat_table(month,beta_H,beta_L,N_sols,i):
                                     html.Td(html.H5([ #'Control Ends',
                                             html.Span(
                                                 'Control Ends',
-                                                id="tooltip-month",
-                                                style={"textDecoration": "underline", "cursor": "pointer"},
+                                                style={"textDecoration": "underline"},
                                             ),
-                                    ],style={'color': 'white', 'fontSize': '100%'})),
+                                    ],
+                                    id="tooltip-month",
+                                    style={'color': 'white', 'fontSize': '100%', "cursor": "pointer"})),
                                     html.Td(html.H5('Month ' + str(month[1]),style={'color': 'white', 'fontSize': '100%'}))
                                 ]),
                         ]),
@@ -481,7 +483,7 @@ def strat_table(month,beta_H,beta_L,N_sols,i):
                     
                     Use the 'Months of Control' option in the left-hand bar to adjust when we start controlling the epidemic.
                     
-                    When control is in place the infection rates are modified (by an amount depending on the choice of control)
+                    When control is in place the infection rates are modified (by an amount depending on the choice of control).
                     
                     When control is not in place the infection rates remain at a baseline level (100%).
                     '''
@@ -896,6 +898,252 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
                    )
 
     return {'data': lines_to_plot, 'layout': layout}
+
+
+
+
+########################################################################################################################
+
+
+def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU,width,number_of_crit_or_dead_text,crit_text_on_or_off):
+    return dbc.Row([
+        # dbc.Col([
+            dbc.Col([
+                dbc.Card(
+                [
+                    dbc.CardHeader(
+                        html.Span(
+                                number_of_crit_or_dead_text,
+                                style={"textDecoration": "underline"},
+                        ),
+                        id="tooltip-dead",
+                        style= {"cursor": "pointer"}
+                        ),
+                    dbc.CardBody([html.H1(str(round(death_stat_1st,1))+'%',className='card-title',style={'fontSize': '150%'})]),
+                    dbc.CardFooter('compared to doing nothing'),
+
+                ],color=color_1st_death,inverse=True
+            )
+            ],width=width,style={'textAlign': 'center'}),
+
+            dbc.Tooltip(
+                dcc.Markdown(
+                '''
+                #### Reduction in deaths
+
+                This box shows the reduction in deaths (or critical care cases, depending on settings) due to the control strategy choice.
+                '''
+                ),
+                target="tooltip-dead",
+                style={'min-width': '20vw'},
+                placement = 'top'
+            ),
+
+            dbc.Col([
+            dbc.Card(
+                [
+                    dbc.CardHeader(
+                        html.Span(
+                                'ICU requirement:',
+                                style={"textDecoration": "underline"},
+                        ),
+                        id="tooltip-ICU",
+                        style= {"cursor": "pointer"}
+                        ),
+                    dbc.CardBody([html.H1(str(round(dat3_1st,1)) + 'x',className='card-title',style={'fontSize': '150%'})],),
+                    dbc.CardFooter('multiple of current capacity'),
+
+                ],color=color_1st_ICU,inverse=True
+            )
+            ],width=width,style=crit_text_on_or_off),
+
+            dbc.Tooltip(
+                dcc.Markdown(
+                '''
+                #### ICU requirement
+
+                COVID-19 can cause a large number of serious illnesses very quickly. This box shows the extent to which the NHS capacity would be overwhelmed by the strategy choice (if nothing was done to increase capacity).
+                '''
+                ),
+                target="tooltip-ICU",
+                style={'min-width': '20vw'},
+                placement = 'top'
+            ),
+            dbc.Col([
+            dbc.Card(
+                [
+                    dbc.CardHeader(
+                        html.Span(
+                                'Herd immunity:',
+                                style={"textDecoration": "underline"},
+                        ),
+                        id="tooltip-herd",
+                        style= {"cursor": "pointer"}
+                        ),
+                    dbc.CardBody([html.H1(str(round(herd_stat_1st,1))+'%',className='card-title',style={'fontSize': '150%'})]),
+                    dbc.CardFooter('of safe threshold'),
+
+                ],color=color_1st_herd,inverse=True
+            )
+            ],width=width,style={'textAlign': 'center'}),
+            dbc.Tooltip(
+                dcc.Markdown(
+                '''
+                #### Herd immunity
+
+                This box shows how close to the safety threshold for herd immunity we got. If we reached (or exceeded) the threshold it will say 100%.
+                
+                However, this is the least important goal since an uncontrolled pandemic will reach safe levels of immunity very quickly, but cause lots of serious illness in doing so.
+                '''
+                ),
+                target="tooltip-herd",
+                style={'min-width': '20vw'},
+                placement = 'top'
+            ),
+        # ],width=True)
+    ],
+    no_gutters=True,
+    style={'margin-top': '2vh', 'margin-bottom': '2vh','fontSize':'75%'})
+
+
+
+
+def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_stat_2nd,herd_stat_2nd,dat3_2nd,number_of_crit_or_dead_metric,hosp,preset,number_strategies,which_strat):
+    
+    death_stat_1st = 100*death_stat_1st
+    herd_stat_1st = 100*herd_stat_1st
+
+    death_stat_2nd = 100*death_stat_2nd
+    herd_stat_2nd = 100*herd_stat_2nd
+
+
+    on_or_off = {'display': 'block','textAlign': 'center'}
+    if number_strategies=='one':
+        num_st = ''
+        if which_strat==2:
+            on_or_off = {'display': 'none'}
+    else:
+        num_st = 'One '
+    strat_name = presets_dict[preset]
+
+    if which_strat==1:
+        Outcome_title = strat_name + ' Strategy ' + num_st
+    else:
+        Outcome_title = strat_name + ' Strategy Two'
+    
+    if 'True_crit' in hosp:
+        crit_text_on_or_off   = {'display': 'none'}
+    if 'True_deaths' in hosp:
+        crit_text_on_or_off  = {'display': 'block','textAlign': 'center'}
+
+    number_of_crit_or_dead_text = 'Reduction in ' + number_of_crit_or_dead_metric + ':' 
+
+    if crit_text_on_or_off['display'] != 'none':
+        width = 4
+    else:
+        width = 6
+    
+    death_thresh1 = 66
+    death_thresh2 = 33
+
+    herd_thresh1 = 66
+    herd_thresh2 = 33
+
+    ICU_thresh1 = 5
+    ICU_thresh2 = 10
+
+    color_1st_death = 'success'
+    if death_stat_1st<death_thresh1:
+        color_1st_death = 'warning'
+    if death_stat_1st<death_thresh2:
+        color_1st_death = 'danger'
+
+    color_1st_herd = 'success'
+    if herd_stat_1st<herd_thresh1:
+        color_1st_herd = 'warning'
+    if herd_stat_1st<herd_thresh2:
+        color_1st_herd = 'danger'
+
+    color_1st_ICU = 'success'
+    if dat3_1st>ICU_thresh1:
+        color_1st_ICU = 'warning'
+    if dat3_1st>ICU_thresh2:
+        color_1st_ICU = 'danger'
+
+    
+    color_2nd_death = 'success'
+    if death_stat_2nd<death_thresh2:
+        color_2nd_death = 'warning'
+    if death_stat_2nd<death_thresh1:
+        color_2nd_death = 'danger'
+
+    color_2nd_herd = 'success'
+    if herd_stat_2nd<herd_thresh1:
+        color_2nd_herd = 'warning'
+    if herd_stat_2nd<herd_thresh2:
+        color_2nd_herd = 'danger'
+
+    color_2nd_ICU = 'success'
+    if dat3_2nd>ICU_thresh1:
+        color_2nd_ICU = 'warning'
+    if dat3_2nd>ICU_thresh2:
+        color_2nd_ICU = 'danger'
+
+
+
+
+    if on_or_off['display']=='none':
+        return None
+    else:
+        return html.Div([
+
+
+                
+                    dbc.Row([
+                        html.H3(Outcome_title,style={'fontSize':'200%'}),
+                    ],
+                    justify='center'
+                    ),
+                    html.Hr(),
+
+
+                    dbc.Row([
+                        html.P('In the absence of a vaccine, when compared to doing nothing.', style={'fontSize': '100%'}),
+                    ],
+                    justify='center', style={'margin-top': '1vh', 'margin-bottom': '1vh'}
+                    ),
+
+            
+            # dbc
+            dbc.Row([
+
+            
+                dbc.Col([
+
+                                html.H3('After 1 year:',style={'fontSize': '180%'}),
+                    
+                                cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU,width,number_of_crit_or_dead_text,crit_text_on_or_off),
+
+                                html.H3('After 2 years:',style={'fontSize': '180%'}),
+
+                                cards_fn(death_stat_2nd,dat3_2nd,herd_stat_2nd,color_2nd_death,color_2nd_herd,color_2nd_ICU,width,number_of_crit_or_dead_text,crit_text_on_or_off),
+
+
+                ],
+                width=12,
+                ),
+
+
+            ],
+            align='center',
+            ),
+
+            ],style=on_or_off)
+
+
+
+########################################################################################################################
+
 
 
 
@@ -1330,7 +1578,13 @@ inputs_col = html.Div([
                                                                             ),
 
                                                                             
-                                                                            html.H6('2. Months of Control',style={'fontSize': '120%', 'margin-top': '1vh', 'margin-bottom': '1vh'}),
+                                                                            html.H6(['2. ',
+                                                                                html.Span(
+                                                                                    'Months of Control',
+                                                                                    style={"textDecoration": "underline"}),
+                                                                                ],
+                                                                            id = 'tooltip-months-control',
+                                                                            style={'fontSize': '120%', 'margin-top': '1vh', 'margin-bottom': '1vh'}),
                                                                             html.Div([
                                                                             dcc.RangeSlider(
                                                                                         id='month-slider',
@@ -1344,6 +1598,24 @@ inputs_col = html.Div([
                                                                             ],
                                                                             style={'fontSize': '180%'},
                                                                             ),
+                                                                            
+                                                                            dbc.Tooltip(
+                                                                                dcc.Markdown('''
+
+                                                                                #### Control Timing
+
+                                                                                Use this slider to determine when control **starts** and **finishes**.
+
+                                                                                When control is in place the infection rate is reduced by an amount depending on the strategy choice.
+
+                                                                                When control is not in place the infection rate returns to the baseline level (100%).
+                                                                                
+                                                                                '''),
+                                                                                target="tooltip-months-control",
+                                                                                style={'min-width': '30vw'},
+                                                                                placement='right',
+                                                                            ),
+
                                                                             html.Hr(),
 
                                                                                     
@@ -3130,254 +3402,6 @@ def find_sol_do_noth(hosp): # years
     
     return sol_do_nothing # {'do_nothing': sol_do_nothing}
 
-########################################################################################################################
-
-
-def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU,width,number_of_crit_or_dead_text,crit_text_on_or_off):
-    return dbc.Row([
-        # dbc.Col([
-            dbc.Col([
-                dbc.Card(
-                [
-                    dbc.CardHeader(
-                        html.Span(
-                                number_of_crit_or_dead_text,
-                                id="tooltip-dead",
-                                style={"textDecoration": "underline", "cursor": "pointer"},
-                        ),
-                        ),
-                    dbc.CardBody([html.H1(str(round(death_stat_1st,1))+'%',className='card-title',style={'fontSize': '150%'})]),
-                    dbc.CardFooter('compared to doing nothing'),
-
-                ],color=color_1st_death,inverse=True
-            )
-            ],width=width,style={'textAlign': 'center'}),
-
-            dbc.Tooltip(
-                dcc.Markdown(
-                '''
-                #### Reduction in deaths
-
-                This box shows the reduction in deaths (or critical care cases, depending on settings) due to the control strategy choice.
-                '''
-                ),
-                target="tooltip-dead",
-                style={'min-width': '20vw'},
-                placement = 'top'
-            ),
-
-            dbc.Col([
-            dbc.Card(
-                [
-                    dbc.CardHeader(
-                        html.Span(
-                                'ICU requirement:',
-                                id="tooltip-ICU",
-                                style={"textDecoration": "underline", "cursor": "pointer"},
-                        ),
-                        ),
-                    dbc.CardBody([html.H1(str(round(dat3_1st,1)) + 'x',className='card-title',style={'fontSize': '150%'})],),
-                    dbc.CardFooter('multiple of current capacity'),
-
-                ],color=color_1st_ICU,inverse=True
-            )
-            ],width=width,style=crit_text_on_or_off),
-
-            dbc.Tooltip(
-                dcc.Markdown(
-                '''
-                #### ICU requirement
-
-                COVID-19 can cause a large number of serious illnesses very quickly. This box shows the extent to which the NHS capacity would be overwhelmed by the strategy choice (if nothing was done to increase capacity).
-                '''
-                ),
-                target="tooltip-ICU",
-                style={'min-width': '20vw'},
-                placement = 'top'
-            ),
-            dbc.Col([
-            dbc.Card(
-                [
-                    dbc.CardHeader(
-                        html.Span(
-                                'Herd immunity:',
-                                id="tooltip-herd",
-                                style={"textDecoration": "underline", "cursor": "pointer"},
-                        ),
-                        ),
-                    dbc.CardBody([html.H1(str(round(herd_stat_1st,1))+'%',className='card-title',style={'fontSize': '150%'})]),
-                    dbc.CardFooter('of safe threshold'),
-
-                ],color=color_1st_herd,inverse=True
-            )
-            ],width=width,style={'textAlign': 'center'}),
-            dbc.Tooltip(
-                dcc.Markdown(
-                '''
-                #### Herd immunity
-
-                This box shows how close to the safety threshold for herd immunity we got. If we reached (or exceeded) the threshold it will say 100%.
-                
-                However, this is the least important goal since an uncontrolled pandemic will reach safe levels of immunity very quickly, but cause lots of serious illness in doing so.
-                '''
-                ),
-                target="tooltip-herd",
-                style={'min-width': '20vw'},
-                placement = 'top'
-            ),
-        # ],width=True)
-    ],
-    no_gutters=True,
-    style={'margin-top': '2vh', 'margin-bottom': '2vh','fontSize':'75%'})
-
-
-
-
-def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_stat_2nd,herd_stat_2nd,dat3_2nd,number_of_crit_or_dead_metric,hosp,preset,number_strategies,which_strat):
-    
-    death_stat_1st = 100*death_stat_1st
-    herd_stat_1st = 100*herd_stat_1st
-
-    death_stat_2nd = 100*death_stat_2nd
-    herd_stat_2nd = 100*herd_stat_2nd
-
-
-    on_or_off = {'display': 'block','textAlign': 'center'}
-    if number_strategies=='one':
-        num_st = ''
-        if which_strat==2:
-            on_or_off = {'display': 'none'}
-    else:
-        num_st = 'One '
-    strat_name = presets_dict[preset]
-
-    if which_strat==1:
-        Outcome_title = strat_name + ' Strategy ' + num_st
-    else:
-        Outcome_title = strat_name + ' Strategy Two'
-    
-    if 'True_crit' in hosp:
-        crit_text_on_or_off   = {'display': 'none'}
-    if 'True_deaths' in hosp:
-        crit_text_on_or_off  = {'display': 'block','textAlign': 'center'}
-
-    number_of_crit_or_dead_text = 'Reduction in ' + number_of_crit_or_dead_metric + ':' 
-
-    if crit_text_on_or_off['display'] != 'none':
-        width = 4
-    else:
-        width = 6
-    
-    death_thresh1 = 66
-    death_thresh2 = 33
-
-    herd_thresh1 = 66
-    herd_thresh2 = 33
-
-    ICU_thresh1 = 5
-    ICU_thresh2 = 10
-
-    color_1st_death = 'success'
-    if death_stat_1st<death_thresh1:
-        color_1st_death = 'warning'
-    if death_stat_1st<death_thresh2:
-        color_1st_death = 'danger'
-
-    color_1st_herd = 'success'
-    if herd_stat_1st<herd_thresh1:
-        color_1st_herd = 'warning'
-    if herd_stat_1st<herd_thresh2:
-        color_1st_herd = 'danger'
-
-    color_1st_ICU = 'success'
-    if dat3_1st>ICU_thresh1:
-        color_1st_ICU = 'warning'
-    if dat3_1st>ICU_thresh2:
-        color_1st_ICU = 'danger'
-
-    
-    color_2nd_death = 'success'
-    if death_stat_2nd<death_thresh2:
-        color_2nd_death = 'warning'
-    if death_stat_2nd<death_thresh1:
-        color_2nd_death = 'danger'
-
-    color_2nd_herd = 'success'
-    if herd_stat_2nd<herd_thresh1:
-        color_2nd_herd = 'warning'
-    if herd_stat_2nd<herd_thresh2:
-        color_2nd_herd = 'danger'
-
-    color_2nd_ICU = 'success'
-    if dat3_2nd>ICU_thresh1:
-        color_2nd_ICU = 'warning'
-    if dat3_2nd>ICU_thresh2:
-        color_2nd_ICU = 'danger'
-
-
-
-
-    if on_or_off['display']=='none':
-        return None
-    else:
-        return html.Div([
-            # dbc.Col([
-
-
-                
-            # dbc.Container([
-                    dbc.Row([
-                        html.H3(Outcome_title,style={'fontSize':'200%'}),
-                    ],
-                    justify='center'
-                    ),
-                    html.Hr(),
-
-                    # html.Div([
-                    # ],style={'height': '3vh'}
-                    # ),
-                    # ]),
-
-                    dbc.Row([
-                        html.P('In the absence of a vaccine, when compared to doing nothing.', style={'fontSize': '100%'}),
-                    ],
-                    justify='center', style={'margin-top': '1vh', 'margin-bottom': '1vh'}
-                    ),
-
-            
-            # dbc
-            dbc.Row([
-
-            
-                dbc.Col([
-
-                                html.H3('After 1 year:',style={'fontSize': '180%'}),
-                    
-                                cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU,width,number_of_crit_or_dead_text,crit_text_on_or_off),
-
-                                html.H3('After 2 years:',style={'fontSize': '180%'}),
-
-                                cards_fn(death_stat_2nd,dat3_2nd,herd_stat_2nd,color_2nd_death,color_2nd_herd,color_2nd_ICU,width,number_of_crit_or_dead_text,crit_text_on_or_off),
-
-
-                ],
-                width=12,
-                # xl=8
-                ),
-
-
-            ],
-            align='center',
-            ),
-
-            ],style=on_or_off)
-
-
-
-########################################################################################################################
-
-
-# bar_children = 
 
 
 
@@ -3443,7 +3467,6 @@ def intro_content(tab,hosp,sol_do_n):
                 Output('SO_dd', 'active'),
 
                 Output('strategy-outcome-content', 'children'),
-                # Output('bar_page_title', 'children'),
                 Output('line_page_title', 'children'),
 
 
@@ -3501,8 +3524,6 @@ def intro_content(tab,hosp,sol_do_n):
 
                 ],
                [
-                # State('url', 'pathname'),
-                # State('intro-tabs', 'active_tab'),
                 State('sol-calculated-do-nothing', 'data'),
                 State('preset', 'value'),
                 State('month-slider', 'value'),
