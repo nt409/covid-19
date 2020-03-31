@@ -1145,13 +1145,28 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 ########################################################################################################################
 
 
-
-
 inf_rate_tooltip = dcc.Markdown(
                     '''
                     #### Infection Rate
                     
-                    The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.
+                    The Infection Rate relates to how quickly the disease is transmitted. Control measures reduce transmission rates (typically lowering them).
+                    
+                    Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.
+
+                    '''
+                    )
+
+
+inf_rate_tooltip_full = dcc.Markdown(
+                    '''
+                    #### Infection Rate
+                    
+                    The Infection Rate relates to how quickly the disease is transmitted. Control measures reduce transmission rates (typically lowering them).
+                    
+                    Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.
+
+                    *You may choose to increase infection rates when using custom control. Usually this is a bad idea, but sometimes increasing rates in the low risk category can be beneficial by increasing the chance that the 'right' people get the infection before the population reaches herd immunity, and also reducing the length of time that control needs to be applied.*
+
                     '''
                     )
 
@@ -1492,9 +1507,6 @@ inputs_col = html.Div([
 
 ########################################################################################################################
 
-                                                                    # dbc.Jumbotron([
-                                                                    # html.Div([
-                                                                    # html.Div([
                                                                     dbc.Col([
                                                                             
 
@@ -1505,25 +1517,27 @@ inputs_col = html.Div([
 ########################################################################################################################
 
 
-                                                                            html.Div([
-
-                                                                            dbc.Button(
-                                                                            color='success',
-                                                                            # disabled=True,
-                                                                            children = [
+                                                                            
                                                                             html.H4(
-                                                                                        'Pick Your Strategy',
-                                                                                style={"textDecoration": "underline", 'color': 'white', 'fontSize': '150%'}),
-                                                                            ]),
-                                                                            ],
-                                                                            id="tooltip-cont-choice",
-                                                                            style={"margin-top": "3vh"},
-                                                                            ),
+                                                                                [
+                                                                                ' Pick Your Strategy ',
+                                                                                dbc.Button('🛈',
+                                                                                color='light',
+                                                                                className='mb-3',
+                                                                                id="popover-pick-strat-target",
+                                                                                size='sm',
+                                                                                style = {'cursor': 'pointer'})
+                                                                                ],
+                                                                                style={'fontSize': '150%','margin-top': "3vh"}),
 
-                                                                            dbc.Tooltip(
-                                                                                dcc.Markdown(
+                                                                            
+
+
+                                                                            dbc.Popover(
+                                                                                [
+                                                                                dbc.PopoverHeader('Pick Your Strategy'),
+                                                                                dbc.PopoverBody(dcc.Markdown(
                                                                                 '''
-                                                                                #### Pick Your Strategy
 
                                                                                 1. Pick the **type of control**.
 
@@ -1532,34 +1546,45 @@ inputs_col = html.Div([
                                                                                 *The other options below are optional custom choices that you may choose to investigate further or ignore altogether*.
 
                                                                                 '''
-                                                                                ),
-                                                                                target="tooltip-cont-choice",
-                                                                                style={'min-width': '20vw'},
-                                                                                placement='right',
+                                                                                ),),
+                                                                                ],
+                                                                                id = "popover-pick-strat",
+                                                                                is_open=False,
+                                                                                target="popover-pick-strat-target",
+                                                                                placement='top',
                                                                             ),
 
-                                                                            html.H6(['1. ',
-                                                                                html.Span(
-                                                                                        'Control Type',
-                                                                                        style={"textDecoration": "underline"}, # , 'color': 'white'
-                                                                                )],
-                                                                                id='tooltip-control',
+                                                                            html.H6([
+                                                                                '1. Control Type ',
+                                                                                dbc.Button('🛈',
+                                                                                color='light',
+                                                                                className='mb-3',
+                                                                                size='sm',
+                                                                                id='popover-control-target',
+                                                                                style={'cursor': 'pointer'}
+                                                                                ),
+                                                                                ],
                                                                                 style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
 
-                                                                            dbc.Tooltip(
-                                                                                dcc.Markdown('''
+                                                                            dbc.Popover(
+                                                                                [
+                                                                                dbc.PopoverHeader('Control'),
+                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                '''
 
-                                                                                #### Control
-                                                                                
                                                                                 The type of **control** determines how much we can reduce the **infection rate** of the disease (how quickly the disease is transmitted between people).
                                                                                 
                                                                                 We consider control of **two risk groups**; high risk and low risk. High risk groups are more likely to get seriously ill if they catch the disease.
 
                                                                                 *For further explanation, read the [**Background**](/intro)*.
-                                                                                '''),
-                                                                                target="tooltip-control",
-                                                                                style={'min-width': '30vw'},
-                                                                                placement='right',
+
+                                                                                '''
+                                                                                ),),
+                                                                                ],
+                                                                                id = "popover-control",
+                                                                                is_open=False,
+                                                                                target="popover-control-target",
+                                                                                placement='top',
                                                                             ),
                                                                             
 
@@ -1569,22 +1594,24 @@ inputs_col = html.Div([
                                                                                     options=[{'label': presets_dict[key],
                                                                                     'value': key} for key in presets_dict],
                                                                                     value= 'MSD',
-                                                                                    # clearable=False,
-                                                                                    # multi=False
-
                                                                                 ),
                                                                             ],
                                                                             style={'fontSize': '80%'},
                                                                             ),
 
-                                                                            
-                                                                            html.H6(['2. ',
-                                                                                html.Span(
-                                                                                    'Months of Control',
-                                                                                    style={"textDecoration": "underline"}),
+                                                                            html.H6([
+                                                                                '2. Months of Control ',
+                                                                                dbc.Button('🛈',
+                                                                                color='light',
+                                                                                className='mb-3',
+                                                                                size='sm',
+                                                                                id='popover-months-control-target',
+                                                                                style= {'cursor': 'pointer'})
                                                                                 ],
-                                                                            id = 'tooltip-months-control',
-                                                                            style={'fontSize': '120%', 'margin-top': '1vh', 'margin-bottom': '1vh'}),
+                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
+
+
+                                                                            
                                                                             html.Div([
                                                                             dcc.RangeSlider(
                                                                                         id='month-slider',
@@ -1598,11 +1625,12 @@ inputs_col = html.Div([
                                                                             ],
                                                                             style={'fontSize': '180%'},
                                                                             ),
-                                                                            
-                                                                            dbc.Tooltip(
-                                                                                dcc.Markdown('''
 
-                                                                                #### Control Timing
+                                                                            dbc.Popover(
+                                                                                [
+                                                                                dbc.PopoverHeader('Control Timing'),
+                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                '''
 
                                                                                 Use this slider to determine when control **starts** and **finishes**.
 
@@ -1610,12 +1638,15 @@ inputs_col = html.Div([
 
                                                                                 When control is not in place the infection rate returns to the baseline level (100%).
                                                                                 
-                                                                                '''),
-                                                                                target="tooltip-months-control",
-                                                                                style={'min-width': '30vw'},
-                                                                                placement='right',
+                                                                                '''
+                                                                                ),),
+                                                                                ],
+                                                                                id = "popover-months-control",
+                                                                                is_open=False,
+                                                                                target="popover-months-control-target",
+                                                                                placement='top',
                                                                             ),
-
+                                                                            
                                                                             html.Hr(),
 
                                                                                     
@@ -1623,28 +1654,28 @@ inputs_col = html.Div([
 
 
 
-                                                                            html.Div([
-                                                                            dbc.Button([
-                                                                                html.Span(
-                                                                                        'Custom Options',
-                                                                                        style={"textDecoration": "underline"},
-                                                                                ),
-                                                                            
-                                                                            
-                                                                            ],
+                                                                            dbc.ButtonGroup([
+                                                                            dbc.Button('Custom Options',
                                                                             color='warning',
                                                                             className='mb-3',
                                                                             id="collapse-button-custom",
-                                                                            style={'fontSize': '110%'} # 'margin-top': '1vh',
-                                                                            )],
-                                                                            id="tooltip-custom",
-                                                                            style={"cursor": "pointer"}
+                                                                            style={'fontSize': '110%', 'cursor': 'pointer'}
                                                                             ),
 
-                                                                            dbc.Tooltip(
-                                                                                dcc.Markdown(
+                                                                            dbc.Button('🛈',
+                                                                            color='light',
+                                                                            className='mb-3',
+                                                                            id="popover-custom-options-target",
+                                                                            style={'cursor': 'pointer'}
+                                                                            )
+                                                                            ]),
+
+
+                                                                            dbc.Popover(
+                                                                                [
+                                                                                dbc.PopoverHeader('Custom Options'),
+                                                                                dbc.PopoverBody(dcc.Markdown(
                                                                                 '''
-                                                                                #### Custom Options
 
                                                                                 Use this to choose your own custom strategy (you must first select 'custom' in the 'Control Type' selector above). You can compare two strategies directly or consider one only.
                                                                                 
@@ -1652,11 +1683,14 @@ inputs_col = html.Div([
                                                                                 
                                                                                 You can choose different infection rates for the different risk groups.
                                                                                 '''
-                                                                                ),
-                                                                                target="tooltip-custom",
-                                                                                style={'min-width': '30vw'},
-                                                                                placement='right',
+                                                                                ),),
+                                                                                ],
+                                                                                id = "popover-custom-options",
+                                                                                is_open=False,
+                                                                                target="popover-custom-options-target",
+                                                                                placement='top',
                                                                             ),
+                                                                            
 
                                                                             
                                                                             dbc.Collapse(
@@ -1670,12 +1704,10 @@ inputs_col = html.Div([
                                                                                                     id = 'number-strats-slider',
                                                                                                     options=[
                                                                                                         {'label': 'One', 'value': 'one'},
-                                                                                                        {'label': 'Two', 'value': 'two'}, #, 'disabled': True},
+                                                                                                        {'label': 'Two', 'value': 'two'},
                                                                                                     ],
                                                                                                     value= 'one',
                                                                                                     inline=True,
-                                                                                                    # labelStyle={'display': 'inline-block'}
-                                                                                                    # style={'fontSize': '120%'}
                                                                                                     ),
 
                                                                                                     
@@ -1761,14 +1793,14 @@ inputs_col = html.Div([
                                                                                             ],id='things-grey'),
 
                                                                                                     dbc.Tooltip(
-                                                                                                    inf_rate_tooltip,
+                                                                                                    inf_rate_tooltip_full,
                                                                                                     target="inf-rate-title-lr",
                                                                                                     style={'min-width': '30vw'},
                                                                                                     placement='right'
                                                                                                     ),
                                                                                                     
                                                                                                     dbc.Tooltip(
-                                                                                                    inf_rate_tooltip,
+                                                                                                    inf_rate_tooltip_full,
                                                                                                     target="inf-rate-title-hr",
                                                                                                     style={'min-width': '30vw'},
                                                                                                     placement='right'
@@ -1803,47 +1835,47 @@ inputs_col = html.Div([
                                                                                             html.Hr(),
                                                                 
                                                                                 ],
-                                                                                # dbc.Card(dbc.CardBody("This content is hidden in the collapse-custom")),
                                                                                 id="collapse-custom",
                                                                                 is_open=False,
                                                                             ),
 
 
                                                                             # html.Hr(),
-
-                                                                            html.Div([
-
-                                                                            dbc.Button([
-                                                                                html.Span(
-                                                                                        'Plot Settings',
-                                                                                        style={"textDecoration": "underline"},
-                                                                                )
-                                                                                    
-                                                                            ],
-                                                                            color='success',
+                                                                            dbc.ButtonGroup([
+                                                                            dbc.Button('Plot Settings',
+                                                                            color='warning',
                                                                             className='mb-3',
                                                                             id="collapse-button-plots",
-                                                                            style={'display': 'none', 'fontSize': '110%'} # 'margin-top': '1vh',
-                                                                            ),
-                                                                            ],
-                                                                            id="tooltip-plot",
-                                                                            style={'cursor': 'pointer'}
+                                                                            style={'fontSize': '110%', 'cursor': 'pointer'}
                                                                             ),
 
-                                                                            dbc.Tooltip(
-                                                                                dcc.Markdown(
+                                                                            dbc.Button('🛈',
+                                                                            color='light',
+                                                                            className='mb-3',
+                                                                            id="popover-plot-settings-target",
+                                                                            style = {'cursor': 'pointer'}
+                                                                            )
+                                                                            
+                                                                            ],
+                                                                            id='plot-settings-collapse',
+                                                                            ),
+
+                                                                            dbc.Popover(
+                                                                                [
+                                                                                dbc.PopoverHeader('Plot Settings'),
+                                                                                dbc.PopoverBody(dcc.Markdown(
                                                                                 '''
-                                                                                #### Plot Settings
 
                                                                                 Press this button to allow you to change the plot settings.
                                                                                 
                                                                                 You may change the timescale ('Years To Plot'), plot different risk groups ('Groups To Plot'), and different disease progress categories ('Categories To Plot'). 'How Many Plots' gives you the option of two different y-axis scales so that it is easier to compare hospital categories to the susceptible/infected/recovered categories.
-                                                                                '''
 
-                                                                                )
-                                                                                ,
-                                                                                target="tooltip-plot",
-                                                                                style={'min-width': '30vw'},
+                                                                                '''
+                                                                                ),),
+                                                                                ],
+                                                                                id = "popover-plot-settings",
+                                                                                is_open=False,
+                                                                                target="popover-plot-settings-target",
                                                                                 placement='right',
                                                                             ),
                                                                             
@@ -1935,39 +1967,40 @@ inputs_col = html.Div([
                                                                                     is_open=False,
                                                                                     ),
 
-                                                                                    # html.Hr(),
+
+                                                                                    dbc.ButtonGroup([
+                                                                                    dbc.Button('Hospital Categories',
+                                                                                    color='warning',
+                                                                                    className='mb-3',
+                                                                                    id="collapse-button-hospital",
+                                                                                    style={'fontSize': '110%', 'cursor': 'pointer'} # 'margin-top': '1vh',
+                                                                                    ),
+
+                                                                                    dbc.Button('🛈',
+                                                                                    # outline=True,
+                                                                                    color='light',
+                                                                                    className='mb-3',
+                                                                                    id="popover-hospital-target",
+                                                                                    style={'cursor': 'pointer'}
+                                                                                    )
+                                                                                    ]),
 
 
-                                                                                    html.Div([
+                                                                                    dbc.Popover(
+                                                                                        [
+                                                                                        dbc.PopoverHeader('Hospital Categories'),
+                                                                                        dbc.PopoverBody(dcc.Markdown(
+                                                                                        '''
 
-                                                                                    dbc.Button([
-                                                                                        html.Span(
-                                                                                                'Hospital Categories',
-                                                                                                style={"textDecoration": "underline", "cursor": "pointer"},
-                                                                                        )
+                                                                                        Press this button to change which hospital categories are modelled.
+
+                                                                                        '''
+                                                                                        ),),
                                                                                         ],
-                                                                                        color='danger',
-                                                                                        className='mb-3',
-                                                                                        id="collapse-button-hospital",
-                                                                                        style={'fontSize': '110%'}
-                                                                                        # style={'margin-top': '1vh'}
-                                                                                    ),
-                                                                                    ],
-                                                                                    id="tooltip-hosp",
-                                                                                    style={"cursor": "pointer"},
-                                                                                    ),
-
-                                                                                    dbc.Tooltip(dcc.Markdown(
-                                                                                    '''
-                                                                                    #### Hospital Categories
-
-                                                                                    Press this button to change which hospital categories are modelled.
-                                                                                    ''',
-
-                                                                                    ),
-                                                                                        target="tooltip-hosp",
-                                                                                        style={'min-width': '20vw'},
-                                                                                        placement='right',
+                                                                                        id = "popover-hospital",
+                                                                                        is_open=False,
+                                                                                        target="popover-hospital-target",
+                                                                                        placement='top',
                                                                                     ),
                                                                                     
                                                                                     dbc.Collapse(
@@ -2040,19 +2073,21 @@ inputs_col = html.Div([
 
 results_col = html.Div([
                                              
+                                                        dcc.Markdown('''*Choose between disease progress curves, bar charts and strategy overviews.*''', style = {'textAlign': 'center'}),
+                                             
                                                         dbc.DropdownMenu(
                                                             label="Type of Result",
                                                             bs_size="lg",
                                                             color='success',
                                                             # id = 'dropdown',
                                                             children=[
-                                                                dbc.DropdownMenuItem("Disease Progress Curves",header=True),
+                                                                dbc.DropdownMenuItem("Disease Progress Curves",header=True,disabled=True),
                                                                 dbc.DropdownMenuItem("See detailed curves describing the outcome of your choice of strategy",id='DPC_dd',active=True),
                                                                 dbc.DropdownMenuItem(divider=True),
-                                                                dbc.DropdownMenuItem("Bar Charts",header=True),
+                                                                dbc.DropdownMenuItem("Bar Charts",header=True,disabled=True),
                                                                 dbc.DropdownMenuItem("See some key outcomes plotted to describe the outcome of your choice of strategy",id='BC_dd'),
                                                                 dbc.DropdownMenuItem(divider=True),
-                                                                dbc.DropdownMenuItem("Strategy Overview",header=True),
+                                                                dbc.DropdownMenuItem("Strategy Overview",header=True,disabled=True),
                                                                 dbc.DropdownMenuItem("Show a broad overview of the outcome of your choice of strategy",id='SO_dd'),
                                                             ],
                                                             className="mb-3",
@@ -2090,7 +2125,7 @@ results_col = html.Div([
                                                                                                             html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
                                                                                                                 dbc.Button([
                                                                                                                 html.Span([##
-                                                                                                                html.Div('Total Deaths (Percentage)',style= {'textAlign': 'center'},id='bar-plot-1-out'),
+                                                                                                                html.Div('Plot: Total Deaths (Percentage)',style= {'textAlign': 'center'},id='bar-plot-1-out'),
                                                                                                                 ],##
                                                                                                                 ),
                                                                                                                 ],
@@ -2127,7 +2162,7 @@ results_col = html.Div([
                                                                                                                                     html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
                                                                                                                                         dbc.Button([
                                                                                                                                         html.Span([##
-                                                                                                                                        html.Div('Peak ICU Bed Capacity Requirement',style= {'textAlign': 'center'},id='bar-plot-3-out'),
+                                                                                                                                        html.Div('Plot: Peak ICU Bed Capacity Requirement',style= {'textAlign': 'center'},id='bar-plot-3-out'),
                                                                                                                                         ]),##
                                                                                                                                         ],
                                                                                                                                         color='info',
@@ -2159,7 +2194,7 @@ results_col = html.Div([
                                                                                                                                         html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
                                                                                                                                             dbc.Button([
                                                                                                                                             html.Span([##
-                                                                                                                                            html.Div('Time ICU Bed Capacity Exceeded',style= {'textAlign': 'center'},id='bar-plot-4-out'),
+                                                                                                                                            html.Div('Plot: Time ICU Bed Capacity Exceeded',style= {'textAlign': 'center'},id='bar-plot-4-out'),
                                                                                                                                             ]),##
                                                                                                                                             ],
                                                                                                                                             color='info',
@@ -2197,7 +2232,7 @@ results_col = html.Div([
                                                                                                                     html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
                                                                                                                         dbc.Button([
                                                                                                                         html.Span([##
-                                                                                                                        html.Div('Herd Immunity Threshold',style= {'textAlign': 'center'},id='bar-plot-2-out'),
+                                                                                                                        html.Div('Plot: Herd Immunity Threshold',style= {'textAlign': 'center'},id='bar-plot-2-out'),
                                                                                                                     ]),##
                                                                                                                     ],
                                                                                                                     color='info',
@@ -2233,7 +2268,7 @@ results_col = html.Div([
                                                                                                                     html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
                                                                                                                             dbc.Button([
                                                                                                                             html.Span([##
-                                                                                                                            html.Div('Time Until Herd Immunity Threshold Reached',style= {'textAlign': 'center'},id='bar-plot-5-out'),
+                                                                                                                            html.Div('Plot: Time Until Herd Immunity Threshold Reached',style= {'textAlign': 'center'},id='bar-plot-5-out'),
                                                                                                                         ]),##
                                                                                                                         ],
                                                                                                                     color='info',
@@ -2527,7 +2562,7 @@ layout_inter = html.Div([
                                                                                                                                                                     ''',style={'margin-top' : '2vh','margin-bottom' : '2vh'}),
 
                                                                                                                                                                     dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585498493/model_ddd3um.png',
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585681272/model_explan_mz81eq.png',
                                                                                                                                                                     style={'max-width':'90%','height': 'auto','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
                                                                                                                                                                     ),
 
@@ -2897,15 +2932,12 @@ def preset_sliders(preset):
 
 
 
-@app.callback(
-    [Output("collapse-custom", "is_open"),
-    Output("collapse-button-custom", "color")],
-    [Input("collapse-button-custom", "n_clicks")],
-    [State("collapse-custom", "is_open")],
-)
+########################################################################################################################
+# collapse
 def toggle_collapse(n, is_open):
     color = 'warning'
-    if n is not None and not is_open:
+
+    if n is not None and not is_open: 
         color = 'success'
     else:
         color = 'warning'
@@ -2914,38 +2946,29 @@ def toggle_collapse(n, is_open):
     return [is_open, color]
 
 
+for p in ["plots", "custom", "hospital"]:
+    app.callback(
+        [Output(f"collapse-{p}", "is_open"),
+        Output(f"collapse-button-{p}", "color")],
+        [Input(f"collapse-button-{p}", "n_clicks")],
+        [State(f"collapse-{p}", "is_open")],
+    )(toggle_collapse)
 
-@app.callback(
-    [Output("collapse-hospital", "is_open"),
-    Output("collapse-button-hospital", "color")],
-    [Input("collapse-button-hospital", "n_clicks")],
-    [State("collapse-hospital", "is_open")],
-)
-def toggle_collapse(n, is_open):
-    color = 'warning'
-    if n is not None and not is_open:
-        color = 'success'
-    else:
-        color = 'warning'
-    if n:
-        return [not is_open, color]
-    return [is_open, color]
 
-@app.callback(
-    [Output("collapse-plots", "is_open"),
-    Output("collapse-button-plots", "color")],
-    [Input("collapse-button-plots", "n_clicks")],
-    [State("collapse-plots", "is_open")],
-)
-def toggle_collapse(n, is_open):
-    color = 'warning'
-    if n is not None and not is_open:
-        color = 'success'
-    else:
-        color = 'warning'
+########################################################################################################################
+# popovers
+def toggle_popover(n, is_open):
     if n:
-        return [not is_open, color]
-    return [is_open, color]
+        return not is_open
+    return is_open
+
+for p in ["pick-strat", "control", "months-control", "custom-options", "plot-settings", "hospital"]:
+    app.callback(
+        Output(f"popover-{p}", "is_open"),
+        [Input(f"popover-{p}-target", "n_clicks")],
+        [State(f"popover-{p}", "is_open")],
+    )(toggle_popover)
+
 
 ##############################################################################################################################
 
@@ -3482,7 +3505,7 @@ def intro_content(tab,hosp,sol_do_n):
                 Output('loading-bar-output-4','children'),
                 Output('loading-bar-output-5','children'),
 
-                Output('collapse-button-plots', 'style'),
+                Output('plot-settings-collapse', 'style'),
 
                 Output('line-plot-1', 'figure'),
                 Output('line-plot-2', 'figure'),
@@ -3718,7 +3741,7 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
 
 
         ########################################################################################################################
-            bar1_title = 'Total Deaths (Percentage)'
+            bar1_title = 'Plot: Total Deaths (Percentage)'
 
             if button_id!='BC_dd': # tab!='tab_1':
                 bar1 = dummy_figure
@@ -3730,7 +3753,7 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
             if sols is not None and button_id=='BC_dd': # tab=='tab_1':
 
                 if not deaths:
-                    bar1_title = 'Maximum Percentage Of Population In Critical Care'
+                    bar1_title = 'Plot: Maximum Percentage Of Population In Critical Care'
 
 
 
@@ -3760,7 +3783,7 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
             if sols is not None and button_id=='DPC_dd':
                 # spacer_style = {'height': '60vh', 'display': 'block'}
                 output_2 = [i for i in output if i in ['C','H','D']]
-                outputs_style = {'display': 'block', 'fontSize': '110%'}
+                outputs_style = None # {'display': 'inline-block'} #, 'fontSize': '110%'}
 
                 if len(output)>0:
                     fig1 = figure_generator(sols[:-1],month,output,groups,hosp,num_strat,groups2,which_plots,years)
