@@ -2992,8 +2992,7 @@ for p in ["pick-strat", "control", "months-control", "custom-options", "plot-set
                Input('align-active-cases-check', 'value'),
                Input('align-active-cases-input', 'value'),
                Input('align-daily-cases-check', 'value'),
-               Input('align-daily-cases-input', 'value'),
-               ],
+               Input('align-daily-cases-input', 'value')],
               [State('hidden-stored-data', 'children')] +
               [State(c_name, 'value') for c_name in COUNTRY_LIST])
 def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop,
