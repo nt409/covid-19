@@ -468,13 +468,7 @@ def strat_table(month,beta_H,beta_L,N_sols,i):
                     ),
 
                     dbc.Tooltip(
-                    dcc.Markdown(
-                    '''
-                    #### Infection Rate
-                    
-                    The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.
-                    '''
-                    ),
+                    inf_rate_tooltip,
                     target="tooltip-hr",
                     style={'min-width': '30vw'},
                     placement='bottom'
@@ -905,7 +899,13 @@ def figure_generator(sols,month,output,groups,hosp,num_strat,groups2,which_plots
 
 
 
-
+inf_rate_tooltip = dcc.Markdown(
+                    '''
+                    #### Infection Rate
+                    
+                    The Infection Rate relates to how quickly the disease is transmitted. Control measures can affect transmission rates (typically lowering them). Use the 'Pick Your Strategy' bar on the left to adjust by choosing a preset strategy or making your own custom choice.
+                    '''
+                    )
 
 
 
@@ -1446,7 +1446,15 @@ inputs_col = html.Div([
                                                                                                     ),
                                                                                                         
 
-                                                                                                    html.H6('Low Risk Infection Rate (%)',style={'fontSize': '100%'}),
+                                                                                                    html.H6([
+                                                                                                        html.Span(
+                                                                                                                'Low Risk Infection Rate (%)',
+                                                                                                                style={"textDecoration": "underline"},
+                                                                                                        )
+                                                                                                    ],
+                                                                                                    id = 'inf-rate-title-lr',
+                                                                                                    style={'fontSize': '100%'}),
+
                                                                                                     dcc.Slider(
                                                                                                         id='grey-lr-slider',
                                                                                                         min=0,
@@ -1456,8 +1464,16 @@ inputs_col = html.Div([
                                                                                                         value=initial_lr,
                                                                                                         disabled=True
                                                                                                     ),
-
-                                                                                                    html.H6('High Risk Infection Rate (%)',style={'fontSize': '100%'}),
+                                                                                                    
+                                                                                                    html.H6([
+                                                                                                        html.Span(
+                                                                                                                'High Risk Infection Rate (%)',
+                                                                                                                style={"textDecoration": "underline"},
+                                                                                                        )
+                                                                                                    ],
+                                                                                                    id = 'inf-rate-title-hr',
+                                                                                                    style={'fontSize': '100%'}),
+                                                                                                    # html.H6('High Risk Infection Rate (%)',style={'fontSize': '100%'}),
                                                                                                     dcc.Slider(
                                                                                                             id='grey-hr-slider',
                                                                                                             min=0,
@@ -1467,8 +1483,25 @@ inputs_col = html.Div([
                                                                                                             value=initial_hr,
                                                                                                             disabled=True
                                                                                                             ),
+
+                                                                                                    
                                                                                                             
                                                                                             ],id='things-grey'),
+
+                                                                                                    dbc.Tooltip(
+                                                                                                    inf_rate_tooltip,
+                                                                                                    target="inf-rate-title-lr",
+                                                                                                    style={'min-width': '30vw'},
+                                                                                                    placement='right'
+                                                                                                    ),
+                                                                                                    
+                                                                                                    dbc.Tooltip(
+                                                                                                    inf_rate_tooltip,
+                                                                                                    target="inf-rate-title-hr",
+                                                                                                    style={'min-width': '30vw'},
+                                                                                                    placement='right'
+                                                                                                    ),
+
 
 
                                                                                             html.Div([
@@ -3508,6 +3541,8 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
 
 
 ########################################################################################################################
+    tables = []
+
     strategy_outcome_text = ['']
     # spacer_style = {'display': 'none'}
 
@@ -3546,7 +3581,6 @@ def render_interactive_content(tab,DPC_dropdown,BC_dropdown,SO_dropdown,tab2,sol
             deaths = True
 
 
-        tables = []
         if sols is not None:
             sols.append(sol_do_nothing)
         
