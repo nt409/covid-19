@@ -1160,32 +1160,67 @@ layout_intro = html.Div([
                                 html.Div( [
 
     dbc.Tabs(id='intro-tabs',
-             active_tab='tab_0',
+             active_tab='tab_start',
              children = [
                 
+        
+        dbc.Tab(label='Start Here', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_start', children=[
+        html.H4('Introduction',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
+        dcc.Markdown('''
+        The aim of this website is to demystify modelling of infectious diseases through short videos and interactive models which let you explore how different control strategies will affect the rate that covid-19 spreads. The website has been developed by experts in epidemiology and modelling from the University of Cambridge.
+        '''),
+        #  Nick and Cerian are based in the Department of Plant Sciences and Daniel is based at the Institute of Astronomy.
+        
+        html.H4('Who is this website for?',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
+        dcc.Markdown('''
+        The content is targeted at people with little or no experience of modelling and might be used as a resource for anyone wishing to understand more about the standstill.
+        '''),
+        
+        html.H4('How to use the website',
+            style = {'margin-top': '1vh', 'fontSize': '180%'}),
+        dcc.Markdown('''
+        It’s up to you how you explore our website. If you already know something about modelling you may want to jump straight to the interactive model. But if you’d like to know a little more about modelling and a detailed explanation of the output then click on the next tabs in this section.
+        '''),
+        
 
-        dbc.Tab(label='Definitions and Strategies', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', children=[
 
-            html.H3('Overview',className='display-4',
+        ]),
+        
+        dbc.Tab(label='Introduction to modelling', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', children=[
+
+            html.H3('Introduction to mathematical modelling',className='display-4',
             style = {'margin-top': '1vh', 'fontSize': '300%'}),
 
             html.Hr(),
 
+            dcc.Markdown('''
+            Watch this video from Dr Cerian Webb, an expert in epidemiology and modelling from the University of Cambridge.
+            '''),
+
+            dbc.Row([
+                    
+                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585755877/WhatIsModellingv2_hhqe2h.mp4',
+                    controls=True,
+                    style={'max-width':'90%','height': 'auto','margin-top': '1vh','margin-bottom': '1vh'}),
+                    
+                    ],
+                    justify='center'
+                    ),
+            
+                    
+
+            
+            html.Hr(),
+            
+            html.H3('Definitions',className='display-4',
+            style = {'margin-top': '1vh', 'fontSize': '300%'}),
+
             dbc.Col([
-            
-            
-            html.H4('Introduction to the modelling study',
-            style = {'margin-top': '1vh', 'fontSize': '180%'}),
-
             dcc.Markdown('''            
-            
-            This page is intended to help you understand:
 
-            1. How the different ways to control COVID-19 work,
-
-            2. Why it is essential that you follow the control measures.
-
-            But first, there are **two vital concepts** that you need to understand before we can fully explore how the control measures work.
+            There are **two vital concepts** that you need to understand before we can fully explore how the control measures work.
             '''),
             
             html.H4('1. Basic Reproduction Number',
@@ -1214,6 +1249,14 @@ layout_intro = html.Div([
             A further concern arises over whether the virus is likely to mutate. However it is still useful to consider the best way to managing each strain.
             '''),
 
+            
+            ],
+            width = True), # {'size': 10}),
+
+    #end of tab 2
+        ]),
+
+        dbc.Tab(label='COVID-19 Control Strategies', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_control', children=[
             html.H4('Keys to a successful control strategy',
             style = {'margin-top': '1vh', 'fontSize': '180%'}),
 
@@ -1230,9 +1273,12 @@ layout_intro = html.Div([
 
             However, controlling COVID-19 is a difficult task, so there is no perfect strategy. We will explore the advantages and disadvantages of each strategy.
             '''),
+            
+            html.Hr(),
 
             html.H4('Strategies',
-            style = {'margin-top': '1vh', 'fontSize': '200%'}),
+            className='display-4',
+            style = {'margin-top': '1vh', 'fontSize': '210%'}),
             
             html.H4('Reducing the infection rate',
             style = {'margin-top': '1vh', 'fontSize': '180%'}),
@@ -1267,12 +1313,7 @@ layout_intro = html.Div([
             ''',
             ),
 
-            ],
-            width = True), # {'size': 10}),
-
-    #end of tab 2
         ]),
-
 
 
         dbc.Tab(label='Control Case Study', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_3', children=[
@@ -1344,6 +1385,11 @@ layout_intro = html.Div([
             
     #end of tab 3
         ]),
+        # dbc.Tab(label='Explanatory Videos', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_vids', children=[
+                    
+                    
+
+        # ]),
 
         dbc.Tab(label='How to use', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_1', children=[
                     
@@ -2498,6 +2544,7 @@ layout_inter = html.Div([
                                                                                                                                                                     html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585681272/model_explan_mz81eq.png',
                                                                                                                                                                     style={'max-width':'90%','height': 'auto','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
                                                                                                                                                                     ),
+                                                                                                                                                                    
 
                                                                                                                                                                     ],
                                                                                                                                                                     justify='center'
@@ -2836,8 +2883,8 @@ page_layout = html.Div([
         # # page content
         dcc.Location(id='url', refresh=False),
 
-        html.Footer(["Authors: Nick P. Taylor and ",
-                     html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'), ". ",
+        html.Footer(["Authors: Nick P. Taylor, ",
+                     html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'), " and Dr Cerian Webb. ",
                      html.A('Source code', href='https://github.com/nt409/covid-19'), ". ",
                      "Data is taken from ",
                      html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
