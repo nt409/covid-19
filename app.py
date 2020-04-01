@@ -578,7 +578,7 @@ def human_format(num):
 
 
 ########################################################################################################################
-def figure_generator(sols,month,output,groups,num_strat,groups2,which_plots,years=2): # hosp
+def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_plot=False): # hosp
 
     font_size = 14
     
@@ -681,18 +681,18 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,which_plots,year
             ))
             
     if ICU:
-        if which_plots=='two':
-            control_font_size = font_size*(16/24) # '10em'
-            ICU_font_size = font_size*(16/24) # '10em'
+        # if which_plots=='two':
+        control_font_size = font_size*(16/24) # '10em'
+        ICU_font_size = font_size*(16/24) # '10em'
 
-            yval_pink = 0.3
-            yval_blue = 0.82
-        else:
-            control_font_size = font_size*(20/24) #'11em'
-            ICU_font_size = font_size*(20/24) # '10em'
+        yval_pink = 0.3
+        yval_blue = 0.82
+        # else:
+        #     control_font_size = font_size*(20/24) #'11em'
+        #     ICU_font_size = font_size*(20/24) # '10em'
 
-            yval_pink = 0.35
-            yval_blue = 0.86
+        #     yval_pink = 0.35
+        #     yval_blue = 0.86
         xshift_use = None
 
 
@@ -731,13 +731,12 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,which_plots,year
             ))
 
     else:
-        if which_plots=='two':
-            control_font_size = font_size*(30/24) #'11em'
-            yval_blue = 0.4
-        else:
-            yval_blue = 0.5
-            control_font_size = font_size*(35/24) #'12em'
-        text_angle_blue = -90
+        # if which_plots=='two':
+        control_font_size = font_size*(30/24) #'11em'
+        yval_blue = 0.4
+        # else:
+        #     yval_blue = 0.5
+        #     control_font_size = font_size*(35/24) #'12em'
         xshift_use = 8
 
 
@@ -764,9 +763,9 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,which_plots,year
 
 
 
-    ICU_to_plot = False
-    if 'C' in output and ymax<0.05:
-        ICU_to_plot = True
+    # ICU_to_plot = False
+    # if 'C' in output and ymax<0.05:
+    #     ICU_to_plot = True
 
             
     if ICU_to_plot:
@@ -797,7 +796,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,which_plots,year
     
 
     
-    yy2 = [0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50, 100, 200]
+    yy2 = [0, 10**(-6), 2*10**(-6), 5*10**(-6), 10**(-5), 2*10**(-5), 5*10**(-5), 10**(-4), 2*10**(-4), 5*10**(-4), 10**(-3), 2*10**(-3), 5*10**(-3), 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50, 100, 200]
     yy = [0.95*i for i in yy2]
 
 
@@ -816,12 +815,15 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,which_plots,year
         xtext = [str(i) for i in range(1+floor(max(sol['t'])/month_len))]
         xvals = [ i for i in range(1+floor(max(sol['t'])/month_len))]
     
-    if yax['range'][1]>0.5:
-        yax_form = '%'
-    elif yax['range'][1]>0.1:
-        yax_form = '.1%'
-    else:
-        yax_form = '.2%'
+    tick_form = ['%','.1%','.2%','.3%','.4%','.5%','.6%','.7%','.8%']
+    upper_lim = [2,0.1,10**(-2),10**(-3),10**(-4),10**(-5),10**(-6),10**(-7),10**(-8)]
+    yax_form = None
+    for i in range(len(tick_form)):
+        if yax['range'][1]<upper_lim[i]:
+            yax_form = tick_form[i]
+    if yax_form is None:
+        yax_form = '.9%'
+
 
     layout = go.Layout(
                     annotations=annotz,
@@ -1459,7 +1461,7 @@ Results_interpretation =  html.Div([
     
     dcc.Markdown('''
 
-    The plots will show a prediction for how coronavirus will affect the population. It is assumed that control measures are in place for a **maximum of one year**.
+    The plots will show a prediction for how coronavirus will affect the population. It is assumed that control measures are in place for a **maximum of 15 months**.
     
     We consider the effect of control in the **absence** of a vaccine. Of course, if a vaccine were introduced this would greatly help reduce the damage caused by COVID-19, and would further promote the use of the quarantine strategy before relying on the vaccine to generate [**herd immunity**](/intro).
 
@@ -1725,10 +1727,10 @@ layout_inter = html.Div([
                                                                                                                                                             dcc.RangeSlider(
                                                                                                                                                                         id='month-slider',
                                                                                                                                                                         min=0,
-                                                                                                                                                                        max=floor(params.months_run_for),
+                                                                                                                                                                        max=floor(params.max_months_controlling),
                                                                                                                                                                         step=1,
                                                                                                                                                                         # pushable=0,
-                                                                                                                                                                        marks={i: str(i) for i in range(0,floor(params.months_run_for)+1,3)},
+                                                                                                                                                                        marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
                                                                                                                                                                         value=[1,initial_month],
                                                                                                                                                             ),
                                                                                                                                                             ],
@@ -1754,6 +1756,24 @@ layout_inter = html.Div([
                                                                                                                                                                 is_open=False,
                                                                                                                                                                 target="popover-months-control-target",
                                                                                                                                                                 placement='right',
+                                                                                                                                                            ),
+
+                                                                                                                                                            html.H6([
+                                                                                                                                                                '1c. Vaccination starts',
+                                                                                                                                                                ],
+                                                                                                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
+
+                                                                                                                                                                                                                                                                                                                        html.Div([
+                                                                                                                                                            dcc.Slider(
+                                                                                                                                                                        id='vaccine-slider',
+                                                                                                                                                                        min   = 9,
+                                                                                                                                                                        max   = 18,
+                                                                                                                                                                        step  = 3,
+                                                                                                                                                                        marks = {i: 'Never' if i==9 else 'Month {}'.format(i) if i==12 else str(i) for i in range(9,19,3)},
+                                                                                                                                                                        value = 9,
+                                                                                                                                                            ),
+                                                                                                                                                            ],
+                                                                                                                                                            style={'fontSize': '180%'},
                                                                                                                                                             ),
 
                                                                                                                                                         ],width=True),
@@ -1959,7 +1979,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                 Press this button to allow you to change the plot settings.
                                                                                                                                                                 
-                                                                                                                                                                You may change the timescale ('Years To Plot'), plot different risk groups ('Groups To Plot'), and different disease progress categories ('Categories To Plot'). 'How Many Plots' gives you the option of two different y-axis scales so that it is easier to compare hospital categories to the susceptible/infected/recovered categories.
+                                                                                                                                                                You may change the timescale ('Years To Plot'), plot different risk groups ('Groups To Plot'), and different disease progress categories ('Categories To Plot').
 
                                                                                                                                                                 '''
                                                                                                                                                                 ),),
@@ -1988,17 +2008,17 @@ layout_inter = html.Div([
                                                                                                                                                                                                                                         value=2,
                                                                                                                                                                                                                                     ),
 
-                                                                                                                                                                                                                                    html.H6('How Many Plots',style={'fontSize': '120%'}),
-                                                                                                                                                                                                                                    dbc.RadioItems(
-                                                                                                                                                                                                                                        id='how-many-plots-slider',
-                                                                                                                                                                                                                                        options=[
-                                                                                                                                                                                                                                            {'label': 'One Plot', 'value': 'all'},
-                                                                                                                                                                                                                                            # {'label': 'One Plot: Hospital Categories', 'value': 'hosp'},
-                                                                                                                                                                                                                                            {'label': 'Two Plots (Different Axis Scales)', 'value': 'two'},
-                                                                                                                                                                                                                                        ],
-                                                                                                                                                                                                                                        value= 'two',
-                                                                                                                                                                                                                                        labelStyle = {'display': 'inline-block'}
-                                                                                                                                                                                                                                    ),
+                                                                                                                                                                                                                                    # html.H6('How Many Plots',style={'fontSize': '120%'}),
+                                                                                                                                                                                                                                    # dbc.RadioItems(
+                                                                                                                                                                                                                                    #     id='how-many-plots-slider',
+                                                                                                                                                                                                                                    #     options=[
+                                                                                                                                                                                                                                    #         {'label': 'One Plot', 'value': 'all'},
+                                                                                                                                                                                                                                    #         # {'label': 'One Plot: Hospital Categories', 'value': 'hosp'},
+                                                                                                                                                                                                                                    #         {'label': 'Two Plots (Different Axis Scales)', 'value': 'two'},
+                                                                                                                                                                                                                                    #     ],
+                                                                                                                                                                                                                                    #     value= 'two',
+                                                                                                                                                                                                                                    #     labelStyle = {'display': 'inline-block'}
+                                                                                                                                                                                                                                    # ),
 
 
                                                                                                                                                                                                                                         html.H6('Groups To Plot',style={'fontSize': '120%'}),
@@ -2414,7 +2434,7 @@ layout_inter = html.Div([
                                                     html.Div(id='DPC-content',children=[
 
                                                                 dbc.Row([
-                                                                        html.H4("Disease Progress Curves",
+                                                                        html.H4("All Categories",
                                                                         style={'margin-bottom': '3vh', 'textAlign': 'center' ,'margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
                                                                         ),
 
@@ -2424,11 +2444,21 @@ layout_inter = html.Div([
                                                                 ),
 
                                                                 
-                                                                dcc.Graph(id='line-plot-1',style={'display': 'none'}), # figure=dummy_figure,
+                                                                dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '95%'}), # figure=dummy_figure,
 
                                                                 dbc.Container([html.Div([],style={'height': '3vh'})]),
 
-                                                                dcc.Graph(id='line-plot-2',style={'display': 'none'}), # figure=dummy_figure,
+                                                                html.H4("Hospital Categories",
+                                                                style={'margin-bottom': '3vh', 'textAlign': 'center' ,'margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
+                                                                ),
+
+                                                                dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '95%'}), # figure=dummy_figure,
+
+                                                                html.H4("Intensive Care",
+                                                                style={'margin-bottom': '3vh', 'textAlign': 'center' ,'margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
+                                                                ),
+
+                                                                dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '95%'}), # figure=dummy_figure,
 
 
                                                     ]),
@@ -2883,8 +2913,10 @@ page_layout = html.Div([
         # # page content
         dcc.Location(id='url', refresh=False),
 
-        html.Footer(["Authors: Nick P. Taylor, ",
-                     html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'), " and Dr Cerian Webb. ",
+        html.Footer(["Authors: ",
+                     html.A('Nick P. Taylor', href='https://twitter.com/TaylorNickP'),", ",
+                     html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'),
+                     " and Dr Cerian Webb. ",
                      html.A('Source code', href='https://github.com/nt409/covid-19'), ". ",
                      "Data is taken from ",
                      html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
@@ -3061,10 +3093,13 @@ def invisible_or_not(num,preset):
     Input('low-risk-slider-2', 'value'),
     Input('high-risk-slider-2', 'value'),
     Input('number-strats-radio', 'value'),
-    # Input('hosp-cats', 'value'),
+    Input('vaccine-slider', 'value'),
     ])
-def find_sol(preset,month,lr,hr,lr2,hr2,num_strat): # years , ,hosp
+def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine): # years , ,hosp
+    if vaccine==9:
+        vaccine = None
     
+    # print(dash.callback_context.triggered)
     if preset=='C':
         lr = params.fact_v[int(lr)]
         hr = params.fact_v[int(hr)]
@@ -3087,9 +3122,9 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat): # years , ,hosp
         months_controlled= None
 
     sols = []
-    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop))
+    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine))
     if num_strat=='two':
-        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop))
+        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine))
     
     return sols # {'sols': sols}
 
@@ -3140,8 +3175,8 @@ def intro_content(tab,sol_do_n): #hosp,
             
             sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=365*year_to_run))
             sols.append(sol_do_n)
-            fig1 = figure_generator(sols,month,output_use,['BR'],'two',['BR'],'all')
-            fig2 = figure_generator(sols,month,output_use_2,['BR'],'two',['BR'],'all')
+            fig1 = figure_generator(sols,month,output_use,['BR'],['BR'],'all')
+            fig2 = figure_generator(sols,month,output_use_2,['BR'],['BR'],'all')
 
         
         return fig1, fig2
@@ -3188,9 +3223,11 @@ def intro_content(tab,sol_do_n): #hosp,
 
                 Output('line-plot-1', 'figure'),
                 Output('line-plot-2', 'figure'),
+                Output('line-plot-3', 'figure'),
 
-                Output('line-plot-1', 'style'),
-                Output('line-plot-2', 'style'),
+
+                # Output('line-plot-1', 'style'),
+                # Output('line-plot-2', 'style'),
                 
                 Output('loading-line-output-1','children'),
                 
@@ -3210,7 +3247,7 @@ def intro_content(tab,sol_do_n): #hosp,
                 # or any of the plot categories
                 Input('groups-checklist-to-plot', 'value'),
                 Input('groups-to-plot-radio','value'),                                      
-                Input('how-many-plots-slider','value'),
+                # Input('how-many-plots-slider','value'),
                 Input('categories-to-plot-checklist', 'value'),
                 Input('years-slider', 'value'),
 
@@ -3229,7 +3266,7 @@ def intro_content(tab,sol_do_n): #hosp,
                 # State('hosp-cats', 'value'),
                 State('number-strats-radio', 'value'),
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,years,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active,sol_do_nothing,preset,month,num_strat): # pathname, tab_intro pathname, hosp
+def render_interactive_content(tab,tab2,sols,groups,groups2,output,years,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active,sol_do_nothing,preset,month,num_strat): # pathname, tab_intro pathname, hosp
 
     ctx = dash.callback_context
     
@@ -3273,7 +3310,6 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
 
     Strat_outcome_title = presets_dict[preset] + ' Strategy Outcome'
-    # tables = []
     strategy_outcome_text = ['']
 
     plot_settings_on_or_off = {'display': 'none'}
@@ -3288,8 +3324,8 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
     if sols is None or tab2!='interactive' or button_id!='DPC_dd':
         fig1 = dummy_figure
         fig2 = dummy_figure
-        line_plot_style_1 = {'display': 'none'}
-        line_plot_style_2 = {'display': 'none'}   
+        fig3 = dummy_figure
+
 
 
     if tab2=='interactive':
@@ -3430,28 +3466,17 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
                 plot_settings_on_or_off = None
 
                 if len(output)>0:
-                    fig1 = figure_generator(sols[:-1],month,output,groups,num_strat,groups2,which_plots,years) # hosp,
+                    fig1 = figure_generator(sols[:-1],month,output,groups,num_strat,groups2,years) # hosp,
                 else:
                     fig1 = dummy_figure
 
                 if len(output_2)>0:
-                    fig2 = figure_generator(sols[:-1],month,output_2,groups,num_strat,groups2,which_plots,years) # hosp,
+                    fig2 = figure_generator(sols[:-1],month,output_2,groups,num_strat,groups2,years) # hosp,
                 else:
                     fig2 = dummy_figure
+                fig3 = figure_generator(sols[:-1],month,['C'],groups,num_strat,groups2,years,True) # hosp,
             
         ##############
-
-            fig_height = '75vh'
-            fig_height_2 = '65vh'
-            fig_width = '95%'
-
-            if which_plots=='all':
-                line_plot_style_1 = {'height': fig_height, 'width': fig_width, 'display': 'block'}
-                line_plot_style_2 = {'display': 'none'}
-
-            if which_plots=='two':
-                line_plot_style_1 = {'height': fig_height_2, 'width': fig_width, 'display': 'block'}
-                line_plot_style_2 = {'height': fig_height_2, 'width': fig_width, 'display': 'block'}
 
                 
 
@@ -3480,8 +3505,9 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
     plot_settings_on_or_off,
     fig1,
     fig2,
-    line_plot_style_1,
-    line_plot_style_2,
+    fig3,
+    # line_plot_style_1,
+    # line_plot_style_2,
     html.Div()
     ]
 

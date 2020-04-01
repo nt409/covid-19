@@ -24,13 +24,15 @@ divider = -2
 # exit()
 fact_v = np.concatenate([[0.02,0.05,0.1],np.linspace(0.25,2,8)]) # np.linspace(0.05,1.2,21) # [0.1,1,4] # np.linspace(0.05,8,11) #[0.05,1,10] #np.linspace(0.05,8,3) # [0.1,1,2,4] #np.linspace(0.5,4,5)
 # fact_v = [0.05,1,1.5]
-months_run_for = 12
+max_months_controlling = 15
+
+
 
 # divider = int(divider)
 # hr_frac = 0.15
 hr_frac = sum(df2.Pop[divider:])/100
 
-T_stop = 30*months_run_for
+T_stop = 30*max_months_controlling
 
 df2 = df2.assign(pop_low_prop=lambda x: x.Pop/(100*(1-hr_frac)),
     pop_high_prop=lambda x: x.Pop/(100*(hr_frac)))
@@ -97,6 +99,9 @@ ICU_capacity = ICU_factor*8/100000 # 0.001 #  8/100000 # = 0.00008
 initial_infections = 625
 UK_population = 60 * 10**(6)
 
+vaccinate_percent = 0.9 # vaccinate this many
+vaccinate_rate = 0.55/(365*2/3) #10000/UK_population # per day
+# https://journals.plos.org/plosntds/article/file?rev=2&id=10.1371/journal.pntd.0006158&type=printable
 
 
 class Parameters:
@@ -118,10 +123,14 @@ class Parameters:
         self.T_stop = T_stop
         self.ICU_capacity = ICU_capacity
         self.fact_v = fact_v
-        self.months_run_for = months_run_for
+        self.max_months_controlling = max_months_controlling
         self.R_0 = R_0
         self.UK_population = UK_population
         self.initial_infections = initial_infections
+
+        self.vaccinate_percent = vaccinate_percent
+        self.vaccinate_rate = vaccinate_rate
+
 
 
         self.number_compartments = number_compartments
