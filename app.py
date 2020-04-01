@@ -3456,21 +3456,26 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
               [Input('normalise-check', 'value')])
 def dan_update_align_options(normalise_by_pop):
     if normalise_by_pop:
-        options = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
+        options_cases = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
+                    'value': 'align'}]
+        options_deaths = [{'label': "Align countries by the date when the number of confirmed deaths was ",
                     'value': 'align'}]
         hidden_text = {'display': 'inline-block'}
-        return [options, 0.0015, hidden_text,
-                options, 0.000034, hidden_text,
-                options, 0.0015, hidden_text,
-                options, 0.0015, hidden_text]
+        return [options_cases, 0.0015, hidden_text,
+                options_deaths, 0.000034, hidden_text,
+                options_cases, 0.0015, hidden_text,
+                options_cases, 0.0015, hidden_text]
     else:
-        options = [{'label': "Align countries by the date when the number of confirmed cases was ",
+        options_cases = [{'label': "Align countries by the date when the number of confirmed cases was ",
+                    'value': 'align'}]
+        options_deaths = [{'label': "Align countries by the date when the number of confirmed deaths was ",
                     'value': 'align'}]
         hidden_text = {'display': 'none'}
-        return[options, 1000, hidden_text,
-               options, 20, hidden_text,
-               options, 1000, hidden_text,
-               options, 1000, hidden_text]
+        return[options_cases, 1000, hidden_text,
+               options_deaths, 20, hidden_text,
+               options_cases, 1000, hidden_text,
+               options_cases, 1000, hidden_text]
+
 
 @app.callback([Output('infections-plot', 'figure'),
                Output('deaths-plot', 'figure'),
