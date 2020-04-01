@@ -113,16 +113,15 @@ colors = {
     'text': '#111111'
 }
 
-layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-family': 'sans-serif'},
+layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font-family': 'sans-serif'
                       id='output-layout', children=[
     html.H4(
         children='COVID-19 Cases and Deaths',
         className='display-4',
         style={
             'textAlign': 'center',
-            'fontSize': '300%',
-            # 'color': colors['text'],
-            'margin-top': '1vh'
+            'fontSize': '6vh',
+            'margin-top': '2vh'
         }
     ),
 
@@ -153,7 +152,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                           "margin-left": "5px", "margin-right": "15px"}),
             html.Div(style={'margin-top': '10px'}),
             html.Div([
-                dcc.Checklist(
+                dbc.Checklist(
                     id=c_name,
                     options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(),
                               'value': c_name}],
@@ -192,14 +191,14 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                 ),
             ], style={'display': 'inline-block', 'horizontal-align': 'center', 'textAlign': 'center',
                       "margin-bottom": "15px",}),
-            dcc.Checklist(
+            dbc.Checklist(
                 id='show-exponential-check',
                 options=[{'label': "Show exponential fits?", 'value': 'exponential'}],
                 value=['exponential'],
                 style={'textAlign': 'center', "margin-bottom": "0px"},
                 inputStyle={"margin-right": "5px"}
             ),
-            dcc.Checklist(
+            dbc.Checklist(
                 id='normalise-check',
                 options=[{'label': "Plot as percentage of population?", 'value': 'normalise'}],
                 value=[],
@@ -213,7 +212,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                                                    'margin-top': '30px'}),
 
             html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
-                dcc.Checklist(
+                dbc.Checklist(
                     id='align-cases-check',
                     options=[{'label': "Align countries by the date when the number of confirmed cases was ",
                               'value': 'align'}],
@@ -238,7 +237,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
             html.H3(children='Total Deaths', style={'textAlign': 'center', 'color': colors['text'],
                                                     'margin-top': '10px'}),
             html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
-                dcc.Checklist(
+                dbc.Checklist(
                     id='align-deaths-check',
                     options=[{'label': "Align countries by the date when the number of confirmed deaths was ",
                               'value': 'align'}],
@@ -263,7 +262,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
             html.Div(id='active-cases-container', style={'display': 'block'}, children=[
                 html.H3(children='Active Cases', style={'textAlign': 'center', 'color': colors['text']}),
                 html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
-                    dcc.Checklist(
+                    dbc.Checklist(
                         id='align-active-cases-check',
                         options=[{'label': "Align countries by the date when the number of confirmed cases was ",
                                   'value': 'align'}],
@@ -290,7 +289,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                 html.H3(children='Daily New Cases', style={'textAlign': 'center', 'color': colors['text'],
                                                     'margin-top': '10px'}),
                 html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
-                    dcc.Checklist(
+                    dbc.Checklist(
                         id='align-daily-cases-check',
                         options=[{'label': "Align countries by the date when the number of confirmed cases was ",
                                   'value': 'align'}],
