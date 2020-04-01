@@ -14,7 +14,7 @@ class simulator:
 #-----------------------------------------------------------------
         
     ##
-    def poly_solv_ode(self,t,y,beta_L_factor=1,beta_H_factor=1,t_control=None,critical=True,death=True):
+    def poly_solv_ode(self,t,y,beta_L_factor=1,beta_H_factor=1,t_control=None): # critical=True,death=True
         ##
         S_L = y[params.S_L_ind]
         I_L = y[params.I_L_ind]
@@ -28,15 +28,15 @@ class simulator:
         C_H = y[params.C_H_ind]
 
 
-        if not critical:
-            params.crit_L = 0
-            params.crit_H = 0
-            params.recover_L = 0
-            params.recover_H = 0
+        # if not critical:
+        #     params.crit_L = 0
+        #     params.crit_H = 0
+        #     params.recover_L = 0
+        #     params.recover_H = 0
         
         death_on = 1
-        if not death:
-            death_on = 0
+        # if not death:
+        #     death_on = 0
         
         if t_control is None:
             beta_L_factor = 1
@@ -79,7 +79,7 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def poly_calc_ode(self,I0_L,I0_H,beta_L_factor,beta_H_factor,t_control,critical,death,T_stop):
+    def poly_calc_ode(self,I0_L,I0_H,beta_L_factor,beta_H_factor,t_control,T_stop): # critical,death
 
         I_L_0 = I0_L
         S_L_0 = (1-params.hr_frac)*params.N - I_L_0
@@ -102,7 +102,7 @@ class simulator:
             0
             ]
 
-        sol = ode(self.poly_solv_ode,jac=None).set_integrator('dopri5').set_f_params(beta_L_factor,beta_H_factor,t_control,critical,death)
+        sol = ode(self.poly_solv_ode,jac=None).set_integrator('dopri5').set_f_params(beta_L_factor,beta_H_factor,t_control) # ,critical,death
         
         tim = np.linspace(0,T_stop, 301) # use 141 time values
 
@@ -127,9 +127,9 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def run_model(self,I0_L=(1-params.hr_frac)*(params.initial_infections/params.UK_population)*params.N,I0_H=params.hr_frac*(params.initial_infections/params.UK_population)*params.N,beta_L_factor=1,beta_H_factor=1,t_control=None,critical=True,death=True,T_stop=params.T_stop):
+    def run_model(self,I0_L=(1-params.hr_frac)*(params.initial_infections/params.UK_population)*params.N,I0_H=params.hr_frac*(params.initial_infections/params.UK_population)*params.N,beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=params.T_stop): # critical=True,death=True,
         # print(I0_H*60*10**6,I0_L*60*10**6,params.hr_frac)
-        y_out, tim = self.poly_calc_ode(I0_L=I0_L,I0_H=I0_H,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,t_control=t_control,critical=critical,death=death,T_stop=T_stop)
+        y_out, tim = self.poly_calc_ode(I0_L=I0_L,I0_H=I0_H,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,t_control=t_control,T_stop=T_stop) # critical=critical,death=death,
         dicto = {'y': y_out,'t': tim,'beta_L': beta_L_factor,'beta_H': beta_H_factor}
         return dicto
 #--------------------------------------------------------------------
