@@ -1710,7 +1710,7 @@ layout_inter = html.Div([
                                                                                                                                                         ]),
 
                                                                                                                                                                     
-                                                                                                                                                            html.Hr(),
+                                                                                                                                                        html.Hr(),
                                                                                         ###################################
 
 
@@ -2002,7 +2002,11 @@ layout_inter = html.Div([
 
                                                                                                                                                             ],width=True),
                                                                                                                                                             # end of plot settings row
-                                                                                                                                                            ]),
+                                                                                                                                                            ],
+                                                                                                                                                            # justify='center',
+                                                                                                                                                            # style={'textAlign': 'center'}
+
+                                                                                                                                                            ),
 
 
                                                                                                 
@@ -2074,9 +2078,9 @@ layout_inter = html.Div([
                                              
                                                         html.H4('2. Choose Results Type',
                                                         # className='display-4',
-                                                        style={'fontSize': '180%', 'color': 'blue' , 'textAlign': 'center' ,'margin-top': "3vh"}),
+                                                        style={'fontSize': '180%', 'color': 'blue' , 'textAlign': 'left' ,'margin-top': "3vh"}),
                                                         
-                                                        dcc.Markdown('''*Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.*''', style = {'textAlign': 'center', 'fontSize': '90%'}),
+                                                        dcc.Markdown('''*Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.*''', style = {'textAlign': 'left', 'fontSize': '90%'}),
                                              
                                                         dbc.Row([
                                                         dbc.ButtonGroup(
