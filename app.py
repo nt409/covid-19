@@ -179,8 +179,7 @@ txt5 = dcc.Markdown('''
 
 
 def Bar_chart_generator(data,data2 = None, data_group = None,name1=None,name2=None,preset=None,text_addition=None,color=None,y_title=None,yax_tick_form=None,maxi=True,yax_font_size_multiplier=None,hover_form=None): # ,title_font_size=None): #title
-    # if preset is None:
-    #     preset = 'N'
+    
     font_size = 10
 
     if yax_font_size_multiplier is None:
@@ -876,7 +875,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,which_plots,year
 ########################################################################################################################
 
 
-def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU,width,number_of_crit_or_dead_text,crit_text_on_or_off):
+def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU,width,crit_text_on_or_off):
     return html.Div([
 
                 dbc.Row([
@@ -884,8 +883,7 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
                         dbc.Card(
                         [
                             dbc.CardHeader(
-                                        [number_of_crit_or_dead_text,
-                                        ]
+                                        ['Reduction in deaths:']
                                 ),
                             dbc.CardBody([html.H1(str(round(death_stat_1st,1))+'%',className='card-title',style={'fontSize': '150%'})]),
                             dbc.CardFooter('compared to doing nothing'),
@@ -899,8 +897,7 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
                     dbc.Card(
                         [
                             dbc.CardHeader(
-                                        ['ICU requirement: '
-                                        ]
+                                        ['ICU requirement:']
                                         # style={"textDecoration": "underline"},
                                 # ),
                                 # id="tooltip-ICU",
@@ -919,8 +916,7 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
                         [
                             dbc.CardHeader(
                                 # html.Span(
-                                        ['Herd immunity: '
-                                        ]
+                                        ['Herd immunity:']
 
                                 ),
                             dbc.CardBody([html.H1(str(round(herd_stat_1st,1))+'%',className='card-title',style={'fontSize': '150%'})]),
@@ -941,7 +937,7 @@ def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_her
 
 
 
-def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_stat_2nd,herd_stat_2nd,dat3_2nd,number_of_crit_or_dead_metric,preset,number_strategies,which_strat): # hosp
+def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_stat_2nd,herd_stat_2nd,dat3_2nd,preset,number_strategies,which_strat): # hosp
     
     death_stat_1st = 100*death_stat_1st
     herd_stat_1st = 100*herd_stat_1st
@@ -964,18 +960,13 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
     else:
         Outcome_title = strat_name + ' Strategy Two'
     
-    # if 'True_crit' in hosp:
-    #     crit_text_on_or_off   = {'display': 'none'}
-    # if 'True_deaths' in hosp:
     crit_text_on_or_off  = {'display': 'block','textAlign': 'center'}
 
-    number_of_crit_or_dead_text = 'Reduction in ' + number_of_crit_or_dead_metric + ': ' 
 
-    if crit_text_on_or_off['display'] != 'none':
-        width = 4
-    else:
-        width = 6
-    
+    width = 4
+
+
+
     death_thresh1 = 66
     death_thresh2 = 33
 
@@ -1054,6 +1045,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
                 dbc.Col([
 
 
+                                html.H3('After 1 year:',style={'fontSize': '180%'}),
 
                                 dbc.Row([
                                     dbc.Col([
@@ -1140,14 +1132,12 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
                                 ],width=width,style={'textAlign': 'center'}),
 
                                 ],no_gutters=True),
-
-                                html.H3('After 1 year:',style={'fontSize': '180%'}),
                     
-                                cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU,width,number_of_crit_or_dead_text,crit_text_on_or_off),
+                                cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU,width,crit_text_on_or_off),
 
                                 html.H3('After 2 years:',style={'fontSize': '180%'}),
 
-                                cards_fn(death_stat_2nd,dat3_2nd,herd_stat_2nd,color_2nd_death,color_2nd_herd,color_2nd_ICU,width,number_of_crit_or_dead_text,crit_text_on_or_off),
+                                cards_fn(death_stat_2nd,dat3_2nd,herd_stat_2nd,color_2nd_death,color_2nd_herd,color_2nd_ICU,width,crit_text_on_or_off),
 
 
                 ],
@@ -1449,501 +1439,609 @@ Results_interpretation =  html.Div([
 ########################################################################################################################
 
  # column_1 = 
-inputs_col = html.Div([
+# inputs_col = 
 
-                        ##################################
 
-                                        # form group 1
-                                        dbc.FormGroup([
+
+# results_col = 
+
+
+
+
+
+
+#########################################################################################################################################################
+
+Instructions_layout = html.Div([html.H4("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center','margin-top': '1vh'}),
+                                             
+                                                    html.Hr(),
+
+                                                    dcc.Markdown('''
+
+                                                    *In this Section we find a **prediction** for the outcome of your choice of strategy. **Strategy choice** involves choosing a means of **controlling** the disease.*
+
+                                                    1. **Pick your strategy** (bar below)
+                                                    
+                                                    2. Choose which **results** to display (button below).
+
+                                                    '''
+                                                    ,style = {'margin-top': '2vh', 'textAlign': 'left'}
+                                                    ),
+
+
+
+
+
+                                                    
+                                    ])
+
+
+
+
+
+layout_inter = html.Div([
+    dbc.Row([
+        # column_1,
+        
+
+
+
+
+                        # end of first col
+
+
 
 ########################################################################################################################
-
-                                                                    dbc.Col([
-                                                                            
-
-
-                                                                            
-
+## start row 1
+# main_page = dbc.Row([
+#                     column_1,
 
 ########################################################################################################################
+                        # col 2
+# column_2 =              
+                        # dbc.Col([
+                        html.Div([
+                        html.Div([
 
 
-                                                                            
-                                                                        dbc.Row([
-                                                                        dbc.Col([
+                                    # store results
+                                    dcc.Store(id='sol-calculated'),# storage_type='session'),
+                                    dcc.Store(id='sol-calculated-do-nothing'),# storage_type='session'),
+            
+                                    # dbc.Col([
 
-                                                                            html.H4('1. Pick Your Strategy ',style={'fontSize': '180%', 'color': 'blue' ,'margin-top': "3vh"}),
+                                    # dbc.Jumbotron([
+                                    # tabs
+                                    dbc.Tabs(id="interactive-tabs", active_tab='tab_0', 
+                                        children=[
 
-                                                                            dbc.Button('Instructions 🛈',
-                                                                            color='info',
-                                                                            className='mb-3',
-                                                                            id="popover-pick-strat-target",
-                                                                            size='md',
-                                                                            style = {'cursor': 'pointer'}),
-
-                                                                            dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'fontSize': '80%'}), # 'textAlign': 'left', 
-                                                                            
-
-
-                                                                            dbc.Popover(
-                                                                                [
-                                                                                dbc.PopoverHeader('Pick Your Strategy'),
-                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                '''
-
-                                                                                1a. Pick the **type of control**.
-
-                                                                                1b. Pick the **control timings** (how long control is applied for and when it starts).
-
-                                                                                *The other options below are optional custom choices that you may choose to investigate further or ignore altogether*.
-
-                                                                                '''
-                                                                                ),),
-                                                                                ],
-                                                                                id = "popover-pick-strat",
-                                                                                is_open=False,
-                                                                                target="popover-pick-strat-target",
-                                                                                placement='right',
-                                                                            ),
-
-                                                                            html.H6([
-                                                                                '1a. Control Type ',
-                                                                                dbc.Button('🛈',
-                                                                                color='info',
-                                                                                className='mb-3',
-                                                                                size='sm',
-                                                                                id='popover-control-target',
-                                                                                style={'cursor': 'pointer'}
-                                                                                ),
-                                                                                ],
-                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
-
-                                                                            dbc.Popover(
-                                                                                [
-                                                                                dbc.PopoverHeader('Control'),
-                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                '''
-
-                                                                                The type of **control** determines how much we can reduce the **infection rate** of the disease (how quickly the disease is transmitted between people).
-                                                                                
-                                                                                We consider control of **two risk groups**; high risk and low risk. High risk groups are more likely to get seriously ill if they catch the disease.
-
-                                                                                *For further explanation, read the [**Background**](/intro)*.
-
-                                                                                '''
-                                                                                ),),
-                                                                                ],
-                                                                                id = "popover-control",
-                                                                                is_open=False,
-                                                                                target="popover-control-target",
-                                                                                placement='right',
-                                                                            ),
-                                                                            
-
-                                                                            html.Div([
-                                                                                dbc.RadioItems(
-                                                                                    id = 'preset',
-                                                                                    options=[{'label': presets_dict[key],
-                                                                                    'value': key} for key in presets_dict],
-                                                                                    value= 'MSD',
-                                                                                ),
-                                                                            ],
-                                                                            style={'fontSize': '80%'},
-                                                                            ),
-
-                                                                            html.H6([
-                                                                                '1b. Months of Control ',
-                                                                                dbc.Button('🛈',
-                                                                                color='info',
-                                                                                className='mb-3',
-                                                                                size='sm',
-                                                                                id='popover-months-control-target',
-                                                                                style= {'cursor': 'pointer'})
-                                                                                ],
-                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
-
-
-                                                                            
-                                                                            html.Div([
-                                                                            dcc.RangeSlider(
-                                                                                        id='month-slider',
-                                                                                        min=0,
-                                                                                        max=floor(params.months_run_for),
-                                                                                        step=1,
-                                                                                        # pushable=0,
-                                                                                        marks={i: str(i) for i in range(0,floor(params.months_run_for)+1,3)},
-                                                                                        value=[1,initial_month],
-                                                                            ),
-                                                                            ],
-                                                                            style={'fontSize': '180%'},
-                                                                            ),
-
-                                                                            dbc.Popover(
-                                                                                [
-                                                                                dbc.PopoverHeader('Control Timing'),
-                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                '''
-
-                                                                                Use this slider to determine when control **starts** and **finishes**.
-
-                                                                                When control is in place the infection rate is reduced by an amount depending on the strategy choice.
-
-                                                                                When control is not in place the infection rate returns to the baseline level (100%).
-                                                                                
-                                                                                '''
-                                                                                ),),
-                                                                                ],
-                                                                                id = "popover-months-control",
-                                                                                is_open=False,
-                                                                                target="popover-months-control-target",
-                                                                                placement='right',
-                                                                            ),
-
-                                                                        ],width=True),
-                                                                        #end of PYS row
-                                                                        ]),
-
-                                                                                    
-                                                                            html.Hr(),
-        ###################################
+                                        # tab 0
+                                        dbc.Tab(label='Model Output',
+                                         label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', 
+                                         children = [
+                                                    # html.Div([
 
 
 
-                                                                        dbc.Row([
-                                                                        dbc.Col([
+                                                    # Instructions_layout,
 
-                                                                            dbc.ButtonGroup([
-                                                                            dbc.Button('Custom Options',
-                                                                            color='warning',
-                                                                            className='mb-3',
-                                                                            id="collapse-button-custom",
-                                                                            style={'fontSize': '110%', 'cursor': 'pointer'}
-                                                                            ),
+                                                    # html.Hr(),
 
+                                                    html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center', 'margin-top': '2vh'}),
 
+                                                    html.Hr(),
 
-                                                                            dbc.Button('🛈',
-                                                                            color='info',
-                                                                            className='mb-3',
-                                                                            id="popover-custom-options-target",
-                                                                            style={'cursor': 'pointer'}
-                                                                            )
-                                                                            ]),
+                                                    dcc.Markdown('''
+                                                    *In this Section we find a **prediction** for the outcome of your choice of **COVID-19 control**. Pick a **strategy** and a **results type** below.*
 
+                                                    '''
+                                                    ,style = {'margin-top': '2vh', 'margin-bottom': '2vh', 'textAlign': 'center'}
+                                                    ),
+                                                    # 1. **Pick your strategy** (bar below)
+                                                    
+                                                    # 2. Choose which **results** to display (button below).
+                                             
+                                             
+                                                    # html.Hr(),
 
-                                                                            dbc.Popover(
-                                                                                [
-                                                                                dbc.PopoverHeader('Custom Options'),
-                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                '''
+                                                    # html.Hr(),
 
-                                                                                Use this to choose your own custom strategy (you must first select 'custom' in the 'Control Type' selector above). You can compare two strategies directly or consider one only.
-                                                                                
-                                                                                The choice consists of selecting whether to accelerate or decelerate spread of COVID-19 (using the 'infection rate' sliders).
-                                                                                
-                                                                                You can choose different infection rates for the different risk groups.
-                                                                                '''
-                                                                                ),),
-                                                                                ],
-                                                                                id = "popover-custom-options",
-                                                                                is_open=False,
-                                                                                target="popover-custom-options-target",
-                                                                                placement='right',
-                                                                            ),
-                                                                            
-
-                                                                            
-                                                                            dbc.Collapse(
-                                                                                [
-
-                                                                                            # dbc.Button('Use Custom Strategy',
-                                                                                            # color='warning',
-                                                                                            # className='mb-3',
-                                                                                            # size = 'sm',
-                                                                                            # id="use-custom-strat",
-                                                                                            # style={'cursor': 'pointer'}
-                                                                                            # ),
-                                                                                            dcc.Markdown('''*Make sure '**1a. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%'}), # 'textAlign': 'left', 
-
-
-
-                                                                                            html.H6('Number Of Strategies',style={'fontSize': '100%'}),
-
-                                                                                            # html.Div([
-                                                                                            dbc.RadioItems(
-                                                                                            id = 'number-strats-radio',
-                                                                                            options=[
-                                                                                                {'label': 'One', 'value': 'one'},
-                                                                                                {'label': 'Two', 'value': 'two'},
-                                                                                            ],
-                                                                                            value= 'one',
-                                                                                            inline=True,
-                                                                                            ),
-
-                                                                                            html.Hr(),
-
-                                                                                            
-                                                                                            # dbc.Row([
-                                                                                            dbc.Button('Infection rate 🛈',
-                                                                                                    size='sm',
-                                                                                                    color='info',
-                                                                                                    className='mb-3',
-                                                                                                    # id="popover-custom-options-target",
-                                                                                                    id = 'popover-inf-rate-target',
-                                                                                                    style={'cursor': 'pointer'}
-                                                                                                    ),
-                                                                                            # ]),
-                                                                                            html.Div(id='strat-lr-infection'),
-                                                                                            
-                                                                                            
-                                                                                            dcc.Slider(
-                                                                                                id='low-risk-slider',
-                                                                                                min=0,
-                                                                                                max=len(params.fact_v)-1,
-                                                                                                step = 1,
-                                                                                                marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                value=initial_lr,
-                                                                                            ),
-
-
-                                                                                            html.Div(id='strat-hr-infection'),
-                                                                                            dcc.Slider(
-                                                                                                    id='high-risk-slider',
-                                                                                                    min=0,
-                                                                                                    max=len(params.fact_v)-1,
-                                                                                                    step = 1,
-                                                                                                    marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                    value=initial_hr,
-                                                                                                    ),
-
-
-                                                                                            dbc.Popover(
-                                                                                                [
-                                                                                                dbc.PopoverHeader('Infection Rate'),
-                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                '''
-
-                                                                                                The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
-                                                                                            
-                                                                                                Adjust by choosing a preset strategy  or making your own custom choice ('**1a. Control Type**').
-
-                                                                                                *You may choose to increase infection rates when using custom control. For more on this, see the 'Interpretation' Section below*
-                                                                                                
-
-                                                                                                '''
-                                                                                                ),),
-                                                                                                ],
-                                                                                                id = "popover-inf-rate",
-                                                                                                is_open=False,
-                                                                                                target="popover-inf-rate-target",
-                                                                                                placement='top',
-                                                                                            ),
-                                                                                                    
-
-
-
-                                                                                            html.Div([
-                                                                                                    html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '100%'}),
-
-                                                                                                    dcc.Slider(
-                                                                                                        id='low-risk-slider-2',
-                                                                                                        min=0,
-                                                                                                        max=len(params.fact_v)-1,
-                                                                                                        step = 1,
-                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                        value=6,
-                                                                                                    ),
-
-                                                                                                    html.H6('Strategy Two: High Risk Infection Rate (%)',style={'fontSize': '100%'}),
-                                                                                                
-                                                                                                    dcc.Slider(
-                                                                                                        id='high-risk-slider-2',
-                                                                                                        min=0,
-                                                                                                        max=len(params.fact_v)-1,
-                                                                                                        step = 1,
-                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                        value=6,
-                                                                                                        ),
-                                                                                            ],id='strat-2-id'),
-
-                                                                                            html.Hr(),
+                                                dbc.Row([
+            
+                                                        dbc.Col([
+                                                            dbc.Jumbotron([
                                                                 
-                                                                                ],
-                                                                                id="collapse-custom",
-                                                                                is_open=False,
-                                                                            ),
-
-                                                                        ],width=True),
-                                                                        # end of custom row
-                                                                        ]),
-
-                                                                        dbc.Row([
-                                                                        dbc.Col([
-
-                                                                            dbc.ButtonGroup([
-                                                                            dbc.Button('Plot Settings',
-                                                                            color='warning',
-                                                                            className='mb-3',
-                                                                            id="collapse-button-plots",
-                                                                            style={'fontSize': '110%', 'cursor': 'pointer'}
-                                                                            ),
-
-                                                                            dbc.Button('🛈',
-                                                                            color='info',
-                                                                            className='mb-3',
-                                                                            id="popover-plot-settings-target",
-                                                                            style = {'cursor': 'pointer'}
-                                                                            )
-                                                                            
-                                                                            ],
-                                                                            id='plot-settings-collapse',
-                                                                            ),
-
-                                                                            dbc.Popover(
-                                                                                [
-                                                                                dbc.PopoverHeader('Plot Settings'),
-                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                '''
-
-                                                                                Press this button to allow you to change the plot settings.
-                                                                                
-                                                                                You may change the timescale ('Years To Plot'), plot different risk groups ('Groups To Plot'), and different disease progress categories ('Categories To Plot'). 'How Many Plots' gives you the option of two different y-axis scales so that it is easier to compare hospital categories to the susceptible/infected/recovered categories.
-
-                                                                                '''
-                                                                                ),),
-                                                                                ],
-                                                                                id = "popover-plot-settings",
-                                                                                is_open=False,
-                                                                                target="popover-plot-settings-target",
-                                                                                placement='right',
-                                                                            ),
-                                                                            
-                                                                            dbc.Collapse(
-                                                                                [
-                        
-                                                                                                        html.Div([
 
 
 
+############################################################################################################################################################################################################################
+                                                                                            html.Div([
+
+                                                                                                        ##################################
+
+                                                                                                                        # form group 1
+                                                                                                                        dbc.FormGroup([
+
+                                                                                ########################################################################################################################
+
+                                                                                                                                                    dbc.Col([
+                                                                                                                                                            
 
 
-                                                                                                                                                    html.H6('Years To Plot',style={'fontSize': '120%'}),
-                                                                                                                                                    dcc.Slider(
-                                                                                                                                                        id='years-slider',
-                                                                                                                                                        min=1,
-                                                                                                                                                        max=3,
-                                                                                                                                                        marks={i: str(i) for i in range(1,4)},
-                                                                                                                                                        value=2,
-                                                                                                                                                    ),
-
-                                                                                                                                                    html.H6('How Many Plots',style={'fontSize': '120%'}),
-                                                                                                                                                    dbc.RadioItems(
-                                                                                                                                                        id='how-many-plots-slider',
-                                                                                                                                                        options=[
-                                                                                                                                                            {'label': 'One Plot', 'value': 'all'},
-                                                                                                                                                            # {'label': 'One Plot: Hospital Categories', 'value': 'hosp'},
-                                                                                                                                                            {'label': 'Two Plots (Different Axis Scales)', 'value': 'two'},
-                                                                                                                                                        ],
-                                                                                                                                                        value= 'two',
-                                                                                                                                                        labelStyle = {'display': 'inline-block'}
-                                                                                                                                                    ),
+                                                                                                                                                            
 
 
-                                                                                                                                                        html.H6('Groups To Plot',style={'fontSize': '120%'}),
-                                                                                                                                                        dbc.Checklist(
-                                                                                                                                                            id = 'groups-checklist-to-plot',
-                                                                                                                                                            options=[
-                                                                                                                                                                {'label': 'Both Risk Groups (Sum Of)', 'value': 'BR'},
-                                                                                                                                                                {'label': 'High Risk Group', 'value': 'HR'},
-                                                                                                                                                                {'label': 'Low Risk Group', 'value': 'LR'},
+                                                                                ########################################################################################################################
+
+
+                                                                                                                                                            
+                                                                                                                                                        dbc.Row([
+                                                                                                                                                        dbc.Col([
+
+                                                                                                                                                            html.H4('1. Pick Your Strategy ',style={'fontSize': '180%', 'color': 'blue' ,'margin-top': "3vh"}),
+
+                                                                                                                                                            dbc.Button('Instructions 🛈',
+                                                                                                                                                            color='info',
+                                                                                                                                                            className='mb-3',
+                                                                                                                                                            id="popover-pick-strat-target",
+                                                                                                                                                            size='md',
+                                                                                                                                                            style = {'cursor': 'pointer'}),
+
+                                                                                                                                                            dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'fontSize': '80%'}), # 'textAlign': 'left', 
+                                                                                                                                                            
+
+
+                                                                                                                                                            dbc.Popover(
+                                                                                                                                                                [
+                                                                                                                                                                dbc.PopoverHeader('Pick Your Strategy'),
+                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                                                                '''
+
+                                                                                                                                                                1a. Pick the **type of control**.
+
+                                                                                                                                                                1b. Pick the **control timings** (how long control is applied for and when it starts).
+
+                                                                                                                                                                *The other options below are optional custom choices that you may choose to investigate further or ignore altogether*.
+
+                                                                                                                                                                '''
+                                                                                                                                                                ),),
+                                                                                                                                                                ],
+                                                                                                                                                                id = "popover-pick-strat",
+                                                                                                                                                                is_open=False,
+                                                                                                                                                                target="popover-pick-strat-target",
+                                                                                                                                                                placement='right',
+                                                                                                                                                            ),
+
+                                                                                                                                                            html.H6([
+                                                                                                                                                                '1a. Control Type ',
+                                                                                                                                                                dbc.Button('🛈',
+                                                                                                                                                                color='info',
+                                                                                                                                                                className='mb-3',
+                                                                                                                                                                size='sm',
+                                                                                                                                                                id='popover-control-target',
+                                                                                                                                                                style={'cursor': 'pointer'}
+                                                                                                                                                                ),
+                                                                                                                                                                ],
+                                                                                                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
+
+                                                                                                                                                            dbc.Popover(
+                                                                                                                                                                [
+                                                                                                                                                                dbc.PopoverHeader('Control'),
+                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                                                                '''
+
+                                                                                                                                                                The type of **control** determines how much we can reduce the **infection rate** of the disease (how quickly the disease is transmitted between people).
+                                                                                                                                                                
+                                                                                                                                                                We consider control of **two risk groups**; high risk and low risk. High risk groups are more likely to get seriously ill if they catch the disease.
+
+                                                                                                                                                                *For further explanation, read the [**Background**](/intro)*.
+
+                                                                                                                                                                '''
+                                                                                                                                                                ),),
+                                                                                                                                                                ],
+                                                                                                                                                                id = "popover-control",
+                                                                                                                                                                is_open=False,
+                                                                                                                                                                target="popover-control-target",
+                                                                                                                                                                placement='right',
+                                                                                                                                                            ),
+                                                                                                                                                            
+
+                                                                                                                                                            html.Div([
+                                                                                                                                                                dbc.RadioItems(
+                                                                                                                                                                    id = 'preset',
+                                                                                                                                                                    options=[{'label': presets_dict[key],
+                                                                                                                                                                    'value': key} for key in presets_dict],
+                                                                                                                                                                    value= 'MSD',
+                                                                                                                                                                ),
                                                                                                                                                             ],
-                                                                                                                                                            value= ['BR'],
-                                                                                                                                                            labelStyle = {'display': 'inline-block'}
-                                                                                                                                                        ),
+                                                                                                                                                            style={'fontSize': '80%'},
+                                                                                                                                                            ),
+
+                                                                                                                                                            html.H6([
+                                                                                                                                                                '1b. Months of Control ',
+                                                                                                                                                                dbc.Button('🛈',
+                                                                                                                                                                color='info',
+                                                                                                                                                                className='mb-3',
+                                                                                                                                                                size='sm',
+                                                                                                                                                                id='popover-months-control-target',
+                                                                                                                                                                style= {'cursor': 'pointer'})
+                                                                                                                                                                ],
+                                                                                                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
 
 
-                                                                                                                                                        dbc.RadioItems(
-                                                                                                                                                            id = 'groups-to-plot-radio',
-                                                                                                                                                            options=[
-                                                                                                                                                                {'label': 'Both Risk Groups (Sum Of)', 'value': 'BR'},
-                                                                                                                                                                {'label': 'High Risk Group', 'value': 'HR'},
-                                                                                                                                                                {'label': 'Low Risk Group', 'value': 'LR'},
+                                                                                                                                                            
+                                                                                                                                                            html.Div([
+                                                                                                                                                            dcc.RangeSlider(
+                                                                                                                                                                        id='month-slider',
+                                                                                                                                                                        min=0,
+                                                                                                                                                                        max=floor(params.months_run_for),
+                                                                                                                                                                        step=1,
+                                                                                                                                                                        # pushable=0,
+                                                                                                                                                                        marks={i: str(i) for i in range(0,floor(params.months_run_for)+1,3)},
+                                                                                                                                                                        value=[1,initial_month],
+                                                                                                                                                            ),
                                                                                                                                                             ],
-                                                                                                                                                            value= 'BR',
-                                                                                                                                                            labelStyle = {'display': 'inline-block'}
-                                                                                                                                                        ),
+                                                                                                                                                            style={'fontSize': '180%'},
+                                                                                                                                                            ),
 
+                                                                                                                                                            dbc.Popover(
+                                                                                                                                                                [
+                                                                                                                                                                dbc.PopoverHeader('Control Timing'),
+                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                                                                '''
 
-                                                                                                                                                        html.H6('Categories To Plot',style={'fontSize': '120%'}),
+                                                                                                                                                                Use this slider to determine when control **starts** and **finishes**.
 
-                                                                                                                                                        dbc.Checklist(id='categories-to-plot-checklist',
-                                                                                                                                                                        options=[
-                                                                                                                                                                            {'label': 'Susceptible', 'value': 'S'},
-                                                                                                                                                                            {'label': 'Infected', 'value': 'I'},
-                                                                                                                                                                            {'label': 'Recovered', 'value': 'R'},
-                                                                                                                                                                            {'label': 'Hospitalised', 'value': 'H'},
-                                                                                                                                                                            {'label': 'Critical Care', 'value': 'C'},
-                                                                                                                                                                            {'label': 'Deaths', 'value': 'D'},
-                                                                                                                                                                        ],
-                                                                                                                                                                        value= ['S','I','R','H','C','D'],
-                                                                                                                                                                        labelStyle = {'display': 'inline-block'}
-                                                                                                                                                                    ),
+                                                                                                                                                                When control is in place the infection rate is reduced by an amount depending on the strategy choice.
+
+                                                                                                                                                                When control is not in place the infection rate returns to the baseline level (100%).
+                                                                                                                                                                
+                                                                                                                                                                '''
+                                                                                                                                                                ),),
+                                                                                                                                                                ],
+                                                                                                                                                                id = "popover-months-control",
+                                                                                                                                                                is_open=False,
+                                                                                                                                                                target="popover-months-control-target",
+                                                                                                                                                                placement='right',
+                                                                                                                                                            ),
+
+                                                                                                                                                        ],width=True),
+                                                                                                                                                        #end of PYS row
+                                                                                                                                                        ]),
+
                                                                                                                                                                     
-
-                                                                                                                    ],id='outputs-div',
-                                                                                                                    
-                                                                                                                    ),
-                                                                                                                    html.Hr(),
-                                                                                    ],
-                                                                                    id="collapse-plots",
-                                                                                    is_open=False,
-                                                                                    ),
-
-                                                                            ],width=True),
-                                                                            # end of plot settings row
-                                                                            ]),
-
-
-                  
-                  
-                  
-                  
-                  
-                  
-
-
-#########################################################################################################################################################
-
-
-                                                                    ],
-                                                                    width = True
-                                                                    ),
-
-                                                                    # ],
-                                                                    # style={'backgroundColor': "#FFFFFF", 'margin-left': '1vw','margin-right': '1vw','margin-bottom': '2vh','margin-top': '2vh'}
-                                                                    # ),        
-                                                        
-
-                                                                    # ],
-                                                                    # style={'backgroundColor': "#FFFFFF",'height': '100%','width': '100%'}),
-
-                                                                    # ],
-                                                                    # ),        
-                                                                    
-########################################################################################################################
-
-                                        # end of form group 1
-                                        ],
-                                        row=True,
-                                        ),
-########################################################################################################################
-
-                        ],
-                        style={'margin-left':'2vh', 'margin-right':'2vh'}
-                        )
+                                                                                                                                                            html.Hr(),
+                                                                                        ###################################
 
 
 
+                                                                                                                                                        dbc.Row([
+                                                                                                                                                        dbc.Col([
+
+                                                                                                                                                            dbc.ButtonGroup([
+                                                                                                                                                            dbc.Button('Custom Options',
+                                                                                                                                                            color='warning',
+                                                                                                                                                            outline=True,
+                                                                                                                                                            className='mb-3',
+                                                                                                                                                            id="collapse-button-custom",
+                                                                                                                                                            style={'fontSize': '110%', 'cursor': 'pointer'}
+                                                                                                                                                            ),
+
+
+
+                                                                                                                                                            dbc.Button('🛈',
+                                                                                                                                                            color='info',
+                                                                                                                                                            className='mb-3',
+                                                                                                                                                            id="popover-custom-options-target",
+                                                                                                                                                            style={'cursor': 'pointer'}
+                                                                                                                                                            )
+                                                                                                                                                            ]),
+
+
+                                                                                                                                                            dbc.Popover(
+                                                                                                                                                                [
+                                                                                                                                                                dbc.PopoverHeader('Custom Options'),
+                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                                                                '''
+
+                                                                                                                                                                Use this to choose your own custom strategy (you must first select 'custom' in the 'Control Type' selector above). You can compare two strategies directly or consider one only.
+                                                                                                                                                                
+                                                                                                                                                                The choice consists of selecting whether to accelerate or decelerate spread of COVID-19 (using the 'infection rate' sliders).
+                                                                                                                                                                
+                                                                                                                                                                You can choose different infection rates for the different risk groups.
+                                                                                                                                                                '''
+                                                                                                                                                                ),),
+                                                                                                                                                                ],
+                                                                                                                                                                id = "popover-custom-options",
+                                                                                                                                                                is_open=False,
+                                                                                                                                                                target="popover-custom-options-target",
+                                                                                                                                                                placement='right',
+                                                                                                                                                            ),
+                                                                                                                                                            
+
+                                                                                                                                                            
+                                                                                                                                                            dbc.Collapse(
+                                                                                                                                                                [
+
+
+
+                                                                                                                                                                            dcc.Markdown('''*Make sure '**1a. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%'}), # 'textAlign': 'left', 
+
+                                                                                                                                                                            html.H6('Number Of Strategies',style={'fontSize': '100%'}),
+
+                                                                                                                                                                            # html.Div([
+                                                                                                                                                                            dbc.RadioItems(
+                                                                                                                                                                            id = 'number-strats-radio',
+                                                                                                                                                                            options=[
+                                                                                                                                                                                {'label': 'One', 'value': 'one'},
+                                                                                                                                                                                {'label': 'Two', 'value': 'two'},
+                                                                                                                                                                            ],
+                                                                                                                                                                            value= 'one',
+                                                                                                                                                                            inline=True,
+                                                                                                                                                                            ),
+
+                                                                                                                                                                            html.Hr(),
+
+                                                                                                                                                                            
+                                                                                                                                                                            # dbc.Row([
+                                                                                                                                                                            dbc.Button('Infection rate 🛈',
+                                                                                                                                                                                    size='sm',
+                                                                                                                                                                                    color='info',
+                                                                                                                                                                                    className='mb-3',
+                                                                                                                                                                                    # id="popover-custom-options-target",
+                                                                                                                                                                                    id = 'popover-inf-rate-target',
+                                                                                                                                                                                    style={'cursor': 'pointer'}
+                                                                                                                                                                                    ),
+                                                                                                                                                                            # ]),
+                                                                                                                                                                            html.Div(id='strat-lr-infection'),
+                                                                                                                                                                            
+                                                                                                                                                                            
+                                                                                                                                                                            dcc.Slider(
+                                                                                                                                                                                id='low-risk-slider',
+                                                                                                                                                                                min=0,
+                                                                                                                                                                                max=len(params.fact_v)-1,
+                                                                                                                                                                                step = 1,
+                                                                                                                                                                                marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                                                                                                value=initial_lr,
+                                                                                                                                                                            ),
+
+
+                                                                                                                                                                            html.Div(id='strat-hr-infection'),
+                                                                                                                                                                            dcc.Slider(
+                                                                                                                                                                                    id='high-risk-slider',
+                                                                                                                                                                                    min=0,
+                                                                                                                                                                                    max=len(params.fact_v)-1,
+                                                                                                                                                                                    step = 1,
+                                                                                                                                                                                    marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                                                                                                    value=initial_hr,
+                                                                                                                                                                                    ),
+
+
+                                                                                                                                                                            dbc.Popover(
+                                                                                                                                                                                [
+                                                                                                                                                                                dbc.PopoverHeader('Infection Rate'),
+                                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                                                                                '''
+
+                                                                                                                                                                                The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
+                                                                                                                                                                            
+                                                                                                                                                                                Adjust by choosing a preset strategy  or making your own custom choice ('**1a. Control Type**').
+
+                                                                                                                                                                                *You may choose to increase infection rates when using custom control. For more on this, see the 'Interpretation' Section below*
+                                                                                                                                                                                
+
+                                                                                                                                                                                '''
+                                                                                                                                                                                ),),
+                                                                                                                                                                                ],
+                                                                                                                                                                                id = "popover-inf-rate",
+                                                                                                                                                                                is_open=False,
+                                                                                                                                                                                target="popover-inf-rate-target",
+                                                                                                                                                                                placement='top',
+                                                                                                                                                                            ),
+                                                                                                                                                                                    
+
+
+
+                                                                                                                                                                            html.Div([
+                                                                                                                                                                                    html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '100%'}),
+
+                                                                                                                                                                                    dcc.Slider(
+                                                                                                                                                                                        id='low-risk-slider-2',
+                                                                                                                                                                                        min=0,
+                                                                                                                                                                                        max=len(params.fact_v)-1,
+                                                                                                                                                                                        step = 1,
+                                                                                                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                                                                                                        value=6,
+                                                                                                                                                                                    ),
+
+                                                                                                                                                                                    html.H6('Strategy Two: High Risk Infection Rate (%)',style={'fontSize': '100%'}),
+                                                                                                                                                                                
+                                                                                                                                                                                    dcc.Slider(
+                                                                                                                                                                                        id='high-risk-slider-2',
+                                                                                                                                                                                        min=0,
+                                                                                                                                                                                        max=len(params.fact_v)-1,
+                                                                                                                                                                                        step = 1,
+                                                                                                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                                                                                                        value=6,
+                                                                                                                                                                                        ),
+                                                                                                                                                                            ],id='strat-2-id'),
+
+                                                                                                                                                                            html.Hr(),
+                                                                                                                                                
+                                                                                                                                                                ],
+                                                                                                                                                                id="collapse-custom",
+                                                                                                                                                                is_open=False,
+                                                                                                                                                            ),
+
+                                                                                                                                                        ],width=True),
+                                                                                                                                                        # end of custom row
+                                                                                                                                                        ]),
+
+                                                                                                                                                        dbc.Row([
+                                                                                                                                                        dbc.Col([
+
+                                                                                                                                                            dbc.ButtonGroup([
+                                                                                                                                                            dbc.Button('Plot Settings',
+                                                                                                                                                            color='warning',
+                                                                                                                                                            outline=True,
+                                                                                                                                                            className='mb-3',
+                                                                                                                                                            id="collapse-button-plots",
+                                                                                                                                                            style={'fontSize': '110%', 'cursor': 'pointer'}
+                                                                                                                                                            ),
+
+                                                                                                                                                            dbc.Button('🛈',
+                                                                                                                                                            color='info',
+                                                                                                                                                            className='mb-3',
+                                                                                                                                                            id="popover-plot-settings-target",
+                                                                                                                                                            style = {'cursor': 'pointer'}
+                                                                                                                                                            )
+                                                                                                                                                            
+                                                                                                                                                            ],
+                                                                                                                                                            id='plot-settings-collapse',
+                                                                                                                                                            ),
+
+                                                                                                                                                            dbc.Popover(
+                                                                                                                                                                [
+                                                                                                                                                                dbc.PopoverHeader('Plot Settings'),
+                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                                                                '''
+
+                                                                                                                                                                Press this button to allow you to change the plot settings.
+                                                                                                                                                                
+                                                                                                                                                                You may change the timescale ('Years To Plot'), plot different risk groups ('Groups To Plot'), and different disease progress categories ('Categories To Plot'). 'How Many Plots' gives you the option of two different y-axis scales so that it is easier to compare hospital categories to the susceptible/infected/recovered categories.
+
+                                                                                                                                                                '''
+                                                                                                                                                                ),),
+                                                                                                                                                                ],
+                                                                                                                                                                id = "popover-plot-settings",
+                                                                                                                                                                is_open=False,
+                                                                                                                                                                target="popover-plot-settings-target",
+                                                                                                                                                                placement='right',
+                                                                                                                                                            ),
+                                                                                                                                                            
+                                                                                                                                                            dbc.Collapse(
+                                                                                                                                                                [
+                                                                                                        
+                                                                                                                                                                                        html.Div([
+
+
+
+
+
+                                                                                                                                                                                                                                    html.H6('Years To Plot',style={'fontSize': '120%'}),
+                                                                                                                                                                                                                                    dcc.Slider(
+                                                                                                                                                                                                                                        id='years-slider',
+                                                                                                                                                                                                                                        min=1,
+                                                                                                                                                                                                                                        max=3,
+                                                                                                                                                                                                                                        marks={i: str(i) for i in range(1,4)},
+                                                                                                                                                                                                                                        value=2,
+                                                                                                                                                                                                                                    ),
+
+                                                                                                                                                                                                                                    html.H6('How Many Plots',style={'fontSize': '120%'}),
+                                                                                                                                                                                                                                    dbc.RadioItems(
+                                                                                                                                                                                                                                        id='how-many-plots-slider',
+                                                                                                                                                                                                                                        options=[
+                                                                                                                                                                                                                                            {'label': 'One Plot', 'value': 'all'},
+                                                                                                                                                                                                                                            # {'label': 'One Plot: Hospital Categories', 'value': 'hosp'},
+                                                                                                                                                                                                                                            {'label': 'Two Plots (Different Axis Scales)', 'value': 'two'},
+                                                                                                                                                                                                                                        ],
+                                                                                                                                                                                                                                        value= 'two',
+                                                                                                                                                                                                                                        labelStyle = {'display': 'inline-block'}
+                                                                                                                                                                                                                                    ),
+
+
+                                                                                                                                                                                                                                        html.H6('Groups To Plot',style={'fontSize': '120%'}),
+                                                                                                                                                                                                                                        dbc.Checklist(
+                                                                                                                                                                                                                                            id = 'groups-checklist-to-plot',
+                                                                                                                                                                                                                                            options=[
+                                                                                                                                                                                                                                                {'label': 'Both Risk Groups (Sum Of)', 'value': 'BR'},
+                                                                                                                                                                                                                                                {'label': 'High Risk Group', 'value': 'HR'},
+                                                                                                                                                                                                                                                {'label': 'Low Risk Group', 'value': 'LR'},
+                                                                                                                                                                                                                                            ],
+                                                                                                                                                                                                                                            value= ['BR'],
+                                                                                                                                                                                                                                            labelStyle = {'display': 'inline-block'}
+                                                                                                                                                                                                                                        ),
+
+
+                                                                                                                                                                                                                                        dbc.RadioItems(
+                                                                                                                                                                                                                                            id = 'groups-to-plot-radio',
+                                                                                                                                                                                                                                            options=[
+                                                                                                                                                                                                                                                {'label': 'Both Risk Groups (Sum Of)', 'value': 'BR'},
+                                                                                                                                                                                                                                                {'label': 'High Risk Group', 'value': 'HR'},
+                                                                                                                                                                                                                                                {'label': 'Low Risk Group', 'value': 'LR'},
+                                                                                                                                                                                                                                            ],
+                                                                                                                                                                                                                                            value= 'BR',
+                                                                                                                                                                                                                                            labelStyle = {'display': 'inline-block'}
+                                                                                                                                                                                                                                        ),
+
+
+                                                                                                                                                                                                                                        html.H6('Categories To Plot',style={'fontSize': '120%'}),
+
+                                                                                                                                                                                                                                        dbc.Checklist(id='categories-to-plot-checklist',
+                                                                                                                                                                                                                                                        options=[
+                                                                                                                                                                                                                                                            {'label': 'Susceptible', 'value': 'S'},
+                                                                                                                                                                                                                                                            {'label': 'Infected', 'value': 'I'},
+                                                                                                                                                                                                                                                            {'label': 'Recovered', 'value': 'R'},
+                                                                                                                                                                                                                                                            {'label': 'Hospitalised', 'value': 'H'},
+                                                                                                                                                                                                                                                            {'label': 'Critical Care', 'value': 'C'},
+                                                                                                                                                                                                                                                            {'label': 'Deaths', 'value': 'D'},
+                                                                                                                                                                                                                                                        ],
+                                                                                                                                                                                                                                                        value= ['S','I','R','H','C','D'],
+                                                                                                                                                                                                                                                        labelStyle = {'display': 'inline-block'}
+                                                                                                                                                                                                                                                    ),
+                                                                                                                                                                                                                                                    
+
+                                                                                                                                                                                                    ],id='outputs-div',
+                                                                                                                                                                                                    
+                                                                                                                                                                                                    ),
+                                                                                                                                                                                                    html.Hr(),
+                                                                                                                                                                    ],
+                                                                                                                                                                    id="collapse-plots",
+                                                                                                                                                                    is_open=False,
+                                                                                                                                                                    ),
+
+                                                                                                                                                            ],width=True),
+                                                                                                                                                            # end of plot settings row
+                                                                                                                                                            ]),
+
+
+                                                                                                
+                                                                                                
+                                                                                                
+                                                                                                
+                                                                                                
+                                                                                                
+
+
+                                                                                #########################################################################################################################################################
+
+
+                                                                                                                                                    ],
+                                                                                                                                                    width = True
+                                                                                                                                                    ),
+
+                                                                                                                                                    # ],
+                                                                                                                                                    # style={'backgroundColor': "#FFFFFF", 'margin-left': '1vw','margin-right': '1vw','margin-bottom': '2vh','margin-top': '2vh'}
+                                                                                                                                                    # ),        
+                                                                                                                                        
+
+                                                                                                                                                    # ],
+                                                                                                                                                    # style={'backgroundColor': "#FFFFFF",'height': '100%','width': '100%'}),
+
+                                                                                                                                                    # ],
+                                                                                                                                                    # ),        
+                                                                                                                                                    
+                                                                                ########################################################################################################################
+
+                                                                                                                        # end of form group 1
+                                                                                                                        ],
+                                                                                                                        row=True,
+                                                                                                                        ),
+                                                                                ########################################################################################################################
+
+                                                                                                        ],
+                                                                                                        style={'margin-left':'2vh', 'margin-right':'2vh'}
+                                                                                                        ),
 
 
 
@@ -1954,9 +2052,25 @@ inputs_col = html.Div([
 
 
 
-#########################################################################################################################################################
+############################################################################################################################################################################################################################    
 
-results_col = html.Div([
+                                                            ]),
+
+
+
+                                                        ],
+                                                        width = 12,
+                                                        xl = 3,
+                                                        style={'height': '100%'}
+                                                        ),
+
+                                                        dbc.Col([
+
+                                                        dbc.Jumbotron([
+                                    ##############################################################################################################################################################################################################################
+                                            # start of results col
+
+                                                    html.Div([
                                              
                                                         html.H4('2. Choose Results Type',
                                                         # className='display-4',
@@ -1964,40 +2078,28 @@ results_col = html.Div([
                                                         
                                                         dcc.Markdown('''*Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.*''', style = {'textAlign': 'center', 'fontSize': '90%'}),
                                              
-                                                        dbc.DropdownMenu(
-                                                            label="Type of Result",
-                                                            bs_size="lg",
-                                                            color='success',
-                                                            # id = 'dropdown',
+                                                        dbc.Row([
+                                                        dbc.ButtonGroup(
                                                             children=[
-                                                                dbc.DropdownMenuItem("Disease Progress Curves",header=True,disabled=True),
-                                                                dbc.DropdownMenuItem("See detailed curves describing the outcome of your choice of strategy",id='DPC_dd',active=True),
-                                                                dbc.DropdownMenuItem(divider=True),
-                                                                dbc.DropdownMenuItem("Bar Charts",header=True,disabled=True),
-                                                                dbc.DropdownMenuItem("See some key outcomes plotted to describe the outcome of your choice of strategy",id='BC_dd'),
-                                                                dbc.DropdownMenuItem(divider=True),
-                                                                dbc.DropdownMenuItem("Strategy Overview",header=True,disabled=True),
-                                                                dbc.DropdownMenuItem("Show a broad overview of the outcome of your choice of strategy",id='SO_dd'),
+                                                                dbc.Button("Disease Progress Curves",color='success',outline=True,style={'min-width': '17vw'},id='DPC_dd',active=True),
+                                                                dbc.Button("Bar Charts",             color='success',outline=True,style={'min-width': '17vw'},id='BC_dd'),
+                                                                dbc.Button("Strategy Overview",      color='success',outline=True,style={'min-width': '17vw'},id='SO_dd'),
                                                             ],
                                                             className="mb-3",
+                                                            size='lg',
+                                                            # outline=True,
                                                             style = {'margin-top': '2vh', 'margin-bottom': '2vh', 'textAlign': 'center'}
                                                         ),
+                                                        ],
+                                                        justify='center'),
                                                         
 
                                              
-                                                    # html.Div(id='bc-content',children=[
                                                         html.Div([
-                                                                        # dcc.Markdown('''
-                                                                        # In this section we present some bar charts to illustrate the effectiveness of each strategy choice.
-                                                                        
-                                                                        # Again, choose your strategy using the bar on the left.
-                                                                        # ''',style = {'textAlign': 'center', 'margin-top': '2vh'}),
-                                                                        
-                                                                        # html.Hr(),
 
-                                                                        # html.H4('Strategy Outcome',id='bar_page_title',className="display-4",style={'fontSize': '300%', 'textAlign': 'center', 'margin-top': '1vh', 'margin-bottom': '2vh'}),
-                                                                        
-                                                                        # html.Hr(),
+
+
+
 
                                                                         
                                                                         dcc.Markdown('''
@@ -2287,134 +2389,22 @@ results_col = html.Div([
                                                     ),
                                                     
                                                     
-                                                ])
-                                                # width = 9)
+                                                ]),
 
 
-
+# end of results col
 #########################################################################################################################################################
 
 
 
 
-Instructions_layout = html.Div([html.H4("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center','margin-top': '1vh'}),
-                                             
-                                                    html.Hr(),
-
-                                                    dcc.Markdown('''
-
-                                                    *In this Section we find a **prediction** for the outcome of your choice of strategy. **Strategy choice** involves choosing a means of **controlling** the disease.*
-
-                                                    1. **Pick your strategy** (bar below)
-                                                    
-                                                    2. Choose which **results** to display (button below).
-
-                                                    '''
-                                                    ,style = {'margin-top': '2vh', 'textAlign': 'left'}
-                                                    ),
 
 
 
 
 
-                                                    
-                                    ])
 
 
-
-
-
-layout_inter = html.Div([
-    dbc.Row([
-        # column_1,
-        
-
-
-
-
-                        # end of first col
-
-
-
-########################################################################################################################
-## start row 1
-# main_page = dbc.Row([
-#                     column_1,
-
-########################################################################################################################
-                        # col 2
-# column_2 =              
-                        # dbc.Col([
-                        html.Div([
-                        html.Div([
-
-
-                                    # store results
-                                    dcc.Store(id='sol-calculated'),# storage_type='session'),
-                                    dcc.Store(id='sol-calculated-do-nothing'),# storage_type='session'),
-            
-                                    # dbc.Col([
-
-                                    # dbc.Jumbotron([
-                                    # tabs
-                                    dbc.Tabs(id="interactive-tabs", active_tab='tab_0', 
-                                        children=[
-
-                                        # tab 0
-                                        dbc.Tab(label='Model Output',
-                                         label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', 
-                                         children = [
-                                                    # html.Div([
-
-
-
-                                                    # Instructions_layout,
-
-                                                    # html.Hr(),
-
-                                                    html.H4('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center', 'margin-top': '2vh'}),
-
-                                                    html.Hr(),
-
-                                                    dcc.Markdown('''
-                                                    *In this Section we find a **prediction** for the outcome of your choice of **COVID-19 control**. Pick a **strategy** and a **results type** below.*
-
-                                                    '''
-                                                    ,style = {'margin-top': '2vh', 'margin-bottom': '2vh', 'textAlign': 'center'}
-                                                    ),
-                                                    # 1. **Pick your strategy** (bar below)
-                                                    
-                                                    # 2. Choose which **results** to display (button below).
-                                             
-                                             
-                                                    # html.Hr(),
-
-                                                    # html.Hr(),
-
-                                                dbc.Row([
-            
-                                                        dbc.Col([
-                                                            # html.Div(
-                                                            # style={'height': '10vh'}
-                                                            # ),
-                                                            dbc.Jumbotron([
-                                                                inputs_col,
-                                                            ]),
-
-                                                            # html.Div([
-                                                            # ],
-                                                            # style={'backgroundColor': '#EEEEEE'}
-                                                            # ),
-                                                        ],
-                                                        width = 12,
-                                                        xl = 3,
-                                                        style={'height': '100%'}
-                                                        ),
-
-                                                        dbc.Col([
-
-                                                        dbc.Jumbotron([
-                                                            results_col,
                                                         ]),
                                                         ],
                                                         width = 12,
@@ -2902,18 +2892,18 @@ def preset_sliders(preset):
         dis = False
         options=[
                 {'label': 'One', 'value': 'one'},
-                {'label': 'Two', 'value': 'two'}, #, 'disabled': True},
+                {'label': 'Two', 'value': 'two'},
             ]
     else:
         dis = True
         options=[
                 {'label': 'One', 'value': 'one','disabled': True},
-                {'label': 'Two', 'value': 'two','disabled': True}, #, 'disabled': True},
+                {'label': 'Two', 'value': 'two','disabled': True},
             ]
     if preset in preset_dict_low:
         return preset_dict_low[preset], preset_dict_high[preset], dis, dis, options
     else:
-        return preset_dict_low['N'], preset_dict_high['N'], dis, dis, options
+        return preset_dict_low['N'], preset_dict_high['N'], dis, dis, options # shouldn't ever be needed
 
 
 
@@ -2957,44 +2947,6 @@ for p in ["pick-strat", "control", "months-control", "custom-options", "plot-set
     )(toggle_popover)
 
 
-##############################################################################################################################
-
-# @app.callback(
-#     Output('preset','value'),
-#     [Input('use-custom-strat','n_clicks')],
-#     [State('preset','value')],
-# )
-# def use_custom(n,preset):
-    
-#     if preset=='C':
-#         use_custom = True
-#     else:
-#         use_custom = False
-    
-#     if n:
-#         use_custom = not use_custom
-
-#     if use_custom:
-#         value = 'C'
-#     else:
-#         value = 'MSD'
-#     return value
-
-
-# ##############################################################################################################################
-# @app.callback(
-#     Output('use-custom-strat','color'),
-#     [Input('preset','value')],
-# )
-# def use_custom_color(preset):
-#     if preset=='C':
-#         color = 'success'
-#     else:
-#         color = 'danger'
-    
-#     return color
-
-
 
 
 
@@ -3014,33 +2966,12 @@ for p in ["pick-strat", "control", "months-control", "custom-options", "plot-set
     Output('groups-to-plot-radio','style'),
     Output('groups-checklist-to-plot','style'),
 
-    Output('categories-to-plot-checklist','options'),                                   
     ],
     [
     Input('number-strats-radio', 'value'),
     Input('preset', 'value'),
-    # Input('hosp-cats', 'value'),
     ])
-def invisible_or_not(num,preset): # ,hosp_cats
-    
-    if True: # hosp_cats=='True_deaths':
-        options=[
-                    {'label': 'Susceptible', 'value': 'S'},
-                    {'label': 'Infected', 'value': 'I'},
-                    {'label': 'Recovered', 'value': 'R'},
-                    {'label': 'Hospitalised', 'value': 'H'},
-                    {'label': 'Critical Care', 'value': 'C'},
-                    {'label': 'Deaths', 'value': 'D'}
-                ]
-    # else:
-    #     options=[
-    #                 {'label': 'Susceptible', 'value': 'S'},
-    #                 {'label': 'Infected', 'value': 'I'},
-    #                 {'label': 'Recovered', 'value': 'R'},
-    #                 {'label': 'Hospitalised', 'value': 'H'},
-    #                 {'label': 'Critical Care', 'value': 'C'},
-    #                 {'label': 'Deaths', 'value': 'D','disabled': True}
-    #             ]
+def invisible_or_not(num,preset):
     
     if num=='two':
         strat_H = [html.H6('Strategy One: High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
@@ -3060,7 +2991,7 @@ def invisible_or_not(num,preset): # ,hosp_cats
 
     
 
-    return [says_strat_2,strat_H, strat_L ,groups_radio,groups_checklist,options]
+    return [says_strat_2,strat_H, strat_L ,groups_radio,groups_checklist]
 
 ########################################################################################################################
 
@@ -3092,12 +3023,6 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat): # years , ,hosp
     lr2 = params.fact_v[int(lr2)]
     hr2 = params.fact_v[int(hr2)]
     
-    crit = True
-    # deaths = False
-    # if 'True_deaths' in hosp:
-    deaths = True
-    
-    # t_stop = 365*years
     t_stop = 365*3
 
 
@@ -3106,9 +3031,9 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat): # years , ,hosp
         months_controlled= None
 
     sols = []
-    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop)) #critical=crit,death=deaths,
+    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop))
     if num_strat=='two':
-        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop)) #critical=crit,death=deaths
+        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop))
     
     return sols # {'sols': sols}
 
@@ -3116,23 +3041,15 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat): # years , ,hosp
 @app.callback(
     Output('sol-calculated-do-nothing', 'data'),
     [
-    # Input('years-slider', 'value'),
     Input('sol-calculated-do-nothing', 'children'),
     ])
 def find_sol_do_noth(hosp): # years
 
-    crit = True
-    deaths = True
-    # deaths = False
-    # if 'True_deaths' in hosp:
-    
-    # t_stop = 365*years
     t_stop = 365*3
-
     
-    sol_do_nothing = simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=t_stop) # critical=crit,death=deaths
+    sol_do_nothing = simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=t_stop)
     
-    return sol_do_nothing # {'do_nothing': sol_do_nothing}
+    return sol_do_nothing
 
 
 
@@ -3149,7 +3066,6 @@ def find_sol_do_noth(hosp): # years
             Input('intro-tabs', 'active_tab'),
             ],
             [
-            # State('hosp-cats', 'value'),
             State('sol-calculated-do-nothing', 'data'),
             ])
 def intro_content(tab,sol_do_n): #hosp,
@@ -3166,10 +3082,7 @@ def intro_content(tab,sol_do_n): #hosp,
             months_controlled = [month_len*i for i in month]
             year_to_run = 3
             
-            # deaths=False
-            # if 'True_deaths' in hosp:
-            # deaths=True
-            sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=365*year_to_run)) #critical=crit,death=deaths
+            sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=365*year_to_run))
             sols.append(sol_do_n)
             fig1 = figure_generator(sols,month,output_use,['BR'],'two',['BR'],'all')
             fig2 = figure_generator(sols,month,output_use_2,['BR'],'two',['BR'],'all')
@@ -3182,61 +3095,6 @@ def intro_content(tab,sol_do_n): #hosp,
 
 
 ###################################################################################################################################################################################
-
-# @app.callback([ 
-
-#                 Output('DPC-content', 'style'),
-#                 Output('bc-content', 'style'),
-#                 Output('strategy-outcome-content', 'style'),
-                
-#                 Output('DPC_dd', 'active'),
-#                 Output('BC_dd', 'active'),
-#                 Output('SO_dd', 'active'),
-
-#                 ],
-#                 [
-#                 Input('DPC_dd', 'n_clicks'),
-#                 Input('BC_dd', 'n_clicks'),
-#                 Input('SO_dd', 'n_clicks')
-#                 ])
-# def which_result_type(DPC_dropdown,BC_dropdown,SO_dropdown): # pathname, tab_intro pathname
-
-#     ctx = dash.callback_context
-    
-#     DPC_style = {'display' : 'none'}
-#     BC_style = {'display': 'none'}
-#     SO_style = {'display' : 'none'}
-
-#     if not ctx.triggered or (DPC_dropdown is None and BC_dropdown is None and SO_dropdown is None) :
-#         button_id = "DPC_dd"
-#     else:
-#         button_id = ctx.triggered[0]["prop_id"].split(".")[0]
-    
-#     DPC_active = False
-#     BC_active  = False
-#     SO_active  = False
-
-#     if button_id == 'BC_dd':
-#         BC_style = {'display': 'block'}
-#         BC_active = True
-#     elif button_id == 'SO_dd':
-#         SO_style = {'display': 'block'}
-#         SO_active = True
-#     else: # 'DPC
-#         DPC_style = {'display': 'block'}
-#         button_id = 'DPC_dd' # in case wasn't
-#         DPC_active = True
-    
-#     return [
-#     DPC_style,
-#     BC_style,
-#     SO_style,
-#     DPC_active,
-#     BC_active,
-#     SO_active]
-
-
-
 
 
 @app.callback([ 
@@ -3354,36 +3212,28 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
             DPC_style = {'display': 'block'}
 
 
-
-    
-
-
-
 ########################################################################################################################
-    tables = []
 
-    strategy_outcome_text = ['']
 
-    bar1 = dummy_figure
-    bar2 = dummy_figure
-    bar3 = dummy_figure
-    bar4 = dummy_figure
-    bar5 = dummy_figure
 
-    
     Strat_outcome_title = presets_dict[preset] + ' Strategy Outcome'
-
+    tables = []
+    strategy_outcome_text = ['']
 
     plot_settings_on_or_off = {'display': 'none'}
 
-    fig1 = dummy_figure
-    fig2 = dummy_figure
+    if sols is None or tab2!='interactive' or button_id!='BC_dd':
+        bar1 = dummy_figure
+        bar2 = dummy_figure
+        bar3 = dummy_figure
+        bar4 = dummy_figure
+        bar5 = dummy_figure
 
-
-    # bar_on_or_off = None
-    # bar1_title = 'Total Deaths (Percentage)'
-    line_plot_style_1 = {'display': 'none'}
-    line_plot_style_2 = {'display': 'none'}
+    if sols is None or tab2!='interactive' or button_id!='DPC_dd':
+        fig1 = dummy_figure
+        fig2 = dummy_figure
+        line_plot_style_1 = {'display': 'none'}
+        line_plot_style_2 = {'display': 'none'}   
 
 
     if tab2=='interactive':
@@ -3392,11 +3242,6 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
         if preset!='C':
             num_strat = 'one'
             
-
-        # deaths = False
-        # if 'True_deaths' in hosp:
-        deaths = True
-
 
         if sols is not None:
             sols.append(sol_do_nothing)
@@ -3430,21 +3275,15 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
             herd_list_3yr = []
             for ii in range(len(sols)):
                 if sols[ii] is not None and ii<len(sols)-1:
-                    # print(ii,len(sols))
                     sol = sols[ii]
                     table_out = strat_table(month,sol['beta_H'],sol['beta_L'],len(sols)-1,ii+1)
                     tables.append(table_out)
-        ########################################################################################################################
-            #loop start
-            if sols is not None and button_id!='DPC_dd': # tab != DPC
+########################################################################################################################
+            if button_id!='DPC_dd': # tab != DPC
 
-                # if deaths:
-                metric = 'deaths'
-                # else:
-                #     metric = 'critical care cases'
-
-
+                #loop start
                 for ii in range(len(sols)):
+                    # print(len(sols),ii)
                     if sols[ii] is not None:
                         sol = sols[ii]
                         
@@ -3483,7 +3322,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
 
              
-            # loop end
+                # loop end
 
                 for jj in range(len(crit_cap_data_H_3yr)):
                     crit_cap_quoted_1yr.append( (1 - (crit_cap_data_L_1yr[jj] + crit_cap_data_H_1yr[jj])/(crit_cap_data_L_1yr[-1] + crit_cap_data_H_1yr[-1]) ))
@@ -3492,70 +3331,45 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 
                     crit_cap_quoted_3yr.append( (1 - (crit_cap_data_L_3yr[jj] + crit_cap_data_H_3yr[jj])/(crit_cap_data_L_3yr[-1] + crit_cap_data_H_3yr[-1]) ))
 
-        ########################################################################################################################
-            # tab 0
-            if sols is not None and button_id=='SO_dd':
+                ########################################################################################################################
+                # SO results
+                if  button_id=='SO_dd': # sols is not None and
 
-                strategy_outcome_text = html.Div([
-                    
-                        # dcc.Markdown('''*Click/hover on underlined text to find out more.*''',style={'fontSize': '100%','textAlign' : 'center'}),
+                    strategy_outcome_text = html.Div([
 
-                    
-
-                    outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[0],herd_list_2yr[0],ICU_data_2yr[0],metric,preset,number_strategies = num_strat,which_strat=1), # hosp,
-                    html.Hr(),
-                    outcome_fn(month,sols[1]['beta_L'],sols[1]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[1],herd_list_2yr[1],ICU_data_2yr[1],metric,preset,number_strategies = num_strat,which_strat=2), # hosp,
-                    ],
-                    style = {'fontSize': '2vh'}
-                    )
+                        dcc.Markdown('''
+                            *Click on the info buttons for explanations*.
+                            ''',style = {'textAlign': 'center'}),
+                        
+                        outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[0],herd_list_2yr[0],ICU_data_2yr[0],preset,number_strategies = num_strat,which_strat=1), # hosp,
+                        html.Hr(),
+                        outcome_fn(month,sols[1]['beta_L'],sols[1]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[1],herd_list_2yr[1],ICU_data_2yr[1],preset,number_strategies = num_strat,which_strat=2), # hosp,
+                        ],
+                        style = {'fontSize': '2vh'}
+                        )
 
                 
+                ########################################################################################################################
+                # BC results
+
+                if button_id=='BC_dd': # sols is not None and 
+
+                    crit_cap_bar_1yr = [crit_cap_data_L_1yr[i] + crit_cap_data_H_1yr[i] for i in range(len(crit_cap_data_H_1yr))]
+                    crit_cap_bar_3yr = [crit_cap_data_L_3yr[i] + crit_cap_data_H_3yr[i] for i in range(len(crit_cap_data_H_3yr))]
 
 
+                    bar1 = Bar_chart_generator(crit_cap_bar_1yr      ,text_addition='%'         , y_title='Population'                    , hover_form = '%{x}, %{y:.3%}'                                                   ,data_group=crit_cap_bar_3yr, yax_tick_form='.1%') # name1='Low Risk',name2='High Risk'
+                    bar2 = Bar_chart_generator(herd_list_1yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'  , hover_form = '%{x}, %{y:.1%}<extra></extra>'          ,color = 'mediumseagreen' ,data_group=herd_list_3yr,yax_tick_form='.1%',maxi=False,yax_font_size_multiplier=0.8) # preset = preset,
+                    bar3 = Bar_chart_generator(ICU_data_1yr          ,text_addition='x current' , y_title='Multiple of Current Capacity'  , hover_form = '%{x}, %{y:.1f}x Current<extra></extra>' ,color = 'powderblue'     ,data_group=ICU_data_3yr  ) # preset = preset,
+                    bar4 = Bar_chart_generator(time_exceeded_data    ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'peachpuff'   ) # preset = preset,
+                    bar5 = Bar_chart_generator(time_reached_data     ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'lemonchiffon') # preset = preset,
 
 
 
         ########################################################################################################################
-            # bar1_title = 'Plot: Total Deaths (Percentage)'
+            # DPC results
 
-            if button_id!='BC_dd': # tab!='tab_1':
-                bar1 = dummy_figure
-                bar2 = dummy_figure
-                bar3 = dummy_figure
-                bar4 = dummy_figure
-                bar5 = dummy_figure
-
-            if sols is not None and button_id=='BC_dd':
-
-                # if not deaths:
-                #     bar1_title = 'Plot: Maximum Percentage Of Population In Critical Care'
-
-
-
-                crit_cap_bar_1yr = [crit_cap_data_L_1yr[i] + crit_cap_data_H_1yr[i] for i in range(len(crit_cap_data_H_1yr))]
-                crit_cap_bar_3yr = [crit_cap_data_L_3yr[i] + crit_cap_data_H_3yr[i] for i in range(len(crit_cap_data_H_3yr))]
-
-
-                bar1 = Bar_chart_generator(crit_cap_bar_1yr      ,text_addition='%'         , y_title='Population'                    , hover_form = '%{x}, %{y:.3%}'                                                   ,data_group=crit_cap_bar_3yr, yax_tick_form='.1%') # name1='Low Risk',name2='High Risk'
-                bar2 = Bar_chart_generator(herd_list_1yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'  , hover_form = '%{x}, %{y:.1%}<extra></extra>'          ,color = 'mediumseagreen' ,data_group=herd_list_3yr,yax_tick_form='.1%',maxi=False,yax_font_size_multiplier=0.8) # preset = preset,
-                bar3 = Bar_chart_generator(ICU_data_1yr          ,text_addition='x current' , y_title='Multiple of Current Capacity'  , hover_form = '%{x}, %{y:.1f}x Current<extra></extra>' ,color = 'powderblue'     ,data_group=ICU_data_3yr  ) # preset = preset,
-                bar4 = Bar_chart_generator(time_exceeded_data    ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'peachpuff'   ) # preset = preset,
-                bar5 = Bar_chart_generator(time_reached_data     ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'lemonchiffon') # preset = preset,
-
-            # if deaths:
-            # bar_on_or_off = None
-            # else:
-            #     bar_on_or_off = {'display': 'none'}
-
-
-        ########################################################################################################################
-
-            if button_id!='DPC_dd':
-                fig1 = dummy_figure
-                fig2 = dummy_figure
-
-
-            if sols is not None and button_id=='DPC_dd':
+            if button_id=='DPC_dd': # sols is not None and
                 output_2 = [i for i in output if i in ['C','H','D']]
                 plot_settings_on_or_off = None
 
@@ -3607,8 +3421,6 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
     html.Div(),
     html.Div(),
     html.Div(),
-    # bar_on_or_off,
-    # bar1_title,
     plot_settings_on_or_off,
     fig1,
     fig2,
