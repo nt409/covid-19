@@ -201,7 +201,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
             ),
             dcc.Checklist(
                 id='normalise-check',
-                options=[{'label': "Normalise by population?", 'value': 'normalise'}],
+                options=[{'label': "Plot as percentage of population?", 'value': 'normalise'}],
                 value=[],
                 style={'textAlign': 'center', "margin-bottom": "20px"},
                 inputStyle={"margin-right": "5px"}

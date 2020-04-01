@@ -2838,7 +2838,7 @@ page_layout = html.Div([
                      html.A('Source code', href='https://github.com/nt409/covid-19'), ". ",
                      "Data is taken from ",
                      html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
-                     html.A("John Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
+                     html.A("Johns Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
                     ],
                     style={'textAlign': 'center', 'fontSize': '1.6vh'}),
 
@@ -3020,7 +3020,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
             'xaxis': {'title': f'Days since the total confirmed cases reached {align_input}' if align_countries else '',
                       'showgrid': True},
             'showlegend': True,
-            'margin': {'l': 50, 'b': 100, 't': 0, 'r': 0},
+            'margin': {'l': 70, 'b': 100, 't': 0, 'r': 0},
             'updatemenus': [
                 dict(
                     buttons=list([
@@ -3150,7 +3150,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                     double_time = 'no growth'
                 else:
                     double_time = fr'{np.log(2) / b:.1f} days to double'
-                label = fr'{c.upper():<10s}: {np.exp(b):.2f}^t ({double_time})'
+                label = fr'{c.upper():<10s}: 2^(t/{np.log(2)/b:.1f}) ({double_time})'
             else:
                 label = fr'{c.upper():<10s}'
 
@@ -3168,14 +3168,16 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
 
             if show_exponential:
                 if np.log(2) / b < 0:
-                    continue
+                    show_plot = False
+                else:
+                    show_plot = True
                 figs.append(go.Scatter(x=model_dates if not align_countries else model_xdata,
                                        y=lin_yfit,
                                        hovertext=[f"Date: {d.strftime('%d-%b-%Y')}" for d in model_dates] if align_countries else '',
                                        mode='lines',
                                        line={'color': colours[i], 'dash': 'dash'},
                                        showlegend=False,
-                                       visible=False if title == 'Daily New Cases' else True,
+                                       visible=False if title == 'Daily New Cases' else show_plot,
                                        name=fr'Model {c.upper():<10s}',
                                        yaxis='y1',
                                        legendgroup='group1', ))
@@ -3185,7 +3187,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                                    y=ydata,
                                    hovertext=[f"Date: {d.strftime('%d-%b-%Y')}" for d in date_objects] if align_countries else '',
                                    showlegend=True,
-                                   visible=True if title == 'Daily New Cases' else True,
+                                   visible=True,
                                    name=label,
                                    marker={'color': colours[i]},
                                    yaxis='y1',
@@ -3220,8 +3222,8 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
         date_objects = date_objects[mask]
 
         if normalise_by_pop:
-            xdata = xdata / POPULATIONS[c] * 100
-            ydata = ydata / POPULATIONS[c] * 100
+            xdata = xdata / POPULATIONS[c]  # * 100
+            ydata = ydata / POPULATIONS[c]  # * 100
 
         fig_new_vs_total.append(go.Scatter(x=xdata,
                                            y=ydata,
@@ -3243,7 +3245,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
         'yaxis': {'title': yaxis_title, 'type': 'log', 'showgrid': True},
         'xaxis': {'title': xaxis_title, 'type': 'log', 'showgrid': True},
         'showlegend': True,
-        'margin': {'l': 50, 'b': 100, 't': 50, 'r': 0},
+        'margin': {'l': 70, 'b': 100, 't': 50, 'r': 0},
     }
     out.append({'data': fig_new_vs_total, 'layout': layout_new_vs_total})
 
