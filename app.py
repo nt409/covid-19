@@ -587,10 +587,6 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
 
     names = ['S','I','R','H','C','D']
     
-    # if 'True_deaths' in hosp:
-    #     names.append('D')
-
-    
     
     if num_strat=='one':
         group_use = groups
@@ -1758,23 +1754,7 @@ layout_inter = html.Div([
                                                                                                                                                                 placement='right',
                                                                                                                                                             ),
 
-                                                                                                                                                            html.H6([
-                                                                                                                                                                '1c. Vaccination starts',
-                                                                                                                                                                ],
-                                                                                                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
 
-                                                                                                                                                                                                                                                                                                                        html.Div([
-                                                                                                                                                            dcc.Slider(
-                                                                                                                                                                        id='vaccine-slider',
-                                                                                                                                                                        min   = 9,
-                                                                                                                                                                        max   = 18,
-                                                                                                                                                                        step  = 3,
-                                                                                                                                                                        marks = {i: 'Never' if i==9 else 'Month {}'.format(i) if i==12 else str(i) for i in range(9,19,3)},
-                                                                                                                                                                        value = 9,
-                                                                                                                                                            ),
-                                                                                                                                                            ],
-                                                                                                                                                            style={'fontSize': '180%'},
-                                                                                                                                                            ),
 
                                                                                                                                                         ],width=True),
                                                                                                                                                         #end of PYS row
@@ -1834,9 +1814,27 @@ layout_inter = html.Div([
                                                                                                                                                             dbc.Collapse(
                                                                                                                                                                 [
 
+                                                                                                                                                                            html.H6([
+                                                                                                                                                                                'Vaccination starts',
+                                                                                                                                                                                ],
+                                                                                                                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
 
+                                                                                                                                                                                                                                                                                                                                        html.Div([
+                                                                                                                                                                            dcc.Slider(
+                                                                                                                                                                                        id='vaccine-slider',
+                                                                                                                                                                                        min   = 9,
+                                                                                                                                                                                        max   = 18,
+                                                                                                                                                                                        step  = 3,
+                                                                                                                                                                                        marks = {i: 'Never' if i==9 else 'Month {}'.format(i) if i==12 else str(i) for i in range(9,19,3)},
+                                                                                                                                                                                        value = 9,
+                                                                                                                                                                            ),
+                                                                                                                                                                            ],
+                                                                                                                                                                            style={'fontSize': '180%'},
+                                                                                                                                                                            ),
 
-                                                                                                                                                                            dcc.Markdown('''*Make sure '**1a. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%'}), # 'textAlign': 'left', 
+                                                                                                                                                                            html.Hr(),
+
+                                                                                                                                                                            dcc.Markdown('''*To adjust the following, make sure '**1a. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%'}), # 'textAlign': 'left', 
 
                                                                                                                                                                             html.H6('Number Of Strategies',style={'fontSize': '100%'}),
 
@@ -3175,8 +3173,8 @@ def intro_content(tab,sol_do_n): #hosp,
             
             sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=365*year_to_run))
             sols.append(sol_do_n)
-            fig1 = figure_generator(sols,month,output_use,['BR'],['BR'],'all')
-            fig2 = figure_generator(sols,month,output_use_2,['BR'],['BR'],'all')
+            fig1 = figure_generator(sols,month,output_use,['BR'],'two',['BR'])
+            fig2 = figure_generator(sols,month,output_use_2,['BR'],'two',['BR'])
 
         
         return fig1, fig2
