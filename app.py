@@ -2836,7 +2836,7 @@ page_layout = html.Div([
                      html.A('Source code', href='https://github.com/nt409/covid-19'), ". ",
                      "Data is taken from ",
                      html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
-                     html.A("John Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
+                     html.A("Johns Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
                     ],
                     style={'textAlign': 'center', 'fontSize': '1.6vh'}),
 
@@ -3445,6 +3445,36 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,which_plots,output,y
 # dan's callback
 
 
+@app.callback([Output('align-cases-check', 'options'),
+               Output('align-cases-input', 'value'),
+               Output('display_percentage_text_cases', 'style'),
+               Output('align-deaths-check', 'options'),
+               Output('align-deaths-input', 'value'),
+               Output('display_percentage_text_deaths', 'style'),
+               Output('align-active-cases-check', 'options'),
+               Output('align-active-cases-input', 'value'),
+               Output('display_percentage_text_active', 'style'),
+               Output('align-daily-cases-check', 'options'),
+               Output('align-daily-cases-input', 'value'),
+               Output('display_percentage_text_daily', 'style')],
+              [Input('normalise-check', 'value')])
+def dan_update_align_options(normalise_by_pop):
+    if normalise_by_pop:
+        options = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
+                    'value': 'align'}]
+        hidden_text = {'display': 'inline-block'}
+        return [options, 0.0015, hidden_text,
+                options, 0.000034, hidden_text,
+                options, 0.0015, hidden_text,
+                options, 0.0015, hidden_text]
+    else:
+        options = [{'label': "Align countries by the date when the number of confirmed cases was ",
+                    'value': 'align'}]
+        hidden_text = {'display': 'none'}
+        return[options, 1000, hidden_text,
+               options, 20, hidden_text,
+               options, 1000, hidden_text,
+               options, 1000, hidden_text]
 
 @app.callback([Output('infections-plot', 'figure'),
                Output('deaths-plot', 'figure'),
@@ -3516,7 +3546,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
             'xaxis': {'title': f'Days since the total confirmed cases reached {align_input}' if align_countries else '',
                       'showgrid': True},
             'showlegend': True,
-            'margin': {'l': 50, 'b': 100, 't': 0, 'r': 0},
+            'margin': {'l': 70, 'b': 100, 't': 0, 'r': 0},
             'updatemenus': [
                 dict(
                     buttons=list([
@@ -3611,6 +3641,9 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                 date_objects.append(datetime.datetime.strptime(date, '%Y-%m-%d').date())
             date_objects = np.asarray(date_objects)
 
+            if normalise_by_pop:
+                ydata = ydata/POPULATIONS[c] * 100
+
             if align_countries:
                 if title in ['Cases', 'Deaths']:
                     idx_when_n_cases = np.abs(ydata - align_input).argmin()
@@ -3621,9 +3654,6 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                         idx_when_n_cases -= 1
 
                 xdata = xdata - idx_when_n_cases
-
-            if normalise_by_pop:
-                ydata = ydata/POPULATIONS[c] * 100
 
             model_date_mask = (date_objects <= end_date) & (date_objects >= start_date)
 
@@ -3646,7 +3676,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                     double_time = 'no growth'
                 else:
                     double_time = fr'{np.log(2) / b:.1f} days to double'
-                label = fr'{c.upper():<10s}: {np.exp(b):.2f}^t ({double_time})'
+                label = fr'{c.upper():<10s}: 2^(t/{np.log(2)/b:.1f}) ({double_time})'
             else:
                 label = fr'{c.upper():<10s}'
 
@@ -3664,14 +3694,16 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
 
             if show_exponential:
                 if np.log(2) / b < 0:
-                    continue
+                    show_plot = False
+                else:
+                    show_plot = True
                 figs.append(go.Scatter(x=model_dates if not align_countries else model_xdata,
                                        y=lin_yfit,
                                        hovertext=[f"Date: {d.strftime('%d-%b-%Y')}" for d in model_dates] if align_countries else '',
                                        mode='lines',
                                        line={'color': colours[i], 'dash': 'dash'},
                                        showlegend=False,
-                                       visible=False if title == 'Daily New Cases' else True,
+                                       visible=False if title == 'Daily New Cases' else show_plot,
                                        name=fr'Model {c.upper():<10s}',
                                        yaxis='y1',
                                        legendgroup='group1', ))
@@ -3681,7 +3713,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
                                    y=ydata,
                                    hovertext=[f"Date: {d.strftime('%d-%b-%Y')}" for d in date_objects] if align_countries else '',
                                    showlegend=True,
-                                   visible=True if title == 'Daily New Cases' else True,
+                                   visible=True,
                                    name=label,
                                    marker={'color': colours[i]},
                                    yaxis='y1',
@@ -3739,7 +3771,7 @@ def dan_update_plots(n_clicks, start_date, end_date, show_exponential, normalise
         'yaxis': {'title': yaxis_title, 'type': 'log', 'showgrid': True},
         'xaxis': {'title': xaxis_title, 'type': 'log', 'showgrid': True},
         'showlegend': True,
-        'margin': {'l': 50, 'b': 100, 't': 50, 'r': 0},
+        'margin': {'l': 70, 'b': 100, 't': 50, 'r': 0},
     }
     out.append({'data': fig_new_vs_total, 'layout': layout_new_vs_total})
 
