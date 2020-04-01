@@ -230,6 +230,9 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                     debounce=True,
                     style={'width': 80},
                 ),
+                html.Div(id='display_percentage_text_cases', style={'display': 'none'}, children=[
+                    html.P("% of population")
+                ]),
             ]),
             dcc.Graph(id='infections-plot'),
             html.H3(children='Total Deaths', style={'textAlign': 'center', 'color': colors['text'],
@@ -250,8 +253,11 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                     value=20,
                     min=0,
                     debounce=True,
-                    style={'width': 80},
+                    style={'width': 100},
                 ),
+                html.Div(id='display_percentage_text_deaths', style={'display': 'none'}, children=[
+                    html.P("% of population")
+                ]),
             ]),
             dcc.Graph(id='deaths-plot'),
             html.Div(id='active-cases-container', style={'display': 'block'}, children=[
@@ -274,6 +280,9 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                         debounce=True,
                         style={'width': 80},
                     ),
+                ]),
+                html.Div(id='display_percentage_text_active', style={'display': 'none'}, children=[
+                    html.P("% of population")
                 ]),
                 dcc.Graph(id='active-plot'),
             ]),
@@ -298,6 +307,9 @@ layout_dan = html.Div(style={'backgroundColor': colors['background'], 'font-fami
                         debounce=True,
                         style={'width': 80},
                     ),
+                    html.Div(id='display_percentage_text_daily', style={'display': 'none'}, children=[
+                        html.P("% of population")
+                    ]),
                 ]),
                 dcc.Graph(id='daily-plot'),
             ]),
