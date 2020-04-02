@@ -10,8 +10,6 @@ from math import ceil
 
 
 
-
-
 df2 = pd.DataFrame({'Age': ['0-9','10-19','20-29','30-39','40-49','50-59','60-69','70-79','80+'],
    'Hosp': [0.1,0.3,1.2,3.2,4.9,10.2,16.6,24.3,27.3],
    'Crit': [5,5,5,5,6.3,12.2,27.4,43.2,70.9],
@@ -102,7 +100,7 @@ ICU_capacity = ICU_factor*8/100000 # 0.001 #  8/100000 # = 0.00008
 initial_infections = 625
 UK_population = 60 * 10**(6)
 
-import_rate = 0 # 1/(30*UK_population) # 1 per month
+import_rate = 1/(30*UK_population) # 1 per month
 
 vaccinate_percent = 0.9 # vaccinate this many
 vaccinate_rate = 0.55/(365*2/3) #10000/UK_population # per day

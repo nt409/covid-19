@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 from flask import Flask
 from gevent.pywsgi import WSGIServer
 import pandas as pd
-from math import floor, ceil
+from math import floor, ceil, exp
 from parameters_cov import params, df2
 import numpy as np
 import plotly.graph_objects as go
@@ -569,6 +569,10 @@ def extract_info(yy,tt,t_index):
 
 ########################################################################################################################
 def human_format(num):
+    if num<1 and num>=0.1:
+        return '%.1f' % num
+    elif num<0.1:
+        return '%.3f' % num
     magnitude = 0
     while abs(num) >= 1000:
         magnitude += 1
@@ -578,7 +582,7 @@ def human_format(num):
 
 
 ########################################################################################################################
-def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_plot=False,vaccine_time=None): # hosp
+def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None): # hosp
 
     font_size = 14
     
@@ -600,11 +604,14 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
             group_string = group_string + ',' + group_strings[group]
     
 
-    linestyle_numst = ['solid','dash']
+    linestyle_numst = ['solid','dash','dot','dashdot','longdash','longdashdot']
     
     len_data_points = len(sols[0]['t'])
-    len_to_plot = ceil(len_data_points*years/3)
-    
+    len_to_plot = ceil(len_data_points) # *years/3)
+    if len(sols)>1:
+        strat_list = [': Strategy;',': Do Nothing;']
+    else:
+        strat_list = [':']
 
     ii = -1
     for sol in sols:
@@ -612,10 +619,11 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
         for name in names:
             if name in output:
                 for group in group_vec:
+                    
                     if group in group_use:
                         sol['y'] = np.asarray(sol['y'])
                         if num_strat=='one':
-                            name_string = ':' + group_strings[group]
+                            name_string = strat_list[ii] + group_strings[group] # ':' +
                             line_style_use = linestyle[group]
                         if num_strat=='two':
                             name_string = ': Strategy ' + str(ii+1) + '; ' + group_strings[group]
@@ -629,9 +637,9 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
                         else:
                             group_hover_str = 'Low Risk' + '<br>'
 
-                        line =  {'x': xx[:len_to_plot], 'y': (factor_L[group]*sol['y'][index[name],:len_to_plot] + factor_H[group]*sol['y'][index[name] + params.number_compartments,:len_to_plot]),
+                        line =  {'x': xx[:len_to_plot], 'y': (100*factor_L[group]*sol['y'][index[name],:len_to_plot] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:len_to_plot]),
                                 'hovertemplate': group_hover_str +
-                                                 longname[name] + ': %{y}<br>' +
+                                                 longname[name] + ': %{y:.2f}%<br>' +
                                                  'Time: %{x:.1f} Months<extra></extra>',
                                 'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name ,'name': longname[name] + name_string}
                         lines_to_plot.append(line)
@@ -639,7 +647,8 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
 
         # setting up pink boxes
         ICU = False
-        if num_strat=='one' and len(output)>0: # 'True_deaths' in hosp 
+        # print(ii,num_strat,group_use,output)
+        if ii==0 and num_strat=='one' and len(group_use)>0 and len(output)>0: # 'True_deaths' in hosp 
             yyy = sol['y']
             ttt = sol['t']
             c_low, c_high, ICU = time_exceeded_function(yyy,ttt)
@@ -649,10 +658,10 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
 
     
 
-    if ymax<1:
-        ymax2 = min(1.1*ymax,1.01)
+    if ymax<100:
+        ymax2 = min(1.1*ymax,101)
     else:
-        ymax2 = 1.01
+        ymax2 = 101
 
     yax = dict(range= [0,ymax2])
     ##
@@ -683,57 +692,45 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
 
         yval_pink = 0.3
         yval_blue = 0.82
-        # else:
-        #     control_font_size = font_size*(20/24) #'11em'
-        #     ICU_font_size = font_size*(20/24) # '10em'
-
-        #     yval_pink = 0.35
-        #     yval_blue = 0.86
-        xshift_use = None
 
 
         for c_min, c_max in zip(c_low, c_high):
-            shapez.append(dict(
-                    # filled Pink ICU Rectangle
-                    type="rect",
-                    x0=c_min/month_len,
-                    y0=-0.01,
-                    x1=c_max/month_len,
-                    y1=yax['range'][1],
-                    line=dict(
-                        color="pink",
-                        width=0,
-                    ),
-                    fillcolor="pink",
-                    opacity=0.5,
-                    xref = 'x',
-                    yref = 'y'
+            if c_min>0 and c_max>0:
+                shapez.append(dict(
+                        # filled Pink ICU Rectangle
+                        type="rect",
+                        x0=c_min/month_len,
+                        y0=-0.01,
+                        x1=c_max/month_len,
+                        y1=yax['range'][1],
+                        line=dict(
+                            color="pink",
+                            width=0,
+                        ),
+                        fillcolor="pink",
+                        opacity=0.5,
+                        xref = 'x',
+                        yref = 'y'
+                    ))
+                annotz.append(dict(
+                        x  = 0.5*(c_min+c_max)/month_len,
+                        y  = yval_pink,
+                        text="ICU<br>" + " Capacity<br>" + " Exceeded",
+                        # hoverinfo='ICU Capacity Exceeded',
+                        showarrow=False,
+                        textangle= 0,
+                        font=dict(
+                            size= ICU_font_size,
+                            color="purple"
+                        ),
+                        opacity=0.7,
+                        xref = 'x',
+                        yref = 'paper',
                 ))
-            annotz.append(dict(
-                    x  = 0.5*(c_min+c_max)/month_len,
-                    y  = yval_pink,
-                    text="ICU<br>" + " Capacity<br>" + " Exceeded",
-                    # hoverinfo='ICU Capacity Exceeded',
-                    showarrow=False,
-                    textangle= 0,
-                    font=dict(
-                        size= ICU_font_size,
-                        color="purple"
-                    ),
-                    opacity=0.5,
-                    # xshift= +8,
-                    xref = 'x',
-                    yref = 'paper',
-            ))
 
     else:
-        # if which_plots=='two':
         control_font_size = font_size*(30/24) #'11em'
         yval_blue = 0.4
-        # else:
-        #     yval_blue = 0.5
-        #     control_font_size = font_size*(35/24) #'12em'
-        xshift_use = 8
 
 
 
@@ -744,24 +741,18 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
                 y  = yval_blue,
                 text="Control<br>" + " In <br>" + " Place",
                 # hoverinfo='Control In Place',
-                textangle=0,#text_angle_blue,
+                textangle=0,
                 font=dict(
                     size= control_font_size,
                     color="blue"
                 ),
                 showarrow=False,
                 opacity=0.5,
-                xshift= xshift_use,
+                xshift= 0,
                 xref = 'x',
                 yref = 'paper',
         ))
     
-
-
-
-    # ICU_to_plot = False
-    # if 'C' in output and ymax<0.05:
-    #     ICU_to_plot = True
 
             
     if ICU_to_plot:
@@ -773,7 +764,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
             opacity=0.5,
             legendgroup='thresholds',
             line=dict(
-            color= 'black',
+            color= 'blue',
             dash = 'dash'
             ),
             hovertemplate= 'ICU Capacity: %{y}',
@@ -796,15 +787,15 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
 
     
 
-    lines_to_plot.append(
-    dict(
-        type='scatter',
-        x = [0,sol['t'][-1]],
-        y = [ 0, params.UK_population],
-        yaxis="y2",
-        opacity=0,
-        showlegend=False
-    ))
+    # lines_to_plot.append(
+    # dict(
+    #     type='scatter',
+    #     x = [0,sol['t'][-1]],
+    #     y = [ 0, params.UK_population],
+    #     yaxis="y2",
+    #     opacity=0,
+    #     showlegend=False
+    # ))
     
 
     
@@ -819,13 +810,33 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
     vec = [i*(params.UK_population) for i in yax2_vec]
 
 
-    # if True: # Months
-    if max(sol['t'])>370:
-        xtext = [str(2*i) for i in range(1+floor(max(sol['t'])/(2*month_len)))]
-        xvals = [2*i for i in range(1+floor(max(sol['t'])/(2*month_len)))]
-    else:
-        xtext = [str(i) for i in range(1+floor(max(sol['t'])/month_len))]
-        xvals = [ i for i in range(1+floor(max(sol['t'])/month_len))]
+    # yax_form_log = '.4%'
+    # yax2_vec_log = np.linspace(-100,100,20)
+    #[100*np.log10(i) for i in np.linspace(10**(-10), yax['range'][1] ,6)] # np.log10(i)
+    # print(log_range,yax2_vec_log)
+
+    log_range = [-8,np.log10(yax['range'][1])]
+    print(yax['range'][1])
+    pop_log_vec = [10**(i) for i in np.linspace(-8,np.log10(100),6)]
+
+    vec2 = [i*(params.UK_population) for i in pop_log_vec]
+    print(vec2)
+
+
+    start = int(datetime.date.today().strftime('%m'))
+    month_labels = []
+    for j in range(4):
+        for i in range(1,13):
+            month_labels.append(datetime.date(2020+j, i, 1).strftime('%b %y'))
+    
+    month_labels = month_labels[(start-1):(start-1+37)]
+
+    xtext = [str(month_labels[2*i]) for i in range(1+floor(max(sol['t'])/(2*month_len)))]
+    xvals = [2*i for i in range(1+floor(max(sol['t'])/(2*month_len)))]
+    # if max(sol['t'])>370:
+    # else:
+    #     xtext = [str(month_labels(2*i)) for i in range(1+floor(max(sol['t'])/month_len))]
+    #     xvals = [ i for i in range(1+floor(max(sol['t'])/month_len))]
     
     tick_form = ['%','.1%','.2%','.3%','.4%','.5%','.6%','.7%','.8%']
     upper_lim = [2,0.1,10**(-2),10**(-3),10**(-4),10**(-5),10**(-6),10**(-7),10**(-8)]
@@ -835,6 +846,8 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
             yax_form = tick_form[i]
     if yax_form is None:
         yax_form = '.9%'
+
+
 
 
     layout = go.Layout(
@@ -851,35 +864,102 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
                    ),
                    legend_orientation = 'h',
                    legend_title='<b> Key <b>',
-                   xaxis_title='Time (Months)',
+
                    yaxis= dict(mirror= True,
-                       range= yax['range'],
-                       showline=False,
-                       linewidth=0,
-                   ),
-                #    yaxis_type="log",
-                   yaxis_tickformat = yax_form,
-                   xaxis= dict(
-                        range= [0, (years/3)*max(sol['t'])/month_len],
+                        title='Proportion of Population',
+                        range= yax['range'],
                         showline=False,
-                        linewidth=0,
-                        # linecolor='red',
+                        # linewidth=0,
+                        # tickformat=yax_form
+                   ),
+                #    yaxis_tickformat = yax_form,
+
+                   xaxis= dict(
+                        title='Time (Months)',
+                        range= [0, (2/3)*max(sol['t'])/month_len],
+                        showline=False,
+                        # rangeslider_visible=True,
+                        # linewidth=0,
                         ticktext = xtext,
                         tickvals = xvals
                        ),
-                   yaxis_title='Proportion of Population',
-                   yaxis2 = dict(
-                        title = 'UK Population',
-                        overlaying='y1',
-                        showline=False,
-                        linewidth=0,
-                        showgrid=True,
-                        range = yax['range'],
-                        side='right',
-                        ticktext = [human_format(vec[i]) for i in range(len(yax2_vec))],
-                        tickvals = [i for i in  yax2_vec],
+                    
+                #     yaxis2 = dict(
+                #         title = 'UK Population',
+                #         overlaying='y1',
+                #         showline=False,
+                #         linewidth=0,
+                #         showgrid=True,
+                #         range = yax['range'],
+                #         side='right',
+                #         # type= 'log',
+                #         ticktext = [human_format(vec[i]) for i in range(len(yax2_vec))],
+                #         tickvals = [i for i in  yax2_vec],
+                #    ),
+                    updatemenus= [
+                    dict(
+                        buttons=list([
+                            dict(
+                                # args=[{"yaxis": {'title': 'Proportion of Population', 'type': 'linear','tickformat': yax_form,'showline':False}}],
+                                args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'linear', 'range': yax['range'], 'showline':False}}], # tickformat
+                                label="Linear, %",
+                                method="relayout"
+                            ),
+                            dict(
+                                args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'log', 'range': log_range,'showline':False}}], # 'tickformat': yax_form_log,
+                                label="Logarithmic, %",
+                                method="relayout"
+                            ),
+                            dict(
+                                args=[{"yaxis": {'title': 'UK Population', 'type': 'linear', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(yax2_vec))], 'tickvals': [i for i in  yax2_vec],'showline':False}},
+                                ],
+                                label="Linear, Number",
+                                method="relayout"
+                            ),
+                            dict(
+                                args=[
+                                {"yaxis": {'title': 'UK Population','type': 'log', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'showline':False}},
+                                ],
+                                label="Log., Number",
+                                method="relayout"
+                            )
+                    ]),
+                    x=0,
+                    xanchor="right",
+                    active=0,
+                    y=1.1,
+                    showactive=True,
+                    yanchor="top"
+                    ),
+                    dict(
+                        buttons=list([
+                            dict(
+                                args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': [str(month_labels[i]) for i in range(1+floor(max(sol['t'])/(month_len)))], 'tickvals': [i for i in range(1+floor(max(sol['t'])/(month_len)))], 'title': 'Time (Months)', 'showline':False ,}],
+                                label="Years: 1",
+                                method="relayout"
+                            ),
+                            dict(
+                                args = ["xaxis", {'range': [0, (2/3)*max(sol['t'])/month_len] , 'ticktext': [str(month_labels[2*i]) for i in range(1+floor(max(sol['t'])/(2*month_len)))], 'tickvals': [2*i for i in range(1+floor(max(sol['t'])/(2*month_len)))], 'title': 'Time (Months)', 'showline':False ,}], #  
+                                label="Years: 2",
+                                method="relayout"
+                            ),
+                            dict(
+                                args = ["xaxis", {'range': [0, (3/3)*max(sol['t'])/month_len] , 'ticktext': [str(month_labels[3*i]) for i in range(1+floor(max(sol['t'])/(3*month_len)))], 'tickvals': [3*i for i in range(1+floor(max(sol['t'])/(3*month_len)))], 'title': 'Time (Months)', 'showline':False ,}],
+                                label="Years: 3",
+                                method="relayout"
+                            )
+                    ]),
+                    x=0,
+                    xanchor="right",
+                    showactive=True,
+                    active=1,
+                    direction='up',
+                    y=-0.1,
+                    yanchor="top"
+                    ),
+                    ],
                    )
-                   )
+                   
 
     return {'data': lines_to_plot, 'layout': layout}
 
@@ -2018,7 +2098,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                 Press this button to allow you to change the plot settings.
                                                                                                                                                                 
-                                                                                                                                                                You may change the timescale ('Years To Plot'), plot different risk groups ('Groups To Plot'), and different disease progress categories ('Categories To Plot').
+                                                                                                                                                                You may plot different risk groups ('Groups To Plot'), and different disease progress categories ('Categories To Plot').
 
                                                                                                                                                                 '''
                                                                                                                                                                 ),),
@@ -2038,14 +2118,14 @@ layout_inter = html.Div([
 
 
 
-                                                                                                                                                                                                                                    html.H6('Years To Plot',style={'fontSize': '120%'}),
-                                                                                                                                                                                                                                    dcc.Slider(
-                                                                                                                                                                                                                                        id='years-slider',
-                                                                                                                                                                                                                                        min=1,
-                                                                                                                                                                                                                                        max=3,
-                                                                                                                                                                                                                                        marks={i: str(i) for i in range(1,4)},
-                                                                                                                                                                                                                                        value=2,
-                                                                                                                                                                                                                                    ),
+                                                                                                                                                                                                                                    # html.H6('Years To Plot',style={'fontSize': '120%'}),
+                                                                                                                                                                                                                                    # dcc.Slider(
+                                                                                                                                                                                                                                    #     id='years-slider',
+                                                                                                                                                                                                                                    #     min=1,
+                                                                                                                                                                                                                                    #     max=3,
+                                                                                                                                                                                                                                    #     marks={i: str(i) for i in range(1,4)},
+                                                                                                                                                                                                                                    #     value=2,
+                                                                                                                                                                                                                                    # ),
 
                                                                                                                                                                                                                                     # html.H6('How Many Plots',style={'fontSize': '120%'}),
                                                                                                                                                                                                                                     # dbc.RadioItems(
@@ -2594,7 +2674,7 @@ layout_inter = html.Div([
 
 
                                                                                                                                                                     dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585498493/Capture_yl2c6f.png',
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/Capture_lomery.png',
                                                                                                                                                                     style={'max-width':'90%','height': 'auto', 'display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
                                                                                                                                                                     ),
                                                                                                                                                                     ],
@@ -2608,141 +2688,61 @@ layout_inter = html.Div([
                                                                                                                                                                     *For the more mathematically inclined reader, a translation of the above into a mathematical system is described below.*
 
                                                                                                                                                                     ''',style={'margin-top' : '2vh','margin-bottom' : '2vh'}),
-
-                                                                                                                                                                    dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585681272/model_explan_mz81eq.png',
-                                                                                                                                                                    style={'max-width':'90%','height': 'auto','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
-                                                                                                                                                                    ),
+                                                                                                                                                                    
                                                                                                                                                                     
 
+                                                                                                                                                                    dbc.Row([
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/eqs_f3esyu.png',
+                                                                                                                                                                    style={'max-width':'90%','height': 'auto','display': 'block','margin-top': '1vh','margin-bottom': '1vh'})
                                                                                                                                                                     ],
                                                                                                                                                                     justify='center'
                                                                                                                                                                     ),
 
-                                                                                                                                                                    dcc.Markdown('''
 
-                                                                                                                                                                    The model uses a weighted average across the age classes below and above 60 to calculate the probability of a member of each class getting hospitalised or needing critical care.
+                                                                                                                                                                    dbc.Row([
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/text_toshav.png',
+                                                                                                                                                                    style={'max-width':'90%','height': 'auto','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
+                                                                                                                                                                    ),
+                                                                                                                                                                    ],
+                                                                                                                                                                    justify='center'
+                                                                                                                                                                    ),
+
+                                                                                                                                                                    
+                                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                                    Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. However, if they don't receive it all die. The number able to get treatment must be lower than the number of ICU beds available.
                                                                                                                                                                     '''),
 
 
 
                                                                                                                                                                     html.Hr(),
-                                                                                                                                                                    
-
 
                                                                                                                                                                     html.H4('Parameter Values',style={'fontSize': '200%'}),
 
+                                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                                    The model uses a weighted average across the age classes below and above 60 to calculate the probability of a member of each class getting hospitalised or needing critical care.
+                                                                                                                                                                    '''),
 
-                                                                                                                                                                    dbc.Col([
-                                                                                                                                                                        dbc.Table(
-                                                                                                                                                                            [
-                                                                                                                                                                                html.Thead(
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                    html.Th("Parameter description"),
-                                                                                                                                                                                    html.Th("Symbol"),
-                                                                                                                                                                                    html.Th("Value"),
-                                                                                                                                                                                    html.Th("Source")
-                                                                                                                                                                                    ])
-                                                                                                                                                                                    ),
-                                                                                                                                                                            ]
-                                                                                                                                                                            + 
-                                                                                                                                                                            
-                                                                                                                                                                            [
-                                                                                                                                                                            html.Tbody([
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Probability high risk infection needs hospital care"),
-                                                                                                                                                                                        html.Td('h_H'),
-                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.frac_hosp_H)),
-                                                                                                                                                                                        html.Td(html.A('Age table below (which uses Imperial and GOV.UK data)'))
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Probability low risk infection needs hospital care"),
-                                                                                                                                                                                        html.Td("h_L"),
-                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.frac_hosp_L)),
-                                                                                                                                                                                        html.Td(html.A('Age table below'))
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Probability high risk hospital case needs critical care"),
-                                                                                                                                                                                        html.Td("c_H"),
-                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.frac_crit_H)),
-                                                                                                                                                                                        html.Td(html.A('Age table below'))
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Probability low risk hospital case needs critical care"),
-                                                                                                                                                                                        html.Td("c_L"),
-                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.frac_crit_L)),
-                                                                                                                                                                                        html.Td(html.A('Age table below'))
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Probability survive critical care"),
-                                                                                                                                                                                        html.Td("d"),
-                                                                                                                                                                                        html.Td(str(0.5)),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Basic reproduction number"),
-                                                                                                                                                                                        html.Td("R0"),
-                                                                                                                                                                                        html.Td('{0:.1f}'.format(params.R_0)),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Infection rate"),
-                                                                                                                                                                                        html.Td("beta"),
-                                                                                                                                                                                        html.Td('{0:.3f}'.format(params.beta) + ' per day'),
-                                                                                                                                                                                        html.Td(html.A('=mu*R0'))
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Average time infectious"),
-                                                                                                                                                                                        html.Td("1/mu"),
-                                                                                                                                                                                        html.Td('{0:.0f}'.format(1/params.recovery_rate) + ' Days'),
-                                                                                                                                                                                        html.Td(html.A('Anderson et al',href='https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30567-5/fulltext'))
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Average time in hospital"),
-                                                                                                                                                                                        html.Td("1/alpha"),
-                                                                                                                                                                                        html.Td('{0:.0f}'.format(1/params.hosp_rate)  + ' Days'),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.**',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
-                                                                                                                                                                                        ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Average time in critical care"),
-                                                                                                                                                                                        html.Td("1/nu"),
-                                                                                                                                                                                        html.Td('{0:.0f}'.format(1/params.death_rate)  + ' Days'),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.**',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
 
-                                                                                                                                                                                    ]),        
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("NHS ICU beds"),
-                                                                                                                                                                                        html.Td(''),
-                                                                                                                                                                                        html.Td('8/100,000'),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("Initial number infected (split proportionally by risk)"),
-                                                                                                                                                                                        html.Td("I_0"),
-                                                                                                                                                                                        html.Td('625'),
-                                                                                                                                                                                        html.Td(html.A('Anderson et al',href='https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30567-5/fulltext'))
 
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                    html.Tr([ 
-                                                                                                                                                                                        html.Td("UK population size (approx)"),
-                                                                                                                                                                                        html.Td("N"),
-                                                                                                                                                                                        html.Td('60M'),
-                                                                                                                                                                                        html.Td(html.A('Anderson et al',href='https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30567-5/fulltext'))
+                                                                                                                                                                    
 
-                                                                                                                                                                                    ]),
-                                                                                                                                                                                ]),
-                                                                                                                                                                            ],
-                                                                                                                                                                            bordered=True,
-                                                                                                                                                                            # dark=True,
-                                                                                                                                                                            hover=True,
-                                                                                                                                                                            responsive=True,
-                                                                                                                                                                            striped=True,
-                                                                                                                                                                        ),
-                                                                                                                                                                    ],
+                                                                                                                                                                    dbc.Row([
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/params_w7tebv.png',
+                                                                                                                                                                    style={'max-width':'90%','height': 'auto','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
                                                                                                                                                                     ),
+                                                                                                                                                                    ],
+                                                                                                                                                                    justify='center'
+                                                                                                                                                                    ),
+
+
 
                                                                                                                                                                     html.P('** the Imperial paper uses 8 days in hospital if critical care is not required (as do we). It uses 16 days (with 10 in ICU) if critical care is required. Instead, if critical care is required we use 8 days in hospital (non-ICU) and then either recovery or a further 8 in intensive care (leading to either recovery or death).',
                                                                                                                                                                     style={'fontSize':'80%'}),
+
+                                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                                    Please use the follow links: [**Ferguson et al**](/https://spiral.imperial.ac.uk/handle/10044/1/77482), [**Anderson et al**](/https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30567-5/fulltext) and [**Zhao et al**](/https://journals.plos.org/plosntds/article/file?rev=2&id=10.1371/journal.pntd.0006158&type=printable)
+                                                                                                                                                                    '''),
+
 
                                                                                                                                                                     html.H4('Age Structure',style={'fontSize': '150%'}),
                                                                                                                                                                     
@@ -2766,11 +2766,6 @@ layout_inter = html.Div([
 
 
 
-                                                                                                                                                                    # ]),
-                                                                                                                                                                    
-
-                                                                                                                                                            # ],width={'size':8,'offset':2}
-                                                                                                                                                            # ), 
                                                                                                                                             ],style={'fontSize': '100%'})
                                                                                                                         ]),
 
@@ -3288,7 +3283,7 @@ def intro_content(tab,sol_do_n): #hosp,
                 Input('groups-to-plot-radio','value'),                                      
                 # Input('how-many-plots-slider','value'),
                 Input('categories-to-plot-checklist', 'value'),
-                Input('years-slider', 'value'),
+                # Input('years-slider', 'value'),
 
                 Input('DPC_dd', 'n_clicks'),
                 Input('BC_dd', 'n_clicks'),
@@ -3307,7 +3302,7 @@ def intro_content(tab,sol_do_n): #hosp,
                 State('vaccine-slider', 'value'),
 
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,output,years,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active,sol_do_nothing,preset,month,num_strat,vaccine_time): # pathname, tab_intro pathname, hosp
+def render_interactive_content(tab,tab2,sols,groups,groups2,output,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active,sol_do_nothing,preset,month,num_strat,vaccine_time): # pathname, tab_intro pathname, hosp
 
     ctx = dash.callback_context
     
@@ -3511,15 +3506,15 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,years,DPC_dro
 
 
                 if len(output)>0:
-                    fig1 = figure_generator(sols[:-1],month,output,groups,num_strat,groups2,years,vaccine_time=vaccine_time) # hosp,
+                    fig1 = figure_generator(sols[:-1],month,output,groups,num_strat,groups2,vaccine_time=vaccine_time) # hosp,
                 else:
                     fig1 = dummy_figure
 
                 if len(output_2)>0:
-                    fig2 = figure_generator(sols[:-1],month,output_2,groups,num_strat,groups2,years,vaccine_time=vaccine_time) # hosp,
+                    fig2 = figure_generator(sols[:-1],month,output_2,groups,num_strat,groups2,vaccine_time=vaccine_time) # hosp,
                 else:
                     fig2 = dummy_figure
-                fig3 = figure_generator(sols[:-1],month,['C'],groups,num_strat,groups2,years,ICU_to_plot=True,vaccine_time=vaccine_time) # hosp,
+                fig3 = figure_generator(sols[:-1],month,['C'],groups,num_strat,groups2,ICU_to_plot=True,vaccine_time=vaccine_time) # hosp,
             
         ##############
 

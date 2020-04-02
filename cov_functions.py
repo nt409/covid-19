@@ -37,6 +37,8 @@ class simulator:
         C_H = y[params.C_H_ind]
 
 
+
+
         
         if t_control is None:
             beta_L_factor = 1
@@ -61,15 +63,15 @@ class simulator:
             C_H_to_R_H = C_H*params.crit_recovery
             C_H_to_D_H = C_H*params.crit_death
         
-        dydt = [-S_L*( params.beta*(beta_L_factor**2)*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**1))*I_H ) - vaccine_effect_L - (1-params.hr_frac)*params.import_rate, # dS
+        dydt = [-S_L*( params.beta*(beta_L_factor**2)*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**1))*I_H ) - vaccine_effect_L, # dS
                 +S_L*( params.beta*(beta_L_factor**2)*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**1))*I_H ) - params.mu_L*I_L - params.gamma_L*I_L + (1-params.hr_frac)*params.import_rate, # dI
-                I_L*params.mu_L    + H_L*params.recover_L + C_L_to_R_L + vaccine_effect_L,  # dR
+                I_L*params.mu_L    + H_L*params.recover_L + C_L_to_R_L + vaccine_effect_L  - (1-params.hr_frac)*params.import_rate,  # dR
                 I_L*params.gamma_L - H_L*params.recover_L - H_L*params.crit_L,         # dH
                 H_L*params.crit_L  - (C_L_to_R_L + C_L_to_D_L),                          # dC
                 + C_L_to_D_L,                                                      # dD
-                -S_H*( (params.beta*((beta_H_factor*beta_L_factor)**1))*I_L + params.beta*(beta_H_factor**2)*I_H) - vaccine_effect_H -  params.hr_frac*params.import_rate, # dS
+                -S_H*( (params.beta*((beta_H_factor*beta_L_factor)**1))*I_L + params.beta*(beta_H_factor**2)*I_H) - vaccine_effect_H , # dS
                 +S_H*( (params.beta*((beta_H_factor*beta_L_factor)**1))*I_L + params.beta*(beta_H_factor**2)*I_H) - params.mu_H*I_H - params.gamma_H*I_H + params.hr_frac*params.import_rate, # dI
-                I_H*params.mu_H    + H_H*params.recover_H  + C_H_to_R_H + vaccine_effect_H,           # dR
+                I_H*params.mu_H    + H_H*params.recover_H  + C_H_to_R_H + vaccine_effect_H -  params.hr_frac*params.import_rate,           # dR
                 I_H*params.gamma_H - H_H*params.recover_H - H_H*params.crit_H,         # dH
                 H_H*params.crit_H  - (C_H_to_R_H + C_H_to_D_H),                          # dC
                 + C_H_to_D_H                                                       # dD
