@@ -816,11 +816,11 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     # print(log_range,yax2_vec_log)
 
     log_range = [-8,np.log10(yax['range'][1])]
-    print(yax['range'][1])
+    # print(yax['range'][1])
     pop_log_vec = [10**(i) for i in np.linspace(-8,np.log10(100),6)]
 
     vec2 = [i*(params.UK_population) for i in pop_log_vec]
-    print(vec2)
+    # print(vec2)
 
 
     start = int(datetime.date.today().strftime('%m'))
