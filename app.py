@@ -578,7 +578,7 @@ def human_format(num):
 
 
 ########################################################################################################################
-def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_plot=False): # hosp
+def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_plot=False,vaccine_time=None): # hosp
 
     font_size = 14
     
@@ -673,7 +673,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
                     width=0,
                 ),
                 fillcolor="LightSkyBlue",
-                opacity=0.15
+                opacity=0.25
             ))
             
     if ICU:
@@ -720,7 +720,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
                         size= ICU_font_size,
                         color="purple"
                     ),
-                    opacity=0.4,
+                    opacity=0.5,
                     # xshift= +8,
                     xref = 'x',
                     yref = 'paper',
@@ -750,7 +750,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
                     color="blue"
                 ),
                 showarrow=False,
-                opacity=0.4,
+                opacity=0.5,
                 xshift= xshift_use,
                 xref = 'x',
                 yref = 'paper',
@@ -778,6 +778,22 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,years=2,ICU_to_p
             ),
             hovertemplate= 'ICU Capacity: %{y}',
             name= 'ICU Capacity'))
+
+    if vaccine_time is not None:
+        lines_to_plot.append(
+        dict(
+        type='scatter',
+            x=[vaccine_time,vaccine_time], y=[yax['range'][0],yax['range'][1]],
+            mode='lines',
+            opacity=0.8,
+            legendgroup='thresholds',
+            line=dict(
+            color= 'royalblue',
+            dash = 'dash'
+            ),
+            hovertemplate= 'Vaccination starts',
+            name= 'Vaccination starts'))
+
     
 
     lines_to_plot.append(
@@ -1200,6 +1216,31 @@ layout_intro = html.Div([
             dbc.Row([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585755877/WhatIsModellingv2_hhqe2h.mp4',
+                    controls=True,
+                    style={'max-width':'90%','height': 'auto','margin-top': '1vh','margin-bottom': '1vh'}),
+                    
+                    ],
+                    justify='center'
+                    ),
+            
+                    
+
+            
+            html.Hr(),
+
+
+            html.H3('Introducing SIR models',className='display-4',
+            style = {'margin-top': '1vh', 'fontSize': '300%'}),
+
+            html.Hr(),
+
+            dcc.Markdown('''
+            Watch this explanation from Dr Cerian Webb, to find out more about basic epidemiological models.
+            '''),
+
+            dbc.Row([
+                    
+                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585814499/StandardSIRModel_hu5ztn.mp4',
                     controls=True,
                     style={'max-width':'90%','height': 'auto','margin-top': '1vh','margin-bottom': '1vh'}),
                     
@@ -1754,6 +1795,24 @@ layout_inter = html.Div([
                                                                                                                                                                 placement='right',
                                                                                                                                                             ),
 
+                                                                                                                                                            html.H6([
+                                                                                                                                                                '1c. Vaccination starts',
+                                                                                                                                                                ],
+                                                                                                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
+
+                                                                                                                                                                                                                                                                                                                        html.Div([
+                                                                                                                                                            dcc.Slider(
+                                                                                                                                                                        id='vaccine-slider',
+                                                                                                                                                                        min   = 9,
+                                                                                                                                                                        max   = 18,
+                                                                                                                                                                        step  = 3,
+                                                                                                                                                                        marks = {i: 'Never' if i==9 else 'Month {}'.format(i) if i==12 else str(i) for i in range(9,19,3)},
+                                                                                                                                                                        value = 9,
+                                                                                                                                                            ),
+                                                                                                                                                            ],
+                                                                                                                                                            style={'fontSize': '180%'},
+                                                                                                                                                            ),
+
 
 
                                                                                                                                                         ],width=True),
@@ -1814,25 +1873,7 @@ layout_inter = html.Div([
                                                                                                                                                             dbc.Collapse(
                                                                                                                                                                 [
 
-                                                                                                                                                                            html.H6([
-                                                                                                                                                                                'Vaccination starts',
-                                                                                                                                                                                ],
-                                                                                                                                                                                style={'fontSize': '120%','margin-top': '1vh', 'margin-bottom': '1vh'}),
-
-                                                                                                                                                                                                                                                                                                                                        html.Div([
-                                                                                                                                                                            dcc.Slider(
-                                                                                                                                                                                        id='vaccine-slider',
-                                                                                                                                                                                        min   = 9,
-                                                                                                                                                                                        max   = 18,
-                                                                                                                                                                                        step  = 3,
-                                                                                                                                                                                        marks = {i: 'Never' if i==9 else 'Month {}'.format(i) if i==12 else str(i) for i in range(9,19,3)},
-                                                                                                                                                                                        value = 9,
-                                                                                                                                                                            ),
-                                                                                                                                                                            ],
-                                                                                                                                                                            style={'fontSize': '180%'},
-                                                                                                                                                                            ),
-
-                                                                                                                                                                            html.Hr(),
+                                                                                                                                                                            # html.Hr(),
 
                                                                                                                                                                             dcc.Markdown('''*To adjust the following, make sure '**1a. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%'}), # 'textAlign': 'left', 
 
@@ -2537,7 +2578,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     We present a compartmental model for COVID-19, split by risk categories. That is to say that everyone in the population is **categorised** based on **disease status** (susceptible/ infected/ recovered/ hospitalised/ critical care/ dead) and based on **COVID risk**.
                                                                                                                                                                     
-                                                                                                                                                                    The model is very simplistic but still captures the basic spread mechanism. It is far simpler than the [Imperial College model](/https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf), but it uses similar parameter values and can capture much of the relevant information in terms of how effective control will be.
+                                                                                                                                                                    The model is very simplistic but still captures the basic spread mechanism. It is far simpler than the [Imperial College model](/https://spiral.imperial.ac.uk/handle/10044/1/77482), but it uses similar parameter values and can capture much of the relevant information in terms of how effective control will be.
 
                                                                                                                                                                     It is intended solely as an illustrative, rather than predictive, tool. We plan to increase the sophistication of the model and to update parameters as more (and better) data become available to us. In particular we will shortly be adding the real time global data feed as an input into the model, so that the simulation initial conditions will be based on current data.
 
@@ -2636,13 +2677,13 @@ layout_inter = html.Div([
                                                                                                                                                                                         html.Td("Probability survive critical care"),
                                                                                                                                                                                         html.Td("d"),
                                                                                                                                                                                         html.Td(str(0.5)),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf'))
+                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
                                                                                                                                                                                     ]),
                                                                                                                                                                                     html.Tr([ 
                                                                                                                                                                                         html.Td("Basic reproduction number"),
                                                                                                                                                                                         html.Td("R0"),
                                                                                                                                                                                         html.Td('{0:.1f}'.format(params.R_0)),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf'))
+                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
                                                                                                                                                                                     ]),
                                                                                                                                                                                     html.Tr([ 
                                                                                                                                                                                         html.Td("Infection rate"),
@@ -2660,20 +2701,20 @@ layout_inter = html.Div([
                                                                                                                                                                                         html.Td("Average time in hospital"),
                                                                                                                                                                                         html.Td("1/alpha"),
                                                                                                                                                                                         html.Td('{0:.0f}'.format(1/params.hosp_rate)  + ' Days'),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.**',href='https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf'))
+                                                                                                                                                                                        html.Td(html.A('Ferguson et al.**',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
                                                                                                                                                                                         ]),
                                                                                                                                                                                     html.Tr([ 
                                                                                                                                                                                         html.Td("Average time in critical care"),
                                                                                                                                                                                         html.Td("1/nu"),
                                                                                                                                                                                         html.Td('{0:.0f}'.format(1/params.death_rate)  + ' Days'),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.**',href='https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf'))
+                                                                                                                                                                                        html.Td(html.A('Ferguson et al.**',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
 
                                                                                                                                                                                     ]),        
                                                                                                                                                                                     html.Tr([ 
                                                                                                                                                                                         html.Td("NHS ICU beds"),
                                                                                                                                                                                         html.Td(''),
                                                                                                                                                                                         html.Td('8/100,000'),
-                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf'))
+                                                                                                                                                                                        html.Td(html.A('Ferguson et al.',href='https://spiral.imperial.ac.uk/handle/10044/1/77482'))
                                                                                                                                                                                     ]),
                                                                                                                                                                                     html.Tr([ 
                                                                                                                                                                                         html.Td("Initial number infected (split proportionally by risk)"),
@@ -2706,7 +2747,7 @@ layout_inter = html.Div([
                                                                                                                                                                     html.H4('Age Structure',style={'fontSize': '150%'}),
                                                                                                                                                                     
                                                                                                                                                                     dcc.Markdown('''
-                                                                                                                                                                    The age data is taken from [**GOV.UK**](/https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](/https://www.imperial.ac.uk/media/imperial-college/medicine/sph/ide/gida-fellowships/Imperial-College-COVID19-NPI-modelling-16-03-2020.pdf) (Ferguson et al.).
+                                                                                                                                                                    The age data is taken from [**GOV.UK**](/https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](/https://spiral.imperial.ac.uk/handle/10044/1/77482) (Ferguson et al.).
 
                                                                                                                                                                     To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population.
 
@@ -3263,8 +3304,10 @@ def intro_content(tab,sol_do_n): #hosp,
                 State('month-slider', 'value'),
                 # State('hosp-cats', 'value'),
                 State('number-strats-radio', 'value'),
+                State('vaccine-slider', 'value'),
+
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,output,years,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active,sol_do_nothing,preset,month,num_strat): # pathname, tab_intro pathname, hosp
+def render_interactive_content(tab,tab2,sols,groups,groups2,output,years,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active,sol_do_nothing,preset,month,num_strat,vaccine_time): # pathname, tab_intro pathname, hosp
 
     ctx = dash.callback_context
     
@@ -3463,16 +3506,20 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,years,DPC_dro
                 output_2 = [i for i in output if i in ['C','H','D']]
                 plot_settings_on_or_off = None
 
+                if vaccine_time==9:
+                    vaccine_time = None
+
+
                 if len(output)>0:
-                    fig1 = figure_generator(sols[:-1],month,output,groups,num_strat,groups2,years) # hosp,
+                    fig1 = figure_generator(sols[:-1],month,output,groups,num_strat,groups2,years,vaccine_time=vaccine_time) # hosp,
                 else:
                     fig1 = dummy_figure
 
                 if len(output_2)>0:
-                    fig2 = figure_generator(sols[:-1],month,output_2,groups,num_strat,groups2,years) # hosp,
+                    fig2 = figure_generator(sols[:-1],month,output_2,groups,num_strat,groups2,years,vaccine_time=vaccine_time) # hosp,
                 else:
                     fig2 = dummy_figure
-                fig3 = figure_generator(sols[:-1],month,['C'],groups,num_strat,groups2,years,True) # hosp,
+                fig3 = figure_generator(sols[:-1],month,['C'],groups,num_strat,groups2,years,ICU_to_plot=True,vaccine_time=vaccine_time) # hosp,
             
         ##############
 

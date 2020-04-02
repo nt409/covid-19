@@ -84,6 +84,9 @@ R_0        = 2.4
 # frac_hosp_L = 0.005 # 0.01 # = low risk hosp/high risk hosp
 number_compartments = 6
 
+
+
+
 N    = 1 # 66*(10**6)
 beta = R_0*recov_rate/N # R_0 mu/N
 
@@ -98,6 +101,8 @@ ICU_capacity = ICU_factor*8/100000 # 0.001 #  8/100000 # = 0.00008
 
 initial_infections = 625
 UK_population = 60 * 10**(6)
+
+import_rate = 0 # 1/(30*UK_population) # 1 per month
 
 vaccinate_percent = 0.9 # vaccinate this many
 vaccinate_rate = 0.55/(365*2/3) #10000/UK_population # per day
@@ -130,6 +135,7 @@ class Parameters:
 
         self.vaccinate_percent = vaccinate_percent
         self.vaccinate_rate = vaccinate_rate
+        self.import_rate = import_rate
 
 
 
@@ -162,3 +168,5 @@ class Parameters:
 
 
 params = Parameters()
+
+# print(params.vaccinate_rate)
