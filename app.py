@@ -3800,9 +3800,11 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                     idx_when_n_cases = np.abs(ydata - align_input).argmin()
                 elif title in ['Currently Infected', 'Daily New Cases']:
                     ydata_cases = np.array(country_data[c]['Cases']['data']).astype('float')
+                    ydata_cases = ydata_cases / POPULATIONS[c] * 100 if normalise_by_pop else ydata_cases
                     idx_when_n_cases = np.abs(ydata_cases - align_input).argmin()
                 elif title in ['Daily New Deaths']:
                     ydata_cases = np.array(country_data[c]['Deaths']['data']).astype('float')
+                    ydata_cases = ydata_cases / POPULATIONS[c] * 100 if normalise_by_pop else ydata_cases
                     idx_when_n_cases = np.abs(ydata_cases - align_input).argmin()
                 if title in ['Daily New Cases', 'Daily New Deaths']:
                     idx_when_n_cases -= 1
