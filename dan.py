@@ -316,6 +316,11 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
             html.H3(children='New Cases vs Total Cases', style={'textAlign': 'center', 'color': colors['text'],
                                                     'margin-top': '10px'}),
             dcc.Graph(id='new-vs-total-cases'),
+
+            html.H3(children='New Deaths vs Total Deaths', style={'textAlign': 'center', 'color': colors['text'],
+                                                                  'margin-top': '10px'}),
+            dcc.Graph(id='new-vs-total-deaths'),
+
             html.Li(html.I(
                 "Caution should be applied when directly comparing the number of confirmed cases of each country. "
                 "Different countries have different testing rates, and may underestimate the number of cases "
@@ -323,7 +328,8 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                 style={'textAlign': 'left', 'color': colors['text']}),
             html.Li(html.I(
                 "The models assume exponential growth - social distancing, quarantining, herd immunity, "
-                "and other factors will slow down the predicted trajectories. "),
+                "and other factors will slow down the predicted trajectories. "
+                "Thus, predicting too far in the future is not recommended."),
                 style={'textAlign': 'left', 'color': colors['text']}),
             html.Li(html.I(
                 "Some countries do not have available data for the number of Active Cases. "),
