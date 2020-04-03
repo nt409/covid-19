@@ -25,7 +25,7 @@ fact_v = np.concatenate([[0.02,0.1],np.linspace(0.20,1,9)]) # np.linspace(0.05,1
 max_months_controlling = 15
 
 
-
+ICU_growth = 1
 # divider = int(divider)
 # hr_frac = 0.15
 hr_frac = sum(df2.Pop[divider:])/100
@@ -134,6 +134,7 @@ class Parameters:
         self.vaccinate_percent = vaccinate_percent
         self.vaccinate_rate = vaccinate_rate
         self.import_rate = import_rate
+        self.ICU_growth = ICU_growth
 
 
 
