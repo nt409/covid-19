@@ -1791,7 +1791,7 @@ layout_inter = html.Div([
                                                                                                                                                                     dbc.ModalBody(
                                                                                                                                                                         dcc.Markdown(
                                                                                                                                                                         '''
-                                                                                                                                                                        This page illustrates the possible outcome of different **COVID-19 control strategies**.
+                                                                                                                                                                        This page illustrates the possible outcomes of different **COVID-19 control strategies**.
 
                                                                                                                                                                         **Pick a strategy** and explore the **results**.
                                                                                                                                                                         ''',style={'textAlign': 'center'}),
