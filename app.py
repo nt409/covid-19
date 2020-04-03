@@ -21,7 +21,32 @@ from dan_get_data import get_data
 from dan_constants import POPULATIONS
 import datetime
 import json
+I0 = np.float(get_data('uk')['Currently Infected']['data'][-1])
+D0 = np.float(get_data('uk')['Deaths']['data'][-1])
+# of resolved cases, fatality rate is 0.9%
+p = 0.009
+R0 = D0*(1-p)/p
 
+I0 = I0/params.UK_population
+R0 = R0/params.UK_population
+D0 = D0/params.UK_population
+
+#  H rate is 4.4% so 
+hosp_proportion = 0.044
+#  30% of H cases critical
+crit_proportion = 0.3
+# and it takes 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before
+I_ten = np.float(get_data('uk')['Currently Infected']['data'][-11])
+I_ten = I_ten/params.UK_population
+
+Hospitalised_all = I_ten*hosp_proportion
+
+H0 = Hospitalised_all*(1-crit_proportion)
+C0 = Hospitalised_all*crit_proportion
+
+I0 = I0 - H0
+
+# print(I0,R0,C0,H0,D0)
 
 
 ########################################################################################################################
@@ -43,7 +68,7 @@ app.config.suppress_callback_exceptions = True
 # setup
 
 initial_lr = 8
-initial_hr = 4
+initial_hr = 5
 initial_month = 8
 
 df = copy.deepcopy(df2)
@@ -75,8 +100,8 @@ presets_dict = {'N': 'Do Nothing',
                 'H': 'Quarantine High Risk, No Social Distancing For Low Risk',
                 'C': 'Custom'}
 
-preset_dict_high = {'Q': 0, 'MSD': 4, 'HL': 0, 'H': 0, 'N':6}
-preset_dict_low  = {'Q': 0, 'MSD': 4, 'HL': 5, 'H': 6, 'N':6}
+preset_dict_high = {'Q': 2, 'MSD': 7, 'HL': 2,  'H': 2, 'N':10}
+preset_dict_low  = {'Q': 2, 'MSD': 7, 'HL': 10, 'H': 10, 'N':10}
 
 month_len = 365/12
 
@@ -759,7 +784,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
         lines_to_plot.append(
         dict(
         type='scatter',
-            x=[-0.01,max(sol['t'])+1], y=[params.ICU_capacity,params.ICU_capacity],
+            x=[-0.01,max(sol['t'])+1], y=[100*params.ICU_capacity,100*params.ICU_capacity],
             mode='lines',
             opacity=0.8,
             legendgroup='thresholds',
@@ -1569,15 +1594,13 @@ Results_interpretation =  html.Div([
     
     dcc.Markdown('''
 
-    The plots will show a prediction for how coronavirus will affect the population. It is assumed that control measures are in place for a **maximum of 15 months**.
+    The plots will show a prediction for how coronavirus will affect the population. It is assumed that control measures are in place for a **maximum of 15 months**. Explore the effect of the different control measures and the amount of time they are implemented for.
     
-    We consider the effect of control in the **absence** of a vaccine. Of course, if a vaccine were introduced this would greatly help reduce the damage caused by COVID-19, and would further promote the use of the quarantine strategy before relying on the vaccine to generate [**herd immunity**](/intro).
+    In the third line plot ('intensive care'), you can see how quickly the ICU capacity (relating to the number of intensive care beds available) could be overwhelmed (within a month if no control measures are implemented). Control measures allow us to 'flatten the curve'. In addition it's essential that the healthcare capacity is rapidly increased.
 
-    You can see how quickly the ICU capacity (relating to the number of intensive care beds available) could be overwhelmed. You can also see how important it is to **protect the high risk group** (potentially by specifically reducing their transmission rate whilst allowing infection to spread more freely through lower risk groups).
+    You can also see how important it is to **protect the high risk group** (potentially by specifically reducing their transmission rate), since this is the group that contributes the most to the death rate (to see this, use the '**Groups to Plot**' checkboxes on the dropdown '**Plot Settings**').
 
-    *In the custom settings, there is an option to increase infection rates. **Usually this is a bad idea**, but sometimes increasing rates in the low risk category can be beneficial by increasing the chance that the 'right' people get the infection before the population reaches herd immunity, and also reducing the length of time that control needs to be applied.*
-                                                                                                
-    *Increasing the infection rate could correspond to increased mixing or (more extreme) actively exposing people to the disease. This can only ever be a good idea if a vaccine is not forthcoming.*
+    The figures also illustrate how a vaccine can very effectively decrease the death toll.
 
     For further explanation, read the [**Background**](/intro).
     
@@ -1920,7 +1943,7 @@ layout_inter = html.Div([
                                                                                                                                                                         step=1,
                                                                                                                                                                         # pushable=0,
                                                                                                                                                                         marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
-                                                                                                                                                                        value=[1,initial_month],
+                                                                                                                                                                        value=[0,initial_month],
                                                                                                                                                             ),
                                                                                                                                                             ],
                                                                                                                                                             style={'fontSize': '180%'},
@@ -2068,7 +2091,7 @@ layout_inter = html.Div([
                                                                                                                                                                             
                                                                                                                                                                                 Adjust by choosing a preset strategy  or making your own custom choice ('**1a. Control Type**').
 
-                                                                                                                                                                                *You may choose to increase infection rates when using custom control. For more on this, see the 'Interpretation' Section below*
+                                                                                                                                                                                *You may choose to increase infection rates when using custom control. For more on this, see the '**Interpretation**' Section below*
                                                                                                                                                                                 
 
                                                                                                                                                                                 '''
@@ -2624,7 +2647,7 @@ layout_inter = html.Div([
 
                                                                 dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '95%'}), # figure=dummy_figure,
 
-                                                                html.H4("Intensive Care",
+                                                                html.H4("Intensive Care - 'flatten the curve'",
                                                                 style={'margin-bottom': '3vh', 'textAlign': 'center' ,'margin-top': '1vh','fontSize': '200%'} # 'margin-left': '2vw', 
                                                                 ),
 
@@ -2711,8 +2734,8 @@ layout_inter = html.Div([
                                                                                                                                                                     
                                                                                                                                                                     The model is very simplistic but still captures the basic spread mechanism. It is far simpler than the [**Imperial College model**](https://spiral.imperial.ac.uk/handle/10044/1/77482), but it uses similar parameter values and can capture much of the relevant information in terms of how effective control will be.
 
-                                                                                                                                                                    It is intended solely as an illustrative, rather than predictive, tool. We plan to increase the sophistication of the model and to update parameters as more (and better) data become available to us. In particular we will shortly be adding the real time global data feed as an input into the model, so that the simulation initial conditions will be based on current data.
-
+                                                                                                                                                                    It is intended solely as an illustrative, rather than predictive, tool. We plan to increase the sophistication of the model and to update parameters as more (and better) data become available to us.
+                                                                                                                                                                    
                                                                                                                                                                     We have **two risk categories**: high and low. **Susceptible** people get **infected** after contact with an infected person (from either risk category). A fraction of infected people (*h*) are **hospitalised** and the rest **recover**. Of these hospitalised cases, a fraction (*c*) require **critical care** and the rest recover. Of those in critical care, a fraction (*d*) **die** and the rest recover.
 
                                                                                                                                                                     The recovery fractions depend on which risk category the individual is in.
@@ -2770,7 +2793,10 @@ layout_inter = html.Div([
                                                                                                                                                                     html.H4('Parameter Values',style={'fontSize': '200%'}),
 
                                                                                                                                                                     dcc.Markdown('''
-                                                                                                                                                                    The model uses a weighted average across the age classes below and above 60 to calculate the probability of a member of each class getting hospitalised or needing critical care.
+                                                                                                                                                                    The model uses a weighted average across the age classes below and above 60 to calculate the probability of a member of each class getting hospitalised or needing critical care. Our initial conditions are updated to match new data every day.
+
+                                                                                                                                                                    We assume a 10 day delay on hospitalisations, so we use the number infected 10 days ago to inform the number hospitalised (0.044 of infected) and in critical care (0.3 of hospitalised). We calculate the approximate number recovered based on the number dead, assuming that 0.009 infections cause death. All these estimates are as per [**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482).
+
                                                                                                                                                                     '''),
 
 
@@ -2778,7 +2804,7 @@ layout_inter = html.Div([
                                                                                                                                                                     
 
                                                                                                                                                                     dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/params_w7tebv.png',
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585913306/table_ie8bxw.png',
                                                                                                                                                                     style={'max-width':'90%','height': 'auto','display': 'block','margin-top': '1vh','margin-bottom': '1vh'}
                                                                                                                                                                     ),
                                                                                                                                                                     ],
@@ -3211,9 +3237,9 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine): # years , ,hosp
         months_controlled= None
 
     sols = []
-    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine))
+    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0))
     if num_strat=='two':
-        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine))
+        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0))
     
     return sols # {'sols': sols}
 
@@ -3227,7 +3253,7 @@ def find_sol_do_noth(hosp): # years
 
     t_stop = 365*3
     
-    sol_do_nothing = simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=t_stop)
+    sol_do_nothing = simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=t_stop,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0)
     
     return sol_do_nothing
 
@@ -3262,7 +3288,7 @@ def intro_content(tab,sol_do_n): #hosp,
             months_controlled = [month_len*i for i in month]
             year_to_run = 3
             
-            sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=365*year_to_run))
+            sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=365*year_to_run,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0))
             sols.append(sol_do_n)
             fig1 = figure_generator(sols,month,output_use,['BR'],'two',['BR'])
             fig2 = figure_generator(sols,month,output_use_2,['BR'],'two',['BR'])

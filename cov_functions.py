@@ -14,7 +14,7 @@ class simulator:
 #-----------------------------------------------------------------
         
     ##
-    def poly_solv_ode(self,t,y,beta_L_factor=1,beta_H_factor=1,t_control=None,vaccine_time=None): # critical=True,death=True
+    def poly_solv_ode(self,t,y,beta_L_factor=1,beta_H_factor=1,t_control=None,vaccine_time=None):
         ##
         S_L = y[params.S_L_ind]
         I_L = y[params.I_L_ind]
@@ -81,28 +81,38 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def poly_calc_ode(self,I0_L,I0_H,beta_L_factor,beta_H_factor,t_control,T_stop,vaccine_time): # critical,death
+    def poly_calc_ode(self,I0,R0,H0,C0,D0,beta_L_factor,beta_H_factor,t_control,T_stop,vaccine_time): # critical,death
+        
+        I0_L = (1-params.hr_frac)*params.N*I0
+        R0_L = (1-params.hr_frac)*params.N*R0
+        C0_L = (1-params.hr_frac)*params.N*C0
+        H0_L = (1-params.hr_frac)*params.N*H0
+        D0_L = (1-params.hr_frac)*params.N*D0
+        S0_L = (1-params.hr_frac)*params.N - I0_L - R0_L - C0_L - H0_L - D0_L
+        
+        I0_H = params.hr_frac*params.N*I0
+        R0_H = params.hr_frac*params.N*R0
+        C0_H = params.hr_frac*params.N*C0
+        H0_H = params.hr_frac*params.N*H0
+        D0_H = params.hr_frac*params.N*D0
+        S0_H = params.hr_frac*params.N - I0_H - R0_H - C0_H - H0_H - D0_H
 
-        I_L_0 = I0_L
-        S_L_0 = (1-params.hr_frac)*params.N - I_L_0
-        
-        I_H_0 = I0_H
-        S_H_0 = params.hr_frac*params.N - I_H_0
         
         
-        y0 = [S_L_0,
-            I_L_0,
-            0,
-            0,
-            0,
-            0,
-            S_H_0,
-            I_H_0,
-            0,
-            0,
-            0,
-            0
+        y0 = [S0_L,
+            I0_L,
+            R0_L,
+            C0_L,
+            H0_L,
+            D0_L,
+            S0_H,
+            I0_H,
+            R0_H,
+            C0_H,
+            H0_H,
+            D0_H,
             ]
+        # print(y0)
 
         sol = ode(self.poly_solv_ode,jac=None).set_integrator('dopri5').set_f_params(beta_L_factor,beta_H_factor,t_control,vaccine_time) # ,critical,death
         
@@ -128,9 +138,9 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def run_model(self,I0_L=(1-params.hr_frac)*(params.initial_infections/params.UK_population)*params.N,I0_H=params.hr_frac*(params.initial_infections/params.UK_population)*params.N,beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=params.T_stop,vaccine_time=None): # critical=True,death=True,
+    def run_model(self,beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=params.T_stop,vaccine_time=None,I0=params.initial_infections,R0=0,H0=0,C0=0,D0=0):
         # print(I0_H*60*10**6,I0_L*60*10**6,params.hr_frac)
-        y_out, tim = self.poly_calc_ode(I0_L=I0_L,I0_H=I0_H,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,t_control=t_control,T_stop=T_stop,vaccine_time=vaccine_time) # critical=critical,death=death,
+        y_out, tim = self.poly_calc_ode(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,t_control=t_control,T_stop=T_stop,vaccine_time=vaccine_time) # critical=critical,death=death,
         dicto = {'y': y_out,'t': tim,'beta_L': beta_L_factor,'beta_H': beta_H_factor}
         return dicto
 #--------------------------------------------------------------------
