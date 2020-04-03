@@ -593,7 +593,7 @@ def extract_info(yy,tt,t_index):
 
 
 ########################################################################################################################
-def human_format(num):
+def human_format(num,dp=0):
     if num<1 and num>=0.1:
         return '%.1f' % num
     elif num<0.1:
@@ -603,7 +603,10 @@ def human_format(num):
         magnitude += 1
         num /= 1000.0
     # add more suffixes if you need them
-    return '%.0f%s' % (num, ['', 'K', 'M', 'G'][magnitude])
+    if dp==0:
+        return '%.0f%s' % (num, ['', 'K', 'M', 'G'][magnitude])
+    else:
+        return '%.1f%s' % (num, ['', 'K', 'M', 'G'][magnitude])
 
 
 ########################################################################################################################
@@ -662,10 +665,13 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                         else:
                             group_hover_str = 'Low Risk' + '<br>'
 
-                        line =  {'x': xx[:len_to_plot], 'y': (100*factor_L[group]*sol['y'][index[name],:len_to_plot] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:len_to_plot]),
+                        yyy_p = (100*factor_L[group]*sol['y'][index[name],:len_to_plot] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:len_to_plot])
+
+                        line =  {'x': xx[:len_to_plot], 'y': yyy_p,
                                 'hovertemplate': group_hover_str +
-                                                 longname[name] + ': %{y:.2f}%<br>' +
+                                                 longname[name] + ': %{y:.2f}%, ' + '%{text} <br>' +
                                                  'Time: %{x:.1f} Months<extra></extra>',
+                                'text': [human_format(i*params.UK_population/100,dp=1) for i in yyy_p],
                                 'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name ,'name': longname[name] + name_string}
                         lines_to_plot.append(line)
 
@@ -824,37 +830,49 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     
 
     
-    yy2 = [0, 10**(-6), 2*10**(-6), 5*10**(-6), 10**(-5), 2*10**(-5), 5*10**(-5), 10**(-4), 2*10**(-4), 5*10**(-4), 10**(-3), 2*10**(-3), 5*10**(-3), 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50, 100, 200]
-    yy = [0.95*i for i in yy2]
+    # yy2 = [0, 10**(-6), 2*10**(-6), 5*10**(-6), 10**(-5), 2*10**(-5), 5*10**(-5), 10**(-4), 2*10**(-4), 5*10**(-4), 10**(-3), 2*10**(-3), 5*10**(-3), 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50, 100, 200]
+    yy2 = [0]
+    for i in range(8):
+        yy2.append(10**(i-5))
+        yy2.append(2*10**(i-5))
+        yy2.append(5*10**(i-5))
+
+    # print(yy2)
+    yy = [i for i in yy2] # 0.95*i
 
 
     for i in range(len(yy)-1):
-        if yax['range'][1]>=yy[i] and yax['range'][1] < yy[i+1]:
-            yax2_vec = np.linspace(0,yy2[i+1],11)
+        if yax['range'][1]>yy[i] and yax['range'][1] <= yy[i+1]:
+            pop_vec_lin = np.linspace(0,yy2[i+1],11)
+    # print(pop_vec_lin)
+    vec = [i*(params.UK_population) for i in pop_vec_lin]
 
-    vec = [i*(params.UK_population) for i in yax2_vec]
-
-
-    # yax_form_log = '.4%'
-    # yax2_vec_log = np.linspace(-100,100,20)
-    #[100*np.log10(i) for i in np.linspace(10**(-10), yax['range'][1] ,6)] # np.log10(i)
-    # print(log_range,yax2_vec_log)
-    # if yax['range'][1]>100:
-    #     yax['range'][1] = 100
     log_bottom = -8
     log_range = [log_bottom,np.log10(yax['range'][1])]
-    
-    pop_log_vec = [10**(i) for i in np.linspace(log_bottom,np.log10(yax['range'][1]),6)]
 
+    # for i in range(len(yy)-1):
+    #     if log_range[1]>=yy[i] and log_range[1] < yy[i+1]:
+    # print(pop_vec_lin[-1],np.log10(pop_vec_lin[-1]), log_range[1])
+    pop_vec_log_intermediate = np.linspace(log_range[0],ceil(np.log10(pop_vec_lin[-1])), 1+ ceil(np.log10(pop_vec_lin[-1])-log_range[0]) )
+    # pop_vec_log_intermediate =  np.linspace(log_range[0],log_range[1],6)
+
+    pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
     vec2 = [i*(params.UK_population) for i in pop_log_vec]
-    # print(vec2)
+
+    # yax_form_log = '.4%'
+    # pop_vec_log = np.linspace(-100,100,20)
+    #[100*np.log10(i) for i in np.linspace(10**(-10), yax['range'][1] ,6)] # np.log10(i)
+    # print(log_range,pop_vec_log)
+    # if yax['range'][1]>100:
+    #     yax['range'][1] = 100
+    
 
 
     start = int(datetime.date.today().strftime('%m'))
     month_labels = []
     for j in range(4):
         for i in range(1,13):
-            month_labels.append(datetime.date(2020+j, i, 1).strftime('%b %y'))
+            month_labels.append(datetime.date(2020+j, i, 1).strftime('%b <br> %Y')) #  if i < 4 else month_labels.append(datetime.date(2020+j, i, 1).strftime('%b <br> '))
     
     month_labels = month_labels[(start-1):(start-1+37)]
 
@@ -865,14 +883,14 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     #     xtext = [str(month_labels(2*i)) for i in range(1+floor(max(sol['t'])/month_len))]
     #     xvals = [ i for i in range(1+floor(max(sol['t'])/month_len))]
     
-    tick_form = ['%','.1%','.2%','.3%','.4%','.5%','.6%','.7%','.8%']
-    upper_lim = [2,0.1,10**(-2),10**(-3),10**(-4),10**(-5),10**(-6),10**(-7),10**(-8)]
-    yax_form = None
-    for i in range(len(tick_form)):
-        if yax['range'][1]<upper_lim[i]:
-            yax_form = tick_form[i]
-    if yax_form is None:
-        yax_form = '.9%'
+    # tick_form = ['%','.1%','.2%','.3%','.4%','.5%','.6%','.7%','.8%']
+    # upper_lim = [2,0.1,10**(-2),10**(-3),10**(-4),10**(-5),10**(-6),10**(-7),10**(-8)]
+    # yax_form = None
+    # for i in range(len(tick_form)):
+    #     if yax['range'][1]<upper_lim[i]:
+    #         yax_form = tick_form[i]
+    # if yax_form is None:
+    #     yax_form = '.9%'
 
 
 
@@ -919,15 +937,15 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                         # showgrid=True,
                         range = yax['range'],
                         side='right',
-                        ticktext = [human_format(0.01*vec[i]) for i in range(len(yax2_vec))],
-                        tickvals = [i for i in  yax2_vec],
+                        ticktext = [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))],
+                        tickvals = [i for i in  pop_vec_lin],
                    ),
                     updatemenus= [
                     dict(
                         buttons=list([
                             dict(
                                 args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'linear', 'range': yax['range'], 'showline':False},
-                                "yaxis2": {'title': 'UK Population','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(yax2_vec))], 'tickvals': [i for i in  yax2_vec],'showline':False,'side':'right'}
+                                "yaxis2": {'title': 'UK Population','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'showline':False,'side':'right'}
                                 }], # tickformat
                                 label="Linear",
                                 method="relayout"
@@ -975,7 +993,6 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                     ),
                     ],
                    )
-                   
 
     return {'data': lines_to_plot, 'layout': layout}
 
