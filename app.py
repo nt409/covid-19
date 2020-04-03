@@ -165,7 +165,7 @@ index = {'S': params.S_L_ind,
 
 txt1 = dcc.Markdown('''
 
-    This plot shows a prediction for the number of deaths (*or critical care depending on hospital category settings*) caused by the epidemic in the absence of a vaccine. It also shows the split between the deaths in the high and low risk groups.
+    This plot shows a prediction for the number of deaths (*or critical care depending on hospital category settings*) caused by the epidemic.
     
     Most outcomes result in a much higher proportion of high risk deaths, so it is critical that any strategy should protect the high risk.
 
@@ -1170,7 +1170,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
 
                     dbc.Row([
-                        html.P('In the absence of a vaccine, when compared to doing nothing.', style={'fontSize': '100%'}),
+                        html.P('When compared to doing nothing.', style={'fontSize': '100%'}),
                     ],
                     justify='center', style={'margin-top': '1vh', 'margin-bottom': '1vh'}
                     ),
