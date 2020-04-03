@@ -2984,7 +2984,7 @@ navbar = html.Nav([
                         ),
                 dcc.Tab(children=
                         layout_dan,
-                        label='Real Time Global Data Feed',value='data',
+                        label='Real-Time Global Data Feed',value='data',
                         style={'fontSize':'1.8vh'}
                         ), #disabled=True),
             ], id='main-tabs', value='inter'),
