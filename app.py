@@ -859,53 +859,64 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     for i in range(len(yy)-1):
         if yax['range'][1]>yy[i] and yax['range'][1] <= yy[i+1]:
             pop_vec_lin = np.linspace(0,yy2[i+1],11)
-    # print(pop_vec_lin)
+
     vec = [i*(params.UK_population) for i in pop_vec_lin]
 
     log_bottom = -8
     log_range = [log_bottom,np.log10(yax['range'][1])]
 
-    # for i in range(len(yy)-1):
-    #     if log_range[1]>=yy[i] and log_range[1] < yy[i+1]:
-    # print(pop_vec_lin[-1],np.log10(pop_vec_lin[-1]), log_range[1])
     pop_vec_log_intermediate = np.linspace(log_range[0],ceil(np.log10(pop_vec_lin[-1])), 1+ ceil(np.log10(pop_vec_lin[-1])-log_range[0]) )
-    # pop_vec_log_intermediate =  np.linspace(log_range[0],log_range[1],6)
 
     pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
     vec2 = [i*(params.UK_population) for i in pop_log_vec]
 
-    # yax_form_log = '.4%'
-    # pop_vec_log = np.linspace(-100,100,20)
-    #[100*np.log10(i) for i in np.linspace(10**(-10), yax['range'][1] ,6)] # np.log10(i)
-    # print(log_range,pop_vec_log)
-    # if yax['range'][1]>100:
-    #     yax['range'][1] = 100
-    
 
+    month_start = int(datetime.date.today().strftime('%m'))
+    day_start = int(datetime.date.today().strftime('%d'))
+    year_start = int(datetime.date.today().strftime('%Y'))
 
-    start = int(datetime.date.today().strftime('%m'))
-    month_labels = []
+    month_labelz = [[],[],[]]
+
     for j in range(4):
         for i in range(1,13):
-            month_labels.append(datetime.date(2020+j, i, 1).strftime('%b <br> %Y')) #  if i < 4 else month_labels.append(datetime.date(2020+j, i, 1).strftime('%b <br> '))
+            if i == month_start and j==0:
+                month_labelz[0].append(datetime.date(year_start+j, i, day_start).strftime('%d %b %y'))
+                month_labelz[1].append(datetime.date(year_start+j, i, day_start).strftime('%d %b %y'))
+                month_labelz[2].append(datetime.date(year_start+j, i, day_start).strftime('%d %b %y'))
+            elif i==1:
+                month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+            elif i==2:
+                month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                
+            elif i==3: # March
+                month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+            else:
+                month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b'))
     
-    month_labels = month_labels[(start-1):(start-1+37)]
+    month_labels = []
+    for list_m in month_labelz:
+        month_labels.append(list_m[(month_start-1):(month_start-1+38)])
 
-    xtext = [str(month_labels[2*i]) for i in range(1+floor(max(sol['t'])/(2*month_len)))]
-    xvals = [2*i for i in range(1+floor(max(sol['t'])/(2*month_len)))]
-    # if max(sol['t'])>370:
-    # else:
-    #     xtext = [str(month_labels(2*i)) for i in range(1+floor(max(sol['t'])/month_len))]
-    #     xvals = [ i for i in range(1+floor(max(sol['t'])/month_len))]
-    
-    # tick_form = ['%','.1%','.2%','.3%','.4%','.5%','.6%','.7%','.8%']
-    # upper_lim = [2,0.1,10**(-2),10**(-3),10**(-4),10**(-5),10**(-6),10**(-7),10**(-8)]
-    # yax_form = None
-    # for i in range(len(tick_form)):
-    #     if yax['range'][1]<upper_lim[i]:
-    #         yax_form = tick_form[i]
-    # if yax_form is None:
-    #     yax_form = '.9%'
+
+    days_till_end_of_month = max(month_len-day_start,1)
+    time_vec = [0]
+    for i in range(36):
+        time_vec.append(days_till_end_of_month/month_len+i)
+
+    time_axis_text = []
+    time_axis_vals = []
+    for N in range(1,4,1):
+        time_axis_text.append([str(month_labels[N-1][N*i]) for i in range(ceil(len(time_vec)/N))])
+        time_axis_vals.append([time_vec[N*i] for i in range(ceil(len(time_vec)/N))])
+
 
 
 
@@ -940,8 +951,8 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                         showline=False,
                         # rangeslider_visible=True,
                         # linewidth=0,
-                        ticktext = xtext,
-                        tickvals = xvals
+                        ticktext = time_axis_text[2],
+                        tickvals = time_axis_vals[2]
                        ),
                     
                     yaxis2 = dict(
@@ -973,7 +984,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                                 method="relayout"
                             )
                     ]),
-                    x=0,
+                    x=-0.1,
                     xanchor="right",
                     active=0,
                     y=1.2,
@@ -983,22 +994,22 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                     dict(
                         buttons=list([
                             dict(
-                                args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': [str(month_labels[i]) for i in range(1+floor(max(sol['t'])/(month_len)))], 'tickvals': [i for i in range(1+floor(max(sol['t'])/(month_len)))], 'title': 'Time (Months)', 'showline':False ,}],
+                                args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[0], 'tickvals': time_axis_vals[0], 'title': 'Time (Months)', 'showline':False ,}],
                                 label="Years: 1",
                                 method="relayout"
                             ),
                             dict(
-                                args = ["xaxis", {'range': [0, (2/3)*max(sol['t'])/month_len] , 'ticktext': [str(month_labels[2*i]) for i in range(1+floor(max(sol['t'])/(2*month_len)))], 'tickvals': [2*i for i in range(1+floor(max(sol['t'])/(2*month_len)))], 'title': 'Time (Months)', 'showline':False ,}], #  
+                                args = ["xaxis", {'range': [0, (2/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[1], 'tickvals': time_axis_vals[1], 'title': 'Time (Months)', 'showline':False ,}], #  
                                 label="Years: 2",
                                 method="relayout"
                             ),
                             dict(
-                                args = ["xaxis", {'range': [0, (3/3)*max(sol['t'])/month_len] , 'ticktext': [str(month_labels[3*i]) for i in range(1+floor(max(sol['t'])/(3*month_len)))], 'tickvals': [3*i for i in range(1+floor(max(sol['t'])/(3*month_len)))], 'title': 'Time (Months)', 'showline':False ,}],
+                                args = ["xaxis", {'range': [0, (3/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[2], 'tickvals': time_axis_vals[2], 'title': 'Time (Months)', 'showline':False ,}],
                                 label="Years: 3",
                                 method="relayout"
                             )
                     ]),
-                    x=1,
+                    x=-0.1,
                     xanchor="right",
                     showactive=True,
                     active=1,
@@ -2133,8 +2144,6 @@ layout_inter = html.Div([
                                                                                                                                                                             
                                                                                                                                                                                 Adjust by choosing a preset strategy  or making your own custom choice ('**1a. Control Type**').
 
-                                                                                                                                                                                *You may choose to increase infection rates when using custom control. For more on this, see the '**Interpretation**' Section below*
-                                                                                                                                                                                
 
                                                                                                                                                                                 '''
                                                                                                                                                                                 ),),
