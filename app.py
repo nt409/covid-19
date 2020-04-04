@@ -854,12 +854,12 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                                 method="relayout"
                             )
                     ]),
-                    x=-0.1,
+                    x=-0.02,
                     xanchor="right",
                     active=0,
                     y=1.2,
                     showactive=True,
-                    yanchor="top"
+                    yanchor="bottom"
                     ),
                     dict(
                         buttons=list([
@@ -879,7 +879,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                                 method="relayout"
                             )
                     ]),
-                    x=-0.1,
+                    x=-0.02,
                     xanchor="right",
                     showactive=True,
                     active=1,
@@ -1043,7 +1043,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
                 
                     dbc.Row([
-                        html.H4(Outcome_title,style={'fontSize':'220%'}),
+                        html.H3(Outcome_title,style={'fontSize':'300%'},className='display-4'),
                     ],
                     justify='center'
                     ),
@@ -1053,7 +1053,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
                     dbc.Row([
                         html.I('Compared to doing nothing. Traffic light colours indicate relative success or failure.'),
                     ],
-                    justify='center', style={'marginTop': '1vh', 'marginBottom': '1vh'}
+                    justify='center', style={'marginTop': '2vh'}
                     ),
 
             
@@ -1064,7 +1064,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
                 dbc.Col([
 
 
-                                html.H3('After 1 year:',style={'fontSize': '180%'}),
+                                html.H3('After 1 year:',style={'fontSize': '180%', 'marginTop': '3vh', 'marginBottom': '3vh'}),
 
                                 dbc.Row([
                                     dbc.Col([
@@ -1154,7 +1154,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
                     
                                 cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU),
 
-                                html.H3('After 2 years:',style={'fontSize': '180%'}),
+                                html.H3('After 2 years:',style={'fontSize': '180%', 'marginTop': '3vh', 'marginBottom': '3vh'}),
 
                                 cards_fn(death_stat_2nd,dat3_2nd,herd_stat_2nd,color_2nd_death,color_2nd_herd,color_2nd_ICU),
 
@@ -1194,7 +1194,7 @@ layout_intro = html.Div([
         dbc.Tab(label='Start Here', tab_style = {'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_start', children=[
         html.H3('Introduction',
         className = 'display-4',
-        style = {'marginTop': '1vh', 'fontSize': '300%'}),
+        style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
         html.Hr(),
 
@@ -1208,7 +1208,7 @@ layout_intro = html.Div([
         
         html.H3('Who is this website for?',
         className = 'display-4',
-        style = {'marginTop': '1vh', 'fontSize': '300%'}),
+        style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
         html.Hr(),
 
@@ -1221,7 +1221,7 @@ layout_intro = html.Div([
         
         html.H3('How to use the website',
         className = 'display-4',
-        style = {'marginTop': '1vh', 'fontSize': '300%'}),
+        style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
         html.Hr(),
 
@@ -1237,7 +1237,7 @@ layout_intro = html.Div([
         dbc.Tab(label='Introduction to modelling',  tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_0', children=[
 
             html.H3('Introduction to mathematical modelling',className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%'}),
+            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1250,7 +1250,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585755877/WhatIsModellingv2_hhqe2h.mp4',
                     controls=True,
-                    style={'maxWidth':'75%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
+                    style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
                     
                     ],
                     justify='center'
@@ -1263,7 +1263,7 @@ layout_intro = html.Div([
 
 
             html.H3('Introducing SIR models',className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%'}),
+            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1276,7 +1276,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585814499/StandardSIRModel_hu5ztn.mp4',
                     controls=True,
-                    style={'maxWidth':'75%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
+                    style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
                     
                     ],
                     justify='center'
@@ -1288,7 +1288,7 @@ layout_intro = html.Div([
 
 
             html.H3('Introducing the basic reproductive number',className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%'}),
+            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1301,7 +1301,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585987204/AllAboutR_wmf2y1.mp4',
                     controls=True,
-                    style={'maxWidth':'75%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
+                    style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
                     
                     ],
                     justify='center'
@@ -1310,7 +1310,7 @@ layout_intro = html.Div([
             html.Hr(),
             
             html.H3('Definitions',className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%'}),
+            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             # dbc.Col([
             dcc.Markdown('''            
@@ -1355,7 +1355,7 @@ layout_intro = html.Div([
         dbc.Tab(label='COVID-19 Control Strategies',tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_control', children=[
             html.H3('Keys to a successful control strategy',
             className = 'display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%'}),
+            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1379,13 +1379,13 @@ layout_intro = html.Div([
 
             html.H3('Strategies',
             className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%'}),
+            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
             
             html.H4('Reducing the infection rate',
-            style = {'marginTop': '1vh', 'fontSize': '180%'}),
+            style = {'marginTop': '1vh', 'fontSize': '180%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
 
 
             dcc.Markdown('''            
@@ -1402,7 +1402,7 @@ layout_intro = html.Div([
 
 
             html.H4('Protecting the high risk',
-            style = {'marginTop': '1vh', 'fontSize': '180%'}),
+            style = {'marginTop': '1vh', 'fontSize': '180%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
 
             
 
@@ -1504,7 +1504,7 @@ layout_intro = html.Div([
 
                     # dbc.Container(html.Div(style={'height':'5px'})),
                     html.H3('How to use the interactive model',className='display-4',
-                    style = {'marginTop': '1vh', 'fontSize': '300%'}),
+                    style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
                     # html.H4('How to use the interactive model',className='display-4'),
                     
@@ -1533,15 +1533,18 @@ layout_intro = html.Div([
                     # style={'fontSize':20}
                     ),
                     
-                    # dbc.Col([
+                    dbc.Row([
                     dbc.Button('Start Calculating', href='/inter', size='lg', color='primary',
                     style={'marginTop': '1vh','marginLeft': '2vw', 'fontSize': '100%'}
                     ),
+                    ],
+                    justify='center'),
                     # ],width={'size':3,'offset':1},
                     # ),
                     ],
                     style={'marginTop': '1vh'},
                     width = True),
+
 
                         #end of tab 1
                     ]),
@@ -1579,13 +1582,13 @@ Results_interpretation =  html.Div([
     
     dcc.Markdown('''
 
-    The plots will show a prediction for how coronavirus will affect the population. It is assumed that control measures are in place for a **maximum of 15 months**. Explore the effect of the different control measures and the amount of time they are implemented for.
+    The plots show a prediction for how coronavirus will affect the population. It is assumed that control measures are in place for a **maximum of 15 months**. Explore the effect of the different control measures and the amount of time they are implemented for.
     
     In the third line plot ('intensive care'), you can see how quickly the ICU capacity (relating to the number of intensive care beds available) could be overwhelmed (within a month if no control measures are implemented). Control measures allow us to 'flatten the curve'. In addition it's essential that the healthcare capacity is rapidly increased.
 
     You can also see how important it is to **protect the high risk group** (potentially by specifically reducing their transmission rate), since this is the group that contributes the most to the death rate (to see this, use the '**Groups to Plot**' checkboxes on the dropdown '**Plot Settings**').
 
-    The figures also illustrate how a vaccine can very effectively decrease the death toll.
+    The figures also illustrate how a vaccine, coupled with an effective quarantine, can drastically decrease the death toll.
 
     For further explanation, read the [**Background**](/intro).
     
@@ -1690,7 +1693,7 @@ layout_inter = html.Div([
 
                                                     # html.Hr(),
 
-                                                    html.H3('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center', 'marginTop': '2vh'}),
+                                                    html.H3('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
                                                     html.Hr(),
 
@@ -1808,7 +1811,7 @@ layout_inter = html.Div([
                                                                                                                                                   
 
 
-                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'textAlign': 'center', 'marginBottom': '2vh'}), # 'textAlign': 'left', fs 80%
+                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'textAlign': 'center', 'marginBottom': '3vh'}), # 'textAlign': 'left', fs 80%
 
                                                                                                                                                         dbc.Row([
                                                                                                                                                             dbc.Col([
@@ -2376,7 +2379,7 @@ layout_inter = html.Div([
                                                         className='display-4',
                                                         style={'fontSize': '300%', 'textAlign': 'center' ,'marginTop': "3vh",'marginBottom': "3vh"}),
                                                         
-                                                        dcc.Markdown('''*Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.*''', style = {'textAlign': 'center', 'marginBottom': '2vh'}), # , 'fontSize': '90%'
+                                                        dcc.Markdown('''*Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.*''', style = {'textAlign': 'center', 'marginBottom': '3vh'}), # , 'fontSize': '90%'
                                              
                                                         dbc.Row([
                                                         dbc.ButtonGroup(
@@ -2404,7 +2407,7 @@ layout_inter = html.Div([
                                                                         
                                                                         dcc.Markdown('''
                                                                         *Click on the info buttons for explanations*.
-                                                                        ''',style = {'textAlign': 'center'}),
+                                                                        ''',style = {'textAlign': 'center','marginTop': '3vh', 'marginBottom': '3vh'}),
 
 
 
@@ -2664,7 +2667,7 @@ layout_inter = html.Div([
 
                                                                 dbc.Row([
                                                                         html.H4("All Categories",
-                                                                        style={'marginBottom': '3vh', 'textAlign': 'center' ,'marginTop': '1vh','fontSize': '180%'} # 'marginLeft': '2vw', 
+                                                                        style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                         ),
 
                                                                         dbc.Spinner(html.Div(id="loading-line-output-1")),
@@ -2675,16 +2678,14 @@ layout_inter = html.Div([
                                                                 
                                                                 dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '95%'}), # figure=dummy_figure,
 
-                                                                dbc.Container([html.Div([],style={'height': '3vh'})]),
-
                                                                 html.H4("Hospital Categories",
-                                                                style={'marginBottom': '3vh', 'textAlign': 'center' ,'marginTop': '1vh','fontSize': '180%'} # 'marginLeft': '2vw', 
+                                                                style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                 ),
 
                                                                 dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '95%'}), # figure=dummy_figure,
 
                                                                 html.H4("Intensive Care - 'flatten the curve'",
-                                                                style={'marginBottom': '3vh', 'textAlign': 'center' ,'marginTop': '1vh','fontSize': '180%'} # 'marginLeft': '2vw', 
+                                                                style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                 ),
 
                                                                 dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '95%'}), # figure=dummy_figure,
@@ -2738,9 +2739,9 @@ layout_inter = html.Div([
                                                     
                                              ##################################################################################################
                                                     
-                                                    html.Hr(style={'marginTop': '3vh', 'marginBottom': '2vh'}),
+                                                    html.Hr(style={'marginTop': '3vh'}),
     
-                                                    html.H3("Interpretation", className="display-4",style={'fontSize': '300%','textAlign': 'center'}),
+                                                    html.H3("Interpretation", className="display-4",style={'fontSize': '300%','textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
                                                     html.Hr(),
 
                                                     # dbc.Jumbotron([
@@ -2765,7 +2766,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     html.H3('Model Explanation',
                                                                                                                                                                     className = 'display-4',
-                                                                                                                                                                    style = {'marginTop': '1vh', 'textAlign': 'center', 'fontSize': '300%'}),
+                                                                                                                                                                    style = {'marginTop': '3vh', 'marginBottom': '1vh', 'textAlign': 'center', 'fontSize': '300%'}),
 
                                                                                                                                                                     html.Hr(),
                                                                                                                                                                     dcc.Markdown(
@@ -3008,12 +3009,12 @@ page_layout = html.Div([
 
 
 
+                    # html.P(
+                    # 'Disclaimer:',
+                    # style = {'marginTop': '0.5vh', 'fontSize': '100%','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
+                    # ),
                     html.P(
-                    'Disclaimer:',
-                    style = {'marginTop': '0.5vh', 'fontSize': '130%','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
-                    ),
-                    html.P(
-                    'This work is for educational purposes only and not for accurate prediction of the pandemic.',
+                    'Disclaimer: This work is for educational purposes only and not for accurate prediction of the pandemic.',
                     style = {'marginTop': '0vh','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ),
                     html.P(
@@ -3037,7 +3038,7 @@ page_layout = html.Div([
         dcc.Location(id='url', refresh=False),
 
         html.Footer('This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.',
-                    style={'textAlign': 'center', 'fontSize': '100%', 'color': '#446E9B', 'fontWeight': 'bold'}),
+                    style={'textAlign': 'center', 'fontSize': '100%', 'marginBottom': '1.5vh' , 'color': '#446E9B', 'fontWeight': 'bold'}),
         html.Footer([
                     "Authors: ",
                      html.A('Nick P. Taylor', href='https://twitter.com/TaylorNickP'),", ",
@@ -3568,7 +3569,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
                         dcc.Markdown('''
                             *Click on the info buttons for explanations*.
-                            ''',style = {'textAlign': 'center'}),
+                            ''',style = {'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '3vh'}),
                         
                         outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[0],herd_list_2yr[0],ICU_data_2yr[0],preset,number_strategies = num_strat,which_strat=1), # hosp,
                         html.Hr(),
@@ -3815,7 +3816,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                     direction="down",
                     pad={"r": 10, "t": 10, "b": 10},
                     showactive=True,
-                    x=0.,
+                    x=0,
                     xanchor="left",
                     y=1.2,
                     yanchor="top"
