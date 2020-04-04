@@ -57,12 +57,16 @@ I0 = I0 - H0
 ########################################################################################################################
 
 # external_stylesheets = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
-external_stylesheets = dbc.themes.CERULEAN
+tab_label_color = "#00AEF9"
+external_stylesheets = dbc.themes.SPACELAB
+# Cerulean
+# COSMO
 # JOURNAL
+# Litera
 # MINTY
 # SIMPLEX - not red danger
+# spacelab good too
 # UNITED
-# Cerulean is ok
 
 app = dash.Dash(__name__, external_stylesheets=[external_stylesheets])
 
@@ -1183,7 +1187,7 @@ layout_intro = html.Div([
              children = [
                 
         
-        dbc.Tab(label='Start Here', tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_start', children=[
+        dbc.Tab(label='Start Here', tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_start', children=[
         html.H3('Introduction',
         className = 'display-4',
         style = {'marginTop': '1vh', 'fontSize': '300%'}),
@@ -1214,7 +1218,7 @@ layout_intro = html.Div([
 
         ]),
         
-        dbc.Tab(label='Introduction to modelling',  tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_0', children=[
+        dbc.Tab(label='Introduction to modelling',  tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_0', children=[
 
             html.H3('Introduction to mathematical modelling',className='display-4',
             style = {'marginTop': '1vh', 'fontSize': '300%'}),
@@ -1230,7 +1234,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585755877/WhatIsModellingv2_hhqe2h.mp4',
                     controls=True,
-                    style={'maxWidth':'90%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
+                    style={'maxWidth':'60%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
                     
                     ],
                     justify='center'
@@ -1256,7 +1260,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585814499/StandardSIRModel_hu5ztn.mp4',
                     controls=True,
-                    style={'maxWidth':'90%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
+                    style={'maxWidth':'60%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
                     
                     ],
                     justify='center'
@@ -1281,7 +1285,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585987204/AllAboutR_wmf2y1.mp4',
                     controls=True,
-                    style={'maxWidth':'90%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
+                    style={'maxWidth':'60%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
                     
                     ],
                     justify='center'
@@ -1332,7 +1336,7 @@ layout_intro = html.Div([
     #end of tab 2
         ]),
 
-        dbc.Tab(label='COVID-19 Control Strategies',tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_control', children=[
+        dbc.Tab(label='COVID-19 Control Strategies',tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_control', children=[
             html.H3('Keys to a successful control strategy',
             className = 'display-4',
             style = {'marginTop': '1vh', 'fontSize': '300%'}),
@@ -1396,7 +1400,7 @@ layout_intro = html.Div([
         ]),
 
 
-    #     dbc.Tab(label='Control Case Study', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_3', children=[
+    #     dbc.Tab(label='Control Case Study', label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_3', children=[
             
 
 
@@ -1465,13 +1469,13 @@ layout_intro = html.Div([
             
     # #end of tab 3
     #     ]),
-        # dbc.Tab(label='Explanatory Videos', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_vids', children=[
+        # dbc.Tab(label='Explanatory Videos', label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_vids', children=[
                     
                     
 
         # ]),
 
-        dbc.Tab(label='How to use', tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='tab_1', children=[
+        dbc.Tab(label='How to use', tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_1', children=[
                     
 
 
@@ -1639,7 +1643,7 @@ layout_inter = html.Div([
 
                                         # tab 0
                                         dbc.Tab(label='Model Output',
-                                         label_style={"color": "#00AEF9", 'fontSize':'120%'},
+                                         label_style={"color": tab_label_color, 'fontSize':'120%'},
                                          tab_id='tab_0',
                                          tab_style = {'minWidth':'50%','textAlign': 'center', 'cursor': 'pointer'},
                                          children = [
@@ -1668,14 +1672,14 @@ layout_inter = html.Div([
                                                     # 2. Choose which **results** to display (button below).
                                              
                                              
-                                                    # html.Hr(),
+                                                    html.Hr(),
 
                                                     # html.Hr(),
 
-                                                dbc.Row([
+                                                # dbc.Row([
             
-                                                        dbc.Col([
-                                                            dbc.Jumbotron([
+                                                        # dbc.Col([
+                                                            # dbc.Jumbotron([
                                                                 
 
 
@@ -1736,7 +1740,7 @@ layout_inter = html.Div([
                                                                                                                                                             style = {'cursor': 'pointer', 'marginBottom': '0.5vh'}),
                                                                                                                                                             ],
                                                                                                                                                             className = 'display-4',
-                                                                                                                                                            style={'fontSize': '300%', 'marginTop': "3vh", 'textAlign': 'center'}),
+                                                                                                                                                            style={'fontSize': '300%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
 
                                                                                                                                                             
 
@@ -1769,7 +1773,7 @@ layout_inter = html.Div([
                                                                                                                                                   
 
 
-                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'textAlign': 'center'}), # 'textAlign': 'left', fs 80%
+                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'textAlign': 'center', 'marginBottom': '2vh'}), # 'textAlign': 'left', fs 80%
 
                                                                                                                                                         dbc.Row([
                                                                                                                                                             dbc.Col([
@@ -2315,18 +2319,19 @@ layout_inter = html.Div([
 
 ############################################################################################################################################################################################################################    
 
-                                                            ]),
+                                                            # ]),
 
 
 
-                                                        ],
-                                                        width = 12,
-                                                        style={'height': '100%'}
-                                                        ),
+                                                        # ],
+                                                        # width = 12,
+                                                        # style={'height': '100%'}
+                                                        # ),
 
-                                                        dbc.Col([
+                                                        # dbc.Col([
 
-                                                        dbc.Jumbotron([
+                                                        # dbc.Jumbotron([
+                                                        html.Hr(),
                                     ##############################################################################################################################################################################################################################
                                             # start of results col
 
@@ -2334,9 +2339,9 @@ layout_inter = html.Div([
                                              
                                                         html.H3('2. Choose Results Type',
                                                         className='display-4',
-                                                        style={'fontSize': '300%', 'textAlign': 'center' ,'marginTop': "3vh"}),
+                                                        style={'fontSize': '300%', 'textAlign': 'center' ,'marginTop': "3vh",'marginBottom': "3vh"}),
                                                         
-                                                        dcc.Markdown('''*Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.*''', style = {'textAlign': 'center'}), # , 'fontSize': '90%'
+                                                        dcc.Markdown('''*Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.*''', style = {'textAlign': 'center', 'marginBottom': '2vh'}), # , 'fontSize': '90%'
                                              
                                                         dbc.Row([
                                                         dbc.ButtonGroup(
@@ -2680,16 +2685,20 @@ layout_inter = html.Div([
 
 
 
-                                                        ]),
-                                                        ],
-                                                        width = 12
-                                                        ),
+                                                        #end of jumbo
+                                                        # ]), 
 
 
-                                                    # end of row
-                                            ],
-                                            # no_gutters=True
-                                            ),
+                                                        # end of col
+                                            #             ],
+                                            #             width = 12
+                                            #             ),
+
+
+                                            #         # end of row
+                                            # ],
+                                            # # no_gutters=True
+                                            # ),
                                                 
                                                     
                                              ##################################################################################################
@@ -2712,7 +2721,7 @@ layout_inter = html.Div([
                                          
                                          ),
 #########################################################################################################################################################
-                                                                                                                dbc.Tab(label='Model Explanation', label_style={"color": "#00AEF9", 'fontSize':'120%'}, tab_id='model_s',
+                                                                                                                dbc.Tab(label='Model Explanation', label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='model_s',
                                                                                                                 tab_style = {'minWidth':'50%','textAlign': 'center', 'cursor': 'pointer'},
                                                                                                                 children=[
                                                                                                         
