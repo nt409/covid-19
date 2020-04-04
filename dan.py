@@ -115,28 +115,30 @@ colors = {
 
 layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font-family': 'sans-serif'
                       id='output-layout', children=[
-    html.H4(
-        children='COVID-19 Cases and Deaths',
-        className='display-4',
-        style={
-            'textAlign': 'center',
-            'fontSize': '6vh',
-            'margin-top': '2vh'
-        }
-    ),
+    # html.H4(
+    #     children='COVID-19 Cases and Deaths',
+    #     className='display-4',
+    #     style={
+    #         'textAlign': 'center',
+    #         'fontSize': '6vh',
+    #         'margin-top': '2vh'
+    #     }
+    # ),
 
-    html.Hr(),
+    # html.Hr(),
 
-    dcc.Markdown(
-        '''
+    html.Div(style={'height': '3vh'}),
+
+    # dcc.Markdown(
+    #     '''
         
-        *This section enables you to compare different countries' reported cases and deaths in real-time, and predict future numbers assuming exponential growth.*
-        *Soon this will be integrated with the full predictive model allowing you to make control predictions for different countries.*
-        ''',
-        style={'textAlign': 'center'}
-    ),
+    #     *This section enables you to compare different countries' reported cases and deaths in real-time, and predict future numbers assuming exponential growth.*
+    #     *Soon this will be integrated with the full predictive model allowing you to make control predictions for different countries.*
+    #     ''',
+    #     style={'textAlign': 'center'}
+    # ),
 
-    html.Hr(),
+    # html.Hr(),
 
     html.Div([
         html.Div([
@@ -165,6 +167,12 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
         html.Div(style={'width': '5%', 'display': 'inline-block'}),
         html.Div([
             html.Div([
+                html.I("This section enables you to compare different countries' reported cases and deaths in real-time, and predict future numbers assuming exponential growth.")],
+                style={'marginBottom': '3vh','marginTop': '1vh'}
+            ),
+
+            html.Div([
+
                 html.I("Fit exponential from: ",
                        style={'textAlign': 'center', 'color': colors['text'], "margin-left": "15px",}),
                 dcc.DatePickerSingle(
@@ -354,20 +362,20 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                 "Caution should be applied when directly comparing the number of confirmed cases of each country. "
                 "Different countries have different testing rates, and may underestimate the number of cases "
                 "by varying amounts."),
-                style={'textAlign': 'left', 'color': colors['text']}),
+                style={'textAlign': 'justify', 'color': colors['text']}),
             html.Li(html.I(
                 "The models assume exponential growth - social distancing, quarantining, herd immunity, "
                 "and other factors will slow down the predicted trajectories. "
                 "Thus, predicting too far in the future is not recommended."),
-                style={'textAlign': 'left', 'color': colors['text']}),
+                style={'textAlign': 'justify', 'color': colors['text']}),
             html.Li(html.I(
                 "Some countries do not have available data for the number of Active Cases. "),
-                style={'textAlign': 'left', 'color': colors['text']}),
+                style={'textAlign': 'justify', 'color': colors['text']}),
             html.Li(html.I(
                 "The last plot is an informative way to compare how each country was increasing when they had "
                 "different numbers of total cases (each point is a different day); countries that fall below "
                 "the general linear line on the log-log plot are reducing their growth rate of COVID-19 cases."),
-                style={'textAlign': 'left', 'color': colors['text']}),
+                style={'textAlign': 'justify', 'color': colors['text']}),
         ], style={'width': '75%', 'display': 'inline-block', 'vertical-align': 'top', 'horizontal-align': 'center',
                   'textAlign': 'center', "margin-left": "0px"}),
         html.Hr(),
