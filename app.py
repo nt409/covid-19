@@ -57,7 +57,7 @@ I0 = I0 - H0
 ########################################################################################################################
 
 # external_stylesheets = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
-tab_label_color = "#00AEF9"
+tab_label_color = 'black' # "#00AEF9"
 external_stylesheets = dbc.themes.SPACELAB
 # Cerulean
 # COSMO
@@ -1178,19 +1178,25 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 ########################################################################################################################
 layout_intro = html.Div([
     dbc.Row([
+                            # dbc.Jumbotron([##
+                            dbc.Row([
+    
     dbc.Col([
-                            dbc.Jumbotron([##
-                                html.Div( [
+                            html.Div([
+                html.Div([
+
 
     dbc.Tabs(id='intro-tabs',
              active_tab='tab_start',
              children = [
                 
         
-        dbc.Tab(label='Start Here', tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_start', children=[
+        dbc.Tab(label='Start Here', tab_style = {'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_start', children=[
         html.H3('Introduction',
         className = 'display-4',
         style = {'marginTop': '1vh', 'fontSize': '300%'}),
+
+        html.Hr(),
 
         dcc.Markdown('''
         The aim of this website is to demystify modelling of infectious diseases through short videos and interactive models which let you explore how different control strategies will affect the rate that covid-19 spreads. The website has been developed by experts in epidemiology and modelling from the University of Cambridge.
@@ -1198,17 +1204,27 @@ layout_intro = html.Div([
         style={'textAlign': 'justify'}),
         #  Nick and Cerian are based in the Department of Plant Sciences and Daniel is based at the Institute of Astronomy.
         
+        html.Hr(),
+        
         html.H3('Who is this website for?',
         className = 'display-4',
         style = {'marginTop': '1vh', 'fontSize': '300%'}),
+
+        html.Hr(),
+
         dcc.Markdown('''
         The content is targeted at people with little or no experience of modelling and might be used as a resource for anyone wishing to understand more about the standstill.
         ''',
         style={'textAlign': 'justify'}),
+
+        html.Hr(),
         
         html.H3('How to use the website',
         className = 'display-4',
         style = {'marginTop': '1vh', 'fontSize': '300%'}),
+
+        html.Hr(),
+
         dcc.Markdown('''
         It’s up to you how you explore our website. If you already know something about modelling you may want to jump straight to the interactive model. But if you’d like to know a little more about modelling and a detailed explanation of the output then click on the next tabs in this section.
         ''',
@@ -1218,7 +1234,7 @@ layout_intro = html.Div([
 
         ]),
         
-        dbc.Tab(label='Introduction to modelling',  tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_0', children=[
+        dbc.Tab(label='Introduction to modelling',  tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_0', children=[
 
             html.H3('Introduction to mathematical modelling',className='display-4',
             style = {'marginTop': '1vh', 'fontSize': '300%'}),
@@ -1234,7 +1250,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585755877/WhatIsModellingv2_hhqe2h.mp4',
                     controls=True,
-                    style={'maxWidth':'60%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
+                    style={'maxWidth':'75%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
                     
                     ],
                     justify='center'
@@ -1260,7 +1276,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585814499/StandardSIRModel_hu5ztn.mp4',
                     controls=True,
-                    style={'maxWidth':'60%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
+                    style={'maxWidth':'75%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
                     
                     ],
                     justify='center'
@@ -1285,7 +1301,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585987204/AllAboutR_wmf2y1.mp4',
                     controls=True,
-                    style={'maxWidth':'60%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
+                    style={'maxWidth':'75%','height': 'auto','marginTop': '1vh','marginBottom': '1vh'}),
                     
                     ],
                     justify='center'
@@ -1336,10 +1352,13 @@ layout_intro = html.Div([
     #end of tab 2
         ]),
 
-        dbc.Tab(label='COVID-19 Control Strategies',tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_control', children=[
+        dbc.Tab(label='COVID-19 Control Strategies',tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_control', children=[
             html.H3('Keys to a successful control strategy',
             className = 'display-4',
             style = {'marginTop': '1vh', 'fontSize': '300%'}),
+
+            html.Hr(),
+
 
             dcc.Markdown('''            
             There are three main goals a control strategy sets out to achieve:
@@ -1361,6 +1380,9 @@ layout_intro = html.Div([
             html.H3('Strategies',
             className='display-4',
             style = {'marginTop': '1vh', 'fontSize': '300%'}),
+
+            html.Hr(),
+
             
             html.H4('Reducing the infection rate',
             style = {'marginTop': '1vh', 'fontSize': '180%'}),
@@ -1475,7 +1497,7 @@ layout_intro = html.Div([
 
         # ]),
 
-        dbc.Tab(label='How to use', tab_style = {'minWidth': '20%', 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_1', children=[
+        dbc.Tab(label='How to use', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_1', children=[
                     
 
 
@@ -1486,7 +1508,7 @@ layout_intro = html.Div([
 
                     # html.H4('How to use the interactive model',className='display-4'),
                     
-                    html.Hr(className='my-2'),
+                    html.Hr(),
                     
                     dbc.Col([
                     dcc.Markdown('''
@@ -1531,13 +1553,26 @@ layout_intro = html.Div([
 style={'fontSize': '2vh'}
 )
 
-    ])##  # end of jumbotron
+
+],
+style= {'marginLeft': '5vw', 'marginRight': '5vw', 'marginBottom': '5vh', 'marginTop': '5vw',}
+),
+
 ],
 width=12,
-xl=8
-),],
+xl=10
+),
+
+],
+justify = 'center',
+style= {'width': '90%','backgroundColor': '#f4f6f7'} # , 'marginLeft': '5vw', 'marginRight': '5vw', 'marginBottom': '5vh'}
+),
+    # ])##  # end of jumbotron
+],
 justify='center')
-])
+
+]),
+
 
 
 Results_interpretation =  html.Div([
@@ -2975,15 +3010,15 @@ page_layout = html.Div([
 
                     html.P(
                     'Disclaimer:',
-                    style = {'marginTop': '0vh', 'fontSize': '130%','marginBottom': '0vh', 'color': '#001f3f', 'fontWeight': 'bold'}
+                    style = {'marginTop': '0.5vh', 'fontSize': '130%','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ),
                     html.P(
                     'This work is for educational purposes only and not for accurate prediction of the pandemic.',
-                    style = {'marginTop': '0vh','marginBottom': '0vh', 'color': '#001f3f', 'fontWeight': 'bold'}
+                    style = {'marginTop': '0vh','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ),
                     html.P(
                     'There are many uncertainties in the COVID debate. The model is intended solely as an illustrative rather than predictive tool.',
-                    style = {'marginTop': '0vh','marginBottom': '1vh', 'color': '#001f3f', 'fontWeight': 'bold'}
+                    style = {'marginTop': '0vh','marginBottom': '3vh', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ), # 
 
                 ],width=True,
@@ -3002,21 +3037,21 @@ page_layout = html.Div([
         dcc.Location(id='url', refresh=False),
 
         html.Footer('This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.',
-                    style={'textAlign': 'center', 'fontSize': '110%', 'color': '#001f3f', 'fontWeight': 'bold'}),
+                    style={'textAlign': 'center', 'fontSize': '100%', 'color': '#446E9B', 'fontWeight': 'bold'}),
         html.Footer([
                     "Authors: ",
                      html.A('Nick P. Taylor', href='https://twitter.com/TaylorNickP'),", ",
                      html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'),
                      " and Dr Cerian Webb. ",
                      ],
-        style={'textAlign': 'center', 'fontSize': '100%'}),
+        style={'textAlign': 'center', 'fontSize': '90%'}),
         html.Footer([
                      html.A('Source code', href='https://github.com/nt409/covid-19'), ". ",
                      "Data is taken from ",
                      html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
                      html.A("Johns Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
                     ],
-                    style={'textAlign': 'center', 'fontSize': '100%'}),
+                    style={'textAlign': 'center', 'fontSize': '90%'}),
 
         
 
