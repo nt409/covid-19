@@ -39,13 +39,11 @@ def begin_date(date_inp = datetime.datetime.strftime(datetime.date.today() - dat
     currently_inf_data = get_data('uk')['Currently Infected']['data']
     deaths_data = get_data('uk')['Deaths']['data']
 
-    # date_inp = datetime.datetime.strftime(date_inp, '%Y-%#m-%d' )
     index = np.argwhere(dates==date_inp)[0][0]
 
     I0    = np.float(currently_inf_data[index])
     I_ten = np.float(currently_inf_data[index-10])
     D0    = np.float(deaths_data[index])
-    # print(I0,I_ten,D0)
     
     # of resolved cases, fatality rate is 0.9%
     p = 0.009
@@ -3155,7 +3153,9 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
-    I0, R0, H0, C0, D0 = begin_date(date)
+    # I0, R0, H0, C0, D0 = begin_date(date)
+    I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
+
     
     if preset=='C':
         lr = params.fact_v[int(lr)]
@@ -3198,7 +3198,8 @@ def find_sol_do_noth(hosp,ICU_grow,date):
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
-    I0, R0, H0, C0, D0 = begin_date(date)
+    # I0, R0, H0, C0, D0 = begin_date(date)
+    I0, R0, H0, C0, D0 = 0.1, 0, 0, 0, 0  # begin_date(date)
 
     t_stop = 365*3
     
