@@ -36,9 +36,9 @@ dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
 
 
 
-def begin_date(date_inp = datetime.date.today() - datetime.timedelta(days=1)):
+def begin_date(date_inp = datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1), '%Y-%#m-%d' ) ):
 
-    date_inp = datetime.datetime.strftime(date_inp, '%Y-%#m-%d' )
+    # date_inp = datetime.datetime.strftime(date_inp, '%Y-%#m-%d' )
     index = np.argwhere(dates==date_inp)[0][0]
 
     I0 = np.float(get_data('uk')['Currently Infected']['data'][index])
@@ -761,10 +761,12 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
     vec2 = [i*(params.UK_population) for i in pop_log_vec]
 
+    # date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
+    split = starting_date.split('-')
 
-    month_start = int(starting_date.strftime('%m'))
-    day_start = int(starting_date.strftime('%d'))
-    year_start = int(starting_date.strftime('%Y'))
+    day_start   = int(split[2]) #  int(starting_date.strftime('%d'))
+    month_start = int(split[1]) #  int(starting_date.strftime('%m'))
+    year_start  = int(split[0]) #  int(starting_date.strftime('%Y'))
     month_labelz = [[],[],[]]
 
     for j in range(4):
@@ -3145,7 +3147,9 @@ def invisible_or_not(num,preset,do_nothing):
 def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # years , ,hosp
     if vaccine==9:
         vaccine = None
+
     date = datetime.datetime.strptime(re.split('T| ', date)[0], '%Y-%m-%d')
+    date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
     I0, R0, H0, C0, D0 = begin_date(date)
     
@@ -3189,6 +3193,7 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
 def find_sol_do_noth(hosp,ICU_grow,date):
 
     date = datetime.datetime.strptime(re.split('T| ', date)[0], '%Y-%m-%d')
+    date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
     I0, R0, H0, C0, D0 = begin_date(date)
 
@@ -3488,6 +3493,8 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
             if button_id=='DPC_dd': # sols is not None and
                 
                 date = datetime.datetime.strptime(re.split('T| ', date)[0], '%Y-%m-%d')
+                date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
+
 
                 output_2 = [i for i in output if i in ['C','H','D']]
                 plot_settings_on_or_off = None
