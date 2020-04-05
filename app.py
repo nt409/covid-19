@@ -3172,14 +3172,14 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     # print(currently_inf_data)
 
     # I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
-    index = np.argwhere(dates==date)[0][0]
+    index =   40 # np.argwhere(dates==date)[0][0]
     I0_in    = np.float(currently_inf_data[index])
     I_ten_in = np.float(currently_inf_data[index-10])
     D0_in    = np.float(deaths_data[index])
 
-    I0_in    = 0.1   
-    I_ten_in = 0      
-    D0_in    = 0   
+    # I0_in    = 0.1   
+    # I_ten_in = 0      
+    # D0_in    = 0   
 
     I0, R0, H0, C0, D0 = begin_date(I0=I0_in,I_ten=I_ten_in,D0=D0_in)
 
@@ -3231,15 +3231,15 @@ def find_sol_do_noth(hosp,ICU_grow,date):
     currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
     deaths_data        = np.asarray(uk_data['Deaths']['data'])
     
-    index    = np.argwhere(dates==date)[0][0]
+    index    = 40 #np.argwhere(dates==date)[0][0]
     I0_in    = np.float(currently_inf_data[index])
     I_ten_in = np.float(currently_inf_data[index-10])
     D0_in    = np.float(deaths_data[index])
 
 
-    I0_in    = 0.1   
-    I_ten_in = 0      
-    D0_in    = 0   
+    # I0_in    = 0.1   
+    # I_ten_in = 0      
+    # D0_in    = 0   
 
     I0, R0, H0, C0, D0 = begin_date(I0=I0_in,I_ten=I_ten_in,D0=D0_in)
 
