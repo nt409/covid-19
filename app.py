@@ -3154,8 +3154,8 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
-    I0, R0, H0, C0, D0 = begin_date(date)
-    # I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
+    # I0, R0, H0, C0, D0 = begin_date(date)
+    I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
 
     
     if preset=='C':
@@ -3199,8 +3199,8 @@ def find_sol_do_noth(hosp,ICU_grow,date):
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
-    I0, R0, H0, C0, D0 = begin_date(date)
-    # I0, R0, H0, C0, D0 = 0.1, 0, 0, 0, 0  # begin_date(date)
+    # I0, R0, H0, C0, D0 = begin_date(date)
+    I0, R0, H0, C0, D0 = 0.1, 0, 0, 0, 0  # begin_date(date)
 
     t_stop = 365*3
     
@@ -3644,13 +3644,12 @@ def update_plots(tabs,n_clicks, start_date, end_date, show_exponential, normalis
                  align_cases_check, align_cases_input, align_deaths_check, align_deaths_input, align_active_cases_check,
                  align_active_cases_input, align_daily_cases_check, align_daily_cases_input,
                  align_daily_deaths_check, align_daily_deaths_input, saved_json_data, *args):
-    # print(n_clicks, start_date, end_date, args)
-    # print(start_date)
+
     if tabs!='data':
         dummy_fig = {'data': [], 'layout': {'template': 'simple_white'}}
         return [dummy_fig,dummy_fig,dummy_fig,dummy_fig,dummy_fig,dummy_fig,dummy_fig,saved_json_data,None]
 
-    if tabs=='data':
+    else:
         start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
         end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
