@@ -1,5 +1,4 @@
 gunicorn
-python==3.6.10
 dash==1.10.0
 numpy
 pandas
