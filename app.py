@@ -3151,12 +3151,13 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
     
-    dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
-    currently_inf_data = np.asarray(get_data('uk')['Currently Infected']['data'])
-    deaths_data = np.asarray(get_data('uk')['Deaths']['data'])
-    I0, R0, H0, C0, D0 = begin_date(date,dates,currently_inf_data,deaths_data)
+    uk_data = get_data('uk')
+    dates              = np.asarray(uk_data['Currently Infected']['dates'])
+    currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
+    deaths_data        = np.asarray(uk_data['Deaths']['data'])
+    # I0, R0, H0, C0, D0 = begin_date(date,dates,currently_inf_data,deaths_data)
 
-    # I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
+    I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
 
     
     if preset=='C':
@@ -3200,12 +3201,13 @@ def find_sol_do_noth(hosp,ICU_grow,date):
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
     
-    dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
-    currently_inf_data = np.asarray(get_data('uk')['Currently Infected']['data'])
-    deaths_data = np.asarray(get_data('uk')['Deaths']['data'])
-    I0, R0, H0, C0, D0 = begin_date(date,dates,currently_inf_data,deaths_data)
+    uk_data = get_data('uk')
+    dates              = np.asarray(uk_data['Currently Infected']['dates'])
+    currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
+    deaths_data        = np.asarray(uk_data['Deaths']['data'])
+    # I0, R0, H0, C0, D0 = begin_date(date,dates,currently_inf_data,deaths_data)
 
-    # I0, R0, H0, C0, D0 = 0.1, 0, 0, 0, 0  # begin_date(date)
+    I0, R0, H0, C0, D0 = 0.1, 0, 0, 0, 0  # begin_date(date)
 
     t_stop = 365*3
     
