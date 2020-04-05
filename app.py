@@ -14,7 +14,6 @@ from plotly.validators.scatter.marker import SymbolValidator
 import copy
 from cov_functions import simulator
 import flask
-import re
 
 
 
@@ -31,12 +30,14 @@ max_date = get_data('uk')['Currently Infected']['dates'][-1]
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
-dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
-currently_inf_data = get_data('uk')['Currently Infected']['data']
-deaths_data = get_data('uk')['Deaths']['data']
 
 
 def begin_date(date_inp = datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1), '%Y-%#m-%d' ) ):
+
+
+    dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
+    currently_inf_data = get_data('uk')['Currently Infected']['data']
+    deaths_data = get_data('uk')['Deaths']['data']
 
     # date_inp = datetime.datetime.strftime(date_inp, '%Y-%#m-%d' )
     index = np.argwhere(dates==date_inp)[0][0]
@@ -1215,7 +1216,7 @@ layout_intro = html.Div([
         dbc.Tab(label='Start Here', tab_style = {'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_start', children=[
         html.H3('Introduction',
         className = 'display-4',
-        style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+        style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
         html.Hr(),
 
@@ -1229,7 +1230,7 @@ layout_intro = html.Div([
         
         html.H3('Who is this website for?',
         className = 'display-4',
-        style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+        style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
         html.Hr(),
 
@@ -1242,7 +1243,7 @@ layout_intro = html.Div([
         
         html.H3('How to use the website',
         className = 'display-4',
-        style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+        style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
         html.Hr(),
 
@@ -1258,7 +1259,7 @@ layout_intro = html.Div([
         dbc.Tab(label='Introduction to modelling',  tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_0', children=[
 
             html.H3('Introduction to mathematical modelling',className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1284,7 +1285,7 @@ layout_intro = html.Div([
 
 
             html.H3('Introducing SIR models',className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1309,7 +1310,7 @@ layout_intro = html.Div([
 
 
             html.H3('Introducing the basic reproductive number',className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1331,7 +1332,7 @@ layout_intro = html.Div([
             html.Hr(),
             
             html.H3('Definitions',className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = { 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             dcc.Markdown('''            
 
@@ -1371,7 +1372,7 @@ layout_intro = html.Div([
         dbc.Tab(label='COVID-19 Control Strategies',tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_control', children=[
             html.H3('Keys to a successful control strategy',
             className = 'display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1395,13 +1396,13 @@ layout_intro = html.Div([
 
             html.H3('Strategies',
             className='display-4',
-            style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
             
             html.H4('Reducing the infection rate',
-            style = {'marginTop': '1vh', 'fontSize': '180%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '180%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
 
 
             dcc.Markdown('''            
@@ -1418,7 +1419,7 @@ layout_intro = html.Div([
 
 
             html.H4('Protecting the high risk',
-            style = {'marginTop': '1vh', 'fontSize': '180%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '180%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
 
             
 
@@ -1445,7 +1446,7 @@ layout_intro = html.Div([
 
                     # dbc.Container(html.Div(style={'height':'5px'})),
                     html.H3('How to use the interactive model',className='display-4',
-                    style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+                    style = { 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
                     # html.H4('How to use the interactive model',className='display-4'),
                     
@@ -3149,7 +3150,9 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     if vaccine==9:
         vaccine = None
 
-    date = datetime.datetime.strptime(re.split('T| ', date)[0], '%Y-%m-%d')
+    # print(date.split('T')[0])
+    # print(re.split('T| ', date)[0])
+    date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
     I0, R0, H0, C0, D0 = begin_date(date)
@@ -3192,7 +3195,7 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     ])
 def find_sol_do_noth(hosp,ICU_grow,date):
 
-    date = datetime.datetime.strptime(re.split('T| ', date)[0], '%Y-%m-%d')
+    date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
     I0, R0, H0, C0, D0 = begin_date(date)
@@ -3492,7 +3495,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
             if button_id=='DPC_dd': # sols is not None and
                 
-                date = datetime.datetime.strptime(re.split('T| ', date)[0], '%Y-%m-%d')
+                date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
                 date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
 
