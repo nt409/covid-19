@@ -32,12 +32,8 @@ max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
 
 
-def begin_date(date_inp = datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1), '%Y-%#m-%d' )): #  ,dates=None, currently_inf_data=None, deaths_data=None):
+def begin_date(date_inp,dates,currently_inf_data,deaths_data): #  ,dates=None, currently_inf_data=None, deaths_data=None):
 
-
-    dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
-    currently_inf_data = np.asarray(get_data('uk')['Currently Infected']['data'])
-    deaths_data = np.asarray(get_data('uk')['Deaths']['data'])
 
     index = np.argwhere(dates==date_inp)[0][0]
 
@@ -3154,8 +3150,13 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
-    # I0, R0, H0, C0, D0 = begin_date(date)
-    I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
+    
+    dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
+    currently_inf_data = np.asarray(get_data('uk')['Currently Infected']['data'])
+    deaths_data = np.asarray(get_data('uk')['Deaths']['data'])
+    I0, R0, H0, C0, D0 = begin_date(date,dates,currently_inf_data,deaths_data)
+
+    # I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
 
     
     if preset=='C':
@@ -3198,9 +3199,13 @@ def find_sol_do_noth(hosp,ICU_grow,date):
 
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
+    
+    dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
+    currently_inf_data = np.asarray(get_data('uk')['Currently Infected']['data'])
+    deaths_data = np.asarray(get_data('uk')['Deaths']['data'])
+    I0, R0, H0, C0, D0 = begin_date(date,dates,currently_inf_data,deaths_data)
 
-    # I0, R0, H0, C0, D0 = begin_date(date)
-    I0, R0, H0, C0, D0 = 0.1, 0, 0, 0, 0  # begin_date(date)
+    # I0, R0, H0, C0, D0 = 0.1, 0, 0, 0, 0  # begin_date(date)
 
     t_stop = 365*3
     
