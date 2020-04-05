@@ -732,6 +732,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
         y = [ 0, params.UK_population],
         yaxis="y2",
         opacity=0,
+        hovertemplate=None,
         showlegend=False
     ))
     
@@ -764,9 +765,9 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     # date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
     split = starting_date.split('-')
 
-    day_start   = int(split[2]) #  int(starting_date.strftime('%d'))
-    month_start = int(split[1]) #  int(starting_date.strftime('%m'))
-    year_start  = int(split[0]) #  int(starting_date.strftime('%Y'))
+    day_start   = int(4) # int(split[2]) #  int(starting_date.strftime('%d'))
+    month_start = int(4) # int(split[1]) #  int(starting_date.strftime('%m'))
+    year_start  = int(2020) # int(split[0]) #  int(starting_date.strftime('%Y'))
     month_labelz = [[],[],[]]
 
     for j in range(4):
@@ -811,7 +812,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
 
 
 
-
+    print(len(lines_to_plot))
 
     layout = go.Layout(
                     annotations=annotz,
