@@ -32,14 +32,7 @@ max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
 
 
-def begin_date(I0,I_ten,D0): # date_inp,dates,currently_inf_data,deaths_data): #  ,dates=None, currently_inf_data=None, deaths_data=None):
-
-    # if False:
-    #     index = np.argwhere(dates==date_inp)[0][0]
-
-    #     I0    = np.float(currently_inf_data[index])
-    #     I_ten = np.float(currently_inf_data[index-10])
-    #     D0    = np.float(deaths_data[index])
+def begin_date(I0,I_ten,D0):
     
     # of resolved cases, fatality rate is 0.9%
     p = 0.009
@@ -870,7 +863,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                                 method="relayout"
                             )
                     ]),
-                    x=-0.02,
+                    x=-0.05,
                     xanchor="right",
                     active=0,
                     y=1.2,
@@ -895,7 +888,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                                 method="relayout"
                             )
                     ]),
-                    x=-0.02,
+                    x=-0.05,
                     xanchor="right",
                     showactive=True,
                     active=1,
@@ -1929,21 +1922,6 @@ layout_inter = html.Div([
                                                                                                                                                                         dbc.Col([
 
 
-                                                                                                                                                                        html.H6('Start Date',style={'fontSize': '100%', 'textAlign': 'center'}),
-
-
-                                                                                                                                                                        dbc.Row([
-                                                                                                                                                                        dcc.DatePickerSingle(
-                                                                                                                                                                            id='model-start-date',
-                                                                                                                                                                            min_date_allowed = min_date + datetime.timedelta(days=10), # datetime.date(2020, 2, 25),
-                                                                                                                                                                            max_date_allowed = max_date, #datetime.date.today() - datetime.timedelta(days=1),
-                                                                                                                                                                            initial_visible_month =  max_date, # datetime.date.today() - datetime.timedelta(days=1),
-                                                                                                                                                                            date = max_date, # datetime.date.today() - datetime.timedelta(days=1),
-                                                                                                                                                                            display_format='D-MMM-YYYY',
-                                                                                                                                                                            style={'textAlign': 'center', 'marginTop': '0.5vh', 'marginBottom': '2vh'}
-                                                                                                                                                                        ),
-                                                                                                                                                                        ],justify='center'),
-
                                                                                                                                                                         html.H6('Critical Care Capacity Annual Increase',style={'fontSize': '100%', 'textAlign': 'center'}),
 
                                                                                                                                                                           dcc.Slider(
@@ -1957,13 +1935,58 @@ layout_inter = html.Div([
                                                                                                                                                                             ),
 
 
-                                                                                                                                                                            dcc.Markdown('''*To adjust the following, make sure '**1a. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%', 'marginTop': '2vh', 'textAlign': 'center'}), # 'textAlign': 'left', 
 
                                                                                                                                                                             html.Hr(),
 
-
-                                                                                                                                                                            
                                                                                                                                                                             dbc.Row([
+
+                                                                                                                                                                            dbc.Col([
+
+                                                                                                                                                                            html.H6('Start Date',style={'fontSize': '100%', 'textAlign': 'center'}),
+
+                                                                                                                                                                            dbc.Row([
+                                                                                                                                                                            dcc.DatePickerSingle(
+                                                                                                                                                                                id='model-start-date',
+                                                                                                                                                                                min_date_allowed = min_date + datetime.timedelta(days=10), # datetime.date(2020, 2, 25),
+                                                                                                                                                                                max_date_allowed = max_date, #datetime.date.today() - datetime.timedelta(days=1),
+                                                                                                                                                                                initial_visible_month =  max_date, # datetime.date.today() - datetime.timedelta(days=1),
+                                                                                                                                                                                date = max_date, # datetime.date.today() - datetime.timedelta(days=1),
+                                                                                                                                                                                display_format='D-MMM-YYYY',
+                                                                                                                                                                                style={'textAlign': 'center', 'marginTop': '0.5vh', 'marginBottom': '2vh'}
+                                                                                                                                                                            ),
+                                                                                                                                                                            ],justify='center'),
+                                                                                                                                                                            ],width=6),
+
+
+                                                                                                                                                                            dbc.Col([
+                                                                                                                                                                            html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
+
+                                                                                                                                                                            dcc.Markdown('''*Set '**1a. Control Type**' to 'Custom'.*''', style = {'fontSize': '70%', 'marginTop': '1vh', 'textAlign': 'center'}),
+                                                                                                                                                                            dbc.Row([
+                                                                                                                                                                            dbc.RadioItems(
+                                                                                                                                                                            id = 'number-strats-radio',
+                                                                                                                                                                            options=[
+                                                                                                                                                                                {'label': 'One', 'value': 'one'},
+                                                                                                                                                                                {'label': 'Two', 'value': 'two'},
+                                                                                                                                                                            ],
+                                                                                                                                                                            value= 'one',
+                                                                                                                                                                            inline=True,
+                                                                                                                                                                            labelStyle = {'fontSize': '80%'}
+                                                                                                                                                                            ),
+                                                                                                                                                                            ],justify='center'),
+                                                                                                                                                                            ],width=6),
+
+                                                                                                                                                                            ],justify='center',
+                                                                                                                                                                            style={'marginTop': '2vh'}),
+
+
+
+                                                                                                                                                                            html.Hr(),
+                                                                                                                                                                            
+                                                                                                                                                                            dcc.Markdown('''*To adjust the following, make sure '**1a. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%', 'marginTop': '2vh', 'textAlign': 'center'}), # 'textAlign': 'left', 
+
+                                                                                                                                                                            dbc.Row([
+
                                                                                                                                                                             dbc.Button('Infection rate 🛈',
                                                                                                                                                                                     size='sm',
                                                                                                                                                                                     color='primary',
@@ -2020,20 +2043,6 @@ layout_inter = html.Div([
                                                                                                                                                                                 placement='top',
                                                                                                                                                                             ),
                                                                                                                                                                                     
-                                                                                                                                                                            html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
-
-                                                                                                                                                                            dbc.Row([
-                                                                                                                                                                            dbc.RadioItems(
-                                                                                                                                                                            id = 'number-strats-radio',
-                                                                                                                                                                            options=[
-                                                                                                                                                                                {'label': 'One', 'value': 'one'},
-                                                                                                                                                                                {'label': 'Two', 'value': 'two'},
-                                                                                                                                                                            ],
-                                                                                                                                                                            value= 'one',
-                                                                                                                                                                            # inline=True,
-                                                                                                                                                                            labelStyle = {'fontSize': '80%'}
-                                                                                                                                                                            ),
-                                                                                                                                                                            ],justify='center'),
                                                                                                                                                                             # style={'fontSize': '80%'}),
 
                                                                                                                                                                             # html.Hr(),
@@ -2062,8 +2071,11 @@ layout_inter = html.Div([
                                                                                                                                                                                         marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
                                                                                                                                                                                         value=10,
                                                                                                                                                                                         ),
-                                                                                                                                                                                    # html.Hr(),
                                                                                                                                                                             ],id='strat-2-id'),
+
+                                                                                                                                                                            # html.Hr(),
+
+
                                                                                                                                                                         ]),
                                                                                                                                                                     ],
                                                                                                                                                                     justify='center'),
@@ -2243,7 +2255,7 @@ layout_inter = html.Div([
 
                                                                                                                         # end of form group 1
                                                                                                                         ],
-                                                                                                                        row=True,
+                                                                                                                        row=True
                                                                                                                         ),
                                                                                 ########################################################################################################################
 
@@ -2274,7 +2286,7 @@ layout_inter = html.Div([
                                                         # dbc.Col([
 
                                                         # dbc.Jumbotron([
-                                                        html.Hr(),
+                                                    html.Hr(style={'marginTop': '4vh'}),
                                     ##############################################################################################################################################################################################################################
                                             # start of results col
 
@@ -3126,6 +3138,10 @@ def invisible_or_not(num,preset,do_nothing):
     return [says_strat_2,strat_H, strat_L ,groups_radio,groups_checklist,options]
 
 ########################################################################################################################
+uk_data = get_data('uk')
+dates              = np.asarray(uk_data['Currently Infected']['dates'])
+currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
+deaths_data        = np.asarray(uk_data['Deaths']['data'])
 
 @app.callback(
     Output('sol-calculated', 'data'),
@@ -3145,19 +3161,23 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     if vaccine==9:
         vaccine = None
 
-    # print(date.split('T')[0])
-    # print(re.split('T| ', date)[0])
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
     
-    uk_data = get_data('uk')
-    dates              = np.asarray(uk_data['Currently Infected']['dates'])
-    currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
-    deaths_data        = np.asarray(uk_data['Deaths']['data'])
-    # I0, R0, H0, C0, D0 = begin_date(date,dates,currently_inf_data,deaths_data)
+    # uk_data = get_data('uk')
+    # dates              = np.asarray(uk_data['Currently Infected']['dates'])
+    # currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
+    # deaths_data        = np.asarray(uk_data['Deaths']['data'])
+    # print(currently_inf_data)
 
-    I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
+    # I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
+    index = np.argwhere(dates==date)[0][0]
+    I0_in    = np.float(currently_inf_data[index])
+    I_ten_in = np.float(currently_inf_data[index-10])
+    D0_in    = np.float(deaths_data[index])
+
+    I0, R0, H0, C0, D0 = begin_date(I0=I0_in,I_ten=I_ten_in,D0=D0_in)
 
     
     if preset=='C':
@@ -3201,17 +3221,13 @@ def find_sol_do_noth(hosp,ICU_grow,date):
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
     date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
     
-    uk_data = get_data('uk')
-    dates              = np.asarray(uk_data['Currently Infected']['dates'])
-    currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
-    deaths_data        = np.asarray(uk_data['Deaths']['data'])
-    # index = np.argwhere(dates==date)[0][0]
-    # I0    = np.float(currently_inf_data[index])
-    # I_ten = np.float(currently_inf_data[index-10])
-    # D0    = np.float(deaths_data[index])
-    # I0, R0, H0, C0, D0 = begin_date(date,dates,currently_inf_data,deaths_data)
+    
+    index    = np.argwhere(dates==date)[0][0]
+    I0_in    = np.float(currently_inf_data[index])
+    I_ten_in = np.float(currently_inf_data[index-10])
+    D0_in    = np.float(deaths_data[index])
 
-    I0, R0, H0, C0, D0 = begin_date(I0=0.1,I_ten=0.01,D0=0) #  0.1, 0, 0, 0, 0  # begin_date(date)
+    I0, R0, H0, C0, D0 = begin_date(I0=I0_in,I_ten=I_ten_in,D0=D0_in)
 
     t_stop = 365*3
     
