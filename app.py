@@ -32,14 +32,14 @@ max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
 
 
-def begin_date(date_inp,dates,currently_inf_data,deaths_data): #  ,dates=None, currently_inf_data=None, deaths_data=None):
+def begin_date(I0,I_ten,D0): # date_inp,dates,currently_inf_data,deaths_data): #  ,dates=None, currently_inf_data=None, deaths_data=None):
 
+    # if False:
+    #     index = np.argwhere(dates==date_inp)[0][0]
 
-    index = np.argwhere(dates==date_inp)[0][0]
-
-    I0    = np.float(currently_inf_data[index])
-    I_ten = np.float(currently_inf_data[index-10])
-    D0    = np.float(deaths_data[index])
+    #     I0    = np.float(currently_inf_data[index])
+    #     I_ten = np.float(currently_inf_data[index-10])
+    #     D0    = np.float(deaths_data[index])
     
     # of resolved cases, fatality rate is 0.9%
     p = 0.009
@@ -3205,9 +3205,13 @@ def find_sol_do_noth(hosp,ICU_grow,date):
     dates              = np.asarray(uk_data['Currently Infected']['dates'])
     currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
     deaths_data        = np.asarray(uk_data['Deaths']['data'])
+    # index = np.argwhere(dates==date)[0][0]
+    # I0    = np.float(currently_inf_data[index])
+    # I_ten = np.float(currently_inf_data[index-10])
+    # D0    = np.float(deaths_data[index])
     # I0, R0, H0, C0, D0 = begin_date(date,dates,currently_inf_data,deaths_data)
 
-    I0, R0, H0, C0, D0 = 0.1, 0, 0, 0, 0  # begin_date(date)
+    I0, R0, H0, C0, D0 = begin_date(I0=0.1,I_ten=0.01,D0=0) #  0.1, 0, 0, 0, 0  # begin_date(date)
 
     t_stop = 365*3
     
