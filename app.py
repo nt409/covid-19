@@ -1219,7 +1219,7 @@ layout_intro = html.Div([
         dcc.Markdown('''
         The aim of this website is to demystify modelling of infectious diseases through short videos and interactive models which let you explore how different control strategies will affect the rate that covid-19 spreads. The website has been developed by experts in epidemiology and modelling from the University of Cambridge.
         ''',
-        style={'textAlign': 'justify'}),
+        style={'textAlign': 'justify','marginTop': '5vh', 'marginBottom': '3vh'}),
         #  Nick and Cerian are based in the Department of Plant Sciences and Daniel is based at the Institute of Astronomy.
         
         html.Hr(),
@@ -1233,7 +1233,7 @@ layout_intro = html.Div([
         dcc.Markdown('''
         The content is targeted at people with little or no experience of modelling and might be used as a resource for anyone wishing to understand more about the standstill.
         ''',
-        style={'textAlign': 'justify'}),
+        style={'textAlign': 'justify','marginTop': '5vh', 'marginBottom': '3vh'}),
 
         html.Hr(),
         
@@ -1246,7 +1246,7 @@ layout_intro = html.Div([
         dcc.Markdown('''
         It’s up to you how you explore our website. If you already know something about modelling you may want to jump straight to the interactive model. But if you’d like to know a little more about modelling and a detailed explanation of the output then click on the next tabs in this section.
         ''',
-        style={'textAlign': 'justify'}),
+        style={'textAlign': 'justify','marginTop': '5vh', 'marginBottom': '3vh'}),
         
 
 
