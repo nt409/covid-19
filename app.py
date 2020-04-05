@@ -40,10 +40,12 @@ def begin_date(date): # I0,I_ten,D0):
     currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
     deaths_data        = np.asarray(uk_data['Deaths']['data'])
     
-    index    = 40 #np.argwhere(dates==date)[0][0]
-    I0_in    = np.float(currently_inf_data[index])
-    I_ten_in = np.float(currently_inf_data[index-10])
-    D0_in    = np.float(deaths_data[index])
+    index = 40 #np.argwhere(dates==date)[0][0]
+
+
+    I0    = np.float(currently_inf_data[index])
+    I_ten = np.float(currently_inf_data[index-10])
+    D0    = np.float(deaths_data[index])
 
     # of resolved cases, fatality rate is 0.9%
     p = 0.009
