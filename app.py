@@ -32,8 +32,8 @@ min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
 dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
-
-
+currently_inf_data = get_data('uk')['Currently Infected']['data']
+deaths_data = get_data('uk')['Deaths']['data']
 
 
 def begin_date(date_inp = datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1), '%Y-%#m-%d' ) ):
@@ -41,9 +41,9 @@ def begin_date(date_inp = datetime.datetime.strftime(datetime.date.today() - dat
     # date_inp = datetime.datetime.strftime(date_inp, '%Y-%#m-%d' )
     index = np.argwhere(dates==date_inp)[0][0]
 
-    I0 = np.float(get_data('uk')['Currently Infected']['data'][index])
-    I_ten = np.float(get_data('uk')['Currently Infected']['data'][index-10])
-    D0 = np.float(get_data('uk')['Deaths']['data'][index])
+    I0    = np.float(currently_inf_data[index])
+    I_ten = np.float(currently_inf_data[index-10])
+    D0    = np.float(deaths_data[index])
     # print(I0,I_ten,D0)
     
     # of resolved cases, fatality rate is 0.9%
@@ -732,7 +732,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
         y = [ 0, params.UK_population],
         yaxis="y2",
         opacity=0,
-        hovertemplate=None,
+        hoverinfo = 'skip',
         showlegend=False
     ))
     
@@ -765,9 +765,9 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     # date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
     split = starting_date.split('-')
 
-    day_start   = int(4) # int(split[2]) #  int(starting_date.strftime('%d'))
-    month_start = int(4) # int(split[1]) #  int(starting_date.strftime('%m'))
-    year_start  = int(2020) # int(split[0]) #  int(starting_date.strftime('%Y'))
+    day_start   = int(split[2]) #  int(starting_date.strftime('%d'))
+    month_start = int(split[1]) #  int(starting_date.strftime('%m'))
+    year_start  = int(split[0]) #  int(starting_date.strftime('%Y'))
     month_labelz = [[],[],[]]
 
     for j in range(4):
@@ -812,7 +812,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
 
 
 
-    print(len(lines_to_plot))
+    # print(lines_to_plot[-1])
 
     layout = go.Layout(
                     annotations=annotz,
@@ -3154,7 +3154,6 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
 
     I0, R0, H0, C0, D0 = begin_date(date)
     
-    # print(dash.callback_context.triggered)
     if preset=='C':
         lr = params.fact_v[int(lr)]
         hr = params.fact_v[int(hr)]
