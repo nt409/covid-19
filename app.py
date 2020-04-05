@@ -14,6 +14,8 @@ from plotly.validators.scatter.marker import SymbolValidator
 import copy
 from cov_functions import simulator
 import flask
+import re
+
 
 
 from dan import layout_dan, COUNTRY_LIST, colours
@@ -23,35 +25,51 @@ import datetime
 import json
 
 
-# print(get_data('uk')['Currently Infected']['dates'])
-# exit()
+min_date = get_data('uk')['Currently Infected']['dates'][0]
+max_date = get_data('uk')['Currently Infected']['dates'][-1]
 
-I0 = np.float(get_data('uk')['Currently Infected']['data'][-1])
-D0 = np.float(get_data('uk')['Deaths']['data'][-1])
-# of resolved cases, fatality rate is 0.9%
-p = 0.009
-R0 = D0*(1-p)/p
+min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
+max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
-I0 = I0/params.UK_population
-R0 = R0/params.UK_population
-D0 = D0/params.UK_population
+dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
 
-#  H rate is 4.4% so 
-hosp_proportion = 0.044
-#  30% of H cases critical
-crit_proportion = 0.3
-# and it takes 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before
-I_ten = np.float(get_data('uk')['Currently Infected']['data'][-11])
-I_ten = I_ten/params.UK_population
 
-Hospitalised_all = I_ten*hosp_proportion
 
-H0 = Hospitalised_all*(1-crit_proportion)
-C0 = Hospitalised_all*crit_proportion
 
-I0 = I0 - H0
+def begin_date(date_inp = datetime.date.today() - datetime.timedelta(days=1)):
 
-# print(I0,R0,C0,H0,D0)
+    date_inp = datetime.datetime.strftime(date_inp, '%Y-%#m-%d' )
+    index = np.argwhere(dates==date_inp)[0][0]
+
+    I0 = np.float(get_data('uk')['Currently Infected']['data'][index])
+    I_ten = np.float(get_data('uk')['Currently Infected']['data'][index-10])
+    D0 = np.float(get_data('uk')['Deaths']['data'][index])
+    # print(I0,I_ten,D0)
+    
+    # of resolved cases, fatality rate is 0.9%
+    p = 0.009
+    R0 = D0*(1-p)/p
+
+    R0 = R0/params.UK_population
+    D0 = D0/params.UK_population
+
+    I0 = 2*I0/params.UK_population
+
+    #  H rate is 4.4% so 
+    hosp_proportion = 0.044
+    #  30% of H cases critical
+    crit_proportion = 0.3
+    # and it takes 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before
+    I_ten = 2*I_ten/params.UK_population # only half reported
+
+    Hospitalised_all = I_ten*hosp_proportion
+    I0 = I0 - Hospitalised_all
+
+    H0 = Hospitalised_all*(1-crit_proportion)
+    C0 = Hospitalised_all*crit_proportion
+
+    return I0, R0, H0, C0, D0
+
 
 
 ########################################################################################################################
@@ -104,13 +122,13 @@ bar_non_crit_style = {'height': bar_height, 'width': bar_width, 'display': 'bloc
 
 presets_dict = {'N': 'Do Nothing',
                 'MSD': 'Social Distancing',
-                'HL': 'Quarantine High Risk, Mild Social Distancing For Low Risk',
-                'Q': 'Quarantine All',
-                'H': 'Quarantine High Risk, No Social Distancing For Low Risk',
+                'H': 'Lockdown High Risk, No Social Distancing For Low Risk',
+                'HL': 'Lockdown High Risk, Mild Social Distancing For Low Risk',
+                'Q': 'Lockdown All',
                 'C': 'Custom'}
 
 preset_dict_high = {'Q': 2, 'MSD': 7, 'HL': 2,  'H': 2, 'N':10}
-preset_dict_low  = {'Q': 2, 'MSD': 7, 'HL': 10, 'H': 10, 'N':10}
+preset_dict_low  = {'Q': 2, 'MSD': 7, 'HL': 8, 'H': 10, 'N':10}
 
 month_len = 365/12
 
@@ -496,7 +514,7 @@ def human_format(num,dp=0):
 
 
 ########################################################################################################################
-def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False): # hosp
+def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,starting_date=None): # hosp
 
     font_size = 14
     
@@ -744,9 +762,9 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     vec2 = [i*(params.UK_population) for i in pop_log_vec]
 
 
-    month_start = int(datetime.date.today().strftime('%m'))
-    day_start = int(datetime.date.today().strftime('%d'))
-    year_start = int(datetime.date.today().strftime('%Y'))
+    month_start = int(starting_date.strftime('%m'))
+    day_start = int(starting_date.strftime('%d'))
+    year_start = int(starting_date.strftime('%Y'))
     month_labelz = [[],[],[]]
 
     for j in range(4):
@@ -822,8 +840,8 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                         showline=False,
                         # rangeslider_visible=True,
                         # linewidth=0,
-                        ticktext = time_axis_text[2],
-                        tickvals = time_axis_vals[2]
+                        ticktext = time_axis_text[1],
+                        tickvals = time_axis_vals[1]
                        ),
                     
                     yaxis2 = dict(
@@ -1312,7 +1330,6 @@ layout_intro = html.Div([
             html.H3('Definitions',className='display-4',
             style = {'marginTop': '1vh', 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
-            # dbc.Col([
             dcc.Markdown('''            
 
             There are **two vital concepts** that you need to understand before we can fully explore how the control measures work.
@@ -1346,10 +1363,6 @@ layout_intro = html.Div([
             style={'textAlign': 'justify'}),
 
             
-            # ],
-            # width = True), # {'size': 10}),
-
-    #end of tab 2
         ]),
 
         dbc.Tab(label='COVID-19 Control Strategies',tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_control', children=[
@@ -1422,81 +1435,6 @@ layout_intro = html.Div([
         ]),
 
 
-    #     dbc.Tab(label='Control Case Study', label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_3', children=[
-            
-
-
-
-    #         html.Div([
-                
-    #         html.H3('Example control strategy',className='display-4',
-    #         style = {'marginTop': '1vh', 'fontSize': '300%'}),
-
-    #         html.Hr(className='my-2'),
-
-    #         dbc.Col([
-
-    #         html.H4("Protecting high risk (quarantine), no change for low risk vs 'do nothing'",
-    #         style = {'marginTop': '1vh', 'fontSize': '180%'}),
-
-    #         dcc.Markdown('''
-
-    #         In the absence of a vaccine, the most effective way to protect high risk people is to let the low risk people get the disease and recover, increasing the levels of [**herd immunity**](/intro) within the population (and therefore ensuring future safety for the population) but minimally affecting the hospitalisation rate.
-
-    #         However, this is a risky strategy. There are very few ICU beds per 100,000 population in most healthcare systems. This means that any level of infection in the system increases the risk of an epidemic that could cause too many patients to need critical care.
-
-    #         A full quarantine would lead to a lower hospitalisation rate in the short term but more deaths in the long term without a vaccine. But with a vaccine the long term death rate can be minimised with a full quarantine followed by a widespread vaccination programme.
-
-    #         ''',
-    #         # style={'fontSize':'2vh'}
-    #         ),
-            
-    #         dbc.Col([
-    #         dcc.Graph(id='line-plot-intro',style={'height': '50vh', 'display': 'block', 'width': '100%'}),
-    #         html.Div(style={'height': '1vh'}),
-            
-    #         # dbc.Container([
-
-    #         dcc.Graph(id='line-plot-intro-2',
-    #         style={'height': '50vh', 'display': 'block', 'width': '100%'}),
-    #         ],
-    #         width=True
-    #         ),
-
-    #         dcc.Markdown('''
-
-    #         The dotted lines in these plots represents the outcome if not control is implemented. The solid lines represent the outcome if we protect the high risk (quarantine) and allow low risk to social distance. The result is a 92% reduction in deaths.
-
-    #         The control is in place for 9 months, starting after a month.
-
-    #         To simulate more strategies, press the button below!
-
-    #         ''',
-    #         # style={'fontSize':'2vh'}
-    #         ),
-
-    #         # dbc.Col([
-    #         dbc.Button('Start Calculating', href='/inter', size='lg', color='success'
-    #         ,style={'marginTop': '1vh','marginLeft': '2vw', 'fontSize': '100%'}
-    #         ),
-    #         ],
-    #         # width={'size':3,'offset':1},
-    #         width = True, # {'size': 12},
-    #         # style = {'marginLeft':'1vh','marginRight':'1vh'}
-
-    #         ),
-    #         ],
-    #         style={'marginTop': '1vh', 'marginBottom': '1vh'}
-    #         ),
-            
-    # #end of tab 3
-    #     ]),
-        # dbc.Tab(label='Explanatory Videos', label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_vids', children=[
-                    
-                    
-
-        # ]),
-
         dbc.Tab(label='How to use', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_1', children=[
                     
 
@@ -1568,9 +1506,9 @@ xl=10
 
 ],
 justify = 'center',
-style= {'width': '90%','backgroundColor': '#f4f6f7'} # , 'marginLeft': '5vw', 'marginRight': '5vw', 'marginBottom': '5vh'}
+style= {'width': '90%','backgroundColor': '#f4f6f7'}
 ),
-    # ])##  # end of jumbotron
+    
 ],
 justify='center')
 
@@ -1599,44 +1537,10 @@ Results_interpretation =  html.Div([
 
 
 
-########################################################################################################################
-
- # column_1 = 
-# inputs_col = 
-
-
-
-# results_col = 
-
-
-
 
 
 
 #########################################################################################################################################################
-
-# Instructions_layout = html.Div([html.H3("Instructions", className="display-4",style={'fontSize': '300%','textAlign': 'center','marginTop': '1vh'}),
-                                             
-#                                                     html.Hr(),
-
-#                                                     dcc.Markdown('''
-
-#                                                     *In this Section we explore the possible outcomes of different choices of strategy. **Strategy choice** involves picking a means of **controlling** the disease.*
-
-#                                                     1. **Pick your strategy** (bar below)
-                                                    
-#                                                     2. Choose which **results** to display (button below).
-
-#                                                     '''
-#                                                     ,style = {'marginTop': '2vh', 'textAlign': 'left'}
-#                                                     ),
-
-
-
-
-
-                                                    
-                                    # ])
 
 
 
@@ -1649,19 +1553,6 @@ layout_inter = html.Div([
 
 
 
-
-                        # end of first col
-
-
-
-########################################################################################################################
-## start row 1
-# main_page = dbc.Row([
-#                     column_1,
-
-########################################################################################################################
-                        # col 2
-# column_2 =              
                         html.Div([
                         dbc.Row([
                         dbc.Col([
@@ -2039,7 +1930,23 @@ layout_inter = html.Div([
                                                                                                                                                                     dbc.Row([
                                                                                                                                                                         dbc.Col([
 
-                                                                                                                                                                        html.H6('Critical Care Capacity Annual Increase',style={'fontSize': '100%'}),
+
+                                                                                                                                                                        html.H6('Start Date',style={'fontSize': '100%', 'textAlign': 'center'}),
+
+
+                                                                                                                                                                        dbc.Row([
+                                                                                                                                                                        dcc.DatePickerSingle(
+                                                                                                                                                                            id='model-start-date',
+                                                                                                                                                                            min_date_allowed = min_date + datetime.timedelta(days=10), # datetime.date(2020, 2, 25),
+                                                                                                                                                                            max_date_allowed = max_date, #datetime.date.today() - datetime.timedelta(days=1),
+                                                                                                                                                                            initial_visible_month =  max_date, # datetime.date.today() - datetime.timedelta(days=1),
+                                                                                                                                                                            date = max_date, # datetime.date.today() - datetime.timedelta(days=1),
+                                                                                                                                                                            display_format='D-MMM-YYYY',
+                                                                                                                                                                            style={'textAlign': 'center', 'marginTop': '0.5vh', 'marginBottom': '2vh'}
+                                                                                                                                                                        ),
+                                                                                                                                                                        ],justify='center'),
+
+                                                                                                                                                                        html.H6('Critical Care Capacity Annual Increase',style={'fontSize': '100%', 'textAlign': 'center'}),
 
                                                                                                                                                                           dcc.Slider(
                                                                                                                                                                                 id='ICU-slider',
@@ -2131,12 +2038,12 @@ layout_inter = html.Div([
                                                                                                                                                                             ],justify='center'),
                                                                                                                                                                             # style={'fontSize': '80%'}),
 
-                                                                                                                                                                            html.Hr(),
+                                                                                                                                                                            # html.Hr(),
 
 
 
                                                                                                                                                                             html.Div([
-                                                                                                                                                                                    html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'textAlign': 'center'}),
+                                                                                                                                                                                    html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '100%','textAlign': 'center'}),
 
                                                                                                                                                                                     dcc.Slider(
                                                                                                                                                                                         id='low-risk-slider-2',
@@ -2147,7 +2054,7 @@ layout_inter = html.Div([
                                                                                                                                                                                         value=10,
                                                                                                                                                                                     ),
 
-                                                                                                                                                                                    html.H6('Strategy Two: High Risk Infection Rate (%)', style = {'textAlign': 'center'}),
+                                                                                                                                                                                    html.H6('Strategy Two: High Risk Infection Rate (%)', style = {'fontSize': '100%','textAlign': 'center'}),
                                                                                                                                                                                 
                                                                                                                                                                                     dcc.Slider(
                                                                                                                                                                                         id='high-risk-slider-2',
@@ -2157,7 +2064,7 @@ layout_inter = html.Div([
                                                                                                                                                                                         marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
                                                                                                                                                                                         value=10,
                                                                                                                                                                                         ),
-                                                                                                                                                                                    html.Hr(),
+                                                                                                                                                                                    # html.Hr(),
                                                                                                                                                                             ],id='strat-2-id'),
                                                                                                                                                                         ]),
                                                                                                                                                                     ],
@@ -2291,7 +2198,7 @@ layout_inter = html.Div([
                                                                                                                                                                                                     ],id='outputs-div',
                                                                                                                                                                                                     ),
                                                                                                                                                                                                     
-                                                                                                                                                                                                    html.Hr(),
+                                                                                                                                                                                                    # html.Hr(),
                                                                                                                                                                     ],
                                                                                                                                                                     id="collapse-plots",
                                                                                                                                                                     is_open=False,
@@ -2665,6 +2572,10 @@ layout_inter = html.Div([
                                                                                         
                                                     html.Div(id='DPC-content',children=[
 
+                                                                dcc.Markdown('''*Click on '**Plot Settings** to adjust the plots or to compare the outcome of your strategy with the outcome of 'Do Nothing'.*''', 
+                                                                style = {'textAlign': 'center', 'marginBottom': '3vh' , 'marginTop': '3vh'}),
+                                                                
+                                                                
                                                                 dbc.Row([
                                                                         html.H4("All Categories",
                                                                         style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '180%'} # 'marginLeft': '2vw', 
@@ -2838,11 +2749,11 @@ layout_inter = html.Div([
                                                                                                                                                                     html.H4('Parameter Values',style={'fontSize': '180%', 'textAlign': 'center'}),
 
                                                                                                                                                                     dcc.Markdown('''
-                                                                                                                                                                    The model uses a weighted average across the age classes below and above 60 to calculate the probability of a member of each class getting hospitalised or needing critical care. Our initial conditions are updated to match new data every day (meaning the model output is updated every day).
+                                                                                                                                                                    The model uses a weighted average across the age classes below and above 60 to calculate the probability of a member of each class getting hospitalised or needing critical care. Our initial conditions are updated to match new data every day (meaning the model output is updated every day, although in '**Custom Options**' there is the choice to start from any given day).
 
-                                                                                                                                                                    We assume a 10 day delay on hospitalisations, so we use the number infected 10 days ago to inform the number hospitalised (0.044 of infected) and in critical care (0.3 of hospitalised). We calculate the approximate number recovered based on the number dead, assuming that 0.009 infections cause death. All these estimates are as per [**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482).
+                                                                                                                                                                    We assume a 10 day delay on hospitalisations, so we use the number infected 10 days ago to inform the number hospitalised (0.044 of infected) and in critical care (0.3 of hospitalised). We calculate the approximate number recovered based on the number dead, assuming that 0.009 infections cause death. All these estimates are as per the Imperial College paper ([**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482)).
 
-                                                                                                                                                                    The number of people infected, hospitalised and in critical care are calculated from the recorded data. This means that the number of infected, hosptilised and in critical care initially is likely an underestimate of the true figure (due to asymptomatic infections and/or lack of available tests).
+                                                                                                                                                                    The number of people infected, hospitalised and in critical care are calculated from the recorded data. We assume that only half the infections are reported ([**Fraser et al.**](https://science.sciencemag.org/content/early/2020/03/30/science.abb6936)), so we double the recorded number of current infections.
 
                                                                                                                                                                     ''',
                                                                                                                                                                     style={'textAlign': 'justify'}),
@@ -2852,7 +2763,7 @@ layout_inter = html.Div([
                                                                                                                                                                     
 
                                                                                                                                                                     dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585913306/table_ie8bxw.png',
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1586088773/table_tb0c9e.png',
                                                                                                                                                                     style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'}
                                                                                                                                                                     ),
                                                                                                                                                                     ],
@@ -3228,11 +3139,15 @@ def invisible_or_not(num,preset,do_nothing):
     Input('high-risk-slider-2', 'value'),
     Input('number-strats-radio', 'value'),
     Input('vaccine-slider', 'value'),
-    Input('ICU-slider', 'value')
+    Input('ICU-slider', 'value'),
+    Input('model-start-date', 'date'),
     ])
-def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow): # years , ,hosp
+def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # years , ,hosp
     if vaccine==9:
         vaccine = None
+    date = datetime.datetime.strptime(re.split('T| ', date)[0], '%Y-%m-%d')
+
+    I0, R0, H0, C0, D0 = begin_date(date)
     
     # print(dash.callback_context.triggered)
     if preset=='C':
@@ -3269,8 +3184,13 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow): # years , ,
     [
     Input('sol-calculated-do-nothing', 'children'),
     Input('ICU-slider', 'value'),
+    Input('model-start-date', 'date'),
     ])
-def find_sol_do_noth(hosp,ICU_grow): # years
+def find_sol_do_noth(hosp,ICU_grow,date):
+
+    date = datetime.datetime.strptime(re.split('T| ', date)[0], '%Y-%m-%d')
+
+    I0, R0, H0, C0, D0 = begin_date(date)
 
     t_stop = 365*3
     
@@ -3281,39 +3201,8 @@ def find_sol_do_noth(hosp,ICU_grow): # years
 
 
 
-########################################################################################################################
 
 
-# @app.callback(
-#             [Output('line-plot-intro', 'figure'),
-#             Output('line-plot-intro-2', 'figure')],
-#             [
-#             Input('intro-tabs', 'active_tab'),
-#             ],
-#             [
-#             State('sol-calculated-do-nothing', 'data'),
-#             ])
-# def intro_content(tab,sol_do_n): #hosp,
-#         fig1 = dummy_figure
-#         fig2 = dummy_figure
-
-
-#         if tab=='tab_3':
-#             lr, hr = preset_strat('H')
-#             output_use = ['S','I','R']
-#             output_use_2 = ['C','H','D']
-#             sols = []
-#             month = [1,10]
-#             months_controlled = [month_len*i for i in month]
-#             year_to_run = 3
-            
-#             sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=365*year_to_run,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow))
-#             sols.append(sol_do_n)
-#             fig1 = figure_generator(sols,month,output_use,['BR'],'two',['BR'],ICU_grow=ICU_grow)
-#             fig2 = figure_generator(sols,month,output_use_2,['BR'],'two',['BR'],ICU_grow=ICU_grow)
-
-        
-#         return fig1, fig2
 
 
 
@@ -3334,7 +3223,6 @@ def find_sol_do_noth(hosp,ICU_grow): # years
 
                 Output('line_page_title', 'children'),
                 
-                # Output('strategy-table', 'children'),
 
                 Output('strategy-outcome-content', 'children'),
 
@@ -3360,8 +3248,6 @@ def find_sol_do_noth(hosp,ICU_grow): # years
                 Output('line-plot-3', 'figure'),
 
 
-                # Output('line-plot-1', 'style'),
-                # Output('line-plot-2', 'style'),
                 
                 Output('loading-line-output-1','children'),
                 
@@ -3401,10 +3287,10 @@ def find_sol_do_noth(hosp,ICU_grow): # years
                 # State('hosp-cats', 'value'),
                 State('number-strats-radio', 'value'),
                 State('vaccine-slider', 'value'),
-                State('ICU-slider','value')
-
+                State('ICU-slider','value'),
+                State('model-start-date','date'),
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_nothing,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow): # pathname, tab_intro pathname, hosp
+def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_nothing,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date): # pathname, tab_intro pathname, hosp
 
     ctx = dash.callback_context
     
@@ -3600,6 +3486,9 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
             # DPC results
 
             if button_id=='DPC_dd': # sols is not None and
+                
+                date = datetime.datetime.strptime(re.split('T| ', date)[0], '%Y-%m-%d')
+
                 output_2 = [i for i in output if i in ['C','H','D']]
                 plot_settings_on_or_off = None
 
@@ -3616,15 +3505,15 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
 
                 if len(output)>0:
-                    fig1 = figure_generator(sols_to_plot,month,output,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow,comp_dn=comp_dn) # hosp,
+                    fig1 = figure_generator(sols_to_plot,month,output,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow,comp_dn=comp_dn,starting_date=date) # hosp,
                 else:
                     fig1 = dummy_figure
 
                 if len(output_2)>0:
-                    fig2 = figure_generator(sols_to_plot,month,output_2,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow,comp_dn=comp_dn) # hosp,
+                    fig2 = figure_generator(sols_to_plot,month,output_2,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow,comp_dn=comp_dn,starting_date=date) # hosp,
                 else:
                     fig2 = dummy_figure
-                fig3 = figure_generator(sols_to_plot,month,['C'],groups,num_strat,groups2,ICU_to_plot=True,vaccine_time=vaccine_time,ICU_grow=ICU_grow,comp_dn=comp_dn) # hosp,
+                fig3 = figure_generator(sols_to_plot,month,['C'],groups,num_strat,groups2,ICU_to_plot=True,vaccine_time=vaccine_time,ICU_grow=ICU_grow,comp_dn=comp_dn,starting_date=date) # hosp,
             
         ##############
 
@@ -3640,7 +3529,6 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
     BC_active,
     SO_active,
     Strat_outcome_title,
-    # tables,
     strategy_outcome_text,
     bar1,
     bar2,
@@ -3656,8 +3544,6 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
     fig1,
     fig2,
     fig3,
-    # line_plot_style_1,
-    # line_plot_style_2,
     html.Div()
     ]
 
@@ -3670,7 +3556,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
 
 
-# dan's callback
+# dan's callbacks
 
 
 @app.callback([Output('align-cases-check', 'options'),
@@ -3723,21 +3609,21 @@ def update_align_options(normalise_by_pop):
                Output('new-vs-total-deaths', 'figure'),
                Output('hidden-stored-data', 'children'),
                Output("loading-icon", "children"),],
-              [Input('button-plot', 'n_clicks'),
-               Input('start-date', 'date'),
-               Input('end-date', 'date'),
-               Input('show-exponential-check', 'value'),
-               Input('normalise-check', 'value'),
-               Input('align-cases-check', 'value'),
-               Input('align-cases-input', 'value'),
-               Input('align-deaths-check', 'value'),
-               Input('align-deaths-input', 'value'),
-               Input('align-active-cases-check', 'value'),
-               Input('align-active-cases-input', 'value'),
-               Input('align-daily-cases-check', 'value'),
-               Input('align-daily-cases-input', 'value'),
-               Input('align-daily-deaths-check', 'value'),
-               Input('align-daily-deaths-input', 'value')],
+              [Input('button-plot', 'n_clicks'),],
+              [State('start-date', 'date'),
+               State('end-date', 'date'),
+               State('show-exponential-check', 'value'),
+               State('normalise-check', 'value'),
+               State('align-cases-check', 'value'),
+               State('align-cases-input', 'value'),
+               State('align-deaths-check', 'value'),
+               State('align-deaths-input', 'value'),
+               State('align-active-cases-check', 'value'),
+               State('align-active-cases-input', 'value'),
+               State('align-daily-cases-check', 'value'),
+               State('align-daily-cases-input', 'value'),
+               State('align-daily-deaths-check', 'value'),
+               State('align-daily-deaths-input', 'value')] +
               [State('hidden-stored-data', 'children')] +
               [State(c_name, 'value') for c_name in COUNTRY_LIST])
 def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop,
@@ -3745,6 +3631,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                  align_active_cases_input, align_daily_cases_check, align_daily_cases_input,
                  align_daily_deaths_check, align_daily_deaths_input, saved_json_data, *args):
     # print(n_clicks, start_date, end_date, args)
+    # print(start_date)
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
