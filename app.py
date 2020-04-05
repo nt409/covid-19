@@ -32,15 +32,20 @@ max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
 
 
-def begin_date(date): # I0,I_ten,D0):
+def begin_date(date):
     
 
     uk_data = get_data('uk')
     dates              = np.asarray(uk_data['Currently Infected']['dates'])
     currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
     deaths_data        = np.asarray(uk_data['Deaths']['data'])
+
+    try:
+        index = int(np.argwhere(dates==date)[0][0])
+    except:
+        index = -1
     
-    index = 40 #np.argwhere(dates==date)[0][0]
+    
 
 
     I0    = np.float(currently_inf_data[index])
@@ -70,7 +75,6 @@ def begin_date(date): # I0,I_ten,D0):
     C0 = Hospitalised_all*crit_proportion
 
     return I0, R0, H0, C0, D0
-
 
 
 ########################################################################################################################
