@@ -30,21 +30,42 @@ max_date = get_data('uk')['Currently Infected']['dates'][-1]
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
+uk_data = get_data('uk')
+dates              = np.asarray(uk_data['Currently Infected']['dates'])
+currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
+deaths_data        = np.asarray(uk_data['Deaths']['data'])
 
+date_objects = []
+for dt in dates:
+    date_objects.append(datetime.datetime.strptime(dt, '%Y-%m-%d').date())
+date_objects = np.asarray(date_objects)
 
 def begin_date(date):
+    date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
+    
+    # date = np.array(datetime.datetime.strftime(date, '%Y-%#m-%d' ))
+    # print(np.argwhere(dates==np.array(date)),date,type(date))
+    # dates = country_data[c][title]['dates'][l:]
+
+
+    # print(date)
+    # print(date_objects[49])
+
+    # print(np.argwhere(date_objects==date),date,type(date))
     
 
-    uk_data = get_data('uk')
-    dates              = np.asarray(uk_data['Currently Infected']['dates'])
-    currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
-    deaths_data        = np.asarray(uk_data['Deaths']['data'])
+
+    # print(type(dates[1]))
+    # print(type(date))
+    # print(type(dates))
+
+
+
 
     try:
-        index = int(np.argwhere(dates==date)[0][0])
+        index = int(np.argwhere(date_objects==date)[0][0])
     except:
         index = -1
-    
     
 
 
@@ -75,6 +96,7 @@ def begin_date(date):
     C0 = Hospitalised_all*crit_proportion
 
     return I0, R0, H0, C0, D0
+
 
 
 ########################################################################################################################
@@ -3178,25 +3200,7 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     if vaccine==9:
         vaccine = None
 
-    date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
-    date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
-    
-    # uk_data = get_data('uk')
-    # dates              = np.asarray(uk_data['Currently Infected']['dates'])
-    # currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
-    # deaths_data        = np.asarray(uk_data['Deaths']['data'])
-    # # print(currently_inf_data)
-
-    # # I0, R0, H0, C0, D0 = 0.0001, 0, 0, 0, 0  # begin_date(date)
-    # index =   40 # np.argwhere(dates==date)[0][0]
-    # I0_in    = np.float(currently_inf_data[index])
-    # I_ten_in = np.float(currently_inf_data[index-10])
-    # D0_in    = np.float(deaths_data[index])
-
-    # # I0_in    = 0.1   
-    # # I_ten_in = 0      
-    # # D0_in    = 0   
 
     I0, R0, H0, C0, D0 = begin_date(date) #I0=I0_in,I_ten=I_ten_in,D0=D0_in)
 
@@ -3238,14 +3242,6 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     Input('model-start-date', 'date'),
     ])
 def find_sol_do_noth(hosp,ICU_grow,date):
-
-    date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
-    date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
-
-
-    # I0_in    = 0.1   
-    # I_ten_in = 0      
-    # D0_in    = 0   
 
     I0, R0, H0, C0, D0 = begin_date(date)
 
