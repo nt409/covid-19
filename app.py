@@ -18,7 +18,7 @@ import flask
 
 
 from dan import layout_dan, COUNTRY_LIST, colours
-from dan_get_data import get_data
+from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER
 from dan_constants import POPULATIONS
 import datetime
 import json
@@ -37,10 +37,26 @@ for dt in dates:
     date_objects.append(datetime.datetime.strptime(dt, '%Y-%m-%d').date())
 date_objects = np.asarray(date_objects)
 
+country_data = get_data('japan')
+
+COUNTRY_LIST_NICK = sorted(COUNTRY_LIST_WORLDOMETER)
+COUNTRY_LIST_NICK.remove('world')
+
+initial_country = COUNTRY_LIST_NICK.index('uk')
+
 def begin_date(date,country='uk'):
+    # if country is None:
+    #     return 0.1, 0, 0, 0, 0
+
+    
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
     
     country_data = get_data(country)
+    
+    if country_data is None:
+        country_data = get_data('uk')
+
+    
     currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
     deaths_data        = np.asarray(country_data['Deaths']['data'])
     population_country = POPULATIONS[country]
@@ -537,7 +553,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
 
     
     population_plot = POPULATIONS[country]
-    # for i in COUNTRY_LIST: # c_name.title() if c_name not in ['us', 'uk'] else c_name.upper()
+
     if country in ['us','uk']:
         country_name = country.upper()
     else:
@@ -1267,7 +1283,7 @@ layout_intro = html.Div([
         html.Hr(),
 
         dcc.Markdown('''
-        The content is targeted at people with little or no experience of modelling and might be used as a resource for anyone wishing to understand more about the standstill. We welcome any feedback you have as we develop this resource – just email us at: [covid.at.plants@gmail.com](\intro).
+        The content is targeted at people with little or no experience of modelling and might be used as a resource for anyone wishing to understand more about the standstill. We welcome any feedback you have as we develop this resource – just email us at: [covid.at.plants@gmail.com](/intro).
         ''',
         style={'textAlign': 'justify','marginTop': '5vh', 'marginBottom': '3vh'}),
 
@@ -1731,8 +1747,8 @@ layout_inter = html.Div([
                                                                                                                                                                     html.Div([
                                                                                                                                                                     dcc.Dropdown(
                                                                                                                                                                         id = 'model-country-choice',
-                                                                                                                                                                        options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST[1:])], # c_name, 'value') for c_name in COUNTRY_LIST
-                                                                                                                                                                        value= 0,
+                                                                                                                                                                        options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST_NICK)],
+                                                                                                                                                                        value= initial_country,
                                                                                                                                                                         clearable = False,
                                                                                                                                                                     ),],
                                                                                                                                                                     style={'cursor': 'pointer'}),
@@ -3479,12 +3495,17 @@ def invisible_or_not(num,preset,do_nothing):
     ])
 def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date,country_num): # years , ,hosp
 
-    country_num = country_num + 1
+    # country_num = country_num + 1
+    
+    try:
+        country = COUNTRY_LIST_NICK[country_num]
+    except:
+        country = 'uk'
 
     if vaccine==9:
         vaccine = None
 
-    I0, R0, H0, C0, D0 = begin_date(date,COUNTRY_LIST[country_num]) #I0=I0_in,I_ten=I_ten_in,D0=D0_in)
+    I0, R0, H0, C0, D0 = begin_date(date,country) #I0=I0_in,I_ten=I_ten_in,D0=D0_in)
 
     if preset is None:
         preset = 'N'
@@ -3529,9 +3550,13 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date,country_
     ])
 def find_sol_do_noth(hosp,ICU_grow,date,country_num):
 
-    country_num = country_num + 1
+    # country_num = country_num + 1
+    try:
+        country = COUNTRY_LIST_NICK[country_num]
+    except:
+        country = 'uk'
 
-    I0, R0, H0, C0, D0 = begin_date(date,COUNTRY_LIST[country_num])
+    I0, R0, H0, C0, D0 = begin_date(date,country)
 
     t_stop = 365*3
     
@@ -3638,8 +3663,14 @@ def find_sol_do_noth(hosp,ICU_grow,date,country_num):
                 State('model-start-date','date'),
                 ])
 def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_nothing,plot_ICU_cap,results_type,country_num,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date): # pathname, tab_intro pathname, hosp # ,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active
-    country_num = country_num + 1
-    country = COUNTRY_LIST[country_num]
+
+    # country_num = country_num + 1
+    try:
+        country = COUNTRY_LIST_NICK[country_num]
+    except:
+        country = 'uk'
+
+    
 
     # ctx = dash.callback_context
     
