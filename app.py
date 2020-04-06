@@ -1097,7 +1097,7 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
                 
                     dbc.Row([
-                        html.H3(Outcome_title,style={'fontSize':'300%'},className='display-4'),
+                        html.H3(Outcome_title,style={'fontSize':'250%'},className='display-4'),
                     ],
                     justify='center'
                     ),
@@ -1248,7 +1248,7 @@ layout_intro = html.Div([
         dbc.Tab(label='Start Here', tab_style = {'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_start', children=[
         html.H3('Introduction',
         className = 'display-4',
-        style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+        style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
         html.Hr(),
 
@@ -1262,7 +1262,7 @@ layout_intro = html.Div([
         
         html.H3('Who is this website for?',
         className = 'display-4',
-        style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+        style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
         html.Hr(),
 
@@ -1275,7 +1275,7 @@ layout_intro = html.Div([
         
         html.H3('How to use the website',
         className = 'display-4',
-        style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+        style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
         html.Hr(),
 
@@ -1291,7 +1291,7 @@ layout_intro = html.Div([
         dbc.Tab(label='Introduction to modelling',  tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_0', children=[
 
             html.H3('Introduction to mathematical modelling',className='display-4',
-            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1317,7 +1317,7 @@ layout_intro = html.Div([
 
 
             html.H3('Introducing SIR models',className='display-4',
-            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1342,7 +1342,7 @@ layout_intro = html.Div([
 
 
             html.H3('Introducing the basic reproductive number',className='display-4',
-            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1364,7 +1364,7 @@ layout_intro = html.Div([
             html.Hr(),
             
             html.H3('Definitions',className='display-4',
-            style = { 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = { 'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             dcc.Markdown('''            
 
@@ -1404,7 +1404,7 @@ layout_intro = html.Div([
         dbc.Tab(label='COVID-19 Control Strategies',tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_control', children=[
             html.H3('Keys to a successful control strategy',
             className = 'display-4',
-            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1428,7 +1428,7 @@ layout_intro = html.Div([
 
             html.H3('Strategies',
             className='display-4',
-            style = {'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+            style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
             html.Hr(),
 
@@ -1478,7 +1478,7 @@ layout_intro = html.Div([
 
                     # dbc.Container(html.Div(style={'height':'5px'})),
                     html.H3('How to use the interactive model',className='display-4',
-                    style = { 'fontSize': '300%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+                    style = { 'fontSize': '250%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
                     # html.H4('How to use the interactive model',className='display-4'),
                     
@@ -1620,7 +1620,7 @@ layout_inter = html.Div([
 
                                                     # html.Hr(),
 
-                                                    html.H3('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '300%','textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+                                                    html.H3('Strategy Outcome',id='line_page_title',className="display-4",style={'fontSize': '250%','textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
 
                                                     # html.Hr(),
 
@@ -1697,7 +1697,7 @@ layout_inter = html.Div([
                                                                                                                                                             # ),
 
                                                                                                                                                             html.H3(['Where and when'],
-                                                                                                                                                            style={'fontSize': '250%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
+                                                                                                                                                            style={'fontSize': '230%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
 
                                                                                                                                                             
 
@@ -1755,7 +1755,7 @@ layout_inter = html.Div([
                                                                                                                                                             style = {'cursor': 'pointer', 'marginBottom': '0.5vh'}),
                                                                                                                                                             ],
                                                                                                                                                             className = 'display-4',
-                                                                                                                                                            style={'fontSize': '250%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
+                                                                                                                                                            style={'fontSize': '230%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
 
                                                                                                                                                             
 
@@ -1766,9 +1766,9 @@ layout_inter = html.Div([
                                                                                                                                                                 dbc.PopoverBody(dcc.Markdown(
                                                                                                                                                                 '''
 
-                                                                                                                                                                1a. Pick the **type of control**.
+                                                                                                                                                                1a. Pick the **control timings** (how long control is applied for and when it starts).
 
-                                                                                                                                                                1b. Pick the **control timings** (how long control is applied for and when it starts).
+                                                                                                                                                                1b. Pick the **type of control**.
 
                                                                                                                                                                 1c. Introduce a **vaccine** if you would like.
 
@@ -1796,10 +1796,64 @@ layout_inter = html.Div([
                                                                                                                                                     dbc.Row([
 
 
-                                                                                                                                                            dbc.Col([
+                                                                                                                                                           
 
-                                                                                                                                                            html.H6([
-                                                                                                                                                                '1a. Control Type ',
+
+
+                                                                                                                                                            dbc.Col([
+                                                                                                                                                                
+
+
+                                                                                                                                                                html.H6([
+                                                                                                                                                                '1a. Months of Control ',
+                                                                                                                                                                dbc.Button('🛈',
+                                                                                                                                                                color='primary',
+                                                                                                                                                                size='sm',
+                                                                                                                                                                id='popover-months-control-target',
+                                                                                                                                                                style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+                                                                                                                                                                ],
+                                                                                                                                                                style={'fontSize': '100%','marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
+
+
+                                                                                                                                                            
+                                                                                                                                                                html.Div([
+                                                                                                                                                                dcc.RangeSlider(
+                                                                                                                                                                            id='month-slider',
+                                                                                                                                                                            min=0,
+                                                                                                                                                                            max=floor(params.max_months_controlling),
+                                                                                                                                                                            step=1,
+                                                                                                                                                                            # pushable=0,
+                                                                                                                                                                            marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
+                                                                                                                                                                            value=[0,initial_month],
+                                                                                                                                                                ),
+                                                                                                                                                                ],
+                                                                                                                                                                # style={'fontSize': '180%'},
+                                                                                                                                                                ),
+
+
+                                                                                                                                                            dbc.Popover(
+                                                                                                                                                                [
+                                                                                                                                                                dbc.PopoverHeader('Control Timing'),
+                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                                                                '''
+
+                                                                                                                                                                Use this slider to determine when control **starts** and **finishes**.
+
+                                                                                                                                                                When control is in place the infection rate is reduced by an amount depending on the strategy choice.
+
+                                                                                                                                                                When control is not in place the infection rate returns to the baseline level (100%).
+                                                                                                                                                                
+                                                                                                                                                                '''
+                                                                                                                                                                ),),
+                                                                                                                                                                ],
+                                                                                                                                                                id = "popover-months-control",
+                                                                                                                                                                is_open=False,
+                                                                                                                                                                target="popover-months-control-target",
+                                                                                                                                                                placement='right',
+                                                                                                                                                            ),
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    html.H6([
+                                                                                                                                                                '1b. Control Type ',
                                                                                                                                                                 dbc.Button('🛈',
                                                                                                                                                                     color='primary',
                                                                                                                                                                     # className='mb-3',
@@ -1811,21 +1865,6 @@ layout_inter = html.Div([
                                                                                                                                                                 style={'fontSize': '100%', 'marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
 
 
-
-
-                                                                                                                                                            html.Div([
-                                                                                                                                                            dcc.Dropdown(
-                                                                                                                                                                id = 'preset',
-                                                                                                                                                                options=[{'label': presets_dict_dropdown[key],
-                                                                                                                                                                'value': key} for key in presets_dict_dropdown],
-                                                                                                                                                                value= 'MSD',
-                                                                                                                                                                clearable = False,
-                                                                                                                                                            ),],
-                                                                                                                                                            style={'cursor': 'pointer'}),
-                                                                                                                                                            
-
-
-                                                                                                                                                            
                                                                                                                                                             dbc.Popover(
                                                                                                                                                                 [
                                                                                                                                                                 dbc.PopoverHeader('Control'),
@@ -1847,10 +1886,16 @@ layout_inter = html.Div([
                                                                                                                                                                 placement='right',
                                                                                                                                                                 ),
 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 
+
+
+                                                                                                                                                            
                                                                                                                                                             ],
                                                                                                                                                             width=6,
                                                                                                                                                             ),
+
+
 
                                                                                                                                                         dbc.Col([
 
@@ -1865,7 +1910,7 @@ layout_inter = html.Div([
                                                                                                                                                                 id='popover-vaccination-target',
                                                                                                                                                                 style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
                                                                                                                                                                 ],
-                                                                                                                                                                style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+                                                                                                                                                                style={'fontSize': '100%','marginTop': '1vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
 
 
                                                                                                                                                             html.Div([
@@ -1905,87 +1950,10 @@ layout_inter = html.Div([
                                                                                                                                                                 target="popover-vaccination-target",
                                                                                                                                                                 placement='left',
                                                                                                                                                             ),
-                                                                                                                                                            
-                                                                                                                                                            
 
 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    html.H6([
 
-
-
-
-                                                                                                                                                        ],width=6),
-
-                                                                                                                                                    ]),
-
-
-
-                                                                                                                                                        dbc.Row([
-                                                                                                                                                            dbc.Col([
-                                                                                                                                                                
-
-
-                                                                                                                                                                html.H6([
-                                                                                                                                                                '1b. Months of Control ',
-                                                                                                                                                                dbc.Button('🛈',
-                                                                                                                                                                color='primary',
-                                                                                                                                                                size='sm',
-                                                                                                                                                                id='popover-months-control-target',
-                                                                                                                                                                style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-                                                                                                                                                                ],
-                                                                                                                                                                style={'fontSize': '100%','marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
-
-
-                                                                                                                                                            
-                                                                                                                                                            html.Div([
-                                                                                                                                                            dcc.RangeSlider(
-                                                                                                                                                                        id='month-slider',
-                                                                                                                                                                        min=0,
-                                                                                                                                                                        max=floor(params.max_months_controlling),
-                                                                                                                                                                        step=1,
-                                                                                                                                                                        # pushable=0,
-                                                                                                                                                                        marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
-                                                                                                                                                                        value=[0,initial_month],
-                                                                                                                                                            ),
-                                                                                                                                                            ],
-                                                                                                                                                            # style={'fontSize': '180%'},
-                                                                                                                                                            ),
-
-
-                                                                                                                                                            dbc.Popover(
-                                                                                                                                                                [
-                                                                                                                                                                dbc.PopoverHeader('Control Timing'),
-                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                                                                                '''
-
-                                                                                                                                                                Use this slider to determine when control **starts** and **finishes**.
-
-                                                                                                                                                                When control is in place the infection rate is reduced by an amount depending on the strategy choice.
-
-                                                                                                                                                                When control is not in place the infection rate returns to the baseline level (100%).
-                                                                                                                                                                
-                                                                                                                                                                '''
-                                                                                                                                                                ),),
-                                                                                                                                                                ],
-                                                                                                                                                                id = "popover-months-control",
-                                                                                                                                                                is_open=False,
-                                                                                                                                                                target="popover-months-control-target",
-                                                                                                                                                                placement='right',
-                                                                                                                                                            ),
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-
-
-
-                                                                                                                                                            
-                                                                                                                                                            ],
-                                                                                                                                                            width=6,
-                                                                                                                                                            ),
-                                                                                                                                                        # ],
-                                                                                                                                                        # justify='center'),
-
-                                                                                                                                                        dbc.Col([
-
-                                                                                                                                                            html.H6([
                                                                                                                                                                 '2. Results Type ',
                                                                                                                                                                 dbc.Button('🛈',
                                                                                                                                                                     color='primary',
@@ -1997,21 +1965,9 @@ layout_inter = html.Div([
                                                                                                                                                                 ],
                                                                                                                                                                 style={'fontSize': '100%', 'marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
 
-                                                                                                                                                            html.Div([
-                                                                                                                                                            dcc.Dropdown(
-                                                                                                                                                                id = 'dropdown',
-                                                                                                                                                                options=[{'label': 'Disease Progress Curves','value': 'DPC_dd'},
-                                                                                                                                                                {'label': 'Bar Charts','value': 'BC_dd'},
-                                                                                                                                                                {'label': 'Strategy Overview','value': 'SO_dd'},
-                                                                                                                                                                ],
-                                                                                                                                                                value= 'DPC_dd',
-                                                                                                                                                                clearable = False,
-                                                                                                                                                            ),],
-                                                                                                                                                            style={'cursor': 'pointer'}),
-
                                                                                                                                                             dbc.Popover(
                                                                                                                                                                     [
-                                                                                                                                                                    dbc.PopoverHeader('ICU Capacity'),
+                                                                                                                                                                    dbc.PopoverHeader('Results'),
                                                                                                                                                                     dbc.PopoverBody(dcc.Markdown(
                                                                                                                                                                     '''
 
@@ -2029,7 +1985,66 @@ layout_inter = html.Div([
                                                                                                                                                             
 
 
+
+
+
+
                                                                                                                                                         ],width=6),
+
+                                                                                                                                                    ]),
+
+
+
+                                                                                                                                                dbc.Row([
+
+
+                                                                                                                                                    dbc.Col([
+
+
+
+
+                                                                                                                                                            html.Div([
+                                                                                                                                                            dcc.Dropdown(
+                                                                                                                                                                id = 'preset',
+                                                                                                                                                                options=[{'label': presets_dict_dropdown[key],
+                                                                                                                                                                'value': key} for key in presets_dict_dropdown],
+                                                                                                                                                                value= 'MSD',
+                                                                                                                                                                clearable = False,
+                                                                                                                                                            ),],
+                                                                                                                                                            style={'cursor': 'pointer'}),
+                                                                                                                                                            
+
+
+                                                                                                                                                            
+
+
+                                                                                                                                                        ],
+                                                                                                                                                        width=7,
+                                                                                                                                                        ),
+
+
+
+                                                                                                                                                        dbc.Col([
+
+
+
+                                                                                                                                                            html.Div([
+                                                                                                                                                            dcc.Dropdown(
+                                                                                                                                                                id = 'dropdown',
+                                                                                                                                                                options=[{'label': 'Disease Progress Curves','value': 'DPC_dd'},
+                                                                                                                                                                {'label': 'Bar Charts','value': 'BC_dd'},
+                                                                                                                                                                {'label': 'Strategy Overview','value': 'SO_dd'},
+                                                                                                                                                                ],
+                                                                                                                                                                value= 'DPC_dd',
+                                                                                                                                                                clearable = False,
+                                                                                                                                                            ),],
+                                                                                                                                                            style={'cursor': 'pointer'}),
+
+
+                                                                                                                                                            
+
+
+                                                                                                                                                        ],width=5),
                                                                                                                                                     ]),
 
 
@@ -2098,7 +2113,7 @@ layout_inter = html.Div([
                                                                                                                                                                 dbc.PopoverBody(dcc.Markdown(
                                                                                                                                                                 '''
 
-                                                                                                                                                                Use this to choose your own custom strategy (you must first select 'Custom' in the '**1a. Control Type**' selector above). You can compare two strategies directly or consider one only.
+                                                                                                                                                                Use this to choose your own custom strategy (you must first select 'Custom' in the '**1b. Control Type**' selector above). You can compare two strategies directly or consider one only.
                                                                                                                                                                 
                                                                                                                                                                 The choice consists of selecting by how much to decelerate spread of COVID-19 (using the 'infection rate' sliders).
                                                                                                                                                                 
@@ -2170,7 +2185,7 @@ layout_inter = html.Div([
                                                                                                                                                                             dbc.Col([
                                                                                                                                                                             html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
 
-                                                                                                                                                                            dcc.Markdown('''*Set '**1a. Control Type**' to 'Custom'.*''', style = {'fontSize': '70%', 'marginTop': '1vh', 'textAlign': 'center'}),
+                                                                                                                                                                            dcc.Markdown('''*Set '**1b. Control Type**' to 'Custom'.*''', style = {'fontSize': '70%', 'marginTop': '1vh', 'textAlign': 'center'}),
                                                                                                                                                                             dbc.Row([
                                                                                                                                                                             dbc.RadioItems(
                                                                                                                                                                             id = 'number-strats-radio',
@@ -2198,7 +2213,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                             # html.Hr(),
                                                                                                                                                                             
-                                                                                                                                                                            dcc.Markdown('''*To adjust the following, make sure '**1a. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%', 'marginTop': '2vh', 'textAlign': 'center'}), # 'textAlign': 'left', 
+                                                                                                                                                                            dcc.Markdown('''*To adjust the following, make sure '**1b. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%', 'marginTop': '2vh', 'textAlign': 'center'}), # 'textAlign': 'left', 
 
                                                                                                                                                                             dbc.Row([
 
@@ -2220,7 +2235,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                                 The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
                                                                                                                                                                             
-                                                                                                                                                                                Adjust by choosing a preset strategy  or making your own custom choice ('**1a. Control Type**').
+                                                                                                                                                                                Adjust by choosing a preset strategy  or making your own custom choice ('**1b. Control Type**').
 
 
                                                                                                                                                                                 '''
@@ -2391,7 +2406,7 @@ layout_inter = html.Div([
                                                         dbc.Row([
                                                                 html.H3('Results',
                                                                 className='display-4',
-                                                                style={'fontSize': '300%', 'textAlign': 'center' ,'marginTop': "1vh",'marginBottom': "1vh"}),
+                                                                style={'fontSize': '250%', 'textAlign': 'center' ,'marginTop': "1vh",'marginBottom': "1vh"}),
                                                                 # html.H4("Disease Progress Curves",
                                                                 # style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '1vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                 # ),
@@ -2960,7 +2975,7 @@ layout_inter = html.Div([
                                                     
                                                     html.Hr(style={'marginTop': '3vh'}),
     
-                                                    html.H3("Interpretation", className="display-4",style={'fontSize': '300%','textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+                                                    html.H3("Interpretation", className="display-4",style={'fontSize': '250%','textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
                                                     html.Hr(),
 
                                                     # dbc.Jumbotron([
@@ -2985,7 +3000,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     html.H3('Model Explanation',
                                                                                                                                                                     className = 'display-4',
-                                                                                                                                                                    style = {'marginTop': '3vh', 'marginBottom': '1vh', 'textAlign': 'center', 'fontSize': '300%'}),
+                                                                                                                                                                    style = {'marginTop': '3vh', 'marginBottom': '1vh', 'textAlign': 'center', 'fontSize': '250%'}),
 
                                                                                                                                                                     html.Hr(),
                                                                                                                                                                     dcc.Markdown(
