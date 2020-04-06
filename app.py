@@ -30,35 +30,20 @@ max_date = get_data('uk')['Currently Infected']['dates'][-1]
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
-uk_data = get_data('uk')
-dates              = np.asarray(uk_data['Currently Infected']['dates'])
-currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
-deaths_data        = np.asarray(uk_data['Deaths']['data'])
+dates              = np.asarray(get_data('uk')['Currently Infected']['dates'])
 
 date_objects = []
 for dt in dates:
     date_objects.append(datetime.datetime.strptime(dt, '%Y-%m-%d').date())
 date_objects = np.asarray(date_objects)
 
-def begin_date(date):
+def begin_date(date,country='uk'):
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
     
-    # date = np.array(datetime.datetime.strftime(date, '%Y-%#m-%d' ))
-    # print(np.argwhere(dates==np.array(date)),date,type(date))
-    # dates = country_data[c][title]['dates'][l:]
-
-
-    # print(date)
-    # print(date_objects[49])
-
-    # print(np.argwhere(date_objects==date),date,type(date))
-    
-
-
-    # print(type(dates[1]))
-    # print(type(date))
-    # print(type(dates))
-
+    country_data = get_data(country)
+    currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
+    deaths_data        = np.asarray(country_data['Deaths']['data'])
+    population_country = POPULATIONS[country]
 
 
 
@@ -66,6 +51,7 @@ def begin_date(date):
         index = int(np.argwhere(date_objects==date)[0][0])
     except:
         index = -1
+        print('date error')
     
 
 
@@ -77,17 +63,17 @@ def begin_date(date):
     p = 0.009
     R0 = D0*(1-p)/p
 
-    R0 = R0/params.UK_population
-    D0 = D0/params.UK_population
+    R0 = R0/population_country
+    D0 = D0/population_country
 
-    I0 = 2*I0/params.UK_population
+    I0 = 2*I0/population_country
 
     #  H rate is 4.4% so 
     hosp_proportion = 0.044
     #  30% of H cases critical
     crit_proportion = 0.3
     # and it takes 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before
-    I_ten = 2*I_ten/params.UK_population # only half reported
+    I_ten = 2*I_ten/population_country # only half reported
 
     Hospitalised_all = I_ten*hosp_proportion
     I0 = I0 - Hospitalised_all
@@ -540,16 +526,23 @@ def human_format(num,dp=0):
     while abs(num) >= 1000:
         magnitude += 1
         num /= 1000.0
-    # add more suffixes if you need them
-    if dp==0:
-        return '%.0f%s' % (num, ['', 'K', 'M', 'G'][magnitude])
+    if dp==0 and not magnitude==3:
+        return '%.0f%s' % (num, ['', 'K', 'M', 'B'][magnitude])
     else:
-        return '%.1f%s' % (num, ['', 'K', 'M', 'G'][magnitude])
+        return '%.1f%s' % (num, ['', 'K', 'M', 'B'][magnitude])
 
 
 ########################################################################################################################
-def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,starting_date=None): # hosp
+def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,starting_date=None,country = 'uk'): # hosp
 
+    
+    population_plot = POPULATIONS[country]
+    # for i in COUNTRY_LIST: # c_name.title() if c_name not in ['us', 'uk'] else c_name.upper()
+    if country in ['us','uk']:
+        country_name = country.upper()
+    else:
+        country_name = country.title()
+    
     font_size = 13
     
     lines_to_plot = []
@@ -614,7 +607,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                                 'hovertemplate': group_hover_str +
                                                  longname[name] + ': %{y:.2f}%, ' + '%{text} <br>' +
                                                  'Time: %{x:.1f} Months<extra></extra>',
-                                'text': [human_format(i*params.UK_population/100,dp=1) for i in yyy_p],
+                                'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
                                 'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name ,'name': longname[name] + name_string}
                         lines_to_plot.append(line)
 
@@ -763,7 +756,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     dict(
         type='scatter',
         x = [0,sol['t'][-1]],
-        y = [ 0, params.UK_population],
+        y = [ 0, population_plot],
         yaxis="y2",
         opacity=0,
         hoverinfo = 'skip',
@@ -786,7 +779,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
         if yax['range'][1]>yy[i] and yax['range'][1] <= yy[i+1]:
             pop_vec_lin = np.linspace(0,yy2[i+1],11)
 
-    vec = [i*(params.UK_population) for i in pop_vec_lin]
+    vec = [i*(population_plot) for i in pop_vec_lin]
 
     log_bottom = -8
     log_range = [log_bottom,np.log10(yax['range'][1])]
@@ -794,7 +787,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     pop_vec_log_intermediate = np.linspace(log_range[0],ceil(np.log10(pop_vec_lin[-1])), 1+ ceil(np.log10(pop_vec_lin[-1])-log_range[0]) )
 
     pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
-    vec2 = [i*(params.UK_population) for i in pop_log_vec]
+    vec2 = [i*(population_plot) for i in pop_log_vec]
 
     # date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
     split = starting_date.split('-')
@@ -885,7 +878,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                        ),
                     
                     yaxis2 = dict(
-                        title = 'Population',
+                        title = 'Population (' + country_name + ')',
                         overlaying='y1',
                         showline=False,
                         # showgrid=True,
@@ -900,14 +893,14 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                         buttons=list([
                             dict(
                                 args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'linear', 'range': yax['range'], 'automargin': True, 'showline':False},
-                                "yaxis2": {'title': 'Population','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'showline':False,'side':'right'}
+                                "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'showline':False,'side':'right'}
                                 }], # tickformat
                                 label="Linear",
                                 method="relayout"
                             ),
                             dict(
                                 args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'log', 'range': log_range,'automargin': True, 'showline':False},
-                                "yaxis2": {'title': 'Population','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True, 'showline':False,'side':'right'}
+                                "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True, 'showline':False,'side':'right'}
                                 }], # 'tickformat': yax_form_log,
                                 label="Logarithmic",
                                 method="relayout"
@@ -1703,6 +1696,56 @@ layout_inter = html.Div([
                                                                                                                                                             #     centered=True
                                                                                                                                                             # ),
 
+                                                                                                                                                            html.H3(['Where and when'],
+                                                                                                                                                            style={'fontSize': '250%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
+
+                                                                                                                                                            
+
+                                                                                                                                                        dbc.Row([
+
+                                                                                                                                                            
+                                                                                                                                                            dbc.Col([
+                                                                                                                                                            html.H6('Model Start Date',style={'fontSize': '100%', 'textAlign': 'center'}),
+
+                                                                                                                                                            dbc.Row([
+                                                                                                                                                            dcc.DatePickerSingle(
+                                                                                                                                                                id='model-start-date',
+                                                                                                                                                                min_date_allowed = min_date + datetime.timedelta(days=10), # datetime.date(2020, 2, 25),
+                                                                                                                                                                max_date_allowed = max_date, #datetime.date.today() - datetime.timedelta(days=1),
+                                                                                                                                                                initial_visible_month =  max_date, # datetime.date.today() - datetime.timedelta(days=1),
+                                                                                                                                                                date = max_date, # datetime.date.today() - datetime.timedelta(days=1),
+                                                                                                                                                                display_format='D-MMM-YYYY',
+                                                                                                                                                                style={'textAlign': 'center', 'marginTop': '0.5vh', 'marginBottom': '2vh'}
+                                                                                                                                                            ),
+                                                                                                                                                            ],justify='center'),
+                                                                                                                                                            ],width=4),
+
+
+
+                                                                                                                                                                # dbc.Row([
+                                                                                                                                                                dbc.Col([
+                                                                                                                                                                
+                                                                                                                                                                html.H6('Country',style={'fontSize': '100%', 'textAlign': 'center'}),
+
+                                                                                                                                                                
+                                                                                                                                                                    html.Div([
+                                                                                                                                                                    dcc.Dropdown(
+                                                                                                                                                                        id = 'model-country-choice',
+                                                                                                                                                                        options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST[1:])], # c_name, 'value') for c_name in COUNTRY_LIST
+                                                                                                                                                                        value= 0,
+                                                                                                                                                                        clearable = False,
+                                                                                                                                                                    ),],
+                                                                                                                                                                    style={'cursor': 'pointer'}),
+
+                                                                                                                                                                ],width=4),
+                                                                                                                                                                # ],justify='center'),
+                                                                                                                                                            
+                                                                                                                                                        ],justify='center'),
+
+
+
+                                                                                                                                                            html.Hr(),
+                                                                                                                                                            
                                                                                                                                                             html.H3(['Pick Your Strategy ',
                                                                                                                                                             dbc.Button('🛈',
                                                                                                                                                             color='primary',
@@ -2121,22 +2164,7 @@ layout_inter = html.Div([
                                                                                                                                                                             
                                                                                                                                                                             dbc.Row([
 
-                                                                                                                                                                            dbc.Col([
 
-                                                                                                                                                                            html.H6('Start Date',style={'fontSize': '100%', 'textAlign': 'center'}),
-
-                                                                                                                                                                            dbc.Row([
-                                                                                                                                                                            dcc.DatePickerSingle(
-                                                                                                                                                                                id='model-start-date',
-                                                                                                                                                                                min_date_allowed = min_date + datetime.timedelta(days=10), # datetime.date(2020, 2, 25),
-                                                                                                                                                                                max_date_allowed = max_date, #datetime.date.today() - datetime.timedelta(days=1),
-                                                                                                                                                                                initial_visible_month =  max_date, # datetime.date.today() - datetime.timedelta(days=1),
-                                                                                                                                                                                date = max_date, # datetime.date.today() - datetime.timedelta(days=1),
-                                                                                                                                                                                display_format='D-MMM-YYYY',
-                                                                                                                                                                                style={'textAlign': 'center', 'marginTop': '0.5vh', 'marginBottom': '2vh'}
-                                                                                                                                                                            ),
-                                                                                                                                                                            ],justify='center'),
-                                                                                                                                                                            ],width=6),
 
 
                                                                                                                                                                             dbc.Col([
@@ -3043,7 +3071,7 @@ layout_inter = html.Div([
                                                                                                                                                                     
 
                                                                                                                                                                     dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1586088773/table_tb0c9e.png',
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1586179930/table_jo7uex.png',
                                                                                                                                                                     style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'}
                                                                                                                                                                     ),
                                                                                                                                                                     ],
@@ -3064,7 +3092,7 @@ layout_inter = html.Div([
                                                                                                                                                                     html.H4('Age Structure',style={'fontSize': '180%', 'textAlign': 'center'}),
                                                                                                                                                                     
                                                                                                                                                                     dcc.Markdown('''
-                                                                                                                                                                    The age data is taken from [**GOV.UK**](https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](https://spiral.imperial.ac.uk/handle/10044/1/77482) (Ferguson et al.).
+                                                                                                                                                                    The age data is taken from [**GOV.UK**](https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](https://spiral.imperial.ac.uk/handle/10044/1/77482) (Ferguson et al.). This means that the age structure won't be accurate when modelling other countries.
 
                                                                                                                                                                     To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population.
 
@@ -3432,14 +3460,16 @@ def invisible_or_not(num,preset,do_nothing):
     Input('vaccine-slider', 'value'),
     Input('ICU-slider', 'value'),
     Input('model-start-date', 'date'),
+    Input('model-country-choice', 'value'),
     ])
-def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # years , ,hosp
+def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date,country_num): # years , ,hosp
+
+    country_num = country_num + 1
+
     if vaccine==9:
         vaccine = None
 
-
-
-    I0, R0, H0, C0, D0 = begin_date(date) #I0=I0_in,I_ten=I_ten_in,D0=D0_in)
+    I0, R0, H0, C0, D0 = begin_date(date,COUNTRY_LIST[country_num]) #I0=I0_in,I_ten=I_ten_in,D0=D0_in)
 
     if preset is None:
         preset = 'N'
@@ -3480,10 +3510,13 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date): # year
     Input('sol-calculated-do-nothing', 'children'),
     Input('ICU-slider', 'value'),
     Input('model-start-date', 'date'),
+    Input('model-country-choice', 'value'),
     ])
-def find_sol_do_noth(hosp,ICU_grow,date):
+def find_sol_do_noth(hosp,ICU_grow,date,country_num):
 
-    I0, R0, H0, C0, D0 = begin_date(date)
+    country_num = country_num + 1
+
+    I0, R0, H0, C0, D0 = begin_date(date,COUNTRY_LIST[country_num])
 
     t_stop = 365*3
     
@@ -3568,6 +3601,8 @@ def find_sol_do_noth(hosp,ICU_grow,date):
                 
                 # Input('years-slider', 'value'),
                 Input('dropdown', 'value'),
+                Input('model-country-choice', 'value'),
+
 
                 # Input('DPC_dd', 'n_clicks'),
                 # Input('BC_dd', 'n_clicks'),
@@ -3587,7 +3622,9 @@ def find_sol_do_noth(hosp,ICU_grow,date):
                 State('ICU-slider','value'),
                 State('model-start-date','date'),
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_nothing,plot_ICU_cap,results_type,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date): # pathname, tab_intro pathname, hosp # ,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active
+def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_nothing,plot_ICU_cap,results_type,country_num,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date): # pathname, tab_intro pathname, hosp # ,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active
+    country_num = country_num + 1
+    country = COUNTRY_LIST[country_num]
 
     # ctx = dash.callback_context
     
@@ -3812,7 +3849,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
 
                 if len(output)>0:
-                    fig1 = figure_generator(sols_to_plot,month,output,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,starting_date=date) # hosp,
+                    fig1 = figure_generator(sols_to_plot,month,output,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,starting_date=date, country = country) # hosp,
                 else:
                     fig1 = dummy_figure
 
