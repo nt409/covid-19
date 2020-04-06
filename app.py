@@ -519,14 +519,14 @@ def extract_info(yy,tt,t_index,ICU_grow):
 ########################################################################################################################
 def human_format(num,dp=0):
     if num<1 and num>=0.1:
-        return '%.1f' % num
+        return '%.2f' % num
     elif num<0.1:
         return '%.3f' % num
     magnitude = 0
     while abs(num) >= 1000:
         magnitude += 1
         num /= 1000.0
-    if dp==0 and not magnitude==3:
+    if dp==0 and not num/10<1:
         return '%.0f%s' % (num, ['', 'K', 'M', 'B'][magnitude])
     else:
         return '%.1f%s' % (num, ['', 'K', 'M', 'B'][magnitude])
@@ -855,7 +855,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                    ),
                    legend_orientation = 'h',
                    legend_title='<b> Key <b>',
-                   margin=dict(t=5, b=5, l=5, r=5, pad=0),
+                   margin=dict(t=5, b=5, l=10, r=10, pad=0),
                    yaxis= dict(mirror= True,
                         title='Proportion of Population',
                         range= yax['range'],
