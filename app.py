@@ -30,7 +30,7 @@ max_date = get_data('uk')['Currently Infected']['dates'][-1]
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
-dates              = np.asarray(get_data('uk')['Currently Infected']['dates'])
+dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
 
 date_objects = []
 for dt in dates:
@@ -1267,7 +1267,7 @@ layout_intro = html.Div([
         html.Hr(),
 
         dcc.Markdown('''
-        The content is targeted at people with little or no experience of modelling and might be used as a resource for anyone wishing to understand more about the standstill.
+        The content is targeted at people with little or no experience of modelling and might be used as a resource for anyone wishing to understand more about the standstill. We welcome any feedback you have as we develop this resource – just email us at: [covid.at.plants@gmail.com](\intro).
         ''',
         style={'textAlign': 'justify','marginTop': '5vh', 'marginBottom': '3vh'}),
 
