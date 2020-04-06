@@ -550,7 +550,7 @@ def human_format(num,dp=0):
 ########################################################################################################################
 def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,starting_date=None): # hosp
 
-    font_size = 14
+    font_size = 13
     
     lines_to_plot = []
     ymax = 0
@@ -807,9 +807,9 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     for j in range(4):
         for i in range(1,13):
             if i == month_start and j==0:
-                month_labelz[0].append(datetime.date(year_start+j, i, day_start).strftime('%d %b %y'))
-                month_labelz[1].append(datetime.date(year_start+j, i, day_start).strftime('%d %b %y'))
-                month_labelz[2].append(datetime.date(year_start+j, i, day_start).strftime('%d %b %y'))
+                month_labelz[0].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
+                month_labelz[1].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
+                month_labelz[2].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
             elif i==1:
                 month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
                 month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
@@ -854,7 +854,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                     template="simple_white",
                     font = dict(size= font_size), #'12em'),
                     legend = dict(
-                       font=dict(size=font_size*(20/24)),#'8em'),
+                       font=dict(size=font_size*(18/24)),#'8em'),
                        x = 0.5,
                        y = -0.35,
                        xanchor= 'center',
@@ -862,12 +862,13 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                    ),
                    legend_orientation = 'h',
                    legend_title='<b> Key <b>',
-                   margin=dict(t=10, b=10, l=5, r=5),
+                   margin=dict(t=5, b=5, l=5, r=5, pad=0),
                    yaxis= dict(mirror= True,
                         title='Proportion of Population',
                         range= yax['range'],
                         showline=False,
                         automargin=True
+                        # title_standoff = 10
                         # tickformat=yax_form
                    ),
                 #    yaxis_tickformat = yax_form,
@@ -880,11 +881,11 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                         # linewidth=0,
                         ticktext = time_axis_text[1],
                         tickvals = time_axis_vals[1],
-                        automargin=True
+                        # automargin=False
                        ),
                     
                     yaxis2 = dict(
-                        title = 'UK Population',
+                        title = 'Population',
                         overlaying='y1',
                         showline=False,
                         # showgrid=True,
@@ -899,22 +900,22 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                         buttons=list([
                             dict(
                                 args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'linear', 'range': yax['range'], 'automargin': True, 'showline':False},
-                                "yaxis2": {'title': 'UK Population','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'showline':False,'side':'right'}
+                                "yaxis2": {'title': 'Population','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'showline':False,'side':'right'}
                                 }], # tickformat
                                 label="Linear",
                                 method="relayout"
                             ),
                             dict(
                                 args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'log', 'range': log_range,'automargin': True, 'showline':False},
-                                "yaxis2": {'title': 'UK Population','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True, 'showline':False,'side':'right'}
+                                "yaxis2": {'title': 'Population','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True, 'showline':False,'side':'right'}
                                 }], # 'tickformat': yax_form_log,
                                 label="Logarithmic",
                                 method="relayout"
                             )
                     ]),
-                    x= 0.1,
+                    x= 0.5,
                     xanchor="right",
-                    pad={"r": 10, "t": 5, "b": 5, "l": 10},
+                    pad={"r": 5, "t": 30, "b": 10, "l": 5},
                     active=0,
                     y=1.05,
                     showactive=True,
@@ -923,24 +924,24 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                     dict(
                         buttons=list([
                             dict(
-                                args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[0], 'tickvals': time_axis_vals[0], 'automargin': True, 'showline':False}], # 'title': 'Time (Months)', 
+                                args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[0], 'tickvals': time_axis_vals[0], 'showline':False}], # 'title': 'Time (Months)', 
                                 label="Years: 1",
                                 method="relayout"
                             ),
                             dict(
-                                args = ["xaxis", {'range': [0, (2/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[1], 'tickvals': time_axis_vals[1], 'automargin': True, 'showline':False}], #   'title': 'Time (Months)', 
+                                args = ["xaxis", {'range': [0, (2/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[1], 'tickvals': time_axis_vals[1], 'showline':False}], #   'title': 'Time (Months)', 
                                 label="Years: 2",
                                 method="relayout"
                             ),
                             dict(
-                                args = ["xaxis", {'range': [0, (3/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[2], 'tickvals': time_axis_vals[2], 'automargin': True, 'showline':False}], # 'title': 'Time (Months)', 
+                                args = ["xaxis", {'range': [0, (3/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[2], 'tickvals': time_axis_vals[2], 'showline':False}], # 'title': 'Time (Months)', 
                                 label="Years: 3",
                                 method="relayout"
                             )
                     ]),
-                    x= 0.1,
+                    x= 0.5,
                     xanchor="left",
-                    pad={"r": 10, "t": 5, "b": 5, "l": 10},
+                    pad={"r": 5, "t": 30, "b": 10, "l": 5},
                     showactive=True,
                     active=1,
                     # direction='bottom',
