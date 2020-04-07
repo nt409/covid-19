@@ -30,11 +30,6 @@ max_date = get_data('uk')['Currently Infected']['dates'][-1]
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
-# dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
-
-
-
-country_data = get_data('japan')
 
 
 if USE_API:
