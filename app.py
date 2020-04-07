@@ -19,7 +19,7 @@ import flask
 
 from dan import layout_dan, COUNTRY_LIST, colours
 from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
-from dan_constants import POPULATIONS
+from dan_constants import POPULATIONS, WORLDOMETER_NAME
 import datetime
 import json
 from json import JSONEncoder
@@ -4198,8 +4198,13 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
 
     for i, country in enumerate(country_names):
         if country not in country_data.keys():
-            data = get_data(country)
-            country_data[country] = data
+            try:
+                data = get_data(country)
+                country_data[country] = data
+            except Exception as e:
+                print(e)
+                country_names.remove(country)
+                continue
 
     out = []
     for title in ['Cases', 'Deaths', 'Currently Infected', 'Daily New Cases', 'Daily New Deaths']:

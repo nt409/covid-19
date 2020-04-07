@@ -11,7 +11,7 @@ import json
 import copy
 
 from dan_get_data import get_data
-from dan_constants import POPULATIONS
+from dan_constants import POPULATIONS, WORLDOMETER_NAME
 
 colours = ['#1f77b4','#ff7f0e', '#2ca02c','#9467bd', '#8c564b', '#e377c2', '#d62728', '#7f7f7f', '#bcbd22', '#17becf',
            'blue', 'purple', 'pink', 'cyan', '#FF1493', 'navy', '#aaffc3', '#228B22', '#aa6e28', '#FFA07A',
@@ -43,6 +43,7 @@ COUNTRY_LIST = ['world',
                 'chile',
                 'china',
                 'colombia',
+                'congo',
                 'costa rica',
                 'croatia',
                 'cyprus',
@@ -50,16 +51,21 @@ COUNTRY_LIST = ['world',
                 'denmark',
                 'dominican republic',
                 'ecuador',
+                'el salvador',
                 'egypt',
                 'estonia',
+                'faeroe islands',
+                'falkland islands',
                 'finland',
                 'greece',
+                'hong kong',
                 'hungary',
                 'iceland',
                 'india',
                 'indonesia',
                 'iraq',
                 'ireland',
+                'isle of man',
                 'israel',
                 'japan',
                 'jordan',
@@ -68,6 +74,7 @@ COUNTRY_LIST = ['world',
                 'lebanon',
                 'lithuania',
                 'luxembourg',
+                'macao',
                 'malaysia',
                 'malta',
                 'mexico',
@@ -78,7 +85,9 @@ COUNTRY_LIST = ['world',
                 'north macedonia',
                 'norway',
                 'pakistan',
+                'palestine',
                 'panama',
+                'papua new guinea',
                 'peru',
                 'philippines',
                 'poland',
@@ -93,7 +102,7 @@ COUNTRY_LIST = ['world',
                 'slovakia',
                 'slovenia',
                 'south africa',
-                'south-korea',
+                'south korea',
                 'sri lanka',
                 'sweden',
                 'switzerland',
@@ -105,6 +114,7 @@ COUNTRY_LIST = ['world',
                 'ukraine',
                 'uruguay',
                 'vietnam',]
+
 app = dash.Dash(external_stylesheets=[dbc.themes.FLATLY])
 server = app.server
 
@@ -157,7 +167,8 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                 dbc.Checklist(
                     id=c_name,
                     options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(),
-                              'value': c_name}],
+                              'value': c_name.replace(' ', '-') if c_name not in WORLDOMETER_NAME
+                              else WORLDOMETER_NAME[c_name]}],
                     value=[c_name] if c_name in ('us', 'uk', 'italy') else [],
                     style={"margin-left": "15px", 'textAlign': 'left'},
                     inputStyle={"margin-right": "5px"})
