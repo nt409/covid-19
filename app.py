@@ -929,6 +929,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                     active=0,
                     y=-0.13,
                     showactive=True,
+                    direction='up',
                     yanchor="top"
                     ),
                     dict(
@@ -954,7 +955,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                     pad={"r": 5, "t": 30, "b": 10, "l": 5},
                     showactive=True,
                     active=1,
-                    # direction='bottom',
+                    direction='up',
                     y=-0.13,
                     yanchor="top"
                     ),
