@@ -937,6 +937,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                         
                         xx = [i/month_len for i in sol['t']]
                         yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
+                        ymax  = max(100*sol['y'][index[name],:] + 100*sol['y'][index[name] + params.number_compartments,:])
                         
                         xx = [xx[i] for i in range(1,len(xx),2)]
                         yyy_p = [yyy_p[i] for i in range(1,len(yyy_p),2)]
@@ -958,15 +959,15 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
 
 
         # setting up pink boxes
-        ICU = False
-        if False:
-            yyy = sol['y']
-            ttt = sol['t']
-            c_low, c_high, ICU = time_exceeded_function(yyy,ttt,ICU_grow)
+        # ICU = False
+        # if False:
+        #     yyy = sol['y']
+        #     ttt = sol['t']
+        #     c_low, c_high, ICU = time_exceeded_function(yyy,ttt,ICU_grow)
     
 
 
-
+    # ymax
 
 
 
@@ -978,7 +979,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
         lines_to_plot.append(
         dict(
         type='scatter',
-            x=[month[0],month[0]], y=[0,1],
+            x=[month[0],month[0]], y=[0,ymax],
             mode='lines',
             opacity=0.9,
             legendgroup='control',
@@ -991,7 +992,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
         lines_to_plot.append(
         dict(
         type='scatter',
-            x=[month[1],month[1]], y=[0,1],
+            x=[month[1],month[1]], y=[0,ymax],
             mode='lines',
             opacity=0.9,
             legendgroup='control',
@@ -1003,68 +1004,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
             name= 'Control ends'))
 
             
-    # if ICU:
-    #     # if which_plots=='two':
-    #     control_font_size = font_size*(18/24) # '10em'
-    #     ICU_font_size = font_size*(18/24) # '10em'
-
-    #     yval_pink = 0.3
-    #     yval_blue = 0.82
-
-
-    #     show_led = True
-    #     for c_min, c_max in zip(c_low, c_high):
-    #         if c_min>0 and c_max>0:
-    #             lines_to_plot.append(
-    #                 dict(
-    #                 type='scatter',
-    #                 x=[c_min/month_len,c_min/month_len], y=[0,1],
-    #                 mode='lines',
-    #                 opacity=0.9,
-    #                 legendgroup='ICU',
-    #                 line=dict(
-    #                 color= 'black',
-    #                 dash = 'dash'
-    #                 ),
-    #                 showlegend=show_led,
-    #                 hovertemplate= 'ICU exceeded (start)<extra></extra>',
-    #                 name= 'ICU exceeded (start)'))
-                    
-    #             lines_to_plot.append(
-    #                 dict(
-    #                 type='scatter',
-    #                 x=[c_max/month_len,c_max/month_len], y=[0,1],
-    #                 mode='lines',
-    #                 opacity=0.9,
-    #                 legendgroup='ICU',
-    #                 line=dict(
-    #                 color= 'black',
-    #                 dash = 'dot'
-    #                 ),
-    #                 showlegend=show_led,
-    #                 hovertemplate= 'ICU exceeded (end)<extra></extra>',
-    #                 name= 'ICU exceeded (end)'))
-                
-    #             show_led = False
-
-    #             annotz.append(dict(
-    #                     x  = 0.5*(c_min+c_max)/month_len,
-    #                     y  = yval_pink,
-    #                     text="ICU<br>" + " Capacity<br>" + " Exceeded",
-    #                     # hoverinfo='ICU Capacity Exceeded',
-    #                     showarrow=False,
-    #                     textangle= 0,
-    #                     font=dict(
-    #                         size= ICU_font_size,
-    #                         color="black"
-    #                     ),
-    #                     opacity=0.9,
-    #                     xref = 'x',
-    #                     yref = 'paper',
-    #             ))
-
-    # else:
-    control_font_size = font_size*(30/24) #'11em'
+    control_font_size = font_size*(30/24)
     yval_blue = 0.4
 
 
@@ -1108,14 +1048,14 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
             name= 'ICU Capacity'))
 
     
-    yax = {}
-    yax['range'] = [0,100]
+    # yax = {}
+    # yax['range'] = [0,100]
     
     if vaccine_time is not None:
         lines_to_plot.append(
         dict(
         type='scatter',
-            x=[vaccine_time,vaccine_time], y=[yax['range'][0],yax['range'][1]],
+            x=[vaccine_time,vaccine_time], y=[0,ymax],
             mode='lines',
             opacity=0.9,
             legendgroup='thresholds',
