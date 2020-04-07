@@ -18,7 +18,7 @@ import flask
 
 
 from dan import layout_dan, COUNTRY_LIST, colours
-from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER, USE_API
+from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
 from dan_constants import POPULATIONS
 import datetime
 import json
@@ -52,9 +52,9 @@ def begin_date(date,country='uk'):
     
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
     
-    country_data = get_data(country)
-
-    if country_data is None:
+    try:
+        country_data = get_data(country)
+    except:
         country_data = get_data('uk')
 
     dates = np.asarray(country_data['Currently Infected']['dates'])
