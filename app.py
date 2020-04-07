@@ -31,11 +31,12 @@ min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
 
+COUNTRY_LIST_NICK = COUNTRY_LIST
 
-if USE_API:
-    COUNTRY_LIST_NICK = COUNTRY_LIST
-else:
-    COUNTRY_LIST_NICK = COUNTRY_LIST_WORLDOMETER
+# if USE_API:
+#     COUNTRY_LIST_NICK = COUNTRY_LIST
+# else:
+#     COUNTRY_LIST_NICK = COUNTRY_LIST_WORLDOMETER
 
 # print(USE_API)
 COUNTRY_LIST_NICK = sorted(COUNTRY_LIST_NICK)
