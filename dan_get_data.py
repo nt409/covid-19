@@ -1,7 +1,7 @@
 from urllib.request import urlopen, Request
 from collections import Counter
 
-from dan_constants import COUNTRY_NAME_TO_CODE, MONTHS_DICT
+from dan_constants import COUNTRY_NAME_TO_CODE, MONTHS_DICT, WORLDOMETER_NAME
 
 try:
     import COVID19Py
@@ -46,9 +46,12 @@ COUNTRY_LIST_WORLDOMETER = ['world', 'afghanistan', 'albania', 'algeria', 'andor
 
 
 def get_data(country_name):
-    if country_name in COUNTRY_LIST_WORLDOMETER:
+    worldometer_cname = country_name.replace(' ', '-') if country_name not in WORLDOMETER_NAME \
+        else WORLDOMETER_NAME[country_name]
+
+    if worldometer_cname in COUNTRY_LIST_WORLDOMETER:
         try:
-            data = get_data_from_worldometer(country_name)
+            data = get_data_from_worldometer(worldometer_cname)
             return data
         except Exception as e:
             print("Could not retrieve data from Worldometer, trying JHU...", e)

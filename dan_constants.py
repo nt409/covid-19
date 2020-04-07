@@ -6,8 +6,9 @@ WORLDOMETER_NAME = {'brunei': 'brunei-darussalam',
                     'macao': 'china-macao-sar',
                     'congo': 'democratic-republic-of-the-congo',
                     'falkland islands': 'falkland-islands-malvinas',
+                    'north macedonia': 'macedonia',
                     'palestine': 'state-of-palestine',
-                    'vietnam' : 'viet-nam',
+                    'vietnam': 'viet-nam',
                     }
 
 COUNTRY_CODE_TO_NAME = {"AD": "andorra",
