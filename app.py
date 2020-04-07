@@ -55,7 +55,8 @@ def begin_date(date,country='uk'):
     try:
         country_data = get_data(country)
     except:
-        country_data = get_data('uk')
+        country_data = get_data('uk') # defaults to uk if error
+        print("Cannnot get country data from ",country)
 
     dates = np.asarray(country_data['Currently Infected']['dates'])
     
@@ -69,7 +70,7 @@ def begin_date(date,country='uk'):
 
     try:
         index = date_objects.index(date)
-    except Exception as e:
+    except Exception as e: # defaults to today if error
         index = -1
         print('Date error; ',e)
     
@@ -562,7 +563,10 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     
     font_size = 13
     
+    # stacked_lines_to_plot = []
+
     lines_to_plot = []
+
     ymax = 0
 
     names = ['S','I','R','H','C','D']
@@ -640,7 +644,24 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     for line in lines_to_plot:
         ymax = max(ymax,max(line['y']))
 
+    #     lines2 = dict(
+    #             x = line['x'],
+    #             y = line['y'],
+    #             name = line['name'],
+    #             hovertemplate = line['hovertemplate'],
+    #             text = line['text'],
+    #             legendgroup = line['legendgroup'],
+    #             fillcolor = line['line']['color'],
+    #             mode = 'lines',
+    #             stackgroup = 'one',
+    #             # fill = 'tozeroy',
+    #             line = dict(width=0),
+    #     )
+        
+    #     stacked_lines_to_plot.append(lines2)
     
+    # # stacked_lines_to_plot = [stacked_lines_to_plot[i] for i in [3,4,5]]
+    # stacked_lines_to_plot = [stacked_lines_to_plot[i] for i in [1,2,0]]
 
 
     yax = dict(range= [0,min(1.1*ymax,100)])
@@ -855,6 +876,8 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
         time_axis_vals.append([time_vec[N*i] for i in range(ceil(len(time_vec)/N))])
 
 
+    # shapez = []
+    # annotz = []
 
     # print(lines_to_plot[-1])
 
@@ -962,7 +985,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                     ],
                    )
 
-    return {'data': lines_to_plot, 'layout': layout}
+    return {'data': lines_to_plot, 'layout': layout} # lines_to_plotstacked_lines_to_plot
 
 
 
@@ -2724,7 +2747,7 @@ layout_inter = html.Div([
 
                                                                                 dbc.Col([
                                                                                 dcc.Markdown('''*Plot different disease progress categories, different risk groups, compare the outcome of your strategy with the outcome of 'Do Nothing', or plot the ICU capacity.*''', 
-                                                                                style = {'textAlign': 'center', 'marginBottom': '1vh' , 'marginTop': '1vh'}),
+                                                                                style = {'textAlign': 'center', 'fontSize': '80%','marginBottom': '1vh' , 'marginTop': '1vh'}),
                                                                                 ],width={'size':8, 'offset': 2}),
 
                                                                                 # dbc.Popover(
@@ -2770,6 +2793,11 @@ layout_inter = html.Div([
                                                                                                                                                                     # inline=True,
                                                                                                                                                                     labelStyle = {'display': 'inline-block','fontSize': '80%'},
                                                                                                                                                                 ),
+                                                                                                                                                    
+                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                        *Category choice is for the plot above. Hospital categories are shown in the plot below.*
+                                                                                                                                                        ''',style={'fontSize': '70%', 'marginTop': '0vh'}),
+                                                                                                                                                        
 
                                                                                                                                                 ],width={'size':6 , 'offset': 3}),
 
@@ -2881,6 +2909,18 @@ layout_inter = html.Div([
                                                                                 no_gutters=True
                                                                                 # style={'textAlign': 'center'}
                                                                                 ),
+
+
+
+
+                                                                html.Hr(style={'marginTop': '3vh'}),
+
+                                                                html.H4("Hospital Categories",
+                                                                style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
+                                                                ),
+
+                                                                dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '97%'}), # figure=dummy_figure,
+
 
 
 
@@ -3563,6 +3603,8 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 
 
                 Output('line-plot-1', 'figure'),
+                Output('line-plot-2', 'figure'),
+
 
 
                 
@@ -3653,6 +3695,8 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
     if sols is None or tab2!='interactive' or results_type!='DPC_dd':
         fig1 = dummy_figure
+        fig2 = dummy_figure
+
 
 
 
@@ -3816,6 +3860,8 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
                 else:
                     fig1 = dummy_figure
 
+                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,starting_date=date, country = country)
+
             
         ##############
 
@@ -3840,6 +3886,8 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
     bar5,
 
     fig1,
+    fig2,
+
 
     None
     ]
