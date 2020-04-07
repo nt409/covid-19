@@ -1717,7 +1717,7 @@ layout_inter = html.Div([
                                                                                                                                                             #     centered=True
                                                                                                                                                             # ),
 
-                                                                                                                                                            html.H3(['Where and when'],
+                                                                                                                                                            html.H3(['When and where'],
                                                                                                                                                             style={'fontSize': '230%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
 
                                                                                                                                                             
