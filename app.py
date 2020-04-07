@@ -35,24 +35,10 @@ from json import JSONEncoder
 
 
 
-# sols = []
-# # sols.append(simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=10,vaccine_time=None,))
-# # sols.append(simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=10,vaccine_time=None,))
-# sols.append( {'y': 1, 'x': np.zeros((10,10)) } )
-# sols.append( {'y': 2, 'x': np.zeros((10,10)) } )
 # sols_dump = {'sols': sols}
-
 # dumped = json.dumps(sols_dump,cls=NumpyArrayEncoder)
 # loaded = json.loads(dumped)['sols']
-
-
 # sols_new  = np.asarray(loaded['sols'])
-
-# print(sols_dump)
-# print(loaded)
-# print(sols_new)
-
-# exit()
 
 min_date = get_data('uk')['Currently Infected']['dates'][0]
 max_date = get_data('uk')['Currently Infected']['dates'][-1]
@@ -253,7 +239,9 @@ index = {'S': params.S_L_ind,
         'D': params.D_L_ind,
         }
 
-
+group_hover_string = {'BR': '',
+        'LR': 'Low Risk' + '<br>',
+        'HR': 'High Risk' + '<br>'}
 
 
 
@@ -581,9 +569,8 @@ def human_format(num,dp=0):
 
 
 ########################################################################################################################
-def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,starting_date=None,country = 'uk'): # hosp
+def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,time_axis_text=None, time_axis_vals = None,country = 'uk'):
 
-    stacked = False
     population_plot = POPULATIONS[country]
 
     if country in ['us','uk']:
@@ -593,31 +580,22 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     
     font_size = 13
     
-    # stacked_lines_to_plot = []
 
     lines_to_plot = []
 
     ymax = 0
 
-    names = ['S','I','R','H','C','D']
+    # names = ['S','I','R','H','C','D']
     
     
     if num_strat=='one':
         group_use = groups
     if num_strat=='two' or comp_dn:
         group_use = groups2
-
-
-    group_string = str()
-    for group in group_vec:
-        if group in group_use:
-            group_string = group_string + ',' + group_strings[group]
-    
+   
 
     linestyle_numst = ['solid','dash','dot','dashdot','longdash','longdashdot']
     
-    len_data_points = len(sols[0]['t'])
-    len_to_plot = ceil(len_data_points) # *years/3)
     if len(sols)>1:
         strat_list = [': Strategy;',': Do Nothing;']
     else:
@@ -626,52 +604,40 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     ii = -1
     for sol in sols:
         ii += 1
-        for name in names:
-            if name in output:
+        for name in longname.keys():
+            if name in cats_to_plot:
                 for group in group_vec:
-                    
                     if group in group_use:
                         sol['y'] = np.asarray(sol['y'])
                         if num_strat=='one':
-                            name_string = strat_list[ii] + group_strings[group] # ':' +
+                            name_string = strat_list[ii] + group_strings[group]
                             line_style_use = linestyle[group]
                             if comp_dn:
                                 if ii == 0:
                                     line_style_use = 'solid'
                                 else:
                                     line_style_use = 'dot'
-                        if num_strat=='two':
+                        else:
                             name_string = ': Strategy ' + str(ii+1) + '; ' + group_strings[group]
                             line_style_use = linestyle_numst[ii]
                         
                         xx = [i/month_len for i in sol['t']]
-                        if group=='BR':
-                            group_hover_str = ''
-                        elif group=='HR':
-                            group_hover_str = 'High Risk' + '<br>'
-                        else:
-                            group_hover_str = 'Low Risk' + '<br>'
+                        yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
                         
-                        xx = xx[:len_to_plot]
-                        yyy_p = (100*factor_L[group]*sol['y'][index[name],:len_to_plot] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:len_to_plot])
-                        
-                        if stacked:
-                            xx = [xx[i] for i in range(1,len(xx),2)]
-                            yyy_p = [yyy_p[i] for i in range(1,len(yyy_p),2)]
-
                         line =  {'x': xx, 'y': yyy_p,
-                                'hovertemplate': group_hover_str +
+                                'hovertemplate': group_hover_string[group] +
                                                  longname[name] + ': %{y:.2f}%, ' + '%{text} <br>' +
                                                  'Time: %{x:.1f} Months<extra></extra>',
                                 'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
-                                'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name ,'name': longname[name] + name_string}
+                                'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name,
+                                'name': longname[name] + name_string}
                         lines_to_plot.append(line)
 
 
         # setting up pink boxes
         ICU = False
-        # print(ii,num_strat,group_use,output)
-        if ii==0 and num_strat=='one' and len(group_use)>0 and len(output)>0: # 'True_deaths' in hosp 
+        # print(ii,num_strat,group_use,cats_to_plot)
+        if ii==0 and num_strat=='one' and len(group_use)>0 and len(cats_to_plot)>0: # 'True_deaths' in hosp 
             yyy = sol['y']
             ttt = sol['t']
             c_low, c_high, ICU = time_exceeded_function(yyy,ttt,ICU_grow)
@@ -679,51 +645,8 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     # y_stack = []
     for line in lines_to_plot:
         ymax = max(ymax,max(line['y']))
-        if stacked:
-            # line['mode'] = 'lines'
-            line['type'] = 'bar'
-            line['marker'] = dict(color=line['line']['color'])
-            line['line'] = {} # dict(width=0)
 
 
-            # line['stackgroup'] = 'one'
-            # line['fillcolor'] = line['line']['color']
-            # line['line'] = dict(width=0)
-            # y_stack.append(line['y'])
-
-    # maxi_stack = []
-    if stacked:
-        lines_to_plot = [lines_to_plot[len(lines_to_plot)-1  - i] for i in range(len(lines_to_plot))]
-        # if len(y_stack)>0:
-        #     for i in range(len(y_stack[0])):
-        #         y_sum = 0
-        #         for ys in y_stack:
-        #             y_sum += ys[i]
-        #         maxi_stack.append(y_sum)
-
-        # print(maxi_stack)
-        # ymax = min(1.1*sum(maxi_stack),100)
-
-
-    # print(line)
-
-    #     lines2 = dict(
-    #             x = line['x'],
-    #             y = line['y'],
-    #             name = line['name'],
-    #             hovertemplate = line['hovertemplate'],
-    #             text = line['text'],
-    #             legendgroup = line['legendgroup'],
-    #             fillcolor = line['line']['color'],
-    #             mode = 'lines',
-    #             stackgroup = 'one',
-    #             # fill = 'tozeroy',
-    #             line = dict(width=0),
-    #     )
-        
-    #     stacked_lines_to_plot.append(lines2)
-    
-    # stacked_lines_to_plot = [stacked_lines_to_plot[i] for i in [1,2,0]]
 
 
     yax = dict(range= [0,min(1.1*ymax,100)])
@@ -732,12 +655,12 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     annotz = []
     shapez = []
 
-    if month[0]!=month[1] and not stacked:
+    if month[0]!=month[1]:
         shapez.append(dict(
                 # filled Blue Control Rectangle
                 type="rect",
                 x0= month[0], #month_len*
-                y0=-0.01,
+                y0=0,
                 x1= month[1], #month_len*
                 y1=yax['range'][1],
                 line=dict(
@@ -748,7 +671,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                 opacity=0.25
             ))
             
-    if ICU and not stacked:
+    if ICU:
         # if which_plots=='two':
         control_font_size = font_size*(18/24) # '10em'
         ICU_font_size = font_size*(18/24) # '10em'
@@ -763,7 +686,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                         # filled Pink ICU Rectangle
                         type="rect",
                         x0=c_min/month_len,
-                        y0=-0.01,
+                        y0=0,
                         x1=c_max/month_len,
                         y1=yax['range'][1],
                         line=dict(
@@ -798,7 +721,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
 
 
 
-    if month[0]!=month[1] and not stacked:
+    if month[0]!=month[1]:
         annotz.append(dict(
                 x  = max(0.5*(month[0]+month[1]), 0.5),
                 y  = yval_blue,
@@ -824,7 +747,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
         lines_to_plot.append(
         dict(
         type='scatter',
-            x=xx[:len_to_plot], y=ICU_line[:len_to_plot],
+            x=xx, y=ICU_line,
             mode='lines',
             opacity=0.8,
             legendgroup='thresholds',
@@ -851,18 +774,18 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
             name= 'Vaccination starts'))
 
     
-    if not stacked:
-        lines_to_plot.append(
-        dict(
-            type='scatter',
-            x = [0,sol['t'][-1]],
-            y = [ 0, population_plot],
-            yaxis="y2",
-            opacity=0,
-            hoverinfo = 'skip',
-            showlegend=False
-        ))
     
+    lines_to_plot.append(
+    dict(
+        type='scatter',
+        x = [0,sol['t'][-1]],
+        y = [ 0, population_plot],
+        yaxis="y2",
+        opacity=0,
+        hoverinfo = 'skip',
+        showlegend=False
+    ))
+
 
     
     # yy2 = [0, 10**(-6), 2*10**(-6), 5*10**(-6), 10**(-5), 2*10**(-5), 5*10**(-5), 10**(-4), 2*10**(-4), 5*10**(-4), 10**(-3), 2*10**(-3), 5*10**(-3), 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50, 100, 200]
@@ -872,7 +795,7 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
         yy2.append(2*10**(i-5))
         yy2.append(5*10**(i-5))
 
-    yy = [i for i in yy2] # 0.95*i
+    yy = [i for i in yy2]
 
 
     for i in range(len(yy)-1):
@@ -889,76 +812,15 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
     pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
     vec2 = [i*(population_plot) for i in pop_log_vec]
 
-    # date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
-    split = starting_date.split('-')
-
-    day_start   = int(split[2]) #  int(starting_date.strftime('%d'))
-    month_start = int(split[1]) #  int(starting_date.strftime('%m'))
-    year_start  = int(split[0]) #  int(starting_date.strftime('%Y'))
-    month_labelz = [[],[],[]]
-
-    for j in range(4):
-        for i in range(1,13):
-            if i == month_start and j==0:
-                month_labelz[0].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
-                month_labelz[1].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
-                month_labelz[2].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
-            elif i==1:
-                month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-            elif i==2:
-                month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-                
-            elif i==3: # March
-                month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-                month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-            else:
-                month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-                month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-                month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-    
-    month_labels = []
-    for list_m in month_labelz:
-        month_labels.append(list_m[(month_start-1):(month_start-1+38)])
 
 
-    days_till_end_of_month = max(month_len-day_start,1)
-    time_vec = [0]
-    for i in range(36):
-        time_vec.append(days_till_end_of_month/month_len+i)
 
-    time_axis_text = []
-    time_axis_vals = []
-    for N in range(1,4,1):
-        time_axis_text.append([str(month_labels[N-1][N*i]) for i in range(ceil(len(time_vec)/N))])
-        time_axis_vals.append([time_vec[N*i] for i in range(ceil(len(time_vec)/N))])
-
-
-    # shapez = []
-    # annotz = []
-
-    # print(lines_to_plot[-1])
-    if stacked:
-        yax['range'] = None
 
     layout = go.Layout(
                     annotations=annotz,
                     shapes=shapez,
                     template="simple_white",
                     font = dict(size= font_size), #'12em'),
-                    legend = dict(
-                       font=dict(size=font_size*(20/24)),#'8em'),
-                       x = 0.5,
-                       y = 1.03,
-                       xanchor= 'center',
-                       yanchor= 'bottom'
-                   ),
-                   legend_orientation = 'h',
-                   legend_title='<b> Key <b>',
                    margin=dict(t=5, b=5, l=10, r=10,pad=15),
                    yaxis= dict(mirror= True,
                         title='Proportion of Population',
@@ -966,48 +828,352 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                         showline=False,
                         automargin=True,
                         type = 'linear'
-                        # title_standoff = 10
-                        # tickformat=yax_form
                    ),
-                #    yaxis_tickformat = yax_form,
-
                    xaxis= dict(
-                        # title='Time (Months)',
                         range= [0, (2/3)*max(sol['t'])/month_len],
                         showline=False,
-                        # rangeslider_visible=True,
-                        # linewidth=0,
                         ticktext = time_axis_text[1],
                         tickvals = time_axis_vals[1],
-                        # automargin=False
                        ),
+                    updatemenus = [dict(
+                                            buttons=list([
+                                                dict(
+                                                    args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[0], 'tickvals': time_axis_vals[0], 'showline':False}], # 'title': 'Time (Months)', 
+                                                    label="Years: 1",
+                                                    method="relayout"
+                                                ),
+                                                dict(
+                                                    args = ["xaxis", {'range': [0, (2/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[1], 'tickvals': time_axis_vals[1], 'showline':False}], #   'title': 'Time (Months)', 
+                                                    label="Years: 2",
+                                                    method="relayout"
+                                                ),
+                                                dict(
+                                                    args = ["xaxis", {'range': [0, (3/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[2], 'tickvals': time_axis_vals[2], 'showline':False}], # 'title': 'Time (Months)', 
+                                                    label="Years: 3",
+                                                    method="relayout"
+                                                )
+                                        ]),
+                                        x= 0.5,
+                                        xanchor = 'left',
+                                        pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                        showactive=True,
+                                        active=1,
+                                        direction='up',
+                                        y=-0.13,
+                                        yanchor="top"
+                                        ),
+                                        dict(
+                                            buttons=list([
+                                                dict(
+                                                    args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'linear', 'range': yax['range'], 'automargin': True, 'showline':False},
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'showline':False,'side':'right'}
+                                                    }], # tickformat
+                                                    label="Linear",
+                                                    method="relayout"
+                                                ),
+                                                dict(
+                                                    args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'log', 'range': log_range,'automargin': True, 'showline':False},
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True, 'showline':False,'side':'right'}
+                                                    }], # 'tickformat': yax_form_log,
+                                                    label="Logarithmic",
+                                                    method="relayout"
+                                                )
+                                        ]),
+                                        x= 0.5,
+                                        xanchor="right",
+                                        pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                        active=0,
+                                        y=-0.13,
+                                        showactive=True,
+                                        direction='up',
+                                        yanchor="top"
+                                        )],
+                                        legend = dict(
+                                                        font=dict(size=font_size*(20/24)),
+                                                        x = 0.5,
+                                                        y = 1.03,
+                                                        xanchor= 'center',
+                                                        yanchor= 'bottom'
+                                                    ),
+                                        legend_orientation  = 'h',
+                                        legend_title        = '<b> Key <b>',
+                                        yaxis2 = dict(
+                                                        title = 'Population (' + country_name + ')',
+                                                        overlaying='y1',
+                                                        showline=False,
+                                                        range = yax['range'],
+                                                        side='right',
+                                                        ticktext = [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))],
+                                                        tickvals = [i for i in  pop_vec_lin],
+                                                        automargin=True
+                                                    )
+
+                            )
+
+
+
+    return {'data': lines_to_plot, 'layout': layout}
+
+
+def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,time_axis_text=None, time_axis_vals = None,country = 'uk'):
+
+    population_plot = POPULATIONS[country]
+
+    font_size = 13
+
+    lines_to_plot = []
+    # names = ['S','I','R','H','C','D']
+    group_use = ['HR','LR']
+
+    
+    if sols is not None:
+        sol = sols[0]
+        for name in longname.keys():
+            if name in cats_to_plot:
+                for group in group_vec:
+                    if group in group_use:
+                        sol['y'] = np.asarray(sol['y'])
+                        name_string = ':' + group_strings[group]
+                        
+                        xx = [i/month_len for i in sol['t']]
+                        yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
+                        
+                        xx = [xx[i] for i in range(1,len(xx),2)]
+                        yyy_p = [yyy_p[i] for i in range(1,len(yyy_p),2)]
+
+                        line =  {'x': xx, 'y': yyy_p,
+                                'hovertemplate': group_hover_string[group] +
+                                                 longname[name] + ': %{y:.2f}%, ' + '%{text} <br>' +
+                                                 'Time: %{x:.1f} Months<extra></extra>',
+                                'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
+                                'type': 'bar',
+                                'legendgroup': name ,
+                                'name': longname[name] + name_string}
+                        if group=='LR':
+                            line['marker'] = dict(color='powderblue')
+                        elif group=='HR':
+                            line['marker'] = dict(color='orange')
+                        
+                        lines_to_plot.append(line)
+
+
+        # setting up pink boxes
+        ICU = False
+        if False:
+            yyy = sol['y']
+            ttt = sol['t']
+            c_low, c_high, ICU = time_exceeded_function(yyy,ttt,ICU_grow)
+    
+
+
+
+
+
+
+
+    ##
+    annotz = []
+
+    if month[0]!=month[1]:
+        lines_to_plot.append(
+        dict(
+        type='scatter',
+            x=[month[0],month[0]], y=[0,1],
+            mode='lines',
+            opacity=0.9,
+            legendgroup='control',
+            line=dict(
+            color= 'blue',
+            dash = 'dash'
+            ),
+            hovertemplate= 'Control starts<extra></extra>',
+            name= 'Control starts'))
+        lines_to_plot.append(
+        dict(
+        type='scatter',
+            x=[month[1],month[1]], y=[0,1],
+            mode='lines',
+            opacity=0.9,
+            legendgroup='control',
+            line=dict(
+            color= 'blue',
+            dash = 'dot'
+            ),
+            hovertemplate= 'Control ends<extra></extra>',
+            name= 'Control ends'))
+
+            
+    # if ICU:
+    #     # if which_plots=='two':
+    #     control_font_size = font_size*(18/24) # '10em'
+    #     ICU_font_size = font_size*(18/24) # '10em'
+
+    #     yval_pink = 0.3
+    #     yval_blue = 0.82
+
+
+    #     show_led = True
+    #     for c_min, c_max in zip(c_low, c_high):
+    #         if c_min>0 and c_max>0:
+    #             lines_to_plot.append(
+    #                 dict(
+    #                 type='scatter',
+    #                 x=[c_min/month_len,c_min/month_len], y=[0,1],
+    #                 mode='lines',
+    #                 opacity=0.9,
+    #                 legendgroup='ICU',
+    #                 line=dict(
+    #                 color= 'black',
+    #                 dash = 'dash'
+    #                 ),
+    #                 showlegend=show_led,
+    #                 hovertemplate= 'ICU exceeded (start)<extra></extra>',
+    #                 name= 'ICU exceeded (start)'))
                     
+    #             lines_to_plot.append(
+    #                 dict(
+    #                 type='scatter',
+    #                 x=[c_max/month_len,c_max/month_len], y=[0,1],
+    #                 mode='lines',
+    #                 opacity=0.9,
+    #                 legendgroup='ICU',
+    #                 line=dict(
+    #                 color= 'black',
+    #                 dash = 'dot'
+    #                 ),
+    #                 showlegend=show_led,
+    #                 hovertemplate= 'ICU exceeded (end)<extra></extra>',
+    #                 name= 'ICU exceeded (end)'))
+                
+    #             show_led = False
 
-                   )
-    
-    
-    # upd_menus = [
-    # if not stacked:
-    #     xanch = 'left'
+    #             annotz.append(dict(
+    #                     x  = 0.5*(c_min+c_max)/month_len,
+    #                     y  = yval_pink,
+    #                     text="ICU<br>" + " Capacity<br>" + " Exceeded",
+    #                     # hoverinfo='ICU Capacity Exceeded',
+    #                     showarrow=False,
+    #                     textangle= 0,
+    #                     font=dict(
+    #                         size= ICU_font_size,
+    #                         color="black"
+    #                     ),
+    #                     opacity=0.9,
+    #                     xref = 'x',
+    #                     yref = 'paper',
+    #             ))
+
     # else:
-    #     xanch = 'center'
+    control_font_size = font_size*(30/24) #'11em'
+    yval_blue = 0.4
 
-                # ,
-                # ]
-            #    ,)
-    if not stacked:
-        layout['yaxis2'] =   dict(
-                        title = 'Population (' + country_name + ')',
-                        overlaying='y1',
+
+
+
+    if month[0]!=month[1]:
+        annotz.append(dict(
+                x  = max(0.5*(month[0]+month[1]), 0.5),
+                y  = yval_blue,
+                text="Control<br>" + " In <br>" + " Place",
+                # hoverinfo='Control In Place',
+                textangle=0,
+                font=dict(
+                    size= control_font_size,
+                    color="blue"
+                ),
+                showarrow=False,
+                opacity=0.9,
+                xshift= 0,
+                xref = 'x',
+                yref = 'paper',
+        ))
+    
+
+
+
+    if ICU_to_plot and 'C' in cats_to_plot:
+        ICU_line = [100*params.ICU_capacity*(1 + ICU_grow*i/365) for i in sol['t']]
+        lines_to_plot.append(
+        dict(
+        type='scatter',
+            x=xx, y=ICU_line,
+            mode='lines',
+            opacity=0.8,
+            legendgroup='thresholds',
+            line=dict(
+            color= 'maroon',
+            dash = 'dash'
+            ),
+            hovertemplate= 'ICU Capacity<extra></extra>',
+            name= 'ICU Capacity'))
+
+    
+    yax = {}
+    yax['range'] = [0,100]
+    
+    if vaccine_time is not None:
+        lines_to_plot.append(
+        dict(
+        type='scatter',
+            x=[vaccine_time,vaccine_time], y=[yax['range'][0],yax['range'][1]],
+            mode='lines',
+            opacity=0.9,
+            legendgroup='thresholds',
+            line=dict(
+            color= 'royalblue',
+            dash = 'dash'
+            ),
+            hovertemplate= 'Vaccination starts<extra></extra>',
+            name= 'Vaccination starts'))
+
+    
+    if False:
+        lines_to_plot.append(
+        dict(
+            type='scatter',
+            x = [0,sol['t'][-1]],
+            y = [ 0, population_plot],
+            yaxis="y2",
+            opacity=0,
+            hoverinfo = 'skip',
+            showlegend=False
+        ))
+    
+
+    
+
+
+
+
+
+    layout = go.Layout(
+                    annotations=annotz,
+                    template="simple_white",
+                    font = dict(size= font_size), #'12em'),
+                   margin=dict(t=5, b=5, l=10, r=10,pad=15),
+                   yaxis= dict(mirror= True,
+                        title='Proportion of Population',
                         showline=False,
-                        # showgrid=True,
-                        range = yax['range'],
-                        side='right',
-                        ticktext = [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))],
-                        tickvals = [i for i in  pop_vec_lin],
-                        automargin=True
-                   )
-        upd_menus_x = dict(
+                        automargin=True,
+                        type = 'linear'
+                   ),
+                   xaxis= dict(
+                        range= [0, (2/3)*max(sol['t'])/month_len],
+                        showline=False,
+                        ticktext = time_axis_text[1],
+                        tickvals = time_axis_vals[1],
+                       ),
+                    barmode = 'stack',
+                    legend = dict(
+                                    font=dict(size=font_size*(20/24)),
+                                    x = 0.5,
+                                    y = 1.03,
+                                    xanchor= 'center',
+                                    yanchor= 'bottom'
+                                ),
+                    legend_orientation  = 'h',
+                    legend_title        = '<b> Key <b>',
+                    updatemenus = [dict(
                         buttons=list([
                             dict(
                                 args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[0], 'tickvals': time_axis_vals[0], 'showline':False}], # 'title': 'Time (Months)', 
@@ -1026,75 +1192,21 @@ def figure_generator(sols,month,output,groups,num_strat,groups2,ICU_to_plot=Fals
                             )
                     ]),
                     x= 0.5,
-                    xanchor = 'left', # only change
+                    xanchor = 'center',
                     pad={"r": 5, "t": 30, "b": 10, "l": 5},
                     showactive=True,
                     active=1,
                     direction='up',
                     y=-0.13,
                     yanchor="top"
-                    )
-        upd_menus_y = dict(
-                        buttons=list([
-                            dict(
-                                args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'linear', 'range': yax['range'], 'automargin': True, 'showline':False},
-                                "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'showline':False,'side':'right'}
-                                }], # tickformat
-                                label="Linear",
-                                method="relayout"
-                            ),
-                            dict(
-                                args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'log', 'range': log_range,'automargin': True, 'showline':False},
-                                "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True, 'showline':False,'side':'right'}
-                                }], # 'tickformat': yax_form_log,
-                                label="Logarithmic",
-                                method="relayout"
-                            )
-                    ]),
-                    x= 0.5,
-                    xanchor="right",
-                    pad={"r": 5, "t": 30, "b": 10, "l": 5},
-                    active=0,
-                    y=-0.13,
-                    showactive=True,
-                    direction='up',
-                    yanchor="top"
-                    )
-        layout['updatemenus'] = [upd_menus_x,upd_menus_y]
-    else:
-        upd_menus_x = dict(
-                        buttons=list([
-                            dict(
-                                args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[0], 'tickvals': time_axis_vals[0], 'showline':False}], # 'title': 'Time (Months)', 
-                                label="Years: 1",
-                                method="relayout"
-                            ),
-                            dict(
-                                args = ["xaxis", {'range': [0, (2/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[1], 'tickvals': time_axis_vals[1], 'showline':False}], #   'title': 'Time (Months)', 
-                                label="Years: 2",
-                                method="relayout"
-                            ),
-                            dict(
-                                args = ["xaxis", {'range': [0, (3/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[2], 'tickvals': time_axis_vals[2], 'showline':False}], # 'title': 'Time (Months)', 
-                                label="Years: 3",
-                                method="relayout"
-                            )
-                    ]),
-                    x= 0.5,
-                    xanchor = 'center', # only change
-                    pad={"r": 5, "t": 30, "b": 10, "l": 5},
-                    showactive=True,
-                    active=1,
-                    direction='up',
-                    y=-0.13,
-                    yanchor="top"
-                    )
-        layout['barmode'] = 'stack'
-        layout['updatemenus'] = [upd_menus_x]
-        # layout['yaxis2'] = 
-                    # updatemenus= [
+                    )]
+                )
 
-    return {'data': lines_to_plot, 'layout': layout} # lines_to_plotstacked_lines_to_plot
+
+
+    
+
+    return {'data': lines_to_plot, 'layout': layout}
 
 
 
@@ -1940,7 +2052,7 @@ layout_inter = html.Div([
                                                                                                                                                   
 
 
-                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'textAlign': 'center', 'marginBottom': '3vh'}), # 'textAlign': 'left', fs 80%
+                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'fontSize': '80%' ,'textAlign': 'center', 'marginBottom': '3vh'}), # 'textAlign': 'left', fs 80%
 
                                                                                                                                                         
                                                                                                                                                     dbc.Row([
@@ -2860,27 +2972,6 @@ layout_inter = html.Div([
                                                                                 style = {'textAlign': 'center', 'fontSize': '80%','marginBottom': '1vh' , 'marginTop': '1vh'}),
                                                                                 ],width={'size':8, 'offset': 2}),
 
-                                                                                # dbc.Popover(
-                                                                                #     [
-                                                                                #     dbc.PopoverHeader('Plot Settings '),
-                                                                                #     dbc.PopoverBody(dcc.Markdown(
-                                                                                #     '''
-
-                                                                                #     Press this button to allow you to change the plot settings.
-                                                                                    
-                                                                                #     You may plot different risk groups ('Groups To Plot'), and different disease progress categories ('Categories To Plot').
-
-                                                                                #     '''
-                                                                                #     ),),
-                                                                                #     ],
-                                                                                #     id = "popover-plot-settings",
-                                                                                #     is_open=False,
-                                                                                #     target="popover-plot-settings-target",
-                                                                                #     placement='bottom',
-                                                                                # ),
-                                                                                
-                                                                                # dbc.Collapse(
-                                                                                #     [
                             
                                                                                                             dbc.Row([
                                                                                                                                         dbc.Col([
@@ -2893,14 +2984,8 @@ layout_inter = html.Div([
                                                                                                                                                     dbc.Checklist(id='categories-to-plot-checklist',
                                                                                                                                                                     options=[
                                                                                                                                                                         {'label': longname[key], 'value': key} for key in longname
-                                                                                                                                                                        # {'label': 'Infected', 'value': 'I'},
-                                                                                                                                                                        # {'label': 'Recovered', 'value': 'R'},
-                                                                                                                                                                        # {'label': 'Hospitalised', 'value': 'H'},
-                                                                                                                                                                        # {'label': 'Critical Care', 'value': 'C'},
-                                                                                                                                                                        # {'label': 'Deaths (cumulative)', 'value': 'D'},
                                                                                                                                                                     ],
                                                                                                                                                                     value= ['S','I','R','H','C','D'],
-                                                                                                                                                                    # inline=True,
                                                                                                                                                                     labelStyle = {'display': 'inline-block','fontSize': '80%'},
                                                                                                                                                                 ),
                                                                                                                                                     
@@ -2987,7 +3072,7 @@ layout_inter = html.Div([
                                                                                                                                                         ,style={'marginBottom': '0vh'}
                                                                                                                                                         ),
                                                                                                                                                         dcc.Markdown('''
-                                                                                                                                                        *ICU capacity will only be clear on small y-scales (hospital categories only).*
+                                                                                                                                                        *ICU capacity will only be clear on small y-scales (hospital categories only). For the classic 'flatten the curve' picture, check this box and then select 'Critical' and no others in the '**Categories To Plot**' checklist.*
                                                                                                                                                         ''',style={'fontSize': '70%', 'marginTop': '0vh'}),
 
 
@@ -3032,33 +3117,39 @@ layout_inter = html.Div([
                                                                 dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '97%'}), # figure=dummy_figure,
 
 
+                                                                html.H4("Risk Breakdown",
+                                                                style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
+                                                                ),
+
+                                                                dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '97%'}), # figure=dummy_figure,
+
+
+
+
+                                                                html.H6("Risk Breakdown Plot Category",style={'fontSize': '100%','textAlign': 'center', 'marginTop': '2vh'}),
+
+                                                                dbc.Row([
+                                                                dbc.Col([
+                                                                dbc.RadioItems(id='categories-to-plot-stacked',
+                                                                                options=[
+                                                                                    {'label': longname[key], 'value': key} for key in longname
+                                                                                ],
+                                                                                value= 'D',
+                                                                                inline=True,
+                                                                                labelStyle = {'display': 'inline-block', 'textAlign': 'center' ,'fontSize': '80%'},
+                                                                            ),
+
+
+                                                                ],width={'size': 8, 'offset': 2}
+                                                                ),
+                                                                ],
+                                                                justify='center'),
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-                                                                # html.Hr(),
-
-                                                                # html.H4("Hospital Categories",
-                                                                # style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
-                                                                # ),
-
-                                                                # dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '95%'}), # figure=dummy_figure,
-
-                                                                # html.H4("Intensive Care - 'flatten the curve'",
-                                                                # style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
-                                                                # ),
-
-                                                                # dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '95%'}), # figure=dummy_figure,
 
 
                                                     ]
@@ -3721,6 +3812,8 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 
                 Output('line-plot-1', 'figure'),
                 Output('line-plot-2', 'figure'),
+                Output('line-plot-3', 'figure'),
+
 
 
 
@@ -3744,6 +3837,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 Input('groups-checklist-to-plot', 'value'),
                 Input('groups-to-plot-radio','value'),                                      
                 Input('categories-to-plot-checklist', 'value'),
+                Input('categories-to-plot-stacked', 'value'),
                 Input('plot-with-do-nothing','value'),
                 Input('plot-ICU-cap','value'),
 
@@ -3764,7 +3858,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 State('ICU-slider','value'),
                 State('model-start-date','date'),
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_nothing,plot_ICU_cap,results_type,country_num,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date):
+def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date):
 
     # ctx = dash.callback_context
     # print(ctx.triggered[0]['prop_id'],'render')
@@ -3816,6 +3910,8 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
     if sols is None or tab2!='interactive' or results_type!='DPC_dd':
         fig1 = dummy_figure
         fig2 = dummy_figure
+        fig3 = dummy_figure
+
 
 
 
@@ -3973,14 +4069,62 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
                 else:
                     ICU_plot = False
 
+                split = date.split('-')
+
+                day_start   = int(split[2])
+                month_start = int(split[1])
+                year_start  = int(split[0])
+                month_labelz = [[],[],[]]
+
+                for j in range(4):
+                    for i in range(1,13):
+                        if i == month_start and j==0:
+                            month_labelz[0].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
+                            month_labelz[1].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
+                            month_labelz[2].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
+                        elif i==1:
+                            month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                            month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                            month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                        elif i==2:
+                            month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                            month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                            month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                            
+                        elif i==3: # March
+                            month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                            month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                            month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                        else:
+                            month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                            month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                            month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                
+                month_labels = []
+                for list_m in month_labelz:
+                    month_labels.append(list_m[(month_start-1):(month_start-1+38)])
+
+                days_till_end_of_month = max(month_len-day_start,1)
+                time_vec = [0]
+                for i in range(36):
+                    time_vec.append(days_till_end_of_month/month_len+i)
+
+                time_axis_text = []
+                time_axis_vals = []
+                for N in range(1,4,1):
+                    time_axis_text.append([str(month_labels[N-1][N*i]) for i in range(ceil(len(time_vec)/N))])
+                    time_axis_vals.append([time_vec[N*i] for i in range(ceil(len(time_vec)/N))])
 
 
-                if len(output)>0:
-                    fig1 = figure_generator(sols_to_plot,month,output,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,starting_date=date, country = country)
+
+                if len(cats_to_plot_line)>0:
+                    fig1 = figure_generator(sols_to_plot,month,cats_to_plot_line,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country)
                 else:
                     fig1 = dummy_figure
 
-                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,starting_date=date, country = country)
+                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country)
+                fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country)
+
 
             
         ##############
@@ -4007,6 +4151,8 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
     fig1,
     fig2,
+    fig3,
+
 
 
     None
