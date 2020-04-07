@@ -701,7 +701,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                 annotz.append(dict(
                         x  = 0.5*(c_min+c_max)/month_len,
                         y  = yval_pink,
-                        text="ICU<br>" + " Capacity<br>" + " Exceeded",
+                        text="<b>ICU<br>" + "<b> Capacity<br>" + "<b> Exceeded",
                         # hoverinfo='ICU Capacity Exceeded',
                         showarrow=False,
                         textangle= 0,
@@ -709,7 +709,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                             size= ICU_font_size,
                             color="purple"
                         ),
-                        opacity=0.7,
+                        opacity=0.6,
                         xref = 'x',
                         yref = 'paper',
                 ))
@@ -725,7 +725,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
         annotz.append(dict(
                 x  = max(0.5*(month[0]+month[1]), 0.5),
                 y  = yval_blue,
-                text="Control<br>" + " In <br>" + " Place",
+                text="<b>Control<br>" + "<b> In <br>" + "<b> Place",
                 # hoverinfo='Control In Place',
                 textangle=0,
                 font=dict(
@@ -896,7 +896,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                         yanchor= 'bottom'
                                                     ),
                                         legend_orientation  = 'h',
-                                        legend_title        = '<b> Key <b>',
+                                        legend_title        = '<b> Key </b>',
                                         yaxis2 = dict(
                                                         title = 'Population (' + country_name + ')',
                                                         overlaying='y1',
@@ -1014,7 +1014,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
         annotz.append(dict(
                 x  = max(0.5*(month[0]+month[1]), 0.5),
                 y  = yval_blue,
-                text="Control<br>" + " In <br>" + " Place",
+                text="<b>Control<br>" + "<b> In <br>" + "<b> Place",
                 # hoverinfo='Control In Place',
                 textangle=0,
                 font=dict(
@@ -1112,7 +1112,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                                     yanchor= 'bottom'
                                 ),
                     legend_orientation  = 'h',
-                    legend_title        = '<b> Key <b>',
+                    legend_title        = '<b> Key </b>',
                     updatemenus = [dict(
                         buttons=list([
                             dict(
@@ -1579,7 +1579,7 @@ layout_intro = html.Div([
             dcc.Markdown('''            
             Any infectious disease requires both infectious individuals and susceptible individuals to be present in a population to spread. The higher the number of susceptible individuals, the faster it can spread since an infectious person can spread the disease to more susceptible people before recovering.
 
-            The average number of infections caused by a single infected person is known as the '**basic reproduction number**' (*R*). If this number is less than 1 (each infected person infects less than one other on average) then the disease won't spread. If it is greater than 1 then the disease will spread. For COVID-19 most estimates for *R* are between 2 and 3. We use the value *R*=2.4.
+            The average number of infections caused by a single infected person is known as the '**basic reproduction number**' (*R*). If this number is less than 1 (each infected person infects less than one other on average) then the disease will not continue to spread. If it is greater than 1 then the disease will spread. For COVID-19 most estimates for *R* are between 2 and 3. We use the value *R*=2.4.
             '''),
 
             html.H4('2. Herd Immunity',
@@ -1588,7 +1588,7 @@ layout_intro = html.Div([
             dcc.Markdown('''            
 
 
-            Once the number of susceptible people drops below a certain threshold (which is different for every disease, and in simpler models depends on the basic reproduction number), the population is no longer at risk of an epidemic (so any new infection introduced won't cause infection to spread through an entire population).
+            Once the number of susceptible people drops below a certain threshold (which is different for every disease, and in simpler models depends on the basic reproduction number), the population is no longer at risk of an epidemic (so any new infection introduced will not cause infection to spread through an entire population).
 
             Once the number of susceptible people has dropped below this threshold, the population is termed to have '**herd immunity**'. Herd immunity is either obtained through sufficiently many individuals catching the disease and developing personal immunity to it, or by vaccination.
 
@@ -1661,7 +1661,7 @@ layout_intro = html.Div([
             dcc.Markdown('''            
             One notable feature of COVID-19 is that it puts particular demographics within society at greater risk. The elderly and the immunosuppressed are particularly at risk of serious illness caused by coronavirus.
 
-            The **interactive model** presented here is designed to show the value is protecting the high risk members of society. It is critically important that the high risk don't catch the disease.
+            The **interactive model** presented here is designed to show the value is protecting the high risk members of society. It is critically important that the high risk do not catch the disease.
 
             If 60% of the population catch the disease, but all are classified as low risk, then very few people will get seriously ill through the course of the epidemic. However, if a mixture of high and low risk individuals catch the disease, then many of the high risk individuals will develop serious illness as a result.
 
@@ -2606,13 +2606,13 @@ layout_inter = html.Div([
 
                                                         
                                                         dbc.Row([
-                                                                dbc.Spinner(html.Div(id="loading-sol-1")),
 
                                                                 html.H3('Results',
                                                                 className='display-4',
                                                                 style={'fontSize': '250%', 'textAlign': 'center' ,'marginTop': "1vh",'marginBottom': "1vh"}),
 
-                                                                dbc.Spinner(html.Div(id="loading-line-output-1")),
+                                                                dbc.Spinner(html.Div(id="loading-sol-1"),color='primary',type='grow'),
+                                                                dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary',type='grow'),
                                                                 ],
                                                                 justify='center',
                                                         ),
@@ -3057,7 +3057,7 @@ layout_inter = html.Div([
                                                                 dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '97%'}), # figure=dummy_figure,
 
 
-                                                                html.H4("Risk Breakdown",
+                                                                html.H4("Low Risk/High Risk Breakdown By Category",
                                                                 style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                 ),
 
@@ -3067,9 +3067,14 @@ layout_inter = html.Div([
 
 
                                                                 html.H6("Risk Breakdown Plot Category",style={'fontSize': '100%','textAlign': 'center', 'marginTop': '2vh'}),
+                                                                
 
                                                                 dbc.Row([
                                                                 dbc.Col([
+                                                                dcc.Markdown('''
+                                                                *Select different categories to see the split between low and high risk individuals. Each bar shows the number in that category at a particular time point. Recovery and death are cumulative, since once you enter one of those categories you cannot leave it.*
+                                                                ''',style={'fontSize': '70%', 'marginTop': '0vh'}),
+
                                                                 dbc.RadioItems(id='categories-to-plot-stacked',
                                                                                 options=[
                                                                                     {'label': longname[key], 'value': key} for key in longname
@@ -3084,6 +3089,10 @@ layout_inter = html.Div([
                                                                 ),
                                                                 ],
                                                                 justify='center'),
+
+                                                                dcc.Markdown('''
+                                                                            In the risk breakdown plot you can see how in most scenarios many more high risk people die or need critical care than low risk, despite the fact there are fewer low risk. However, most of the immunity in the population comes from the bigger, low risk class. This is why it is essential that the strategy chosen adequately protects those higher risk individuals.
+                                                                            ''',style={'fontSize': '100%', 'marginTop': '2vh'}),
 
 
 
@@ -3228,7 +3237,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     
                                                                                                                                                                     dcc.Markdown('''
-                                                                                                                                                                    Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. However, if they don't receive it all die. The number able to get treatment must be lower than the number of ICU beds available.
+                                                                                                                                                                    Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. However, if they do not receive it all die. The number able to get treatment must be lower than the number of ICU beds available.
                                                                                                                                                                     ''',
                                                                                                                                                                     style={'textAlign': 'justify'}),
 
@@ -3274,7 +3283,7 @@ layout_inter = html.Div([
                                                                                                                                                                     html.H4('Age Structure',style={'fontSize': '180%', 'textAlign': 'center'}),
                                                                                                                                                                     
                                                                                                                                                                     dcc.Markdown('''
-                                                                                                                                                                    The age data is taken from [**GOV.UK**](https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](https://spiral.imperial.ac.uk/handle/10044/1/77482) (Ferguson et al.). This means that the age structure won't be accurate when modelling other countries.
+                                                                                                                                                                    The age data is taken from [**GOV.UK**](https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](https://spiral.imperial.ac.uk/handle/10044/1/77482) (Ferguson et al.). This means that the age structure will not be accurate when modelling other countries.
 
                                                                                                                                                                     To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population.
 
