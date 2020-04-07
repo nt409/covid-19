@@ -18,7 +18,7 @@ import flask
 
 
 from dan import layout_dan, COUNTRY_LIST, colours
-from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER
+from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER, USE_API
 from dan_constants import POPULATIONS
 import datetime
 import json
@@ -30,17 +30,22 @@ max_date = get_data('uk')['Currently Infected']['dates'][-1]
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
-dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
+# dates = np.asarray(get_data('uk')['Currently Infected']['dates'])
 
-date_objects = []
-for dt in dates:
-    date_objects.append(datetime.datetime.strptime(dt, '%Y-%m-%d').date())
-date_objects = np.asarray(date_objects)
+
 
 country_data = get_data('japan')
 
-COUNTRY_LIST_NICK = sorted(COUNTRY_LIST_WORLDOMETER)
+
+if USE_API:
+    COUNTRY_LIST_NICK = COUNTRY_LIST
+else:
+    COUNTRY_LIST_NICK = COUNTRY_LIST_WORLDOMETER
+
+# print(USE_API)
+COUNTRY_LIST_NICK = sorted(COUNTRY_LIST_NICK)
 COUNTRY_LIST_NICK.remove('world')
+COUNTRY_LIST_NICK.remove('china-hong-kong-sar')
 
 initial_country = COUNTRY_LIST_NICK.index('uk')
 
@@ -52,28 +57,39 @@ def begin_date(date,country='uk'):
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
     
     country_data = get_data(country)
-    
+
     if country_data is None:
         country_data = get_data('uk')
 
+    dates = np.asarray(country_data['Currently Infected']['dates'])
     
     currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
     deaths_data        = np.asarray(country_data['Deaths']['data'])
     population_country = POPULATIONS[country]
 
-
+    date_objects = []
+    for dt in dates:
+        date_objects.append(datetime.datetime.strptime(dt, '%Y-%m-%d').date())
 
     try:
-        index = int(np.argwhere(date_objects==date)[0][0])
-    except:
+        index = date_objects.index(date)
+    except Exception as e:
         index = -1
-        print('date error')
+        print('Date error; ',e)
     
+    if index>=10:
+        I0    = np.float(currently_inf_data[index])
+        I_ten = np.float(currently_inf_data[index-10])
+        D0    = np.float(deaths_data[index])
+    else:
+        index=10
+        I0    = np.float(currently_inf_data[index])
+        I_ten = np.float(currently_inf_data[index-10])
+        D0    = np.float(deaths_data[index])
+        print("dates didn't go far enough back")
 
 
-    I0    = np.float(currently_inf_data[index])
-    I_ten = np.float(currently_inf_data[index-10])
-    D0    = np.float(deaths_data[index])
+    
 
     # of resolved cases, fatality rate is 0.9%
     p = 0.009
@@ -457,17 +473,6 @@ def time_exceeded_function(yy,tt,ICU_grow):
 
 
 
-########################################################################################################################
-def preset_strat(preset):
-    if preset in preset_dict_high:
-        lr = params.fact_v[preset_dict_low[preset]]
-        hr = params.fact_v[preset_dict_high[preset]]
-    else:
-        lr = 1
-        hr = 1
-    
-
-    return lr, hr
 
 
 
@@ -2423,16 +2428,13 @@ layout_inter = html.Div([
                                                                 html.H3('Results',
                                                                 className='display-4',
                                                                 style={'fontSize': '250%', 'textAlign': 'center' ,'marginTop': "1vh",'marginBottom': "1vh"}),
-                                                                # html.H4("Disease Progress Curves",
-                                                                # style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '1vh','fontSize': '180%'} # 'marginLeft': '2vw', 
-                                                                # ),
 
                                                                 dbc.Spinner(html.Div(id="loading-line-output-1")),
+                                                                dbc.Spinner(html.Div(id="loading-sol-1")),
                                                                 ],
                                                                 justify='center',
                                                         ),
                                                         
-                                                        # dcc.Markdown('''*Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.*''', style = {'textAlign': 'center', 'marginBottom': '1vh'}), # , 'fontSize': '90%'
                                              
                                                       
 
@@ -2467,10 +2469,9 @@ layout_inter = html.Div([
                                                                                                             id="popover-bp1-target",
                                                                                                             style={'cursor': 'pointer'}
                                                                                                             )],
-                                                                                                            style= {'textAlign': 'center'}), # ,id='bar-plot-1-out'),
+                                                                                                            style= {'textAlign': 'center'}),
 
                                                                                                             ]),
-                                                                                                            # dbc.Spinner(html.Div(id="loading-bar-output-1")),
                                                                                                         ]
                                                                                                         ,justify='center'),
                                                                                                         ],
@@ -2478,10 +2479,6 @@ layout_inter = html.Div([
 
                                                                                                         dcc.Graph(id='bar-plot-1',style=bar_non_crit_style),
                                                                                                 
-                                                                                                ],
-                                                                                                align='center',
-                                                                                                width = 12,
-                                                                                                ),
                                                                                                 
 
                                                                                                 
@@ -2489,8 +2486,6 @@ layout_inter = html.Div([
 
 
 
-                                                                                        # html.Div([
-                                                                                                    dbc.Col([
 
                                                                                                                     html.Div(
                                                                                                                         [dbc.Row([##
@@ -2504,11 +2499,10 @@ layout_inter = html.Div([
                                                                                                                                 id="popover-bp3-target",
                                                                                                                                 style={'cursor': 'pointer'}
                                                                                                                                 )
-                                                                                                                                ],style= {'textAlign': 'center'}), # id='bar-plot-3-out'),
+                                                                                                                                ],style= {'textAlign': 'center'}),
 
 
                                                                                                                             ]),
-                                                                                                                            # dbc.Spinner(html.Div(id="loading-bar-output-3")),
                                                                                                                         ],
                                                                                                                         justify='center'),##
                                                                                                                         ],
@@ -2517,16 +2511,10 @@ layout_inter = html.Div([
                                                                                                                         dcc.Graph(id='bar-plot-3',style=bar_non_crit_style),
                                                                                                                     
                                                                                                         
-                                                                                                        ],
-                                                                                                        align='center',
-                                                                                                        
-                                                                                                        width = 12,
-                                                                                                        ),
 
                                                                                                     html.Hr(),
 
 
-                                                                                                        dbc.Col([
                                                                                                                     html.Div(
                                                                                                                             [dbc.Row([##
                                                                                                                                 html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
@@ -2540,33 +2528,24 @@ layout_inter = html.Div([
                                                                                                                                     style={'cursor': 'pointer'}
                                                                                                                                     )
 
-                                                                                                                                    ],style= {'textAlign': 'center'}), # id='bar-plot-4-out'),
+                                                                                                                                    ],style= {'textAlign': 'center'}),
 
                                                                                                                                 ]),
                                                                                                                                 
-                                                                                                                                # dbc.Spinner(html.Div(id="loading-bar-output-4")),
                                                                                                                             ],
                                                                                                                             justify='center'),##
                                                                                                                             ],
                                                                                                                     id='bar-plot-4-title',style={'display':'block'}),
 
                                                                                                                     dcc.Graph(id='bar-plot-4',style=bar_non_crit_style),
-                                                                                                        ],
-                                                                                                        align='center',
-                                                                                                        width = 12,
-                                                                                                        ),
                                                                                                     
                                                                                             html.Hr(),
 
-                                                                                            # ],
-                                                                                            # id = 'bar-plots-crit'
-                                                                                            # ),
 
 
                                                                                                 
 
 
-                                                                                            dbc.Col([
                                                                                                         html.Div(
                                                                                                                 [dbc.Row([##
                                                                                                                     html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
@@ -2585,7 +2564,6 @@ layout_inter = html.Div([
 
                                                                                                                     ]),
 
-                                                                                                                    # dbc.Spinner(html.Div(id="loading-bar-output-2")),
                                                                                                                 ],
                                                                                                             justify='center'),##
                                                                                                                 ],
@@ -2595,15 +2573,10 @@ layout_inter = html.Div([
                                                                                                         
 
                                                                                             
-                                                                                            ],
-                                                                                            align='center',
-                                                                                            width = 12,
-                                                                                            ),
 
                                                                                             html.Hr(),
 
 
-                                                                                            dbc.Col([
                                                                                                     
                                                                                                     html.Div(
                                                                                                             [dbc.Row([##
@@ -2794,7 +2767,7 @@ layout_inter = html.Div([
                                                                                                                                                                         {'label': 'Recovered', 'value': 'R'},
                                                                                                                                                                         {'label': 'Hospitalised', 'value': 'H'},
                                                                                                                                                                         {'label': 'Critical Care', 'value': 'C'},
-                                                                                                                                                                        {'label': 'Deaths', 'value': 'D'},
+                                                                                                                                                                        {'label': 'Deaths (Cumulative)', 'value': 'D'},
                                                                                                                                                                     ],
                                                                                                                                                                     value= ['S','I','R','H','C','D'],
                                                                                                                                                                     # inline=True,
@@ -3308,7 +3281,7 @@ page_layout = html.Div([
         
 
         ],
-        # style={'padding': '5%'}
+        # 
         )
 ##
 ########################################################################################################################
@@ -3344,38 +3317,6 @@ def display_page(pathname):
         return 'interactive'
 
 
-
-
-@app.callback(
-            [Output('low-risk-slider', 'value'),
-            Output('high-risk-slider', 'value'),
-            Output('low-risk-slider', 'disabled'), 
-            Output('high-risk-slider', 'disabled'),
-            Output('number-strats-radio','options')
-            ],
-            [
-            Input('preset', 'value'),
-            ])
-def preset_sliders(preset):
-    if preset is None:
-        preset = 'N'
-    
-    if preset == 'C':
-        dis = False
-        options=[
-                {'label': 'One', 'value': 'one'},
-                {'label': 'Two', 'value': 'two'},
-            ]
-    else:
-        dis = True
-        options=[
-                {'label': 'One', 'value': 'one','disabled': True},
-                {'label': 'Two', 'value': 'two','disabled': True},
-            ]
-    if preset in preset_dict_low:
-        return preset_dict_low[preset], preset_dict_high[preset], dis, dis, options
-    else:
-        return preset_dict_low['N'], preset_dict_high['N'], dis, dis, options # shouldn't be needed
 
 
 
@@ -3435,8 +3376,7 @@ for p in [ "rt-data" ,"pick-strat","control", "months-control", "vaccination", "
     Input('plot-with-do-nothing', 'value')
     ])
 def invisible_or_not(num,preset,do_nothing):
-    if preset is None:
-        preset = 'N'
+    # print('invis or not')
 
     do_nothing_dis = False
     do_n_val = 1
@@ -3473,13 +3413,43 @@ def invisible_or_not(num,preset,do_nothing):
     return [says_strat_2,strat_H, strat_L ,groups_radio,groups_checklist,options]
 
 ########################################################################################################################
-# uk_data = get_data('uk')
-# dates              = np.asarray(uk_data['Currently Infected']['dates'])
-# currently_inf_data = np.asarray(uk_data['Currently Infected']['data'])
-# deaths_data        = np.asarray(uk_data['Deaths']['data'])
+
+
+
 
 @app.callback(
-    Output('sol-calculated', 'data'),
+            [Output('low-risk-slider', 'value'),
+            Output('high-risk-slider', 'value'),
+            Output('low-risk-slider', 'disabled'), 
+            Output('high-risk-slider', 'disabled'),
+            Output('number-strats-radio','options')
+            ],
+            [
+            Input('preset', 'value'),
+            ])
+def preset_sliders(preset):
+    # print('preset sliders')
+    
+    if preset == 'C':
+        dis = False
+        options=[
+                {'label': 'One', 'value': 'one'},
+                {'label': 'Two', 'value': 'two'},
+            ]
+    else:
+        dis = True
+        options=[
+                {'label': 'One', 'value': 'one','disabled': True},
+                {'label': 'Two', 'value': 'two','disabled': True},
+            ]
+    return preset_dict_low[preset], preset_dict_high[preset], dis, dis, options
+    
+
+
+
+@app.callback(
+    [Output('sol-calculated', 'data'),
+    Output('loading-sol-1','children')],
     [
     Input('preset', 'value'),
     Input('month-slider', 'value'),
@@ -3493,9 +3463,8 @@ def invisible_or_not(num,preset,do_nothing):
     Input('model-start-date', 'date'),
     Input('model-country-choice', 'value'),
     ])
-def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date,country_num): # years , ,hosp
+def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num):
 
-    # country_num = country_num + 1
     
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -3505,25 +3474,23 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date,country_
     if vaccine==9:
         vaccine = None
 
-    I0, R0, H0, C0, D0 = begin_date(date,country) #I0=I0_in,I_ten=I_ten_in,D0=D0_in)
+    I0, R0, H0, C0, D0 = begin_date(date,country)
 
-    if preset is None:
-        preset = 'N'
+    # if preset is None:
+    #     preset = 'N'
 
-    
     if preset=='C':
-        lr = params.fact_v[int(lr)]
-        hr = params.fact_v[int(hr)]
+        lr = params.fact_v[int(lr_in)]
+        hr = params.fact_v[int(hr_in)]
     else:
-        lr, hr = preset_strat(preset)
-        # num_strat='one'
+        lr = params.fact_v[preset_dict_low[preset]]
+        hr = params.fact_v[preset_dict_high[preset]]
 
     if preset=='N':
         month=[0,0]
-
     
-    lr2 = params.fact_v[int(lr2)]
-    hr2 = params.fact_v[int(hr2)]
+    lr2 = params.fact_v[int(lr2_in)]
+    hr2 = params.fact_v[int(hr2_in)]
     
     t_stop = 365*3
 
@@ -3537,20 +3504,21 @@ def find_sol(preset,month,lr,hr,lr2,hr2,num_strat,vaccine,ICU_grow,date,country_
     if num_strat=='two':
         sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow))
     
-    return sols # {'sols': sols}
+    return sols, None
 
 
 @app.callback(
     Output('sol-calculated-do-nothing', 'data'),
     [
-    Input('sol-calculated-do-nothing', 'children'),
     Input('ICU-slider', 'value'),
     Input('model-start-date', 'date'),
     Input('model-country-choice', 'value'),
     ])
-def find_sol_do_noth(hosp,ICU_grow,date,country_num):
+def find_sol_do_noth(ICU_grow,date,country_num):
 
-    # country_num = country_num + 1
+    # ctx = dash.callback_context
+    # print('find sol do nothing')
+
     try:
         country = COUNTRY_LIST_NICK[country_num]
     except:
@@ -3583,9 +3551,6 @@ def find_sol_do_noth(hosp,ICU_grow,date,country_num):
                 Output('bc-content', 'style'),
                 Output('strategy-outcome-content', 'style'),
                 
-                # Output('DPC_dd', 'active'),
-                # Output('BC_dd', 'active'),
-                # Output('SO_dd', 'active'),
 
                 Output('line_page_title', 'children'),
                 
@@ -3599,19 +3564,8 @@ def find_sol_do_noth(hosp,ICU_grow,date,country_num):
                 Output('bar-plot-4', 'figure'),
                 Output('bar-plot-5', 'figure'),
 
-                # Output('loading-bar-output-1','children'),
-                # Output('loading-bar-output-2','children'),
-                # Output('loading-bar-output-3','children'),
-                # Output('loading-bar-output-4','children'),
-                # Output('loading-bar-output-5','children'),
-
-
-
-                # Output('plot-settings-collapse', 'style'),
 
                 Output('line-plot-1', 'figure'),
-                # Output('line-plot-2', 'figure'),
-                # Output('line-plot-3', 'figure'),
 
 
                 
@@ -3633,38 +3587,34 @@ def find_sol_do_noth(hosp,ICU_grow,date,country_num):
                 # or any of the plot categories
                 Input('groups-checklist-to-plot', 'value'),
                 Input('groups-to-plot-radio','value'),                                      
-                # Input('how-many-plots-slider','value'),
                 Input('categories-to-plot-checklist', 'value'),
                 Input('plot-with-do-nothing','value'),
                 Input('plot-ICU-cap','value'),
 
                 
-                # Input('years-slider', 'value'),
                 Input('dropdown', 'value'),
                 Input('model-country-choice', 'value'),
 
 
-                # Input('DPC_dd', 'n_clicks'),
-                # Input('BC_dd', 'n_clicks'),
-                # Input('SO_dd', 'n_clicks'),
 
                 ],
                [
-                # State('DPC_dd', 'active'),
-                # State('BC_dd', 'active'),
-                # State('SO_dd', 'active'),
                 State('sol-calculated-do-nothing', 'data'),
                 State('preset', 'value'),
                 State('month-slider', 'value'),
-                # State('hosp-cats', 'value'),
+
                 State('number-strats-radio', 'value'),
                 State('vaccine-slider', 'value'),
                 State('ICU-slider','value'),
                 State('model-start-date','date'),
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_nothing,plot_ICU_cap,results_type,country_num,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date): # pathname, tab_intro pathname, hosp # ,DPC_dropdown,BC_dropdown,SO_dropdown,DPC_active,BC_active,SO_active
+def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_nothing,plot_ICU_cap,results_type,country_num,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date):
 
-    # country_num = country_num + 1
+    # ctx = dash.callback_context
+    # print(ctx.triggered[0]['prop_id'],'render')
+
+
+
     try:
         country = COUNTRY_LIST_NICK[country_num]
     except:
@@ -3672,54 +3622,30 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
     
 
-    # ctx = dash.callback_context
     
     DPC_style = {'display' : 'none'}
     BC_style  = {'display': 'none'}
     SO_style  = {'display' : 'none'}
 
-    # if not ctx.triggered:
-    #     results_type = "DPC_dd"
-    # else:
-    #     results_type = ctx.triggered[0]["prop_id"].split(".")[0]
-    # DPC_active = False
-    # BC_active  = False
-    # SO_active  = False
-    # if results_type in ['BC_dd','SO_dd','DPC_dd']:
-    # DPC_active = False
-    # BC_active  = False
-    # SO_active  = False
     if results_type == 'BC_dd':
         BC_style = {'display': 'block'}
-        # BC_active = True
+
     elif results_type == 'SO_dd':
         SO_style = {'display': 'block'}
-        # SO_active = True
+
     else: # 'DPC
         DPC_style = {'display': 'block'}
         results_type = 'DPC_dd' # in case wasn't
-        # DPC_active = True
-    # else:
-    #     if BC_active:
-    #         results_type = 'BC_dd'
-    #         BC_style = {'display': 'block'}
-    #     elif SO_active:
-    #         results_type = 'SO_dd'
-    #         SO_style = {'display': 'block'}
-    #     else:
-    #         results_type = 'DPC_dd'
-    #         DPC_style = {'display': 'block'}
 
 
 ########################################################################################################################
 
-    if preset is None:
-        preset = 'N'
+    # if preset is None:
+    #     preset = 'N'
 
     Strat_outcome_title = presets_dict[preset] + ' Strategy Outcome'
     strategy_outcome_text = ['']
 
-    # plot_settings_on_or_off = {'display': 'none'}
 
     if sols is None or tab2!='interactive' or results_type!='BC_dd':
         bar1 = dummy_figure
@@ -3730,8 +3656,6 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
     if sols is None or tab2!='interactive' or results_type!='DPC_dd':
         fig1 = dummy_figure
-        # fig2 = dummy_figure
-        # fig3 = dummy_figure
 
 
 
@@ -3775,14 +3699,13 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
             for ii in range(len(sols)):
                 if sols[ii] is not None and ii<len(sols)-1:
                     sol = sols[ii]
-                    # table_out = strat_table(month,sol['beta_H'],sol['beta_L'],len(sols)-1,ii+1)
-                    # tables.append(table_out)
+
 ########################################################################################################################
             if results_type!='DPC_dd': # tab != DPC
 
                 #loop start
                 for ii in range(len(sols)):
-                    # print(len(sols),ii)
+                    # 
                     if sols[ii] is not None:
                         sol = sols[ii]
                         
@@ -3832,7 +3755,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
                 ########################################################################################################################
                 # SO results
-                if  results_type=='SO_dd': # sols is not None and
+                if  results_type=='SO_dd':
 
                     strategy_outcome_text = html.Div([
 
@@ -3851,31 +3774,28 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
                 ########################################################################################################################
                 # BC results
 
-                if results_type=='BC_dd': # sols is not None and 
+                if results_type=='BC_dd':
 
                     crit_cap_bar_1yr = [crit_cap_data_L_1yr[i] + crit_cap_data_H_1yr[i] for i in range(len(crit_cap_data_H_1yr))]
                     crit_cap_bar_3yr = [crit_cap_data_L_3yr[i] + crit_cap_data_H_3yr[i] for i in range(len(crit_cap_data_H_3yr))]
 
 
-                    bar1 = Bar_chart_generator(crit_cap_bar_1yr      ,text_addition='%'         , y_title='Population'                    , hover_form = '%{x}, %{y:.3%}'                         ,color = 'powderblue' ,data_group=crit_cap_bar_3yr, yax_tick_form='.1%') # name1='Low Risk',name2='High Risk'
-                    bar2 = Bar_chart_generator(herd_list_1yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'  , hover_form = '%{x}, %{y:.1%}<extra></extra>'          ,color = 'powderblue' ,data_group=herd_list_3yr,yax_tick_form='.1%',maxi=False,yax_font_size_multiplier=0.8) # preset = preset,
-                    bar3 = Bar_chart_generator(ICU_data_1yr          ,text_addition='x current' , y_title='Multiple of Capacity'  , hover_form = '%{x}, %{y:.1f}x Current<extra></extra>' ,color = 'powderblue'     ,data_group=ICU_data_3yr  ) # preset = preset,
-                    bar4 = Bar_chart_generator(time_exceeded_data    ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'powderblue'   ) # preset = preset,
-                    bar5 = Bar_chart_generator(time_reached_data     ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'powderblue') # preset = preset,
+                    bar1 = Bar_chart_generator(crit_cap_bar_1yr      ,text_addition='%'         , y_title='Population'                    , hover_form = '%{x}, %{y:.3%}'                         ,color = 'powderblue' ,data_group=crit_cap_bar_3yr, yax_tick_form='.1%')
+                    bar2 = Bar_chart_generator(herd_list_1yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'  , hover_form = '%{x}, %{y:.1%}<extra></extra>'          ,color = 'powderblue' ,data_group=herd_list_3yr,yax_tick_form='.1%',maxi=False,yax_font_size_multiplier=0.8)
+                    bar3 = Bar_chart_generator(ICU_data_1yr          ,text_addition='x current' , y_title='Multiple of Capacity'  , hover_form = '%{x}, %{y:.1f}x Current<extra></extra>' ,color = 'powderblue'     ,data_group=ICU_data_3yr  )
+                    bar4 = Bar_chart_generator(time_exceeded_data    ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'powderblue'   )
+                    bar5 = Bar_chart_generator(time_reached_data     ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'powderblue')
 
 
 
         ########################################################################################################################
             # DPC results
 
-            if results_type=='DPC_dd': # sols is not None and
+            if results_type=='DPC_dd':
                 
                 date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
                 date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
 
-
-                # output_2 = [i for i in output if i in ['C','H','D']]
-                # plot_settings_on_or_off = None
 
                 if vaccine_time==9:
                     vaccine_time = None
@@ -3895,19 +3815,15 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
 
 
                 if len(output)>0:
-                    fig1 = figure_generator(sols_to_plot,month,output,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,starting_date=date, country = country) # hosp,
+                    fig1 = figure_generator(sols_to_plot,month,output,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,starting_date=date, country = country)
                 else:
                     fig1 = dummy_figure
 
-                # if len(output_2)>0:
-                #     fig2 = figure_generator(sols_to_plot,month,output_2,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow,comp_dn=comp_dn,starting_date=date) # hosp,
-                # else:
-                #     fig2 = dummy_figure
-                # fig3 = figure_generator(sols_to_plot,month,['C'],groups,num_strat,groups2,ICU_to_plot=True,vaccine_time=vaccine_time,ICU_grow=ICU_grow,comp_dn=comp_dn,starting_date=date) # hosp,
             
         ##############
 
                 
+    # print('render end')
 
 ########################################################################################################################
 
@@ -3915,26 +3831,20 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,output,plot_with_do_
     DPC_style,
     BC_style,
     SO_style,
-    # DPC_active,
-    # BC_active,
-    # SO_active,
+
     Strat_outcome_title,
+
     strategy_outcome_text,
+
     bar1,
     bar2,
     bar3,
     bar4,
     bar5,
-    # None, #html.Div(),
-    # None, #html.Div(),
-    # None, #html.Div(),
-    # None, #html.Div(),
-    # None, #html.Div(),
-    # plot_settings_on_or_off,
+
     fig1,
-    # fig2,
-    # fig3,
-    None # html.Div()
+
+    None
     ]
 
 ########################################################################################################################
