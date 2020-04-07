@@ -167,8 +167,8 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                 dbc.Checklist(
                     id=c_name,
                     options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(),
-                              'value': c_name.replace(' ', '-') if c_name in WORLDOMETER_NAME else WORLDOMETER_NAME[
-                                  c_name]}],
+                              'value': c_name.replace(' ', '-') if c_name not in WORLDOMETER_NAME
+                              else WORLDOMETER_NAME[c_name]}],
                     value=[c_name] if c_name in ('us', 'uk', 'italy') else [],
                     style={"margin-left": "15px", 'textAlign': 'left'},
                     inputStyle={"margin-right": "5px"})
