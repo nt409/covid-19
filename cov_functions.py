@@ -84,18 +84,30 @@ class simulator:
     ##
     def poly_calc_ode(self,I0,R0,H0,C0,D0,beta_L_factor,beta_H_factor,t_control,T_stop,vaccine_time,ICU_grow): # critical,death
         
+        prop_hosp_H = (params.hr_frac*params.frac_hosp_H)   /( (1-params.hr_frac)*params.frac_hosp_L   +    params.hr_frac*params.frac_hosp_H  )
+
+        prop_crit_H = (params.hr_frac*params.frac_hosp_H*params.frac_crit_H)/( (1-params.hr_frac)*params.frac_hosp_L*params.frac_crit_L     +    params.hr_frac*params.frac_hosp_H*params.frac_crit_H)
+        
+        prop_rec_H = (params.hr_frac*(1-params.frac_hosp_H))/( (1-params.hr_frac)*(1 - params.frac_hosp_L)   +  params.hr_frac*(1 - params.frac_hosp_H) )
+
+        # print(prop_hosp_H)
+        # print(prop_crit_H)
+        # print(prop_rec_H)
+
+
+
         I0_L = (1-params.hr_frac)*params.N*I0
-        R0_L = (1-params.hr_frac)*params.N*R0
-        C0_L = (1-params.hr_frac)*params.N*C0
-        H0_L = (1-params.hr_frac)*params.N*H0
-        D0_L = (1-params.hr_frac)*params.N*D0
+        R0_L = (1-prop_rec_H)    *params.N*R0
+        H0_L = (1-prop_hosp_H)   *params.N*H0
+        C0_L = (1-prop_crit_H)   *params.N*C0
+        D0_L = (1-prop_crit_H)   *params.N*D0
         S0_L = (1-params.hr_frac)*params.N - I0_L - R0_L - C0_L - H0_L - D0_L
         
         I0_H = params.hr_frac*params.N*I0
-        R0_H = params.hr_frac*params.N*R0
-        C0_H = params.hr_frac*params.N*C0
-        H0_H = params.hr_frac*params.N*H0
-        D0_H = params.hr_frac*params.N*D0
+        R0_H = prop_rec_H    *params.N*R0
+        H0_H = prop_hosp_H   *params.N*H0
+        C0_H = prop_crit_H   *params.N*C0
+        D0_H = prop_crit_H   *params.N*D0
         S0_H = params.hr_frac*params.N - I0_H - R0_H - C0_H - H0_H - D0_H
 
         

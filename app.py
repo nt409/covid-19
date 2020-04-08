@@ -252,49 +252,6 @@ group_hover_string = {'BR': '',
 
 ########################################################################################################################
 
-txt1 = dcc.Markdown('''
-
-    This plot shows a prediction for the number of deaths (*or critical care depending on hospital category settings*) caused by the epidemic.
-    
-    Most outcomes result in a much higher proportion of high risk deaths, so it is critical that any strategy should protect the high risk.
-
-    Quarantine/lockdown strategies are very effective at slowing the death rate, but only work whilst they're in place (or until a vaccine is produced).
-
-    ''',style={'fontSize': '1.4vh' })
-txt2 = dcc.Markdown('''
-
-    This plot shows how close to the 60% population immunity the strategy gets.
-    
-    Strategies with a lower *infection rate* can delay the course of the epidemic but once the strategies are lifted there is no protection through herd immunity. Strategies with a high infection rate can risk overwhelming healthcare capacity.
-
-    The optimal outcome is obtained by making sure the 60% that do get the infection are from the low risk group.
-
-    ''',style={'fontSize': '1.4vh' })
-txt3 = dcc.Markdown('''
-
-    This plot shows the maximum ICU capacity needed.
-    
-    Better strategies reduce the load on the healthcare system by reducing the numbers requiring Intensive Care at any one time.
-
-    ''',style={'fontSize': '1.4vh' })
-txt4 = dcc.Markdown('''
-
-    This plot shows the length of time for which ICU capacity is exceeded, over the calculated number of years.
-
-    Better strategies will exceed the ICU capacity for shorter lengths of time.
-
-    ''',style={'fontSize': '1.4vh' })
-txt5 = dcc.Markdown('''
-
-    This plot shows the length of time until the safe threshold for population immunity is 95% reached.
-    
-    We allow within 5% of the safe threshold, since some strategies get very close to full safety very quickly and then asymptotically approach it (but in practical terms this means the ppulation is safe).
-
-    The longer it takes to reach this safety threshold, the longer the population must continue control measures because it is at risk of a further epidemic.
-
-    ''',style={'fontSize': '1.4vh' })
-
-########################################################################################################################
 
 
 def Bar_chart_generator(data,data2 = None, data_group = None,name1=None,name2=None,preset=None,text_addition=None,color=None,y_title=None,yax_tick_form=None,maxi=True,yax_font_size_multiplier=None,hover_form=None): # ,title_font_size=None): #title
@@ -823,7 +780,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                     font = dict(size= font_size), #'12em'),
                    margin=dict(t=5, b=5, l=10, r=10,pad=15),
                    yaxis= dict(mirror= True,
-                        title='Proportion of Population',
+                        title='Percentage of Total Population',
                         range= yax['range'],
                         showline=False,
                         automargin=True,
@@ -865,14 +822,14 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                         dict(
                                             buttons=list([
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'linear', 'range': yax['range'], 'automargin': True, 'showline':False},
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'linear', 'range': yax['range'], 'automargin': True, 'showline':False},
                                                     "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'showline':False,'side':'right'}
                                                     }], # tickformat
                                                     label="Linear",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Population', 'type': 'log', 'range': log_range,'automargin': True, 'showline':False},
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'log', 'range': log_range,'automargin': True, 'showline':False},
                                                     "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True, 'showline':False,'side':'right'}
                                                     }], # 'tickformat': yax_form_log,
                                                     label="Logarithmic",
@@ -918,6 +875,10 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
 def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,time_axis_text=None, time_axis_vals = None,country = 'uk'):
 
     population_plot = POPULATIONS[country]
+    if country in ['us','uk']:
+        country_name = country.upper()
+    else:
+        country_name = country.title()
 
     font_size = 13
 
@@ -1004,21 +965,17 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
             name= 'Control ends'))
 
             
-    control_font_size = font_size*(30/24)
-    yval_blue = 0.4
-
-
 
 
     if month[0]!=month[1]:
         annotz.append(dict(
                 x  = max(0.5*(month[0]+month[1]), 0.5),
-                y  = yval_blue,
+                y  = 0.5,
                 text="<b>Control<br>" + "<b> In <br>" + "<b> Place",
                 # hoverinfo='Control In Place',
                 textangle=0,
                 font=dict(
-                    size= control_font_size,
+                    size= font_size*(30/24),
                     color="blue"
                 ),
                 showarrow=False,
@@ -1048,8 +1005,6 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
             name= 'ICU Capacity'))
 
     
-    # yax = {}
-    # yax['range'] = [0,100]
     
     if vaccine_time is not None:
         lines_to_plot.append(
@@ -1066,21 +1021,32 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
             hovertemplate= 'Vaccination starts<extra></extra>',
             name= 'Vaccination starts'))
 
-    
-    if False:
-        lines_to_plot.append(
-        dict(
-            type='scatter',
-            x = [0,sol['t'][-1]],
-            y = [ 0, population_plot],
-            yaxis="y2",
-            opacity=0,
-            hoverinfo = 'skip',
-            showlegend=False
-        ))
+    lines_to_plot.append(
+    dict(
+        type='scatter',
+        x = [0,sol['t'][-1]],
+        y = [ 0, ymax*population_plot],
+        yaxis="y2",
+        opacity=0,
+        hoverinfo = 'skip',
+        showlegend=False
+    ))
     
 
-    
+    yy2 = [0]
+    for i in range(8):
+        yy2.append(10**(i-5))
+        yy2.append(2*10**(i-5))
+        yy2.append(5*10**(i-5))
+
+    yy = [i for i in yy2]
+
+
+    for i in range(len(yy)-1):
+        if ymax>yy[i] and ymax <= yy[i+1]:
+            pop_vec_lin = np.linspace(0,yy2[i+1],11)
+
+    vec = [i*(population_plot) for i in pop_vec_lin]
 
 
 
@@ -1092,11 +1058,22 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                     font = dict(size= font_size), #'12em'),
                    margin=dict(t=5, b=5, l=10, r=10,pad=15),
                    yaxis= dict(mirror= True,
-                        title='Proportion of Population',
+                        title='Percentage of Total Population',
+                        range = [0,ymax],
                         showline=False,
                         automargin=True,
                         type = 'linear'
                    ),
+                    yaxis2 = dict(
+                            title = 'Population (' + country_name + ')',
+                            overlaying='y1',
+                            showline=False,
+                            range = [0,ymax],
+                            side='right',
+                            ticktext = [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))],
+                            tickvals = [i for i in  pop_vec_lin],
+                            automargin=True
+                        ),
                    xaxis= dict(
                         range= [0, (2/3)*max(sol['t'])/month_len],
                         showline=False,
@@ -1455,9 +1432,9 @@ layout_intro = html.Div([
         html.Hr(),
 
         dcc.Markdown('''
-        The aim of this website is to demystify modelling of infectious diseases through short videos and interactive models which let you explore how different control strategies will affect the rate that covid-19 spreads. The website has been developed by experts in epidemiology and modelling from the University of Cambridge.
+        The aim of this website is to demystify modelling of infectious diseases through short videos and interactive models which let you explore how different control strategies will affect the rate that COVID-19 spreads. The website has been developed by experts in epidemiology and modelling from the University of Cambridge. **This work is for educational purposes only and not for accurate prediction of the pandemic.**
         ''',
-        style={'textAlign': 'justify','marginTop': '5vh', 'marginBottom': '7vh'}),
+        style={'textAlign': 'justify','marginTop': '3vh', 'marginBottom': '7vh'}),
         #  Nick and Cerian are based in the Department of Plant Sciences and Daniel is based at the Institute of Astronomy.
         
         html.Hr(),
@@ -1471,7 +1448,7 @@ layout_intro = html.Div([
         dcc.Markdown('''
         The content is targeted at people with little or no experience of modelling and might be used as a resource for anyone wishing to understand more about the standstill. We welcome any feedback you have as we develop this resource – just email us at: [covid.at.plants@gmail.com](/intro).
         ''',
-        style={'textAlign': 'justify','marginTop': '5vh', 'marginBottom': '7vh'}),
+        style={'textAlign': 'justify','marginTop': '3vh', 'marginBottom': '7vh'}),
 
         html.Hr(),
         
@@ -1484,7 +1461,7 @@ layout_intro = html.Div([
         dcc.Markdown('''
         It’s up to you how you explore our website. If you already know something about modelling you may want to jump straight to the interactive model. But if you’d like to know a little more about modelling and a detailed explanation of the output then click on the next tabs in this section.
         ''',
-        style={'textAlign': 'justify','marginTop': '5vh', 'marginBottom': '7vh'}),
+        style={'textAlign': 'justify','marginTop': '3vh', 'marginBottom': '7vh'}),
         
 
 
@@ -1758,7 +1735,7 @@ Results_interpretation =  html.Div([
     
     dcc.Markdown('''
 
-    The plots show a prediction for how coronavirus will affect the population. It is assumed that control measures are in place for a **maximum of 15 months**. Explore the effect of the different control measures and the amount of time they are implemented for.
+    The results show a prediction for how coronavirus will affect the population given a choice of control measure. It is assumed that control measures are in place for a **maximum of 15 months**. Explore the effect of the different control measures and the amount of time for which they are implemented.
     
     The figures illustrate how a vaccine, coupled with an effective quarantine, can drastically decrease the death toll.
 
@@ -2605,6 +2582,7 @@ layout_inter = html.Div([
                                                                 dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary',type='grow'),
                                                                 ],
                                                                 justify='center',
+                                                                style = {'marginTop': '3vh', 'marginBottom': '3vh'}
                                                         ),
                                                         
                                              
@@ -2618,9 +2596,6 @@ layout_inter = html.Div([
 
 
                                                                         
-                                                                        dcc.Markdown('''
-                                                                        *Click on the info buttons for explanations*.
-                                                                        ''',style = {'textAlign': 'center','marginTop': '3vh', 'marginBottom': '3vh'}),
 
 
 
@@ -2632,16 +2607,17 @@ layout_inter = html.Div([
                                                                                                         dbc.Row([
                                                                                                             html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
                                                                                                             
-                                                                                                            html.Div(['Plot: Total Deaths (Percentage) ',
+                                                                                                            html.Div(['Total Deaths (Percentage) ',
                                                                                                             
-                                                                                                            dbc.Button('🛈',
-                                                                                                            color='primary',
-                                                                                                            className='mb-3',
-                                                                                                            size='sm',
-                                                                                                            id="popover-bp1-target",
-                                                                                                            style={'cursor': 'pointer'}
-                                                                                                            )],
-                                                                                                            style= {'textAlign': 'center'}),
+                                                                                                            # dbc.Button('🛈',
+                                                                                                            # color='primary',
+                                                                                                            # className='mb-3',
+                                                                                                            # size='sm',
+                                                                                                            # id="popover-bp1-target",
+                                                                                                            # style={'cursor': 'pointer'}
+                                                                                                            # )
+                                                                                                            ],
+                                                                                                            style= {'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '3vh'}),
 
                                                                                                             ]),
                                                                                                         ]
@@ -2651,6 +2627,15 @@ layout_inter = html.Div([
 
                                                                                                         dcc.Graph(id='bar-plot-1',style=bar_non_crit_style),
                                                                                                 
+                                                                                                        dcc.Markdown('''
+
+                                                                                                            This plot shows a prediction for the number of deaths caused by the epidemic.
+                                                                                                            
+                                                                                                            Most outcomes result in a much higher proportion of high risk deaths, so it is critical that any strategy should protect the high risk.
+
+                                                                                                            Quarantine/lockdown strategies are very effective at slowing the death rate, but only work whilst they're in place (or until a vaccine is produced).
+
+                                                                                                            ''',style={'fontSize': '100%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '6vh' }),
                                                                                                 
 
                                                                                                 
@@ -2661,16 +2646,16 @@ layout_inter = html.Div([
 
                                                                                                                     html.Div(
                                                                                                                         [dbc.Row([##
-                                                                                                                            html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                            html.H4(style={'fontSize': '180%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '3vh'}, children = [
 
-                                                                                                                                html.Div(['Plot: Peak ICU Bed Capacity Requirement ',
-                                                                                                                                dbc.Button('🛈',
-                                                                                                                                color='primary',
-                                                                                                                                className='mb-3',
-                                                                                                                                size='sm',
-                                                                                                                                id="popover-bp3-target",
-                                                                                                                                style={'cursor': 'pointer'}
-                                                                                                                                )
+                                                                                                                                html.Div(['Peak ICU Bed Capacity Requirement ',
+                                                                                                                                # dbc.Button('🛈',
+                                                                                                                                # color='primary',
+                                                                                                                                # className='mb-3',
+                                                                                                                                # size='sm',
+                                                                                                                                # id="popover-bp3-target",
+                                                                                                                                # style={'cursor': 'pointer'}
+                                                                                                                                # )
                                                                                                                                 ],style= {'textAlign': 'center'}),
 
 
@@ -2682,6 +2667,13 @@ layout_inter = html.Div([
 
                                                                                                                         dcc.Graph(id='bar-plot-3',style=bar_non_crit_style),
                                                                                                                     
+                                                                                                                        dcc.Markdown('''
+
+                                                                                                                            This plot shows the maximum ICU capacity needed.
+                                                                                                                            
+                                                                                                                            Better strategies reduce the load on the healthcare system by reducing the numbers requiring Intensive Care at any one time.
+
+                                                                                                                            ''',style={'fontSize': '100%' , 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '6vh' }),
                                                                                                         
 
                                                                                                     html.Hr(),
@@ -2689,16 +2681,16 @@ layout_inter = html.Div([
 
                                                                                                                     html.Div(
                                                                                                                             [dbc.Row([##
-                                                                                                                                html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                                html.H4(style={'fontSize': '180%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '3vh'}, children = [
 
-                                                                                                                                    html.Div(['Plot: Time ICU (Current) Bed Capacity Exceeded ',
-                                                                                                                                    dbc.Button('🛈',
-                                                                                                                                    color='primary',
-                                                                                                                                    className='mb-3',
-                                                                                                                                    size='sm',
-                                                                                                                                    id='popover-bp4-target',
-                                                                                                                                    style={'cursor': 'pointer'}
-                                                                                                                                    )
+                                                                                                                                    html.Div(['Time ICU (Current) Bed Capacity Exceeded ',
+                                                                                                                                    # dbc.Button('🛈',
+                                                                                                                                    # color='primary',
+                                                                                                                                    # className='mb-3',
+                                                                                                                                    # size='sm',
+                                                                                                                                    # id='popover-bp4-target',
+                                                                                                                                    # style={'cursor': 'pointer'}
+                                                                                                                                    # )
 
                                                                                                                                     ],style= {'textAlign': 'center'}),
 
@@ -2711,6 +2703,13 @@ layout_inter = html.Div([
 
                                                                                                                     dcc.Graph(id='bar-plot-4',style=bar_non_crit_style),
                                                                                                     
+                                                                                                                    dcc.Markdown('''
+
+                                                                                                                        This plot shows the length of time for which ICU capacity is exceeded, over the calculated number of years.
+
+                                                                                                                        Better strategies will exceed the ICU capacity for shorter lengths of time.
+
+                                                                                                                        ''',style={'fontSize': '100%' , 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '6vh' }),
                                                                                             html.Hr(),
 
 
@@ -2720,16 +2719,16 @@ layout_inter = html.Div([
 
                                                                                                         html.Div(
                                                                                                                 [dbc.Row([##
-                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '3vh'}, children = [
 
-                                                                                                                        html.Div(['Plot: Herd Immunity Threshold ',
-                                                                                                                        dbc.Button('🛈',
-                                                                                                                        color='primary',
-                                                                                                                        className='mb-3',
-                                                                                                                        size='sm',
-                                                                                                                        id='popover-bp2-target',
-                                                                                                                        style={'cursor': 'pointer'}
-                                                                                                                        )
+                                                                                                                        html.Div(['Herd Immunity Threshold ',
+                                                                                                                        # dbc.Button('🛈',
+                                                                                                                        # color='primary',
+                                                                                                                        # className='mb-3',
+                                                                                                                        # size='sm',
+                                                                                                                        # id='popover-bp2-target',
+                                                                                                                        # style={'cursor': 'pointer'}
+                                                                                                                        # )
                                                                                                                         ],
                                                                                                                         style= {'textAlign': 'center'}), # id='bar-plot-2-out'),
                                                                                                                     
@@ -2744,6 +2743,15 @@ layout_inter = html.Div([
                                                                                                         dcc.Graph(id='bar-plot-2',style=bar_non_crit_style),
                                                                                                         
 
+                                                                                                        dcc.Markdown('''
+
+                                                                                                            This plot shows how close to the 60% population immunity the strategy gets.
+                                                                                                            
+                                                                                                            Strategies with a lower *infection rate* can delay the course of the epidemic but once the strategies are lifted there is no protection through herd immunity. Strategies with a high infection rate can risk overwhelming healthcare capacity.
+
+                                                                                                            The optimal outcome is obtained by making sure the 60% that do get the infection are from the low risk group.
+
+                                                                                                            ''',style={'fontSize': '100%' , 'textAlign': 'center' , 'marginTop': '3vh', 'marginBottom': '6vh'}),
                                                                                             
 
                                                                                             html.Hr(),
@@ -2753,16 +2761,16 @@ layout_inter = html.Div([
                                                                                                     html.Div(
                                                                                                             [dbc.Row([##
 
-                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center'}, children = [
+                                                                                                                    html.H4(style={'fontSize': '180%', 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '3vh'}, children = [
 
-                                                                                                                    html.Div(['Plot: Time Until Herd Immunity Threshold Reached ',
-                                                                                                                        dbc.Button('🛈',
-                                                                                                                        color='primary',
-                                                                                                                        className='mb-3',
-                                                                                                                        size='sm',
-                                                                                                                        id='popover-bp5-target',
-                                                                                                                        style={'cursor': 'pointer'}
-                                                                                                                        )
+                                                                                                                    html.Div(['Time Until Herd Immunity Threshold Reached ',
+                                                                                                                        # dbc.Button('🛈',
+                                                                                                                        # color='primary',
+                                                                                                                        # className='mb-3',
+                                                                                                                        # size='sm',
+                                                                                                                        # id='popover-bp5-target',
+                                                                                                                        # style={'cursor': 'pointer'}
+                                                                                                                        # )
                                                                                                                     ],style= {'textAlign': 'center'}), # id='bar-plot-5-out'),
 
                                                                                                                     ]),
@@ -2775,6 +2783,15 @@ layout_inter = html.Div([
 
                                                                                                     dcc.Graph(id='bar-plot-5',style=bar_non_crit_style),
                                                                                                     
+                                                                                                    dcc.Markdown('''
+
+                                                                                                        This plot shows the length of time until the safe threshold for population immunity is 95% reached.
+                                                                                                        
+                                                                                                        We allow within 5% of the safe threshold, since some strategies get very close to full safety very quickly and then asymptotically approach it (but in practical terms this means the population is safe).
+
+                                                                                                        The longer it takes to reach this safety threshold, the longer the population must continue control measures because it is at risk of a further epidemic.
+
+                                                                                                        ''',style={'fontSize': '100%' , 'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '3vh' }),
 
                                                                                             
                                                                                             ],
@@ -2783,60 +2800,7 @@ layout_inter = html.Div([
                                                                                             ),
 
 
-                                                                                        
-                                                                                        dbc.Popover(
-                                                                                            [
-                                                                                            dbc.PopoverHeader('Total Deaths'), # Critical Care
-                                                                                            dbc.PopoverBody(txt1),
-                                                                                            ],
-                                                                                            id = "popover-bp1",
-                                                                                            is_open=False,
-                                                                                            target="popover-bp1-target",
-                                                                                            placement='left',
-                                                                                        ),
-                                                                                        dbc.Popover(
-                                                                                            [
-                                                                                            dbc.PopoverHeader('Herd immunity threshold'),
-                                                                                            dbc.PopoverBody(txt2),
-                                                                                            ],
-                                                                                            id = "popover-bp2",
-                                                                                            is_open=False,
-                                                                                            target="popover-bp2-target",
-                                                                                            placement='left',
-                                                                                        ),
 
-                                                                                        dbc.Popover(
-                                                                                            [
-                                                                                            dbc.PopoverHeader('ICU capacity'),
-                                                                                            dbc.PopoverBody(txt3),
-                                                                                            ],
-                                                                                            id = "popover-bp3",
-                                                                                            is_open=False,
-                                                                                            target="popover-bp3-target",
-                                                                                            placement='left',
-                                                                                        ),
-
-                                                                                        dbc.Popover(
-                                                                                            [
-                                                                                            dbc.PopoverHeader('ICU capacity (time exceeded)'),
-                                                                                            dbc.PopoverBody(txt4),
-                                                                                            ],
-                                                                                            id = "popover-bp4",
-                                                                                            is_open=False,
-                                                                                            target="popover-bp4-target",
-                                                                                            placement='left',
-                                                                                        ),
-
-                                                                                        dbc.Popover(
-                                                                                            [
-                                                                                            dbc.PopoverHeader('Time to herd immunity'),
-                                                                                            dbc.PopoverBody(txt5),
-                                                                                            ],
-                                                                                            id = "popover-bp5",
-                                                                                            is_open=False,
-                                                                                            target="popover-bp5-target",
-                                                                                            placement='left',
-                                                                                        )
                                                                                         
                                                                                         
 
@@ -2863,7 +2827,7 @@ layout_inter = html.Div([
                                                                 # ),
 
                                                                 
-                                                                dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '97%'}), # figure=dummy_figure,
+                                                                dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
 
                                                                 # dbc.Col([
@@ -3053,7 +3017,7 @@ layout_inter = html.Div([
                                                                 style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                 ),
 
-                                                                dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '97%'}), # figure=dummy_figure,
+                                                                dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
                                                                 dcc.Markdown('''
                                                                             In the **Hospital Categories** plot, you can see how quickly the **ICU capacity** (relating to the number of intensive care beds available) could be overwhelmed (within April if no control measures are implemented). This is shown by the pink boxes, and happens when the black 'Critical Care' curve exceeds the line specifying the critical care capacity (make sure you have selected '*Plot Intensive Care Capacity*' in '**Plot Settings**').
@@ -3069,7 +3033,7 @@ layout_inter = html.Div([
                                                                 style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                 ),
 
-                                                                dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '97%'}), # figure=dummy_figure,
+                                                                dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
 
 
@@ -3080,7 +3044,7 @@ layout_inter = html.Div([
                                                                 dbc.Row([
                                                                 dbc.Col([
                                                                 dcc.Markdown('''
-                                                                *Select different categories to see the split between low and high risk individuals. Each bar shows the number in that category at a particular time point. Recovery and death are cumulative, since once you enter one of those categories you cannot leave it.*
+                                                                *Select different categories to see the split between low and high risk individuals.*
                                                                 ''',style={'fontSize': '85%',  'textAlign': 'center', 'marginTop': '0vh'}),
 
                                                                 dbc.RadioItems(id='categories-to-plot-stacked',
@@ -3099,7 +3063,10 @@ layout_inter = html.Div([
                                                                 justify='center'),
 
                                                                 dcc.Markdown('''
-                                                                            In the **Risk Breakdown** plot you can see how in most scenarios many more high risk people die or need critical care than low risk, despite the fact that high risk people make up a relatively small proportion of the population. This is why it is essential that the strategy chosen adequately protects those higher risk individuals.
+                                                                            
+                                                                            In the **Risk Breakdown** plot each bar shows the **number** in that category **at each time**. Recovery and death are cumulative, since once you enter one of those categories you cannot leave it.
+                                                                            
+                                                                            In most scenarios, many more high risk people die or need critical care than low risk, despite the fact that high risk people make up a relatively small proportion of the population. This is why it is essential that the strategy chosen adequately protects those higher risk individuals.
                                                                             
                                                                             Most of the immunity in the population comes from the bigger, low risk class.
                                                                             ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '3vh', 'marginBottom': '3vh'}),
@@ -3262,7 +3229,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     We assume a 10 day delay on hospitalisations, so we use the number infected 10 days ago to inform the number hospitalised (0.044 of infected) and in critical care (0.3 of hospitalised). We calculate the approximate number recovered based on the number dead, assuming that 0.009 infections cause death. All these estimates are as per the Imperial College paper ([**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482)).
 
-                                                                                                                                                                    The number of people infected, hospitalised and in critical care are calculated from the recorded data. We assume that only half the infections are reported ([**Fraser et al.**](https://science.sciencemag.org/content/early/2020/03/30/science.abb6936)), so we double the recorded number of current infections.
+                                                                                                                                                                    The number of people infected, hospitalised and in critical care are calculated from the recorded data. We assume that only half the infections are reported ([**Fraser et al.**](https://science.sciencemag.org/content/early/2020/03/30/science.abb6936)), so we double the recorded number of current infections. The estimates for the initial conditions are then distributed amongst the risk groups. These proportions are calculated using conditional probability, according to risk (so that the initial number of infections is split proportionally by size of the risk categories, whereas the initially proportion of high risk deaths is much higher than low risk deaths).
 
                                                                                                                                                                     ''',
                                                                                                                                                                     style={'textAlign': 'justify'}),
@@ -3272,7 +3239,7 @@ layout_inter = html.Div([
                                                                                                                                                                     
 
                                                                                                                                                                     dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1586338368/table_jfdtjl.png',
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1586345773/table_fhy8sf.png',
                                                                                                                                                                     style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'}
                                                                                                                                                                     ),
                                                                                                                                                                     ],
@@ -3425,7 +3392,7 @@ page_layout = html.Div([
                 dbc.Col([
                     html.H3(children='Modelling control of COVID-19',
                     className="display-4",
-                    style={'marginTop': '1vh', 'textAlign': 'center','fontSize': '6vh'}
+                    style={'marginTop': '1vh', 'textAlign': 'center','fontSize': '350%'}
                     ),
 
 
@@ -3434,13 +3401,14 @@ page_layout = html.Div([
                     # 'Disclaimer:',
                     # style = {'marginTop': '0.5vh', 'fontSize': '100%','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
                     # ),
-                    html.P(
-                    'Disclaimer: This work is for educational purposes only and not for accurate prediction of the pandemic.',
-                    style = {'marginTop': '0vh','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
+                    html.P([
+                    html.Span('Disclaimer: ',style={'color': '#F49B14'}), # orange
+                    'This work is for educational purposes only and not for accurate prediction of the pandemic.'],
+                    style = {'marginTop': '0vh','marginBottom': '0vh', 'fontSize': '110%', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ),
                     html.P(
                     'There are many uncertainties in the COVID debate. The model is intended solely as an illustrative rather than predictive tool.',
-                    style = {'marginTop': '0vh','marginBottom': '3vh', 'color': '#446E9B', 'fontWeight': 'bold'}
+                    style = {'marginTop': '0vh','marginBottom': '2.5vh', 'fontSize': '110%', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ), # 
 
                 ],width=True,
@@ -3489,6 +3457,8 @@ page_layout = html.Div([
 
 app.layout = page_layout
 
+app.title = 'Modelling COVID-19 Control'
+
 
 
 
@@ -3511,7 +3481,7 @@ def display_page(pathname):
     elif pathname == '/intro':
         return 'intro'
     else:
-        return 'interactive'
+        return 'intro'
 
 
 
@@ -3539,7 +3509,7 @@ for p in ["custom"]: # , "hospital"]:
 # popovers
 
 
-for p in [ "rt-data" ,"pick-strat","control", "months-control", "vaccination", "res-type" , "cc-care" ,"custom-options", "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd","bp1","bp2","bp3","bp4","bp5"]: #  "plot-settings"
+for p in [ "rt-data" ,"pick-strat","control", "months-control", "vaccination", "res-type" , "cc-care" ,"custom-options", "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd"]:
     app.callback(
         Output(f"popover-{p}", "is_open"),
         [Input(f"popover-{p}-target", "n_clicks")
