@@ -14,7 +14,7 @@ class simulator:
 #-----------------------------------------------------------------
         
     ##
-    def poly_solv_ode(self,t,y,beta_L_factor=1,beta_H_factor=1,t_control=None,vaccine_time=None,ICU_grow=0):
+    def poly_solv_ode(self,t,y,beta_L_factor=1,beta_H_factor=1,t_control=None,vaccine_time=None,ICU_grow=0,let_HR_out=True):
         ##
         S_L = y[params.S_L_ind]
         I_L = y[params.I_L_ind]
@@ -38,18 +38,29 @@ class simulator:
 
 
 
+        ICU_capac = params.ICU_capacity*(1 + ICU_grow*t/365 )
 
         
         if t_control is None:
             beta_L_factor = 1
             beta_H_factor = 1
         else:
-            if len(t_control)>1:
+            if len(t_control)==2:
                 if t<t_control[0] or t>t_control[1]:
                     beta_L_factor = 1
                     beta_H_factor = 1
+            elif len(t_control)>2:
+                control = False
+                for i in range(0,len(t_control)-1,2):
+                    if not control and (t>t_control[i] and t<t_control[i+1]): # in a control period
+                        control = True
+                if not control:
+                    beta_L_factor = 1
+                    if let_HR_out:
+                        beta_H_factor = 1
 
-        ICU_capac = params.ICU_capacity*(1 + ICU_grow*t/365 )
+
+
         if C_L>ICU_capac:
             C_L_to_R_L = ICU_capac*params.crit_recovery
             C_L_to_D_L = ICU_capac*params.crit_death + params.noICU*(params.crit_death + params.crit_recovery)*(C_L-ICU_capac) # all without crit care die
@@ -82,7 +93,7 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def poly_calc_ode(self,I0,R0,H0,C0,D0,beta_L_factor,beta_H_factor,t_control,T_stop,vaccine_time,ICU_grow): # critical,death
+    def poly_calc_ode(self,I0,R0,H0,C0,D0,beta_L_factor,beta_H_factor,t_control,T_stop,vaccine_time,ICU_grow,let_HR_out): # critical,death
         
         prop_hosp_H = (params.hr_frac*params.frac_hosp_H)   /( (1-params.hr_frac)*params.frac_hosp_L   +    params.hr_frac*params.frac_hosp_H  )
 
@@ -127,7 +138,7 @@ class simulator:
             ]
         # print(y0)
 
-        sol = ode(self.poly_solv_ode,jac=None).set_integrator('dopri5').set_f_params(beta_L_factor,beta_H_factor,t_control,vaccine_time,ICU_grow) # ,critical,death
+        sol = ode(self.poly_solv_ode,jac=None).set_integrator('dopri5').set_f_params(beta_L_factor,beta_H_factor,t_control,vaccine_time,ICU_grow,let_HR_out) # ,critical,death
         
         tim = np.linspace(0,T_stop, 301) # use 141 time values
 
@@ -151,9 +162,9 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def run_model(self,beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=params.T_stop,vaccine_time=None,I0=params.initial_infections,R0=0,H0=0,C0=0,D0=0,ICU_grow=0):
+    def run_model(self,beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=params.T_stop,vaccine_time=None,I0=params.initial_infections,R0=0,H0=0,C0=0,D0=0,ICU_grow=0,let_HR_out=True):
         # print(I0_H*60*10**6,I0_L*60*10**6,params.hr_frac)
-        y_out, tim = self.poly_calc_ode(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,t_control=t_control,T_stop=T_stop,vaccine_time=vaccine_time,ICU_grow=ICU_grow) # critical=critical,death=death,
+        y_out, tim = self.poly_calc_ode(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,t_control=t_control,T_stop=T_stop,vaccine_time=vaccine_time,ICU_grow=ICU_grow,let_HR_out=let_HR_out) # critical=critical,death=death,
         dicto = {'y': y_out,'t': tim,'beta_L': beta_L_factor,'beta_H': beta_H_factor}
         return dicto
 #--------------------------------------------------------------------

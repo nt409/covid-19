@@ -183,6 +183,7 @@ presets_dict = {'N': 'Do Nothing',
                 'H': 'Lockdown High Risk, No Social Distancing For Low Risk',
                 'HL': 'Lockdown High Risk, Social Distancing For Low Risk',
                 'Q': 'Lockdown All',
+                'LC': 'Lockdown Cycles',
                 'C': 'Custom'}
 
 presets_dict_dropdown = {'N': 'Do Nothing',
@@ -190,10 +191,11 @@ presets_dict_dropdown = {'N': 'Do Nothing',
                 'H': 'High Risk: Lockdown, Low Risk: No Social Dist.',
                 'HL': 'High Risk: Lockdown, Low Risk: Social Dist.',
                 'Q': 'Lockdown All',
+                'LC': 'Lockdown Cycles (switching lockdown on and off)',
                 'C': 'Custom'}
 
-preset_dict_high = {'Q': 2, 'MSD': 7, 'HL': 2,  'H': 2, 'N':10}
-preset_dict_low  = {'Q': 2, 'MSD': 7, 'HL': 7, 'H': 10, 'N':10}
+preset_dict_high = {'Q': 2, 'MSD': 7, 'LC': 2, 'HL': 2,  'H': 2, 'N':10}
+preset_dict_low  = {'Q': 2, 'MSD': 7, 'LC': 2, 'HL': 7, 'H': 10, 'N':10}
 
 month_len = 365/12
 
@@ -526,7 +528,7 @@ def human_format(num,dp=0):
 
 
 ########################################################################################################################
-def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,time_axis_text=None, time_axis_vals = None,country = 'uk'):
+def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,time_axis_text=None, time_axis_vals = None,country = 'uk',month_cycle=None,preset=None):
 
     population_plot = POPULATIONS[country]
 
@@ -554,41 +556,50 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
     linestyle_numst = ['solid','dash','dot','dashdot','longdash','longdashdot']
     
     if len(sols)>1:
-        strat_list = [': Strategy;',': Do Nothing;']
+        strat_list = [': Strategy',': Do Nothing']
     else:
-        strat_list = [':']
+        strat_list = ['']
 
     ii = -1
     for sol in sols:
         ii += 1
-        for name in longname.keys():
-            if name in cats_to_plot:
-                for group in group_vec:
-                    if group in group_use:
-                        sol['y'] = np.asarray(sol['y'])
-                        if num_strat=='one':
-                            name_string = strat_list[ii] + group_strings[group]
-                            line_style_use = linestyle[group]
-                            if comp_dn:
-                                if ii == 0:
-                                    line_style_use = 'solid'
-                                else:
-                                    line_style_use = 'dot'
-                        else:
-                            name_string = ': Strategy ' + str(ii+1) + '; ' + group_strings[group]
-                            line_style_use = linestyle_numst[ii]
-                        
-                        xx = [i/month_len for i in sol['t']]
-                        yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
-                        
-                        line =  {'x': xx, 'y': yyy_p,
-                                'hovertemplate': group_hover_string[group] +
-                                                 longname[name] + ': %{y:.2f}%, ' + '%{text} <br>' +
-                                                 'Time: %{x:.1f} Months<extra></extra>',
-                                'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
-                                'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name,
-                                'name': longname[name] + name_string}
-                        lines_to_plot.append(line)
+        if num_strat == 'one' and not comp_dn and ii>0:
+            pass
+        else:
+            for name in longname.keys():
+                if name in cats_to_plot:
+                    for group in group_vec:
+                        if group in group_use:
+                            sol['y'] = np.asarray(sol['y'])
+                            if num_strat=='one':
+                                name_string = strat_list[ii] + ';' + group_strings[group]
+                                if group_use == ['BR']: # getting rid of 'all' if not needed
+                                    name_string = ''
+                                elif group_use == 'BR': # getting rid of 'all' if not needed
+                                    name_string = strat_list[ii]
+                                line_style_use = linestyle[group]
+                                if comp_dn:
+                                    if ii == 0:
+                                        line_style_use = 'solid'
+                                    else:
+                                        line_style_use = 'dot'
+                            else:
+                                name_string = ': Strategy ' + str(ii+1) + '; ' + group_strings[group]
+                                if group_use == 'BR':
+                                    name_string = ': Strategy ' + str(ii+1)
+                                line_style_use = linestyle_numst[ii]
+                            
+                            xx = [i/month_len for i in sol['t']]
+                            yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
+                            
+                            line =  {'x': xx, 'y': yyy_p,
+                                    'hovertemplate': group_hover_string[group] +
+                                                    longname[name] + ': %{y:.2f}%, ' + '%{text} <br>' +
+                                                    'Time: %{x:.1f} Months<extra></extra>',
+                                    'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
+                                    'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name,
+                                    'name': longname[name] + name_string}
+                            lines_to_plot.append(line)
 
 
         # setting up pink boxes
@@ -612,7 +623,12 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
     annotz = []
     shapez = []
 
-    if month[0]!=month[1]:
+
+    blue_opacity = 0.25
+    if month_cycle is not None:
+        blue_opacity = 0.1
+
+    if month[0]!=month[1] and preset != 'N':
         shapez.append(dict(
                 # filled Blue Control Rectangle
                 type="rect",
@@ -625,7 +641,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                     width=0,
                 ),
                 fillcolor="LightSkyBlue",
-                opacity=0.25
+                opacity= blue_opacity
             ))
             
     if ICU:
@@ -673,12 +689,12 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
 
     else:
         control_font_size = font_size*(30/24) #'11em'
-        yval_blue = 0.4
+        yval_blue = 0.5
 
 
 
 
-    if month[0]!=month[1]:
+    if month[0]!=month[1] and preset!='N':
         annotz.append(dict(
                 x  = max(0.5*(month[0]+month[1]), 0.5),
                 y  = yval_blue,
@@ -696,6 +712,22 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                 yref = 'paper',
         ))
     
+    if month_cycle is not None:
+        for i in range(0,len(month_cycle),2):
+            shapez.append(dict(
+                    # filled Blue Control Rectangle
+                    type="rect",
+                    x0= month_cycle[i],
+                    y0=0,
+                    x1= month_cycle[i+1],
+                    y1=yax['range'][1],
+                    line=dict(
+                        color="LightSkyBlue",
+                        width=0,
+                    ),
+                    fillcolor="LightSkyBlue",
+                    opacity=0.3
+                ))
 
 
 
@@ -724,7 +756,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
             opacity=0.9,
             legendgroup='thresholds',
             line=dict(
-            color= 'royalblue',
+            color= 'green',
             dash = 'dash'
             ),
             hovertemplate= 'Vaccination starts<extra></extra>',
@@ -872,7 +904,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
     return {'data': lines_to_plot, 'layout': layout}
 
 
-def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,time_axis_text=None, time_axis_vals = None,country = 'uk'):
+def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,time_axis_text=None, time_axis_vals = None,country = 'uk',preset=None):
 
     population_plot = POPULATIONS[country]
     if country in ['us','uk']:
@@ -912,7 +944,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                                 'legendgroup': name ,
                                 'name': longname[name] + name_string}
                         if group=='LR':
-                            line['marker'] = dict(color='powderblue')
+                            line['marker'] = dict(color='LightSkyBlue')
                         elif group=='HR':
                             line['marker'] = dict(color='orange')
                         
@@ -936,7 +968,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
     ##
     annotz = []
 
-    if month[0]!=month[1]:
+    if month[0]!=month[1] and preset != 'N':
         lines_to_plot.append(
         dict(
         type='scatter',
@@ -967,7 +999,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
             
 
 
-    if month[0]!=month[1]:
+    if month[0]!=month[1] and preset != 'N':
         annotz.append(dict(
                 x  = max(0.5*(month[0]+month[1]), 0.5),
                 y  = 0.5,
@@ -1015,7 +1047,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
             opacity=0.9,
             legendgroup='thresholds',
             line=dict(
-            color= 'royalblue',
+            color= 'green',
             dash = 'dash'
             ),
             hovertemplate= 'Vaccination starts<extra></extra>',
@@ -2261,7 +2293,7 @@ layout_inter = html.Div([
 
 
                                                                                                                                                             dbc.ButtonGroup([
-                                                                                                                                                            dbc.Button('Custom Options',
+                                                                                                                                                            dbc.Button('More Parameters (Optional)',
                                                                                                                                                             color='primary',
                                                                                                                                                             outline=True,
                                                                                                                                                             className='mb-3',
@@ -2284,15 +2316,15 @@ layout_inter = html.Div([
 
                                                                                                                                                             dbc.Popover(
                                                                                                                                                                 [
-                                                                                                                                                                dbc.PopoverHeader('Custom Options'),
+                                                                                                                                                                dbc.PopoverHeader('More Options'),
                                                                                                                                                                 dbc.PopoverBody(dcc.Markdown(
                                                                                                                                                                 '''
 
-                                                                                                                                                                Use this to choose your own custom strategy (you must first select 'Custom' in the '**1b. Control Type**' selector above). You can compare two strategies directly or consider one only.
+                                                                                                                                                                Use this to adjust the **healthcare provisions**, adjust **lockdown cycles options**, or choose a **custom strategy**.
+
+                                                                                                                                                                To choose a custom strategy, you must first select 'Custom' in the '**1b. Control Type**' selector above). You can compare two strategies directly or consider one only.
                                                                                                                                                                 
-                                                                                                                                                                The choice consists of selecting by how much to decelerate spread of COVID-19 (using the 'infection rate' sliders).
-                                                                                                                                                                
-                                                                                                                                                                You can also choose different infection rates for the different risk groups.
+                                                                                                                                                                The custom choice consists of selecting by how much to decelerate spread of COVID-19 (using the 'infection rate' sliders). You can also choose different infection rates for the different risk groups.
                                                                                                                                                                 '''
                                                                                                                                                                 ),),
                                                                                                                                                                 ],
@@ -2304,187 +2336,403 @@ layout_inter = html.Div([
                                                                                                                                                             
 
                                                                                                                                                             
-                                                                                                                                                            dbc.Collapse(
-                                                                                                                                                                [
-                                                                                                                                                                    dbc.Row([
-                                                                                                                                                                        dbc.Col([
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                dbc.Row([
-                                                                                                                                                                            dbc.Col([
-                                                                                                                                                                                html.H6(['Critical Care Capacity Increase ',
-                                                                                                                                                                                dbc.Button('🛈',
-                                                                                                                                                                                    color='primary',
-                                                                                                                                                                                    size='sm',
-                                                                                                                                                                                    id='popover-cc-care-target',
-                                                                                                                                                                                    style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-                                                                                                                                                                                    ],
-                                                                                                                                                                                    style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+                                                                    dbc.Collapse(
+                                                                        [
+                                                                            dbc.Row([
 
-                                                                                                                                                                                dcc.Slider(
-                                                                                                                                                                                        id='ICU-slider',
-                                                                                                                                                                                        min = 0,
-                                                                                                                                                                                        max = 5,
-                                                                                                                                                                                        step = 1,
-                                                                                                                                                                                        marks={i: str(i)+'x' for i in range(6)},
-                                                                                                                                                                                        value=1,
-                                                                                                                                                                                    ),
+                                                                                dbc.Col([
+
+                                                                                                # dbc.Row([
+
+
+                                                                                                        dbc.Row([
+                                                                                                            dbc.Col([
+
+
+
+                                                        html.H6(['Critical Care Capacity Increase ',
+                                                        dbc.Button('🛈',
+                                                            color='primary',
+                                                            size='sm',
+                                                            id='popover-cc-care-target',
+                                                            style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+                                                            ],
+                                                            style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+
+                                                        dcc.Slider(
+                                                                id='ICU-slider',
+                                                                min = 0,
+                                                                max = 5,
+                                                                step = 1,
+                                                                marks={i: str(i)+'x' for i in range(6)},
+                                                                value=1,
+                                                            ),
+                                                        
+                                                        dbc.Popover(
+                                                            [
+                                                            dbc.PopoverHeader('ICU Capacity'),
+                                                            dbc.PopoverBody(dcc.Markdown(
+                                                            '''
+
+                                                            Select '0x' to assume that ICU capacity stays constant, or pick an amount by which capacity is bulked up each year (relative to the amount initially).
+
+                                                            '''
+                                                            ),),
+                                                            ],
+                                                            id = "popover-cc-care",
+                                                            is_open=False,
+                                                            target="popover-cc-care-target",
+                                                            placement='top',
+                                                        ),
+                                                                                                        ],width=6),
+
+                                                                                                        ],justify='center'),
+
+
+
+
+                                                                                                        html.Hr(),
+
+                                                                                                dbc.Row([
+                                                                                                    dbc.Col([
+                                                                                                        html.H4("Lockdown Cycle Options ",style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
+
+                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**1b. Control Type**' is set to 'Lockdown Cycles'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
+
+                                                                                                    ],width=6),
+
+
+
+                                                                                                    dbc.Col([
+                                                                                                        html.H4("Custom Options ",
+                                                                                                        style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
+
+                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**1b. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
+
+                                                                                                    ],width=6),
+
+                                                                                                ],justify='center'),
+
+                                                                                                dbc.Row([
+
+                                                                                                        dbc.Col([
+
+
+
+                                                                                                        dbc.Row([
+
+
+
+                                                                                                        dbc.Col([
+
+                                                                                                            html.H6(['Lockdown Cycles: groups allowed out of lockdown ',
+                                                                                                            dbc.Button('🛈',
+                                                                                                                color='primary',
+                                                                                                                size='sm',
+                                                                                                                id='popover-groups-allowed-target',
+                                                                                                                style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+                                                                                                                ],
+                                                                                                                style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+
+
+                                                                                                            dbc.Popover(
+                                                                                                                [
+                                                                                                                dbc.PopoverHeader('Lockdown Cycles: Groups'),
+                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                '''
+
+                                                                                                                In a strategy where lockdowns are 'switched on and off', you may choose to continue to protect the high risk by continuing their lockdown.
+
+                                                                                                                Choose whether to keep high risk in lockdown or allow all groups to leave lockdown (this is the default setting).
+
+                                                                                                                '''
+                                                                                                                ),),
+                                                                                                                ],
+                                                                                                                id = "popover-groups-allowed",
+                                                                                                                is_open=False,
+                                                                                                                target="popover-groups-allowed-target",
+                                                                                                                placement='top',
+                                                                                                            ),
+
+
+                                                                                                            dbc.Row([
+                                                                                                            dbc.RadioItems(
+                                                                                                                id = 'hr-ld',
+                                                                                                                options=[
+                                                                                                                    {'label': 'Low Risk Only', 'value': 0},
+                                                                                                                    {'label': 'Both Groups', 'value': 1},
+                                                                                                                ],
+                                                                                                                value= 1,
+                                                                                                                inline=True,
+                                                                                                                labelStyle = {'fontSize': '80%'}
+                                                                                                                ),
+                                                                                                                ],justify='center'),
+
+
+
+                                                                                                                        
+                                                                                                        # ],width=True),
+
+                                                                                                        # ],justify='center'),
+
+
+                                                                                                        #                         # html.Hr(),
+
+
+
+                                                                                                        #                                                             dbc.Row([
+                                                                                                        #                                                             dbc.Col([
+
+
                                                                                                                                                                                 
-                                                                                                                                                                                dbc.Popover(
-                                                                                                                                                                                    [
-                                                                                                                                                                                    dbc.PopoverHeader('ICU Capacity'),
-                                                                                                                                                                                    dbc.PopoverBody(dcc.Markdown(
-                                                                                                                                                                                    '''
+                                                                                                            html.H6(['Lockdown Cycles: Time On ',
+                                                                                                            dbc.Button('🛈',
+                                                                                                                color='primary',
+                                                                                                                size='sm',
+                                                                                                                id='popover-cycles-on-target',
+                                                                                                                style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+                                                                                                                ],
+                                                                                                                style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
 
-                                                                                                                                                                                    Select '0x' to assume that ICU capacity stays constant, or pick an amount by which capacity is bulked up each year (relative to the amount initially).
+                                                                                                            dcc.Slider(
+                                                                                                                    id='cycle-on',
+                                                                                                                    min = 1,
+                                                                                                                    max = 8,
+                                                                                                                    step = 1,
+                                                                                                                    marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
+                                                                                                                    value=3,
+                                                                                                                ),
+                                                                                                            
+                                                                                                            dbc.Popover(
+                                                                                                                [
+                                                                                                                dbc.PopoverHeader('Lockdown Cycles: Time On'),
+                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                '''
 
-                                                                                                                                                                                    '''
-                                                                                                                                                                                    ),),
-                                                                                                                                                                                    ],
-                                                                                                                                                                                    id = "popover-cc-care",
-                                                                                                                                                                                    is_open=False,
-                                                                                                                                                                                    target="popover-cc-care-target",
-                                                                                                                                                                                    placement='top',
-                                                                                                                                                                                ),
-                                                                                                                                                                        ],width=6),],
-                                                                                                                                                                        justify='center'),
+                                                                                                                Use this slider to adjust the amount of time that the country is in lockdown under the strategy 'Lockdown cycles'.
 
-                                                                                                                                                                        html.Hr(),
+                                                                                                                This allows us to consider a system where the country is in lockdown for 3 weeks say, followed by a week of normality.
 
-                                                                                                                                                                            
-                                                                                                                                                                            
-                                                                                                                                                                            dbc.Row([
-
-
-
-
-                                                                                                                                                                            dbc.Col([
-                                                                                                                                                                            html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
-
-                                                                                                                                                                            dcc.Markdown('''*Set '**1b. Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
-                                                                                                                                                                            dbc.Row([
-                                                                                                                                                                            dbc.RadioItems(
-                                                                                                                                                                            id = 'number-strats-radio',
-                                                                                                                                                                            options=[
-                                                                                                                                                                                {'label': 'One', 'value': 'one'},
-                                                                                                                                                                                {'label': 'Two', 'value': 'two'},
-                                                                                                                                                                            ],
-                                                                                                                                                                            value= 'one',
-                                                                                                                                                                            inline=True,
-                                                                                                                                                                            labelStyle = {'fontSize': '80%'}
-                                                                                                                                                                            ),
-                                                                                                                                                                            ],justify='center'),
-                                                                                                                                                                            ],width=6),
-
-                                                                                                                                                                            ],justify='center',
-                                                                                                                                                                            style={'marginTop': '2vh'}),
+                                                                                                                '''
+                                                                                                                ),),
+                                                                                                                ],
+                                                                                                                id = "popover-cycles-on",
+                                                                                                                is_open=False,
+                                                                                                                target="popover-cycles-on-target",
+                                                                                                                placement='top',
+                                                                                                            ),
+                                                                                                        # ],width=6),
 
 
+                                                                                                        # dbc.Col([
+                                                                                                            html.H6(['Lockdown Cycles: Time Off ',
+                                                                                                            dbc.Button('🛈',
+                                                                                                                color='primary',
+                                                                                                                size='sm',
+                                                                                                                id='popover-cycles-off-target',
+                                                                                                                style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+                                                                                                                ],
+                                                                                                                style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
 
-                                                                                                                                                                            html.Hr(),
-                                                                                                                                                                            
+                                                                                                            dcc.Slider(
+                                                                                                                    id='cycle-off',
+                                                                                                                    min = 1,
+                                                                                                                    max = 8,
+                                                                                                                    step = 1,
+                                                                                                                    marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
+                                                                                                                    value=2,
+                                                                                                                ),
+                                                                                                            
+                                                                                                            dbc.Popover(
+                                                                                                                [
+                                                                                                                dbc.PopoverHeader('Lockdown Cycles: Time Off'),
+                                                                                                                dbc.PopoverBody(dcc.Markdown(
+                                                                                                                '''
+
+                                                                                                                Use this slider to adjust the amount of time that the country is out of lockdown under the strategy 'Lockdown cycles'.
+
+                                                                                                                This allows us to consider a system where the country is in lockdown for 3 weeks say, followed by a week of normality.
+
+                                                                                                                '''
+                                                                                                                ),),
+                                                                                                                ],
+                                                                                                                id = "popover-cycles-off",
+                                                                                                                is_open=False,
+                                                                                                                target="popover-cycles-off-target",
+                                                                                                                placement='top',
+                                                                                                            ),
+                                                                                                        ],width=True),
+                                                                                                            ],
+                                                                                                            justify='center'),
+
+                                                                                                        
+                                                                                                        ],width=6),
 
 
 
+
+
+
+
+                                                                                            # html.Hr(),
+                                                                dbc.Col([
+
+                                                                                                
+                                                                                                
+
+                                                                                                dbc.Row([
+
+
+                                                                                                dbc.Col([
+
+
+                                                                                                html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
+
+                                                                                                # dcc.Markdown('''*Set '**1b. Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
+                                                                                                dbc.Row([
+                                                                                                dbc.RadioItems(
+                                                                                                id = 'number-strats-radio',
+                                                                                                options=[
+                                                                                                    {'label': 'One', 'value': 'one'},
+                                                                                                    {'label': 'Two', 'value': 'two'},
+                                                                                                ],
+                                                                                                value= 'one',
+                                                                                                inline=True,
+                                                                                                labelStyle = {'fontSize': '80%'}
+                                                                                                ),
+                                                                                                ],justify='center'),
+                                                                                                ],width=6),
+
+                                                                                                ],justify='center',
+                                                                                                style={'marginTop': '2vh', 'marginBottom': '2vh'}),
+
+
+
+                                                                                                # html.Hr(),
+                                                                                                
+
+
+
+
+                                                                                                # html.Hr(),
+                                                                                                
+
+
+                                                                                                dbc.Row([
+
+                                                                                                dbc.Button('Infection rate 🛈',
+                                                                                                        size='sm',
+                                                                                                        color='primary',
+                                                                                                        className='mb-3',
+                                                                                                        # id="popover-custom-options-target",
+                                                                                                        id = 'popover-inf-rate-target',
+                                                                                                        style={'cursor': 'pointer'}
+                                                                                                        ),
+                                                                                                ],justify='center'),
+
+                                                                                                dbc.Popover(
+                                                                                                    [
+                                                                                                    dbc.PopoverHeader('Infection Rate'),
+                                                                                                    dbc.PopoverBody(dcc.Markdown(
+                                                                                                    '''
+
+                                                                                                    The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
+                                                                                                
+                                                                                                    Adjust by choosing a preset strategy  or making your own custom choice ('**1b. Control Type**').
+
+
+                                                                                                    '''
+                                                                                                    ),),
+                                                                                                    ],
+                                                                                                    id = "popover-inf-rate",
+                                                                                                    is_open=False,
+                                                                                                    target="popover-inf-rate-target",
+                                                                                                    placement='top',
+                                                                                                ),
+
+                                                                                                dbc.Row([
+
+                                                                                                    
+
+
+                                                                                                    dbc.Col([
+                                                                                              
+                                                                                              
+
+                                                                                                    html.Div(id='strat-lr-infection',style = {'textAlign': 'center','fontSize': '100%'}),
+                                                                                                    
+                                                                                                    
+                                                                                                    dcc.Slider(
+                                                                                                        id='low-risk-slider',
+                                                                                                        min=0,
+                                                                                                        max=len(params.fact_v)-1,
+                                                                                                        step = 1,
+                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                        value=initial_lr,
+                                                                                                    ),
+
+
+                                                                                                    html.Div(id='strat-hr-infection',style = {'textAlign': 'center','fontSize': '100%'}),
+                                                                                                    dcc.Slider(
+                                                                                                            id='high-risk-slider',
+                                                                                                            min=0,
+                                                                                                            max=len(params.fact_v)-1,
+                                                                                                            step = 1,
+                                                                                                            marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                            value=initial_hr,
+                                                                                                            ),
+                                                                                                    ],width=True),
+
+                                                                                                            
+
+
+
+                                                                                                    dbc.Col([
+                                                                                                            html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '100%','textAlign': 'center'}),
+
+                                                                                                            dcc.Slider(
+                                                                                                                id='low-risk-slider-2',
+                                                                                                                min=0,
+                                                                                                                max=len(params.fact_v)-1,
+                                                                                                                step = 1,
+                                                                                                                marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                                value=5,
+                                                                                                            ),
+
+                                                                                                            html.H6('Strategy Two: High Risk Infection Rate (%)', style = {'fontSize': '100%','textAlign': 'center'}),
+                                                                                                        
+                                                                                                            dcc.Slider(
+                                                                                                                id='high-risk-slider-2',
+                                                                                                                min=0,
+                                                                                                                max=len(params.fact_v)-1,
+                                                                                                                step = 1,
+                                                                                                                marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+                                                                                                                value=8,
+                                                                                                                ),
+                                                                                                    ],width=True,
+                                                                                                    id='strat-2-id'),
+                                                                                                    
+                                                                                                ],justify='center'),
 
                                                                                                                                                                             # html.Hr(),
-                                                                                                                                                                            
-                                                                                                                                                                            dcc.Markdown('''*To adjust the following, make sure '**1b. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}), # 'textAlign': 'left', 
-
-                                                                                                                                                                            dbc.Row([
-
-                                                                                                                                                                            dbc.Button('Infection rate 🛈',
-                                                                                                                                                                                    size='sm',
-                                                                                                                                                                                    color='primary',
-                                                                                                                                                                                    className='mb-3',
-                                                                                                                                                                                    # id="popover-custom-options-target",
-                                                                                                                                                                                    id = 'popover-inf-rate-target',
-                                                                                                                                                                                    style={'cursor': 'pointer'}
-                                                                                                                                                                                    ),
-                                                                                                                                                                            ],justify='center'),
-
-                                                                                                                                                                            dbc.Popover(
-                                                                                                                                                                                [
-                                                                                                                                                                                dbc.PopoverHeader('Infection Rate'),
-                                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                                                                                                '''
-
-                                                                                                                                                                                The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
-                                                                                                                                                                            
-                                                                                                                                                                                Adjust by choosing a preset strategy  or making your own custom choice ('**1b. Control Type**').
 
 
-                                                                                                                                                                                '''
-                                                                                                                                                                                ),),
-                                                                                                                                                                                ],
-                                                                                                                                                                                id = "popover-inf-rate",
-                                                                                                                                                                                is_open=False,
-                                                                                                                                                                                target="popover-inf-rate-target",
-                                                                                                                                                                                placement='top',
-                                                                                                                                                                            ),
+                                                                        ],width=6),
 
 
-                                                                                                                                                                            dbc.Row([
-                                                                                                                                                                                dbc.Col([
-                                                                                                                                                                                html.Div(id='strat-lr-infection',style = {'textAlign': 'center','fontSize': '100%'}),
-                                                                                                                                                                                
-                                                                                                                                                                                
-                                                                                                                                                                                dcc.Slider(
-                                                                                                                                                                                    id='low-risk-slider',
-                                                                                                                                                                                    min=0,
-                                                                                                                                                                                    max=len(params.fact_v)-1,
-                                                                                                                                                                                    step = 1,
-                                                                                                                                                                                    marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                                                                                                    value=initial_lr,
-                                                                                                                                                                                ),
-
-
-                                                                                                                                                                                html.Div(id='strat-hr-infection',style = {'textAlign': 'center','fontSize': '100%'}),
-                                                                                                                                                                                dcc.Slider(
-                                                                                                                                                                                        id='high-risk-slider',
-                                                                                                                                                                                        min=0,
-                                                                                                                                                                                        max=len(params.fact_v)-1,
-                                                                                                                                                                                        step = 1,
-                                                                                                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                                                                                                        value=initial_hr,
-                                                                                                                                                                                        ),
-                                                                                                                                                                                ],width=6),
-
-                                                                                                                                                                                        
+                                                                        ]), # row with custom options and lockdown cycles
+                                                                                                                                                                    
+                                                                ],width=True),
 
 
 
-                                                                                                                                                                                dbc.Col([
-                                                                                                                                                                                        html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '100%','textAlign': 'center'}),
-
-                                                                                                                                                                                        dcc.Slider(
-                                                                                                                                                                                            id='low-risk-slider-2',
-                                                                                                                                                                                            min=0,
-                                                                                                                                                                                            max=len(params.fact_v)-1,
-                                                                                                                                                                                            step = 1,
-                                                                                                                                                                                            marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                                                                                                            value=10,
-                                                                                                                                                                                        ),
-
-                                                                                                                                                                                        html.H6('Strategy Two: High Risk Infection Rate (%)', style = {'fontSize': '100%','textAlign': 'center'}),
-                                                                                                                                                                                    
-                                                                                                                                                                                        dcc.Slider(
-                                                                                                                                                                                            id='high-risk-slider-2',
-                                                                                                                                                                                            min=0,
-                                                                                                                                                                                            max=len(params.fact_v)-1,
-                                                                                                                                                                                            step = 1,
-                                                                                                                                                                                            marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                                                                                                            value=10,
-                                                                                                                                                                                            ),
-                                                                                                                                                                                ],width=6,
-                                                                                                                                                                                id='strat-2-id'),
-                                                                                                                                                                                
-                                                                                                                                                                            ],justify='center'),
-
-                                                                                                                                                                            # html.Hr(),
 
 
-                                                                                                                                                                        ]),
+
+
                                                                                                                                                                     ],
                                                                                                                                                                     justify='center'),
+
 
 
                                                                                                                                                 
@@ -2966,7 +3214,7 @@ layout_inter = html.Div([
                                                                                                                                                         ,style={'marginBottom': '0vh'}
                                                                                                                                                         ),
                                                                                                                                                         dcc.Markdown('''
-                                                                                                                                                        *ICU capacity will only be clear on small y-scales (hospital categories only). For the classic 'flatten the curve' picture, check this box and then select 'Critical' and no others in the '**Categories To Plot**' checklist.*
+                                                                                                                                                        *ICU capacity will only be clear on small y-scales (hospital categories only), or logarithmic scales. For the classic 'flatten the curve' picture, check this box and then select 'Critical' and no others in the '**Categories To Plot**' checklist.*
                                                                                                                                                         ''',style={'fontSize': '75%', 'textAlign': 'justify', 'marginTop': '0vh'}),
 
 
@@ -3509,7 +3757,7 @@ for p in ["custom"]: # , "hospital"]:
 # popovers
 
 
-for p in [ "rt-data" ,"pick-strat","control", "months-control", "vaccination", "res-type" , "cc-care" ,"custom-options", "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd"]:
+for p in [ "rt-data" ,"pick-strat","control", "months-control", "vaccination", "res-type" , "cc-care" ,"custom-options", "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd", 'cycles-off', 'cycles-on', 'groups-allowed']:
     app.callback(
         Output(f"popover-{p}", "is_open"),
         [Input(f"popover-{p}-target", "n_clicks")
@@ -3547,6 +3795,9 @@ def invisible_or_not(num,preset,do_nothing):
 
     do_nothing_dis = False
     do_n_val = 1
+
+
+
     if num=='two':
         strat_H = [html.H6('Strategy One: High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
         strat_L = [html.H6('Strategy One: Low Risk Infection Rate (%)',style={'fontSize': '100%'}),]
@@ -3589,27 +3840,47 @@ def invisible_or_not(num,preset,do_nothing):
             Output('high-risk-slider', 'value'),
             Output('low-risk-slider', 'disabled'), 
             Output('high-risk-slider', 'disabled'),
-            Output('number-strats-radio','options')
+            Output('number-strats-radio','options'),
+            Output('number-strats-radio','value'),
+            Output('cycle-off', 'disabled'),
+            Output('cycle-on', 'disabled'),
+            Output('hr-ld', 'options'),
             ],
             [
             Input('preset', 'value'),
-            ])
-def preset_sliders(preset):
-    # print('preset sliders')
-    
+            ],
+            [State('number-strats-radio','value')])
+def preset_sliders(preset,number_strs):
+    lockdown_cycles_dis = True
+    options_lockdown_cycles = [
+                                {'label': 'Low Risk Only', 'value': 0, 'disabled': True},
+                                {'label': 'Both Groups', 'value': 1, 'disabled': True},
+                            ]
+    if preset=='LC':
+        lockdown_cycles_dis = False
+        options_lockdown_cycles = [
+                                {'label': 'Low Risk Only', 'value': 0},
+                                {'label': 'Both Groups', 'value': 1},
+                            ]
+
     if preset == 'C':
         dis = False
         options=[
                 {'label': 'One', 'value': 'one'},
                 {'label': 'Two', 'value': 'two'},
             ]
+        number_strats = number_strs
     else:
         dis = True
         options=[
                 {'label': 'One', 'value': 'one','disabled': True},
                 {'label': 'Two', 'value': 'two','disabled': True},
             ]
-    return preset_dict_low[preset], preset_dict_high[preset], dis, dis, options
+        number_strats = 'one'
+    if preset in preset_dict_low:
+        return preset_dict_low[preset], preset_dict_high[preset], dis, dis, options, number_strats, lockdown_cycles_dis, lockdown_cycles_dis, options_lockdown_cycles
+    else:
+        return preset_dict_low['N'], preset_dict_high['N'], dis, dis, options, number_strats, lockdown_cycles_dis, lockdown_cycles_dis, options_lockdown_cycles
     
 
 
@@ -3629,11 +3900,11 @@ def preset_sliders(preset):
     Input('ICU-slider', 'value'),
     Input('model-start-date', 'date'),
     Input('model-country-choice', 'value'),
+    Input('cycle-off', 'value'),
+    Input('cycle-on', 'value'),
+    Input('hr-ld', 'value'),
     ])
-def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num):
-
-    # ctx = dash.callback_context
-    # print(ctx.triggered[0]['prop_id'],'calc')
+def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld):
 
 
     try:
@@ -3646,8 +3917,6 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
 
     I0, R0, H0, C0, D0 = begin_date(date,country)
 
-    # if preset is None:
-    #     preset = 'N'
 
     if preset=='C':
         lr = params.fact_v[int(lr_in)]
@@ -3659,6 +3928,21 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     if preset=='N':
         month=[0,0]
     
+    let_HR_out = True
+    if preset=='LC':
+        time_start = month[0]
+        time_end   = month[1]
+        time_on = t_on*7/month_len
+        time_off = t_off*7/month_len
+        if hr_ld==0:
+            let_HR_out = False
+        month = [time_start,time_on]
+        mm = month[1]
+        while mm + time_off+time_on < time_end:
+            month.append(mm+time_off)
+            month.append(mm+time_off+time_on)
+            mm = mm + time_off + time_on
+    
     lr2 = params.fact_v[int(lr2_in)]
     hr2 = params.fact_v[int(hr2_in)]
     
@@ -3666,13 +3950,16 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
 
 
     months_controlled = [month_len*i for i in month]
+
+    # print(months_controlled,lr,hr)
+
     if month[0]==month[1]:
         months_controlled= None
 
     sols = []
-    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow))
+    sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow,let_HR_out=let_HR_out))
     if num_strat=='two':
-        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow))
+        sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow,let_HR_out=let_HR_out))
 
     # print('about to dump')
 
@@ -3778,6 +4065,8 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 
                 ],
                [
+                State('cycle-off', 'value'),
+                State('cycle-on', 'value'),
                 State('sol-calculated-do-nothing', 'data'),
                 State('preset', 'value'),
                 State('month-slider', 'value'),
@@ -3787,7 +4076,8 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 State('ICU-slider','value'),
                 State('model-start-date','date'),
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date):
+def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
+                                t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date):
 
     # ctx = dash.callback_context
     # print(ctx.triggered[0]['prop_id'],'render')
@@ -3966,11 +4256,11 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
                     crit_cap_bar_3yr = [crit_cap_data_L_3yr[i] + crit_cap_data_H_3yr[i] for i in range(len(crit_cap_data_H_3yr))]
 
 
-                    bar1 = Bar_chart_generator(crit_cap_bar_1yr      ,text_addition='%'         , y_title='Population'                    , hover_form = '%{x}, %{y:.3%}'                         ,color = 'powderblue' ,data_group=crit_cap_bar_3yr, yax_tick_form='.1%')
-                    bar2 = Bar_chart_generator(herd_list_1yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'  , hover_form = '%{x}, %{y:.1%}<extra></extra>'          ,color = 'powderblue' ,data_group=herd_list_3yr,yax_tick_form='.1%',maxi=False,yax_font_size_multiplier=0.8)
-                    bar3 = Bar_chart_generator(ICU_data_1yr          ,text_addition='x current' , y_title='Multiple of Capacity'  , hover_form = '%{x}, %{y:.1f}x Current<extra></extra>' ,color = 'powderblue'     ,data_group=ICU_data_3yr  )
-                    bar4 = Bar_chart_generator(time_exceeded_data    ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'powderblue'   )
-                    bar5 = Bar_chart_generator(time_reached_data     ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'powderblue')
+                    bar1 = Bar_chart_generator(crit_cap_bar_1yr      ,text_addition='%'         , y_title='Population'                    , hover_form = '%{x}, %{y:.3%}'                         ,color = 'LightSkyBlue' ,data_group=crit_cap_bar_3yr, yax_tick_form='.1%')
+                    bar2 = Bar_chart_generator(herd_list_1yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'  , hover_form = '%{x}, %{y:.1%}<extra></extra>'          ,color = 'LightSkyBlue' ,data_group=herd_list_3yr,yax_tick_form='.1%',maxi=False,yax_font_size_multiplier=0.8)
+                    bar3 = Bar_chart_generator(ICU_data_1yr          ,text_addition='x current' , y_title='Multiple of Capacity'  , hover_form = '%{x}, %{y:.1f}x Current<extra></extra>' ,color = 'LightSkyBlue'     ,data_group=ICU_data_3yr  )
+                    bar4 = Bar_chart_generator(time_exceeded_data    ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'LightSkyBlue'   )
+                    bar5 = Bar_chart_generator(time_reached_data     ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'LightSkyBlue')
 
 
 
@@ -4044,15 +4334,29 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
                     time_axis_text.append([str(month_labels[N-1][N*i]) for i in range(ceil(len(time_vec)/N))])
                     time_axis_vals.append([time_vec[N*i] for i in range(ceil(len(time_vec)/N))])
 
-
+                
+                month_cycle = None
+                if preset=='LC':
+                    time_start = month[0]
+                    time_end   = month[1]
+                    time_on = t_on*7/month_len
+                    time_off = t_off*7/month_len
+                    # if hr_ld==0:
+                    #     let_HR_out = False
+                    month_cycle = [time_start,time_on]
+                    mm = month_cycle[1]
+                    while mm + time_off+time_on < time_end:
+                        month_cycle.append(mm+time_off)
+                        month_cycle.append(mm+time_off+time_on)
+                        mm = mm + time_off + time_on
 
                 if len(cats_to_plot_line)>0:
-                    fig1 = figure_generator(sols_to_plot,month,cats_to_plot_line,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country)
+                    fig1 = figure_generator(sols_to_plot,month,cats_to_plot_line,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country,month_cycle=month_cycle,preset=preset)
                 else:
                     fig1 = dummy_figure
 
-                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country)
-                fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country)
+                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country,month_cycle=month_cycle,preset=preset)
+                fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country,preset=preset)
 
 
             
