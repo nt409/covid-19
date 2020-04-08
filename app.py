@@ -2931,7 +2931,7 @@ layout_inter = html.Div([
                                                                                                                                                     
                                                                                                                                                     dcc.Markdown('''
                                                                                                                                                         *Category choice is for the plot above. Hospital categories are shown in the plot below.*
-                                                                                                                                                        ''',style={'fontSize': '70%', 'marginTop': '0vh'}),
+                                                                                                                                                        ''',style={'fontSize': '70%', 'textAlign': 'justify', 'marginTop': '0vh'}),
                                                                                                                                                         
 
                                                                                                                                                 ],width={'size':6 , 'offset': 3}),
@@ -3013,7 +3013,7 @@ layout_inter = html.Div([
                                                                                                                                                         ),
                                                                                                                                                         dcc.Markdown('''
                                                                                                                                                         *ICU capacity will only be clear on small y-scales (hospital categories only). For the classic 'flatten the curve' picture, check this box and then select 'Critical' and no others in the '**Categories To Plot**' checklist.*
-                                                                                                                                                        ''',style={'fontSize': '70%', 'marginTop': '0vh'}),
+                                                                                                                                                        ''',style={'fontSize': '70%', 'textAlign': 'justify', 'marginTop': '0vh'}),
 
 
                                                                                                                                         ],width=4),
@@ -3073,7 +3073,7 @@ layout_inter = html.Div([
                                                                 dbc.Col([
                                                                 dcc.Markdown('''
                                                                 *Select different categories to see the split between low and high risk individuals. Each bar shows the number in that category at a particular time point. Recovery and death are cumulative, since once you enter one of those categories you cannot leave it.*
-                                                                ''',style={'fontSize': '70%', 'marginTop': '0vh'}),
+                                                                ''',style={'fontSize': '70%',  'textAlign': 'center', 'marginTop': '0vh'}),
 
                                                                 dbc.RadioItems(id='categories-to-plot-stacked',
                                                                                 options=[
@@ -3085,14 +3085,14 @@ layout_inter = html.Div([
                                                                             ),
 
 
-                                                                ],width={'size': 8, 'offset': 2}
+                                                                ],width={'size': 8} # , 'offset': 2
                                                                 ),
                                                                 ],
                                                                 justify='center'),
 
                                                                 dcc.Markdown('''
                                                                             In the risk breakdown plot you can see how in most scenarios many more high risk people die or need critical care than low risk, despite the fact there are fewer low risk. However, most of the immunity in the population comes from the bigger, low risk class. This is why it is essential that the strategy chosen adequately protects those higher risk individuals.
-                                                                            ''',style={'fontSize': '100%', 'marginTop': '2vh'}),
+                                                                            ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '2vh'}),
 
 
 
@@ -3237,7 +3237,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     
                                                                                                                                                                     dcc.Markdown('''
-                                                                                                                                                                    Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. However, if they do not receive it all die. The number able to get treatment must be lower than the number of ICU beds available.
+                                                                                                                                                                    Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. However, if they do not receive it they die, taking 2 days. The number able to get treatment must be lower than the number of ICU beds available.
                                                                                                                                                                     ''',
                                                                                                                                                                     style={'textAlign': 'justify'}),
 
@@ -3285,7 +3285,7 @@ layout_inter = html.Div([
                                                                                                                                                                     dcc.Markdown('''
                                                                                                                                                                     The age data is taken from [**GOV.UK**](https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](https://spiral.imperial.ac.uk/handle/10044/1/77482) (Ferguson et al.). This means that the age structure will not be accurate when modelling other countries.
 
-                                                                                                                                                                    To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population.
+                                                                                                                                                                    To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population. Note that the figures below are proportion of *symptomatic* cases that are hospitalised, which we estimate to be 55% of cases ([**Ferguson et al.**](https://spiral.imperial.ac.uk/handle/10044/1/77482)). The number requiring critical care is a proportion of this hospitalised number.
 
                                                                                                                                                                     *The table below shows the age structure data that was used to calculate these weighted averages across the low risk category (under 60) and high risk (over 60) category.*
                                                                                                                                                                     

@@ -58,15 +58,16 @@ df2 = df2.assign(   weighted_hosp_low=lambda x: (x.Hosp/100)*x.pop_low_prop,
                     weighted_crit_low=lambda x: (x.Crit/100)*x.pop_low_prop,
                     weighted_crit_high=lambda x:(x.Crit/100)*x.pop_high_prop)
 
+frac_symptomatic = 0.55 # so e.g. 40% that weren't detected were bc no symptoms and the rest (5%) didn't identify vs e.g. flu
 
-# print(df2)
-frac_hosp_L = sum(df2.weighted_hosp_low)
-frac_hosp_H = sum(df2.weighted_hosp_high)
+frac_hosp_L = sum(df2.weighted_hosp_low)*frac_symptomatic
+frac_hosp_H = sum(df2.weighted_hosp_high)*frac_symptomatic
 frac_crit_L = sum(df2.weighted_crit_low)
 frac_crit_H = sum(df2.weighted_crit_high)
 
 hosp_rate = 1/8
 death_rate = 1/8
+noICU  = 4 # so die in 1/(death_rate*noICU) days = 2 without ICU
 
 crit_L      = hosp_rate*frac_crit_L
 recover_L   = hosp_rate*(1-frac_crit_L)
@@ -135,6 +136,7 @@ class Parameters:
         self.vaccinate_rate = vaccinate_rate
         self.import_rate = import_rate
         self.ICU_growth = ICU_growth
+        self.noICU = noICU
 
 
 

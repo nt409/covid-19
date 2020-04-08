@@ -52,14 +52,14 @@ class simulator:
         ICU_capac = params.ICU_capacity*(1 + ICU_grow*t/365 )
         if C_L>ICU_capac:
             C_L_to_R_L = ICU_capac*params.crit_recovery
-            C_L_to_D_L = ICU_capac*params.crit_death + (params.crit_death + params.crit_recovery)*(C_L-ICU_capac) # all without crit care die
+            C_L_to_D_L = ICU_capac*params.crit_death + params.noICU*(params.crit_death + params.crit_recovery)*(C_L-ICU_capac) # all without crit care die
         else:
             C_L_to_R_L = C_L*params.crit_recovery
             C_L_to_D_L = C_L*params.crit_death
 
         if C_H>ICU_capac:
             C_H_to_R_H = ICU_capac*params.crit_recovery
-            C_H_to_D_H = ICU_capac*params.crit_death + (params.crit_death + params.crit_recovery)*(C_H-ICU_capac) # all without crit care die
+            C_H_to_D_H = ICU_capac*params.crit_death + params.noICU*(params.crit_death + params.crit_recovery)*(C_H-ICU_capac) # all without crit care die
         else:
             C_H_to_R_H = C_H*params.crit_recovery
             C_H_to_D_H = C_H*params.crit_death
