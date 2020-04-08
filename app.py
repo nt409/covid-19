@@ -1760,11 +1760,7 @@ Results_interpretation =  html.Div([
 
     The plots show a prediction for how coronavirus will affect the population. It is assumed that control measures are in place for a **maximum of 15 months**. Explore the effect of the different control measures and the amount of time they are implemented for.
     
-    In the third line plot ('intensive care'), you can see how quickly the ICU capacity (relating to the number of intensive care beds available) could be overwhelmed (within a month if no control measures are implemented). Control measures allow us to 'flatten the curve'. In addition it's essential that the healthcare capacity is rapidly increased.
-
-    You can also see how important it is to **protect the high risk group** (potentially by specifically reducing their transmission rate), since this is the group that contributes the most to the death rate (to see this, use the '**Groups to Plot**' checkboxes on the dropdown '**Plot Settings**').
-
-    The figures also illustrate how a vaccine, coupled with an effective quarantine, can drastically decrease the death toll.
+    The figures illustrate how a vaccine, coupled with an effective quarantine, can drastically decrease the death toll.
 
     For further explanation, read the [**Background**](/intro).
     
@@ -1992,7 +1988,7 @@ layout_inter = html.Div([
                                                                                                                                                   
 
 
-                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'fontSize': '80%' ,'textAlign': 'center', 'marginBottom': '3vh'}), # 'textAlign': 'left', fs 80%
+                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'fontSize': '85%' ,'textAlign': 'center', 'marginBottom': '3vh'}), # 'textAlign': 'left', fs 80%
 
                                                                                                                                                         
                                                                                                                                                     dbc.Row([
@@ -2353,7 +2349,6 @@ layout_inter = html.Div([
                                                                                                                                                                                         step = 1,
                                                                                                                                                                                         marks={i: str(i)+'x' for i in range(6)},
                                                                                                                                                                                         value=1,
-                                                                                                                                                                                        # style={'fontSize': '80%'}
                                                                                                                                                                                     ),
                                                                                                                                                                                 
                                                                                                                                                                                 dbc.Popover(
@@ -2387,7 +2382,7 @@ layout_inter = html.Div([
                                                                                                                                                                             dbc.Col([
                                                                                                                                                                             html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
 
-                                                                                                                                                                            dcc.Markdown('''*Set '**1b. Control Type**' to 'Custom'.*''', style = {'fontSize': '70%', 'marginTop': '1vh', 'textAlign': 'center'}),
+                                                                                                                                                                            dcc.Markdown('''*Set '**1b. Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
                                                                                                                                                                             dbc.Row([
                                                                                                                                                                             dbc.RadioItems(
                                                                                                                                                                             id = 'number-strats-radio',
@@ -2415,7 +2410,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                             # html.Hr(),
                                                                                                                                                                             
-                                                                                                                                                                            dcc.Markdown('''*To adjust the following, make sure '**1b. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '80%', 'marginTop': '2vh', 'textAlign': 'center'}), # 'textAlign': 'left', 
+                                                                                                                                                                            dcc.Markdown('''*To adjust the following, make sure '**1b. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}), # 'textAlign': 'left', 
 
                                                                                                                                                                             dbc.Row([
 
@@ -2462,7 +2457,6 @@ layout_inter = html.Div([
                                                                                                                                                                                     step = 1,
                                                                                                                                                                                     marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
                                                                                                                                                                                     value=initial_lr,
-                                                                                                                                                                                    # style={'fontSize': '80%'}
                                                                                                                                                                                 ),
 
 
@@ -2474,14 +2468,10 @@ layout_inter = html.Div([
                                                                                                                                                                                         step = 1,
                                                                                                                                                                                         marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
                                                                                                                                                                                         value=initial_hr,
-                                                                                                                                                                                        # style={'fontSize': '80%'}
                                                                                                                                                                                         ),
                                                                                                                                                                                 ],width=6),
 
                                                                                                                                                                                         
-                                                                                                                                                                                # style={'fontSize': '80%'}),
-
-                                                                                                                                                                                # html.Hr(),
 
 
 
@@ -2909,7 +2899,7 @@ layout_inter = html.Div([
 
                                                                                 dbc.Col([
                                                                                 dcc.Markdown('''*Plot different disease progress categories, different risk groups, compare the outcome of your strategy with the outcome of 'Do Nothing', or plot the ICU capacity.*''', 
-                                                                                style = {'textAlign': 'center', 'fontSize': '80%','marginBottom': '1vh' , 'marginTop': '1vh'}),
+                                                                                style = {'textAlign': 'center', 'fontSize': '85%','marginBottom': '1vh' , 'marginTop': '1vh'}),
                                                                                 ],width={'size':8, 'offset': 2}),
 
                             
@@ -2931,7 +2921,7 @@ layout_inter = html.Div([
                                                                                                                                                     
                                                                                                                                                     dcc.Markdown('''
                                                                                                                                                         *Category choice is for the plot above. Hospital categories are shown in the plot below.*
-                                                                                                                                                        ''',style={'fontSize': '70%', 'textAlign': 'justify', 'marginTop': '0vh'}),
+                                                                                                                                                        ''',style={'fontSize': '75%', 'textAlign': 'justify', 'marginTop': '0vh'}),
                                                                                                                                                         
 
                                                                                                                                                 ],width={'size':6 , 'offset': 3}),
@@ -3013,7 +3003,7 @@ layout_inter = html.Div([
                                                                                                                                                         ),
                                                                                                                                                         dcc.Markdown('''
                                                                                                                                                         *ICU capacity will only be clear on small y-scales (hospital categories only). For the classic 'flatten the curve' picture, check this box and then select 'Critical' and no others in the '**Categories To Plot**' checklist.*
-                                                                                                                                                        ''',style={'fontSize': '70%', 'textAlign': 'justify', 'marginTop': '0vh'}),
+                                                                                                                                                        ''',style={'fontSize': '75%', 'textAlign': 'justify', 'marginTop': '0vh'}),
 
 
                                                                                                                                         ],width=4),
@@ -3045,10 +3035,19 @@ layout_inter = html.Div([
                                                                                 # style={'textAlign': 'center'}
                                                                                 ),
 
+                                                                # html.Hr(style={'marginTop': '3vh'}),
 
+                                                                dcc.Markdown('''
+                                                                            Each line displays the number of people in that category at each time point. Two of the categories are cumulative, since once you recover, or you die, you remain in that category. The time for which control is in place is shown in light blue. This may be adjusted using the '**Pick Your Strategy** sliders above. The time for which the intensive care capacity is exceeded is shown in pink. The extent to which healthcare capacity is increased is a strategy choice under '**Custom Options**'.
 
+                                                                            You may choose to adjust the graph axes. Choosing a logarithmic scale for the *y* axis makes it easier to compare the different quantities and their rates of growth or decay. However a linear scale makes it easiest to draw comparisons between the relative sizes of the categories.
 
-                                                                html.Hr(style={'marginTop': '3vh'}),
+                                                                            An interesting way to compare the strategies is their effectiveness relative to 'do nothing'; that is, relative to no control measure at all. To see this, select the '*Compare with Do Nothing*' checkbox in '**Plot Settings**'.
+
+                                                                            ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '6vh', 'marginBottom': '3vh'}),
+
+                                                                html.Hr(),
+
 
                                                                 html.H4("Hospital Categories",
                                                                 style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
@@ -3056,6 +3055,15 @@ layout_inter = html.Div([
 
                                                                 dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '97%'}), # figure=dummy_figure,
 
+                                                                dcc.Markdown('''
+                                                                            In the **Hospital Categories** plot, you can see how quickly the **ICU capacity** (relating to the number of intensive care beds available) could be overwhelmed (within April if no control measures are implemented). This is shown by the pink boxes, and happens when the black 'Critical Care' curve exceeds the line specifying the critical care capacity (make sure you have selected '*Plot Intensive Care Capacity*' in '**Plot Settings**').
+                                                                            
+                                                                            Control measures allow us to 'flatten the curve'. In addition it's essential that the healthcare capacity is rapidly increased.
+
+                                                                            ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '6vh', 'marginBottom': '3vh'}),
+
+
+                                                                html.Hr(),
 
                                                                 html.H4("Low Risk/High Risk Breakdown By Category",
                                                                 style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
@@ -3073,7 +3081,7 @@ layout_inter = html.Div([
                                                                 dbc.Col([
                                                                 dcc.Markdown('''
                                                                 *Select different categories to see the split between low and high risk individuals. Each bar shows the number in that category at a particular time point. Recovery and death are cumulative, since once you enter one of those categories you cannot leave it.*
-                                                                ''',style={'fontSize': '70%',  'textAlign': 'center', 'marginTop': '0vh'}),
+                                                                ''',style={'fontSize': '85%',  'textAlign': 'center', 'marginTop': '0vh'}),
 
                                                                 dbc.RadioItems(id='categories-to-plot-stacked',
                                                                                 options=[
@@ -3091,8 +3099,10 @@ layout_inter = html.Div([
                                                                 justify='center'),
 
                                                                 dcc.Markdown('''
-                                                                            In the risk breakdown plot you can see how in most scenarios many more high risk people die or need critical care than low risk, despite the fact there are fewer low risk. However, most of the immunity in the population comes from the bigger, low risk class. This is why it is essential that the strategy chosen adequately protects those higher risk individuals.
-                                                                            ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '2vh'}),
+                                                                            In the **Risk Breakdown** plot you can see how in most scenarios many more high risk people die or need critical care than low risk, despite the fact that high risk people make up a relatively small proportion of the population. This is why it is essential that the strategy chosen adequately protects those higher risk individuals.
+                                                                            
+                                                                            Most of the immunity in the population comes from the bigger, low risk class.
+                                                                            ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '3vh', 'marginBottom': '3vh'}),
 
 
 
@@ -3272,7 +3282,7 @@ layout_inter = html.Div([
 
 
                                                                                                                                                                     html.P('** the Imperial paper uses 8 days in hospital if critical care is not required (as do we). It uses 16 days (with 10 in ICU) if critical care is required. Instead, if critical care is required we use 8 days in hospital (non-ICU) and then either recovery or a further 8 in intensive care (leading to either recovery or death).',
-                                                                                                                                                                    style={'fontSize':'80%'}),
+                                                                                                                                                                    style={'fontSize':'85%'}),
 
                                                                                                                                                                     dcc.Markdown('''
                                                                                                                                                                     Please use the following links: [**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482), [**Anderson et al**](https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30567-5/fulltext) and [**Zhao et al**](https://journals.plos.org/plosntds/article/file?rev=2&id=10.1371/journal.pntd.0006158&type=printable)
