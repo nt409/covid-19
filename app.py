@@ -3237,7 +3237,7 @@ layout_inter = html.Div([
 
                                                                                                                                                                     
                                                                                                                                                                     dcc.Markdown('''
-                                                                                                                                                                    Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. However, if they do not receive it they die, taking 2 days. The number able to get treatment must be lower than the number of ICU beds available.
+                                                                                                                                                                    Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. If they do not receive it they die, taking 2 days. The number able to get treatment must be lower than the number of ICU beds available.
                                                                                                                                                                     ''',
                                                                                                                                                                     style={'textAlign': 'justify'}),
 
@@ -3262,7 +3262,7 @@ layout_inter = html.Div([
                                                                                                                                                                     
 
                                                                                                                                                                     dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1586179930/table_jo7uex.png',
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1586338368/table_jfdtjl.png',
                                                                                                                                                                     style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'}
                                                                                                                                                                     ),
                                                                                                                                                                     ],

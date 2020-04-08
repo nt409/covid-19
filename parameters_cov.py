@@ -171,3 +171,12 @@ class Parameters:
 params = Parameters()
 
 # print(params.vaccinate_rate)
+
+
+
+
+
+# print(params.frac_hosp_H)
+# print(params.frac_hosp_L)
+# print(params.frac_crit_H)
+# print(params.frac_crit_L)
