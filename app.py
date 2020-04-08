@@ -3369,7 +3369,7 @@ navbar = html.Nav([
                         style={'fontSize':'1.9vh'},
                         value='data',
                         ), #disabled=True),
-            ], id='main-tabs', value='inter'),
+            ], id='main-tabs', value='intro'),
         ], style={'width': '100vw'}, # , 'display': 'flex', 'justifyContent': 'center'},
         ),
     ],)
@@ -3392,7 +3392,7 @@ page_layout = html.Div([
                 dbc.Col([
                     html.H3(children='Modelling control of COVID-19',
                     className="display-4",
-                    style={'marginTop': '1vh', 'textAlign': 'center','fontSize': '350%'}
+                    style={'marginTop': '1vh', 'textAlign': 'center','fontSize': '360%'}
                     ),
 
 
@@ -3402,7 +3402,7 @@ page_layout = html.Div([
                     # style = {'marginTop': '0.5vh', 'fontSize': '100%','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
                     # ),
                     html.P([
-                    html.Span('Disclaimer: ',style={'color': '#F49B14'}), # orange
+                    html.Span('Disclaimer: ',style={'color': '#C37C10'}), # orange
                     'This work is for educational purposes only and not for accurate prediction of the pandemic.'],
                     style = {'marginTop': '0vh','marginBottom': '0vh', 'fontSize': '110%', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ),
