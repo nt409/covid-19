@@ -62,35 +62,35 @@ COUNTRY_LIST_NICK.remove('world')
 initial_country = COUNTRY_LIST_NICK.index('uk')
 
 def begin_date(date,country='uk'):
-    # if country is None:
-    #     return 0.1, 0, 0, 0, 0
 
-    
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
     pre_defined = False
+
     try:
         country_data = get_data(country)
     except:
-        try:
-            country_data = get_data('uk') # defaults to uk if error
-            print("Cannnot get country data from ",country)
-        except:
-            pre_defined = True
-            print("Can't do UK either")
+        print("Cannnot get country data from:",country)
+        pre_defined = True
 
     if country_data is None:
-        print("Can't do UK either")
+        print("Country data none")
+        pre_defined = True
 
-    if not pre_defined and country_data is not None:
+    try:
+        population_country = POPULATIONS[country]
+    except:
+        population_country = 100*10**6
+        print("Cannot get country population")
+        pre_defined = True
+
+    
+    if not pre_defined:
+        worked = True
+        
         dates = np.asarray(country_data['Currently Infected']['dates'])
         currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
         deaths_data        = np.asarray(country_data['Deaths']['data'])
         
-        try:
-            population_country = POPULATIONS[country]
-        except:
-            population_country = 100*10**6
-            print("couldn't get country population")
 
         date_objects = []
         for dt in dates:
@@ -100,6 +100,7 @@ def begin_date(date,country='uk'):
             index = date_objects.index(date)
         except Exception as e: # defaults to today if error
             index = -1
+            worked = False
             print('Date error; ',e)
         
         if index>=10:
@@ -135,9 +136,9 @@ def begin_date(date,country='uk'):
         H0 = Hospitalised_all*(1-crit_proportion)
         C0 = Hospitalised_all*crit_proportion
         # print(I0, R0, H0, C0, D0)
-        return I0, R0, H0, C0, D0
+        return I0, R0, H0, C0, D0, worked
     else:
-        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761
+        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False # if data collection fails, use UK on 8th April as default
 
 
 
@@ -1826,6 +1827,9 @@ layout_inter = html.Div([
                                     dcc.Store(id='sol-calculated'),
                                     dcc.Store(id='sol-calculated-do-nothing'),
                                     dcc.Store(id='store-initial-conds'),
+                                    dcc.Store(id='store-get-data-worked'),
+
+                                    # State('store-get-data-worked','data'),
 
             
                                     # dbc.Col([
@@ -1965,6 +1969,7 @@ layout_inter = html.Div([
                                                                                                                                                                         clearable = False,
                                                                                                                                                                     ),],
                                                                                                                                                                     style={'cursor': 'pointer'}),
+
 
                                                                                                                                                                 ],width=4),
                                                                                                                                                                 # ],justify='center'),
@@ -2841,8 +2846,12 @@ layout_inter = html.Div([
                                                     html.Div([
                                              
 
-                                                        
                                                         dbc.Row([
+                                                        html.Div(id='worked-div'),
+                                                        ],justify='center'),
+
+                                                        dbc.Row([
+
 
                                                                 html.H3('Results',
                                                                 className='display-4',
@@ -3913,6 +3922,8 @@ def preset_sliders(preset,number_strs):
     [Output('sol-calculated', 'data'),
     Output('loading-sol-1','children'),
     Output('store-initial-conds', 'data'),
+    Output('store-get-data-worked', 'data'),
+    Output('worked-div', 'children'),
     ],
     [
     Input('preset', 'value'),
@@ -3930,8 +3941,10 @@ def preset_sliders(preset,number_strs):
     Input('cycle-on', 'value'),
     Input('hr-ld', 'value'),
     ],
-    [State('store-initial-conds','data')])
-def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored):
+    [State('store-initial-conds','data'),
+    State('store-get-data-worked','data'),
+    ])
+def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
     # print('find sol')
 
     try:
@@ -3945,8 +3958,9 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     triggered = dash.callback_context.triggered[0]['prop_id']
 
     if init_stored is None or triggered in ['model-country-choice.value','model-start-date.date']:
-        I0, R0, H0, C0, D0 = begin_date(date,country)
+        I0, R0, H0, C0, D0, worked = begin_date(date,country)
         initial_conds = [I0, R0, H0, C0, D0]
+        # print('calculating new')
         # print(initial_conds)
     else:
         initial_conds = init_stored
@@ -3956,8 +3970,15 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         C0 = init_stored[3]
         D0 = init_stored[4]
 
-
-
+    # print(worked)
+    if worked is None:
+        worked = False
+    
+    if not worked:
+        worked_div = dcc.Markdown('''Getting data for this country/date combination failed... try another. Default initial values used instead.''' , style={'textAlign': 'center', 'color': 'red', 'fontWeight': 'bold'})
+    else:
+        worked_div = None
+    
     if preset=='C':
         lr = params.fact_v[int(lr_in)]
         hr = params.fact_v[int(hr_in)]
@@ -4001,7 +4022,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow,let_HR_out=let_HR_out))
 
 
-    return sols, None, initial_conds
+    return sols, None, initial_conds, worked, worked_div
 
 
 
@@ -4019,7 +4040,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
     except:
         country = 'uk'
 
-    I0, R0, H0, C0, D0 = begin_date(date,country)
+    I0, R0, H0, C0, D0, worked = begin_date(date,country)
 
     t_stop = 365*3
     
