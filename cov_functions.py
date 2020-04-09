@@ -162,7 +162,7 @@ class simulator:
     ##
     #--------------------------------------------------------------------
     ##
-    def run_model(self,beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=params.T_stop,vaccine_time=None,I0=params.initial_infections,R0=0,H0=0,C0=0,D0=0,ICU_grow=0,let_HR_out=True):
+    def run_model(self,beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=None,vaccine_time=None,I0=None,R0=None,H0=None,C0=None,D0=None,ICU_grow=0,let_HR_out=True):
         # print(I0_H*60*10**6,I0_L*60*10**6,params.hr_frac)
         y_out, tim = self.poly_calc_ode(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,beta_L_factor=beta_L_factor,beta_H_factor=beta_H_factor,t_control=t_control,T_stop=T_stop,vaccine_time=vaccine_time,ICU_grow=ICU_grow,let_HR_out=let_HR_out) # critical=critical,death=death,
         dicto = {'y': y_out,'t': tim,'beta_L': beta_L_factor,'beta_H': beta_H_factor}
