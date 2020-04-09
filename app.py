@@ -47,7 +47,7 @@ min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
 
-COUNTRY_LIST_NICK = COUNTRY_LIST_WORLDOMETER
+COUNTRY_LIST_NICK = COUNTRY_LIST
 
 # if USE_API:
 #     COUNTRY_LIST_NICK = COUNTRY_LIST
@@ -57,7 +57,7 @@ COUNTRY_LIST_NICK = COUNTRY_LIST_WORLDOMETER
 # print(USE_API)
 COUNTRY_LIST_NICK = sorted(COUNTRY_LIST_NICK)
 COUNTRY_LIST_NICK.remove('world')
-COUNTRY_LIST_NICK.remove('china-hong-kong-sar')
+# COUNTRY_LIST_NICK.remove('china-hong-kong-sar')
 
 initial_country = COUNTRY_LIST_NICK.index('uk')
 
@@ -78,7 +78,12 @@ def begin_date(date,country='uk'):
     
     currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
     deaths_data        = np.asarray(country_data['Deaths']['data'])
-    population_country = POPULATIONS[country]
+    
+    try:
+        population_country = POPULATIONS[country]
+    except:
+        population_country = 100*10**6
+        print("couldn't get country population")
 
     date_objects = []
     for dt in dates:
@@ -530,7 +535,11 @@ def human_format(num,dp=0):
 ########################################################################################################################
 def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,time_axis_text=None, time_axis_vals = None,country = 'uk',month_cycle=None,preset=None):
 
-    population_plot = POPULATIONS[country]
+    # population_plot = POPULATIONS[country]
+    try:
+        population_plot = POPULATIONS[country]
+    except:
+        population_plot = 100
 
     if country in ['us','uk']:
         country_name = country.upper()
@@ -906,7 +915,12 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
 
 def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,time_axis_text=None, time_axis_vals = None,country = 'uk',preset=None):
 
-    population_plot = POPULATIONS[country]
+    # population_plot = POPULATIONS[country]
+    try:
+        population_plot = POPULATIONS[country]
+    except:
+        population_plot = 100
+
     if country in ['us','uk']:
         country_name = country.upper()
     else:
@@ -1803,8 +1817,10 @@ layout_inter = html.Div([
 
 
                                     # store results
-                                    dcc.Store(id='sol-calculated'),# storage_type='session'),
-                                    dcc.Store(id='sol-calculated-do-nothing'),# storage_type='session'),
+                                    dcc.Store(id='sol-calculated'),
+                                    dcc.Store(id='sol-calculated-do-nothing'),
+                                    dcc.Store(id='store-initial-conds'),
+
             
                                     # dbc.Col([
 
@@ -3722,6 +3738,7 @@ app.title = 'Modelling COVID-19 Control'
 @app.callback(Output('main-tabs', 'value'),
             [Input('url', 'pathname')])
 def display_page(pathname):
+    # print('disp page')
     if pathname == '/inter':
         return 'interactive'
     elif pathname == '/data':
@@ -3791,7 +3808,7 @@ for p in [ "rt-data" ,"pick-strat","control", "months-control", "vaccination", "
     Input('plot-with-do-nothing', 'value')
     ])
 def invisible_or_not(num,preset,do_nothing):
-    # print('invis or not')
+    # print('invis or not',dash.callback_context.triggered)
 
     do_nothing_dis = False
     do_n_val = 1
@@ -3851,6 +3868,7 @@ def invisible_or_not(num,preset,do_nothing):
             ],
             [State('number-strats-radio','value')])
 def preset_sliders(preset,number_strs):
+    # print('preset sliders')
     lockdown_cycles_dis = True
     options_lockdown_cycles = [
                                 {'label': 'Low Risk Only', 'value': 0, 'disabled': True},
@@ -3887,7 +3905,9 @@ def preset_sliders(preset,number_strs):
 
 @app.callback(
     [Output('sol-calculated', 'data'),
-    Output('loading-sol-1','children')],
+    Output('loading-sol-1','children'),
+    Output('store-initial-conds', 'data'),
+    ],
     [
     Input('preset', 'value'),
     Input('month-slider', 'value'),
@@ -3903,9 +3923,10 @@ def preset_sliders(preset,number_strs):
     Input('cycle-off', 'value'),
     Input('cycle-on', 'value'),
     Input('hr-ld', 'value'),
-    ])
-def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld):
-
+    ],
+    [State('store-initial-conds','data')])
+def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored):
+    print('find sol')
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -3915,7 +3936,19 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     if vaccine==9:
         vaccine = None
 
-    I0, R0, H0, C0, D0 = begin_date(date,country)
+    triggered = dash.callback_context.triggered[0]['prop_id']
+
+    if init_stored is None or triggered in ['model-country-choice.value','model-start-date.date']:
+        I0, R0, H0, C0, D0 = begin_date(date,country)
+        initial_conds = [I0, R0, H0, C0, D0]
+    else:
+        initial_conds = init_stored
+        I0 = init_stored[0]
+        R0 = init_stored[1]
+        H0 = init_stored[2]
+        C0 = init_stored[3]
+        D0 = init_stored[4]
+
 
 
     if preset=='C':
@@ -3951,22 +3984,19 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
 
     months_controlled = [month_len*i for i in month]
 
-    # print(months_controlled,lr,hr)
 
     if month[0]==month[1]:
         months_controlled= None
-
+    
     sols = []
     sols.append(simulator().run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow,let_HR_out=let_HR_out))
     if num_strat=='two':
         sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow,let_HR_out=let_HR_out))
 
-    # print('about to dump')
 
-    
-    return sols, None
-    # return json.dumps({'soln':sols},cls=NumpyArrayEncoder), None
-# json.dumps(sols_dump,cls=NumpyArrayEncoder)
+    return sols, None, initial_conds
+
+
 
 @app.callback(
     Output('sol-calculated-do-nothing', 'data'),
@@ -3976,9 +4006,6 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     Input('model-country-choice', 'value'),
     ])
 def find_sol_do_noth(ICU_grow,date,country_num):
-
-    # ctx = dash.callback_context
-    # print('find sol do nothing')
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -4079,13 +4106,33 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
                                 t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date):
 
-    # ctx = dash.callback_context
-    # print(ctx.triggered[0]['prop_id'],'render')
-    
-    
-    # if sols is not None:
-    #     sols = json.loads(sols)['soln']
-        # print(sols)
+    print('render',sols is None)
+    if sols is None:
+        return [
+        {'display': 'block'},
+        {'display' : 'none'},
+        {'display' : 'none'},
+
+        'Strategy Outcome',
+
+        [''],
+
+        dummy_figure,
+        dummy_figure,
+        dummy_figure,
+        dummy_figure,
+        dummy_figure,
+
+        dummy_figure,
+        dummy_figure,
+        dummy_figure,
+
+        None
+        ]
+
+
+
+
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -4112,21 +4159,19 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
 
 ########################################################################################################################
 
-    # if preset is None:
-    #     preset = 'N'
 
     Strat_outcome_title = presets_dict[preset] + ' Strategy Outcome'
     strategy_outcome_text = ['']
 
 
-    if sols is None or tab2!='interactive' or results_type!='BC_dd':
+    if tab2!='interactive' or results_type!='BC_dd': # sols is None or 
         bar1 = dummy_figure
         bar2 = dummy_figure
         bar3 = dummy_figure
         bar4 = dummy_figure
         bar5 = dummy_figure
 
-    if sols is None or tab2!='interactive' or results_type!='DPC_dd':
+    if tab2!='interactive' or results_type!='DPC_dd': # sols is None or 
         fig1 = dummy_figure
         fig2 = dummy_figure
         fig3 = dummy_figure
@@ -4142,7 +4187,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
             num_strat = 'one'
             
 
-        if sols is not None:
+        if True: # sols is not None:
             sols.append(sol_do_nothing)
         
             # bar plot data
@@ -4341,8 +4386,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
                     time_end   = month[1]
                     time_on = t_on*7/month_len
                     time_off = t_off*7/month_len
-                    # if hr_ld==0:
-                    #     let_HR_out = False
+
                     month_cycle = [time_start,time_on]
                     mm = month_cycle[1]
                     while mm + time_off+time_on < time_end:
@@ -4360,11 +4404,8 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
 
 
             
-        ##############
 
-                
-    # print('render end')
-
+        
 ########################################################################################################################
 
     return [
@@ -4420,6 +4461,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
                Output('display_percentage_text_daily_deaths', 'style')],
               [Input('normalise-check', 'value')])
 def update_align_options(normalise_by_pop):
+    # print('dan 1')
     if normalise_by_pop:
         options_cases = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
                     'value': 'align'}]
@@ -4477,6 +4519,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                  align_active_cases_input, align_daily_cases_check, align_daily_cases_input,
                  align_daily_deaths_check, align_daily_deaths_input, saved_json_data, *args):
 
+    # print('dan 2',dash.callback_context.triggered)
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
