@@ -67,71 +67,77 @@ def begin_date(date,country='uk'):
 
     
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
-    
+    pre_defined = False
     try:
         country_data = get_data(country)
     except:
-        country_data = get_data('uk') # defaults to uk if error
-        print("Cannnot get country data from ",country)
+        try:
+            country_data = get_data('uk') # defaults to uk if error
+            print("Cannnot get country data from ",country)
+        except:
+            pre_defined = True
+            print("Can't do UK either")
 
-    dates = np.asarray(country_data['Currently Infected']['dates'])
-    
-    currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
-    deaths_data        = np.asarray(country_data['Deaths']['data'])
-    
-    try:
-        population_country = POPULATIONS[country]
-    except:
-        population_country = 100*10**6
-        print("couldn't get country population")
+    if country_data is None:
+        print("Can't do UK either")
 
-    date_objects = []
-    for dt in dates:
-        date_objects.append(datetime.datetime.strptime(dt, '%Y-%m-%d').date())
+    if not pre_defined and country_data is not None:
+        dates = np.asarray(country_data['Currently Infected']['dates'])
+        currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
+        deaths_data        = np.asarray(country_data['Deaths']['data'])
+        
+        try:
+            population_country = POPULATIONS[country]
+        except:
+            population_country = 100*10**6
+            print("couldn't get country population")
 
-    try:
-        index = date_objects.index(date)
-    except Exception as e: # defaults to today if error
-        index = -1
-        print('Date error; ',e)
-    
-    if index>=10:
-        I0    = np.float(currently_inf_data[index])
-        I_ten = np.float(currently_inf_data[index-10])
-        D0    = np.float(deaths_data[index])
+        date_objects = []
+        for dt in dates:
+            date_objects.append(datetime.datetime.strptime(dt, '%Y-%m-%d').date())
+
+        try:
+            index = date_objects.index(date)
+        except Exception as e: # defaults to today if error
+            index = -1
+            print('Date error; ',e)
+        
+        if index>=10:
+            I0    = np.float(currently_inf_data[index])
+            I_ten = np.float(currently_inf_data[index-10])
+            D0    = np.float(deaths_data[index])
+        else:
+            index=10
+            I0    = np.float(currently_inf_data[index])
+            I_ten = np.float(currently_inf_data[index-10])
+            D0    = np.float(deaths_data[index])
+            print("dates didn't go far enough back")      
+
+        # of resolved cases, fatality rate is 0.9%
+        p = 0.009
+        R0 = D0*(1-p)/p
+
+        R0 = R0/population_country
+        D0 = D0/population_country
+
+        I0 = 2*I0/population_country
+
+        #  H rate is 4.4% so 
+        hosp_proportion = 0.044
+        #  30% of H cases critical
+        crit_proportion = 0.3
+        # and it takes 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before
+        I_ten = 2*I_ten/population_country # only half reported
+
+        Hospitalised_all = I_ten*hosp_proportion
+        I0 = I0 - Hospitalised_all
+
+        H0 = Hospitalised_all*(1-crit_proportion)
+        C0 = Hospitalised_all*crit_proportion
+        # print(I0, R0, H0, C0, D0)
+        return I0, R0, H0, C0, D0
     else:
-        index=10
-        I0    = np.float(currently_inf_data[index])
-        I_ten = np.float(currently_inf_data[index-10])
-        D0    = np.float(deaths_data[index])
-        print("dates didn't go far enough back")
-
-
-    
-
-    # of resolved cases, fatality rate is 0.9%
-    p = 0.009
-    R0 = D0*(1-p)/p
-
-    R0 = R0/population_country
-    D0 = D0/population_country
-
-    I0 = 2*I0/population_country
-
-    #  H rate is 4.4% so 
-    hosp_proportion = 0.044
-    #  30% of H cases critical
-    crit_proportion = 0.3
-    # and it takes 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before
-    I_ten = 2*I_ten/population_country # only half reported
-
-    Hospitalised_all = I_ten*hosp_proportion
-    I0 = I0 - Hospitalised_all
-
-    H0 = Hospitalised_all*(1-crit_proportion)
-    C0 = Hospitalised_all*crit_proportion
-
-    return I0, R0, H0, C0, D0
+        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761
 
 
 
@@ -3941,6 +3947,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     if init_stored is None or triggered in ['model-country-choice.value','model-start-date.date']:
         I0, R0, H0, C0, D0 = begin_date(date,country)
         initial_conds = [I0, R0, H0, C0, D0]
+        # print(initial_conds)
     else:
         initial_conds = init_stored
         I0 = init_stored[0]
