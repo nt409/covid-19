@@ -3926,7 +3926,7 @@ def preset_sliders(preset,number_strs):
     ],
     [State('store-initial-conds','data')])
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored):
-    print('find sol')
+    # print('find sol')
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -4106,7 +4106,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
                                 t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date):
 
-    print('render',sols is None)
+    # print('render',sols is None)
     if sols is None:
         return [
         {'display': 'block'},
