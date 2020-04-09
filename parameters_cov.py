@@ -4,8 +4,11 @@ import pandas as pd
 from scipy.stats import gamma, norm
 from math import ceil
 #------------------------------------------------------------
-# age stats
+
 # https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest
+
+
+
 
 df2 = pd.DataFrame({'Age': ['0-9','10-19','20-29','30-39','40-49','50-59','60-69','70-79','80+'],
    'Hosp': [0.1,0.3,1.2,3.2,4.9,10.2,16.6,24.3,27.3],
@@ -15,20 +18,45 @@ df2 = pd.DataFrame({'Age': ['0-9','10-19','20-29','30-39','40-49','50-59','60-69
 
 divider = -2
 
+# print()
+# exit()
+fact_v = np.concatenate([[0.02,0.1],np.linspace(0.20,1,9)]) # np.linspace(0.05,1.2,21) # [0.1,1,4] # np.linspace(0.05,8,11) #[0.05,1,10] #np.linspace(0.05,8,3) # [0.1,1,2,4] #np.linspace(0.5,4,5)
+# fact_v = [0.05,1,1.5]
+max_months_controlling = 15
+
+
+ICU_growth = 1
+# divider = int(divider)
+# hr_frac = 0.15
 hr_frac = sum(df2.Pop[divider:])/100
+
+T_stop = 30*max_months_controlling
 
 df2 = df2.assign(pop_low_prop=lambda x: x.Pop/(100*(1-hr_frac)),
     pop_high_prop=lambda x: x.Pop/(100*(hr_frac)))
 
+# print(df2['pop_low_prop'])
+# # print(df2.pop_low_prop[-4:])
+# x1 = df2.ix[divider:,'pop_low_prop'] # 'pop_low_prop'])
+# print(x1)
+    
+
+
+# df2.loc[:,'pop_low_prop'][divider:] = 0
+# df2.loc[:,'pop_high_prop'][:divider] = 0
+# print(df2.loc[(df2.shape[0]-1+divider):,'pop_low_prop'])# = 0
+# print(df2.loc[:(df2.shape[0]-1+divider),'pop_high_prop'])# = 0
+
 df2.loc[  (df2.shape[0]-1+divider): ,'pop_low_prop' ] = 0
 df2.loc[ :(df2.shape[0]-1+divider)  ,'pop_high_prop'] = 0
+
+# print(df2.loc[(df2.shape[0]-1+divider):,'pop_low_prop'])# = 0
+# print(df2.loc[:(df2.shape[0]-1+divider),'pop_high_prop'])# = 0
 
 df2 = df2.assign(   weighted_hosp_low=lambda x: (x.Hosp/100)*x.pop_low_prop,
                     weighted_hosp_high=lambda x:(x.Hosp/100)*x.pop_high_prop,
                     weighted_crit_low=lambda x: (x.Crit/100)*x.pop_low_prop,
                     weighted_crit_high=lambda x:(x.Crit/100)*x.pop_high_prop)
-
-######
 
 frac_symptomatic = 0.55 # so e.g. 40% that weren't detected were bc no symptoms and the rest (5%) didn't identify vs e.g. flu
 
@@ -37,40 +65,42 @@ frac_hosp_H = sum(df2.weighted_hosp_high)*frac_symptomatic
 frac_crit_L = sum(df2.weighted_crit_low)
 frac_crit_H = sum(df2.weighted_crit_high)
 
-#------------------------------------------------------------
-# disease params
-N    = 1
-recov_rate = 1/7
-R_0        = 2.4
-beta = R_0*recov_rate/N # R_0 mu/N
-
 hosp_rate = 1/8
 death_rate = 1/8
-noICU  = 4 # rate by which death is accelerated without ICU care... so die in 1/(death_rate*noICU) days = 2 without ICU
+noICU  = 4 # so die in 1/(death_rate*noICU) days = 2 without ICU
 
 crit_L      = hosp_rate*frac_crit_L
 recover_L   = hosp_rate*(1-frac_crit_L)
 crit_H      = hosp_rate*frac_crit_H
 recover_H   = hosp_rate*(1-frac_crit_H) 
 
+crit_death     =  death_rate*0.5
+crit_recovery  =  death_rate*0.5
+
+recov_rate = 1/7
+R_0        = 2.4
+# frac_hosp_H = 0.14 # for high risk group
+# frac_hosp_L = 0.005 # 0.01 # = low risk hosp/high risk hosp
+number_compartments = 6
+
+
+
+
+N    = 1 # 66*(10**6)
+beta = R_0*recov_rate/N # R_0 mu/N
+
 mu_L    = recov_rate*(1-frac_hosp_L)
 gamma_L = recov_rate*frac_hosp_L
 mu_H    = recov_rate*(1-frac_hosp_H)
 gamma_H = recov_rate*frac_hosp_H
 
-crit_death     =  death_rate*0.5
-crit_recovery  =  death_rate*0.5
+hospital_production_rate = 8*10**(-3)
+ICU_factor = 1
+ICU_capacity = ICU_factor*8/100000 # 0.001 #  8/100000 # = 0.00008
 
-
-number_compartments = 6
-
-fact_v = np.concatenate([[0.02,0.1],np.linspace(0.20,1,9)])
-max_months_controlling = 15
-
-ICU_growth = 1
-ICU_capacity = 8/100000
-
+initial_infections = 625
 UK_population = 60 * 10**(6)
+
 import_rate = 1/(30*UK_population) # 1 per month
 
 vaccinate_percent = 0.9 # vaccinate this many
@@ -79,7 +109,7 @@ vaccinate_rate = 0.55/(365*2/3) #10000/UK_population # per day
 
 
 class Parameters:
-    def __init__(self):
+    def __init__(self): # ,mu_L=mu_L,mu_H=mu_H,gamma_L=gamma_L,gamma_H=gamma_H,beta=beta,N=N,hr_frac=hr_frac,crit_L=crit_L,crit_H=crit_H,recover_L=recover_L,recover_H=recover_H,death=death):
         self.mu_L  = mu_L
         self.mu_H  = mu_H
         self.gamma_L = gamma_L
@@ -93,15 +123,14 @@ class Parameters:
         self.recover_H = recover_H
         self.crit_death = crit_death
         self.crit_recovery = crit_recovery
+        self.hospital_production_rate = hospital_production_rate
+        self.T_stop = T_stop
         self.ICU_capacity = ICU_capacity
         self.fact_v = fact_v
         self.max_months_controlling = max_months_controlling
         self.R_0 = R_0
-
-        # self.UK_population = UK_population
-        # self.hospital_production_rate = hospital_production_rate
-        # self.T_stop = T_stop
-        # self.initial_infections = initial_infections
+        self.UK_population = UK_population
+        self.initial_infections = initial_infections
 
         self.vaccinate_percent = vaccinate_percent
         self.vaccinate_rate = vaccinate_rate
@@ -140,6 +169,10 @@ class Parameters:
 
 
 params = Parameters()
+
+# print(params.vaccinate_rate)
+
+
 
 
 

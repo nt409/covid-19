@@ -1783,7 +1783,7 @@ style= {'width': '90%','backgroundColor': '#f4f6f7'}
 ],
 justify='center')
 
-]),
+])
 
 
 
@@ -3610,7 +3610,7 @@ layout_inter = html.Div([
     justify='center'
     )],
     style={'fontSize' : '1.9vh'},
-    id='main-page-id'
+    # id='main-page-id'
     )
 
 
@@ -3637,12 +3637,14 @@ navbar = html.Nav([
             dcc.Tabs([
                 dcc.Tab(children=
                         layout_intro,
-                        label='Background',value='intro',
+                        label='Background',
+                        value='intro',
                         style={'fontSize':'1.9vh'}
                         ), #
                 dcc.Tab(children=
                         layout_inter,
-                        label='Interactive Model',value='interactive',
+                        label='Interactive Model',
+                        value='interactive',
                         style={'fontSize':'1.9vh'}
                         ),
                 dcc.Tab(children=
@@ -3658,7 +3660,48 @@ navbar = html.Nav([
 
 
 
+# navbar2 = dbc.NavbarSimple(
+#     children=[
+#         dbc.NavItem(dbc.NavLink("Background", href="/intro")),
+#         dbc.NavItem(dbc.NavLink("Interactive Model", href="/interactive")),
+#         dbc.NavItem(dbc.NavLink("Real-Time Global Data Feed", href="/data")),
+#     ],
+#     brand="Modelling control of COVID-19",
+#     brand_href="/intro",
+#     brand_style = {'fontSize': '3vh'},
+#     color="primary",
+#     sticky = 'top',
+#     dark=True,
+# )
 
+
+
+disclaimer = dbc.Row([
+                dbc.Col([
+                    html.H3(children='Modelling control of COVID-19',
+                    className="display-4",
+                    style={'marginTop': '1vh', 'textAlign': 'center','fontSize': '360%'}
+                    ),
+
+
+
+                html.P([
+                    html.Span('Disclaimer: ',style={'color': '#C37C10'}), # orange
+                    'This work is for educational purposes only and not for accurate prediction of the pandemic.'],
+                    style = {'marginTop': '3vh','marginBottom': '0vh', 'fontSize': '110%', 'color': '#446E9B', 'fontWeight': 'bold'}
+                    ),
+                    html.P(
+                    'There are many uncertainties in the COVID debate. The model is intended solely as an illustrative rather than predictive tool.',
+                    style = {'marginTop': '0vh','marginBottom': '3vh', 'fontSize': '110%', 'color': '#446E9B', 'fontWeight': 'bold'}
+                    ),
+
+                ],width=True,
+                style={'textAlign': 'center'}
+                ),
+            ],
+            align="center",
+            style={'backgroundColor': '#d1d4d7'} # e9ecef
+            )
 
 
 
@@ -3668,45 +3711,26 @@ navbar = html.Nav([
 # app.layout
         
 page_layout = html.Div([
-    
-            
-            dbc.Row([
-                dbc.Col([
-                    html.H3(children='Modelling control of COVID-19',
-                    className="display-4",
-                    style={'marginTop': '1vh', 'textAlign': 'center','fontSize': '360%'}
-                    ),
 
 
+        # navbar2,
 
-                    # html.P(
-                    # 'Disclaimer:',
-                    # style = {'marginTop': '0.5vh', 'fontSize': '100%','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
-                    # ),
-                    html.P([
-                    html.Span('Disclaimer: ',style={'color': '#C37C10'}), # orange
-                    'This work is for educational purposes only and not for accurate prediction of the pandemic.'],
-                    style = {'marginTop': '0vh','marginBottom': '0vh', 'fontSize': '110%', 'color': '#446E9B', 'fontWeight': 'bold'}
-                    ),
-                    html.P(
-                    'There are many uncertainties in the COVID debate. The model is intended solely as an illustrative rather than predictive tool.',
-                    style = {'marginTop': '0vh','marginBottom': '2.5vh', 'fontSize': '110%', 'color': '#446E9B', 'fontWeight': 'bold'}
-                    ), # 
+        disclaimer,
 
-                ],width=True,
-                style={'textAlign': 'center'}
-                ),
-            ],
-            align="center",
-            style={'backgroundColor': '#e9ecef'}
-            ),
-
-        # navbar
         html.Div([navbar]),
-        ##
+
+            
+
 
         # # page content
         dcc.Location(id='url', refresh=False),
+
+        # html.Div([disclaimer,layout_intro,], id='cont-intro',style={'display': 'block'}),
+        # html.Div([disclaimer,layout_inter,], id='cont-inter',style={'display': 'none'}),
+        # html.Div([disclaimer,layout_dan,],   id='cont-data' ,style={'display': 'none'}),
+
+
+
 
         html.Footer('This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.',
                     style={'textAlign': 'center', 'fontSize': '100%', 'marginBottom': '1.5vh' , 'color': '#446E9B', 'fontWeight': 'bold'}),
@@ -3749,22 +3773,51 @@ app.title = 'Modelling COVID-19 Control'
 
 
 
-
-
-
-
 @app.callback(Output('main-tabs', 'value'),
             [Input('url', 'pathname')])
 def display_page(pathname):
-    # print('disp page')
-    if pathname == '/inter':
+    print('disp page',pathname)
+    if pathname == '/interactive':
         return 'interactive'
     elif pathname == '/data':
         return 'data'
-    elif pathname == '/intro':
+    else:# pathname == '/intro':
         return 'intro'
-    else:
-        return 'intro'
+
+
+
+
+# @app.callback(
+#             [Output('cont-intro', 'style'), 
+#             Output('cont-inter', 'style'), 
+#             Output('cont-data', 'style')], 
+#             [Input('url', 'pathname'),
+#             ])
+# def display_page(url_input):
+#     print('disp page',url_input)
+#     display_on = {'display': 'block'} 
+#     display_off = {'display': 'none'} 
+#     if url_input == '/interactive':
+#         return [display_off,display_on,display_off]
+#     elif url_input == '/data':
+#         return [display_off,display_off,display_on]
+#     else:
+#         return [display_on,display_off,display_off]
+
+
+# @app.callback(
+#             Output('page-content', 'children'), 
+#             [Input('url', 'pathname')])
+# def display_page(pathname):
+#     # print('disp page')
+#     if pathname == '/interactive':
+#         return layout_inter
+#     elif pathname == '/data':
+#         return layout_dan
+#     else:
+#         return layout_intro
+    # elif pathname == '/intro':
+        # return [{'display': 'block'},{'display': 'none','fontSize' : '1.9vh'},{'display': 'none','backgroundColor': '#f4f6f7'}]
 
 
 
@@ -3826,7 +3879,7 @@ for p in [ "rt-data" ,"pick-strat","control", "months-control", "vaccination", "
     Input('plot-with-do-nothing', 'value')
     ])
 def invisible_or_not(num,preset,do_nothing):
-    # print('invis or not',dash.callback_context.triggered)
+    print('invis or not',dash.callback_context.triggered)
 
     do_nothing_dis = False
     do_n_val = 1
@@ -3886,7 +3939,7 @@ def invisible_or_not(num,preset,do_nothing):
             ],
             [State('number-strats-radio','value')])
 def preset_sliders(preset,number_strs):
-    # print('preset sliders')
+    print('preset sliders')
     lockdown_cycles_dis = True
     options_lockdown_cycles = [
                                 {'label': 'Low Risk Only', 'value': 0, 'disabled': True},
@@ -3948,7 +4001,7 @@ def preset_sliders(preset,number_strs):
     State('store-get-data-worked','data'),
     ])
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
-    # print('find sol')
+    print('find sol',dash.callback_context.triggered[0]['prop_id'])
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -4102,7 +4155,9 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 
 
 
-                Input('main-tabs', 'value'),
+                # Input('main-tabs', 'value'),
+                # Input('url', 'pathname'),
+
 
                 
                 Input('sol-calculated', 'data'),
@@ -4134,10 +4189,10 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 State('ICU-slider','value'),
                 State('model-start-date','date'),
                 ])
-def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
+def render_interactive_content(tab,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
                                 t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date):
 
-    # print('render',sols is None)
+    print('render',dash.callback_context.triggered[0]['prop_id'])
     if sols is None:
         return [
         {'display': 'block'},
@@ -4195,14 +4250,14 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
     strategy_outcome_text = ['']
 
 
-    if tab2!='interactive' or results_type!='BC_dd': # sols is None or 
+    if results_type!='BC_dd': # sols is None or ##tab2!='/interactive' or 
         bar1 = dummy_figure
         bar2 = dummy_figure
         bar3 = dummy_figure
         bar4 = dummy_figure
         bar5 = dummy_figure
 
-    if tab2!='interactive' or results_type!='DPC_dd': # sols is None or 
+    if results_type!='DPC_dd': # sols is None or ##tab2!='/interactive' or 
         fig1 = dummy_figure
         fig2 = dummy_figure
         fig3 = dummy_figure
@@ -4211,7 +4266,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
 
 
 
-    if tab2=='interactive':
+    if True: # tab2=='/interactive':
    
    
         if preset!='C':
@@ -4492,7 +4547,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
                Output('display_percentage_text_daily_deaths', 'style')],
               [Input('normalise-check', 'value')])
 def update_align_options(normalise_by_pop):
-    # print('dan 1')
+    print('dan 1')
     if normalise_by_pop:
         options_cases = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
                     'value': 'align'}]
@@ -4550,7 +4605,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                  align_active_cases_input, align_daily_cases_check, align_daily_cases_input,
                  align_daily_deaths_check, align_daily_deaths_input, saved_json_data, *args):
 
-    # print('dan 2',dash.callback_context.triggered)
+    print('dan 2',dash.callback_context.triggered)
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
@@ -4864,6 +4919,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+    # app2.run_server(debug=True)
 
 
 

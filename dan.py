@@ -115,32 +115,11 @@ colors = {
     'text': '#111111'
 }
 
-layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font-family': 'sans-serif'
-                      id='output-layout', children=[
-    # html.H4(
-    #     children='COVID-19 Cases and Deaths',
-    #     className='display-4',
-    #     style={
-    #         'textAlign': 'center',
-    #         'fontSize': '6vh',
-    #         'margin-top': '2vh'
-    #     }
-    # ),
 
-    # html.Hr(),
+layout_dan = html.Div(style={'backgroundColor': colors['background'],'backgroundColor': '#f4f6f7'}, # id='cont-data',
+                      children=[
 
     html.Div(style={'height': '3vh'}),
-
-    # dcc.Markdown(
-    #     '''
-        
-    #     *This section enables you to compare different countries' reported cases and deaths in real-time, and predict future numbers assuming exponential growth.*
-    #     *Soon this will be integrated with the full predictive model allowing you to make control predictions for different countries.*
-    #     ''',
-    #     style={'textAlign': 'center'}
-    # ),
-
-    # html.Hr(),
 
     html.Div([
         html.Div([
@@ -148,24 +127,24 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                 children='Plot',
                 id='button-plot',
                 type='submit',
-                style={"margin": "15px", 'background-color': '#008CBA', 'color': 'white', 'width': '80%',
+                style={"margin": "15px", 'background-color': '#446E9B', 'color': 'white', 'width': '80%',
                        'height': '30px', 'font-size': '20px', 'border': 'None', 'border-radius': '10px'}
             ),
             html.I("Select countries of interest, then click the Plot button above.",
                    style={'textAlign': 'center', 'color': colors['text'],
-                          "margin-left": "5px", "margin-right": "15px"}),
-            html.Div(style={'margin-top': '10px'}),
+                          "marginLeft": "5px", "marginRight": "15px"}),
+            html.Div(style={'marginTop': '10px'}),
             html.Div([
                 dbc.Checklist(
                     id=c_name,
                     options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(),
                               'value': c_name}],
                     value=[c_name] if c_name in ('us', 'uk', 'italy') else [],
-                    style={"margin-left": "15px", 'textAlign': 'left'},
-                    inputStyle={"margin-right": "5px"})
+                    style={"marginLeft": "15px", 'textAlign': 'left'},
+                    inputStyle={"marginRight": "5px"})
                 for i, c_name in enumerate(COUNTRY_LIST)]),
         ], style={'width': '17%', 'display': 'inline-block', 'vertical-align': 'top',
-                  'background-color': 'lightgrey', 'horizontal-align': 'left', 'textAlign': 'center'}),
+                  'background-color': '#d1d4d7', 'horizontal-align': 'left', 'textAlign': 'center'}),
         html.Div(style={'width': '5%', 'display': 'inline-block'}),
         html.Div([
             html.Div([
@@ -176,7 +155,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
             html.Div([
 
                 html.I("Fit exponential from: ",
-                       style={'textAlign': 'center', 'color': colors['text'], "margin-left": "15px",}),
+                       style={'textAlign': 'center', 'color': colors['text'], "marginLeft": "15px",}),
                 dcc.DatePickerSingle(
                     id='start-date',
                     min_date_allowed=datetime.date(2020, 1, 22),
@@ -189,7 +168,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
             ], style={'display': 'inline-block', 'horizontal-align': 'center', 'textAlign': 'center'}),
             html.Div([
                 html.I("Predict until: ",
-                       style={'textAlign': 'center', 'color': colors['text'], "margin-left": "15px", }),
+                       style={'textAlign': 'center', 'color': colors['text'], "marginLeft": "15px", }),
                 dcc.DatePickerSingle(
                     id='end-date',
                     min_date_allowed=datetime.date(2020, 1, 22),
@@ -200,26 +179,30 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                     style={'textAlign': 'center'}
                 ),
             ], style={'display': 'inline-block', 'horizontal-align': 'center', 'textAlign': 'center',
-                      "margin-bottom": "15px",}),
+                      "marginBottom": "15px",}),
             dbc.Checklist(
                 id='show-exponential-check',
                 options=[{'label': "Show exponential fits?", 'value': 'exponential'}],
                 value=['exponential'],
-                style={'textAlign': 'center', "margin-bottom": "0px"},
-                inputStyle={"margin-right": "5px"}
+                style={'textAlign': 'center', "marginBottom": "0px"},
+                inputStyle={"marginRight": "5px"}
             ),
             dbc.Checklist(
                 id='normalise-check',
                 options=[{'label': "Plot as percentage of population?", 'value': 'normalise'}],
                 value=[],
-                style={'textAlign': 'center', "margin-bottom": "20px"},
-                inputStyle={"margin-right": "5px"}
+                style={'textAlign': 'center', "marginBottom": "20px"},
+                inputStyle={"marginRight": "5px"}
             ),
-            dcc.Loading(id="loading-icon", children=[html.Div(id="loading-output-1")], type="default"),
+            # dcc.Loading(id="loading-icon", children=[html.Div(id="loading-output-1")], type="default"),
+            dbc.Spinner(html.Div(id="loading-icon"),color='primary',type='grow'),
+
+            
+
 
             html.Hr(),
             html.H3(children='Total Cases', style={'textAlign': 'center', 'color': colors['text'],
-                                                   'margin-top': '30px'}),
+                                                   'marginTop': '30px'}),
 
             html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
                 dbc.Checklist(
@@ -227,8 +210,8 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                     options=[{'label': "Align countries by the date when the number of confirmed cases was ",
                               'value': 'align'}],
                     value=[],
-                    style={'textAlign': 'left', "margin-right": "4px", 'display': 'inline-block'},
-                    inputStyle={"margin-right": "5px"}
+                    style={'textAlign': 'left', "marginRight": "4px", 'display': 'inline-block'},
+                    inputStyle={"marginRight": "5px"}
                 ),
                 dcc.Input(
                     id="align-cases-input",
@@ -243,17 +226,17 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                     html.P("% of population")
                 ]),
             ]),
-            dcc.Graph(id='infections-plot'),
+            dcc.Graph(id='infections-plot',style={'width': '100%', 'height': '50vh'}),
             html.H3(children='Total Deaths', style={'textAlign': 'center', 'color': colors['text'],
-                                                    'margin-top': '10px'}),
+                                                    'marginTop': '10px'}),
             html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
                 dbc.Checklist(
                     id='align-deaths-check',
                     options=[{'label': "Align countries by the date when the number of confirmed deaths was ",
                               'value': 'align'}],
                     value=[],
-                    style={'textAlign': 'left', "margin-right": "4px", 'display': 'inline-block'},
-                    inputStyle={"margin-right": "5px"}
+                    style={'textAlign': 'left', "marginRight": "4px", 'display': 'inline-block'},
+                    inputStyle={"marginRight": "5px"}
                 ),
                 dcc.Input(
                     id="align-deaths-input",
@@ -268,7 +251,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                     html.P("% of population")
                 ]),
             ]),
-            dcc.Graph(id='deaths-plot'),
+            dcc.Graph(id='deaths-plot',style={'width': '100%', 'height': '50vh'}),
             html.Div(id='active-cases-container', style={'display': 'block'}, children=[
                 html.H3(children='Active Cases', style={'textAlign': 'center', 'color': colors['text']}),
                 html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
@@ -277,8 +260,8 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                         options=[{'label': "Align countries by the date when the number of confirmed cases was ",
                                   'value': 'align'}],
                         value=[],
-                        style={'textAlign': 'left', "margin-right": "4px", 'display': 'inline-block'},
-                        inputStyle={"margin-right": "5px"}
+                        style={'textAlign': 'left', "marginRight": "4px", 'display': 'inline-block'},
+                        inputStyle={"marginRight": "5px"}
                     ),
                     dcc.Input(
                         id="align-active-cases-input",
@@ -293,20 +276,20 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                 html.Div(id='display_percentage_text_active', style={'display': 'none'}, children=[
                     html.P("% of population")
                 ]),
-                dcc.Graph(id='active-plot'),
+                dcc.Graph(id='active-plot',style={'width': '100%', 'height': '50vh'}),
             ]),
 
             html.Div(id='daily-cases-container', children=[
                 html.H3(children='Daily New Cases', style={'textAlign': 'center', 'color': colors['text'],
-                                                           'margin-top': '10px'}),
+                                                           'marginTop': '10px'}),
                 html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
                     dcc.Checklist(
                         id='align-daily-cases-check',
                         options=[{'label': "Align countries by the date when the number of confirmed cases was ",
                                   'value': 'align'}],
                         value=[],
-                        style={'textAlign': 'left', "margin-right": "4px", 'display': 'inline-block'},
-                        inputStyle={"margin-right": "5px"}
+                        style={'textAlign': 'left', "marginRight": "4px", 'display': 'inline-block'},
+                        inputStyle={"marginRight": "5px"}
                     ),
                     dcc.Input(
                         id="align-daily-cases-input",
@@ -321,20 +304,20 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                         html.P("% of population")
                     ]),
                 ]),
-                dcc.Graph(id='daily-cases-plot'),
+                dcc.Graph(id='daily-cases-plot',style={'width': '100%', 'height': '50vh'}),
             ]),
 
             html.Div(id='daily-deaths-container', children=[
                 html.H3(children='Daily New Deaths', style={'textAlign': 'center', 'color': colors['text'],
-                                                            'margin-top': '10px'}),
+                                                            'marginTop': '10px'}),
                 html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
                     dcc.Checklist(
                         id='align-daily-deaths-check',
                         options=[{'label': "Align countries by the date when the number of confirmed deaths was ",
                                   'value': 'align'}],
                         value=[],
-                        style={'textAlign': 'left', "margin-right": "4px", 'display': 'inline-block'},
-                        inputStyle={"margin-right": "5px"}
+                        style={'textAlign': 'left', "marginRight": "4px", 'display': 'inline-block'},
+                        inputStyle={"marginRight": "5px"}
                     ),
                     dcc.Input(
                         id="align-daily-deaths-input",
@@ -349,16 +332,16 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                         html.P("% of population")
                     ]),
                 ]),
-                dcc.Graph(id='daily-deaths-plot'),
+                dcc.Graph(id='daily-deaths-plot',style={'width': '100%', 'height': '50vh'}),
             ]),
 
             html.H3(children='New Cases vs Total Cases', style={'textAlign': 'center', 'color': colors['text'],
-                                                    'margin-top': '10px'}),
-            dcc.Graph(id='new-vs-total-cases'),
+                                                    'marginTop': '10px'}),
+            dcc.Graph(id='new-vs-total-cases',style={'width': '100%', 'height': '50vh'}),
 
             html.H3(children='New Deaths vs Total Deaths', style={'textAlign': 'center', 'color': colors['text'],
-                                                                  'margin-top': '10px'}),
-            dcc.Graph(id='new-vs-total-deaths'),
+                                                                  'marginTop': '10px'}),
+            dcc.Graph(id='new-vs-total-deaths',style={'width': '100%', 'height': '50vh'}),
 
             html.Li(html.I(
                 "Caution should be applied when directly comparing the number of confirmed cases of each country. "
@@ -379,7 +362,7 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                 "the general linear line on the log-log plot are reducing their growth rate of COVID-19 cases."),
                 style={'textAlign': 'justify', 'color': colors['text']}),
         ], style={'width': '75%', 'display': 'inline-block', 'vertical-align': 'top', 'horizontal-align': 'center',
-                  'textAlign': 'center', "margin-left": "0px"}),
+                  'textAlign': 'center', "marginLeft": "0px"}),
         html.Hr(),
         html.Div(id='hidden-stored-data', style={'display': 'none'}),
         
