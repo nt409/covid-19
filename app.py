@@ -86,7 +86,7 @@ def begin_date(date,country='uk'):
     
     if not pre_defined:
         worked = True
-        
+
         dates = np.asarray(country_data['Currently Infected']['dates'])
         currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
         deaths_data        = np.asarray(country_data['Deaths']['data'])
@@ -3975,7 +3975,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         worked = False
     
     if not worked:
-        worked_div = dcc.Markdown('''Getting data for this country/date combination failed... try another. Default initial values used instead.''' , style={'textAlign': 'center', 'color': 'red', 'fontWeight': 'bold'})
+        worked_div = dcc.Markdown('''Getting data for this country/date combination failed... try another. UK 8th April data used instead.''' , style={'textAlign': 'center', 'color': 'red', 'fontWeight': 'bold'})
     else:
         worked_div = None
     
