@@ -426,16 +426,17 @@ def Bar_chart_generator(data,data2 = None, data_group = None,name1=None,name2=No
 ########################################################################################################################
 def time_exceeded_function(yy,tt,ICU_grow):
     ICU_capac = [params.ICU_capacity*(1 + ICU_grow*time/365 ) for time in tt]
-    True_vec = [ (yy[params.C_H_ind,i]+yy[params.C_L_ind,i]) > ICU_capac[i] for i in range(len(tt))]
+    Exceeded_vec = [ (yy[params.C_H_ind,i]+yy[params.C_L_ind,i]) > ICU_capac[i] for i in range(len(tt))]
     Crit_vals = [ (yy[params.C_H_ind,i]+yy[params.C_L_ind,i])  for i in range(len(tt))]
 
     c_low = [-2]
     c_high = [-1]
     ICU = False
     if max(Crit_vals)>params.ICU_capacity:
-
-        for i in range(len(True_vec)-1):
-            if not True_vec[i] and True_vec[i+1]: # entering
+        if Exceeded_vec[0]: # if exceeded at t=0
+            c_low.append(0)
+        for i in range(len(Exceeded_vec)-1):
+            if not Exceeded_vec[i] and Exceeded_vec[i+1]: # entering
                 ICU = True
                 y1 = 100*(yy[params.C_H_ind,i]+yy[params.C_L_ind,i])
                 y2 = 100*(yy[params.C_H_ind,i+1]+yy[params.C_L_ind,i+1])
@@ -443,7 +444,7 @@ def time_exceeded_function(yy,tt,ICU_grow):
                 t2 = tt[i+1]
                 t_int = t1 + (t2- t1)* abs((100*0.5*(ICU_capac[i]+ICU_capac[i+1]) - y1)/(y2-y1)) 
                 c_low.append(t_int) # 0.5 * ( tt[i] + tt[i+1]))
-            if True_vec[i] and not True_vec[i+1]: # leaving
+            if Exceeded_vec[i] and not Exceeded_vec[i+1]: # leaving
                 y1 = 100*(yy[params.C_H_ind,i]+yy[params.C_L_ind,i])
                 y2 = 100*(yy[params.C_H_ind,i+1]+yy[params.C_L_ind,i+1])
                 t1 = tt[i]
@@ -455,6 +456,8 @@ def time_exceeded_function(yy,tt,ICU_grow):
 
     if len(c_low)>len(c_high):
         c_high.append(tt[-1]+1)
+
+    # print(c_low,c_high)
     return c_low, c_high, ICU
 
 
@@ -670,7 +673,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
 
 
         for c_min, c_max in zip(c_low, c_high):
-            if c_min>0 and c_max>0:
+            if c_min>=0 and c_max>=0:
                 shapez.append(dict(
                         # filled Pink ICU Rectangle
                         type="rect",
