@@ -1537,7 +1537,7 @@ layout_intro = html.Div([
 
             dbc.Row([
                     
-                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585755877/WhatIsModellingv2_hhqe2h.mp4',
+                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto/v1586536825/WhatIsModellingv2_172141_jwpplb.mp4', #vc_h264
                     controls=True,
                     style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
                     
@@ -1563,7 +1563,7 @@ layout_intro = html.Div([
 
             dbc.Row([
                     
-                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto/v1585814499/StandardSIRModel_hu5ztn.mp4', # 
+                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto,vc_h264/v1585814499/StandardSIRModel_hu5ztn.mp4', # 
                     controls=True,
                     style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
                     
@@ -1588,7 +1588,7 @@ layout_intro = html.Div([
 
             dbc.Row([
                     
-                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585987204/AllAboutR_wmf2y1.mp4',
+                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto/v1586536823/AllAboutR_173637_poxzmb.mp4',
                     controls=True,
                     style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
                     
@@ -2352,7 +2352,9 @@ layout_inter = html.Div([
 
                                                                                                                                                                 Use this to adjust the **healthcare provisions**, adjust **lockdown cycles options**, or choose a **custom strategy**.
 
-                                                                                                                                                                To choose a custom strategy, you must first select 'Custom' in the '**1b. Control Type**' selector above). You can compare two strategies directly or consider one only.
+                                                                                                                                                                To adjust the **Lockdown Cycles Options**, you must first select '*Lockdown Cycles*' in the '**1b. Control Type**' selector above).
+
+                                                                                                                                                                To adjust the **Custom Options**, you must first select '*Custom*' in the '**1b. Control Type**' selector above). You can compare two strategies directly or consider one only.
                                                                                                                                                                 
                                                                                                                                                                 The custom choice consists of selecting by how much to decelerate spread of COVID-19 (using the 'infection rate' sliders). You can also choose different infection rates for the different risk groups.
                                                                                                                                                                 '''
