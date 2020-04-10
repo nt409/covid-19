@@ -1563,7 +1563,7 @@ layout_intro = html.Div([
 
             dbc.Row([
                     
-                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/v1585814499/StandardSIRModel_hu5ztn.mp4',
+                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto/v1585814499/StandardSIRModel_hu5ztn.mp4', # 
                     controls=True,
                     style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
                     
@@ -3741,6 +3741,33 @@ app.layout = page_layout
 
 app.title = 'Modelling COVID-19 Control'
 
+app.index_string = """<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-163339118-1"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-163339118-1');
+        </script>
+
+        {%metas%}
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>"""
 
 
 
