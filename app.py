@@ -1539,7 +1539,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto/v1586536825/WhatIsModellingv2_172141_jwpplb.mp4', #vc_h264
                     controls=True,
-                    style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
+                    style={'maxWidth':'100%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
                     
                     ],
                     justify='center'
@@ -1563,9 +1563,9 @@ layout_intro = html.Div([
 
             dbc.Row([
                     
-                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto,vc_h264/v1585814499/StandardSIRModel_hu5ztn.mp4', # 
+                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/c_scale,q_auto,w_800/v1585814499/StandardSIRModel_hu5ztn.mp4', # 
                     controls=True,
-                    style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
+                    style={'maxWidth':'100%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
                     
                     ],
                     justify='center'
@@ -1590,7 +1590,7 @@ layout_intro = html.Div([
                     
                     html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto/v1586536823/AllAboutR_173637_poxzmb.mp4',
                     controls=True,
-                    style={'maxWidth':'80%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
+                    style={'maxWidth':'100%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
                     
                     ],
                     justify='center'
