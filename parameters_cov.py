@@ -65,7 +65,7 @@ crit_recovery  =  death_rate*0.5
 number_compartments = 6
 
 fact_v = np.concatenate([[0.02,0.1],np.linspace(0.20,1,9)])
-max_months_controlling = 15
+max_months_controlling = 18
 
 ICU_growth = 1
 ICU_capacity = 8/100000

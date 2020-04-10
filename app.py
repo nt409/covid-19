@@ -1791,7 +1791,7 @@ Results_interpretation =  html.Div([
     
     dcc.Markdown('''
 
-    The results show a prediction for how coronavirus will affect the population given a choice of control measure. It is assumed that control measures are in place for a **maximum of 15 months**. Explore the effect of the different control measures and the amount of time for which they are implemented.
+    The results show a prediction for how coronavirus will affect the population given a choice of control measure. It is assumed that control measures are in place for a **maximum of 18 months**. Explore the effect of the different control measures and the amount of time for which they are implemented.
     
     The figures illustrate how a vaccine, coupled with an effective quarantine, can drastically decrease the death toll.
 
