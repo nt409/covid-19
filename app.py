@@ -90,6 +90,7 @@ def begin_date(date,country='uk'):
         dates = np.asarray(country_data['Currently Infected']['dates'])
         currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
         deaths_data        = np.asarray(country_data['Deaths']['data'])
+        # print(deaths_data)
         
 
         date_objects = []
@@ -104,16 +105,16 @@ def begin_date(date,country='uk'):
             print('Date error; ',e)
         
         if index>=10:
-            I0    = np.float(currently_inf_data[index])
-            I_ten = np.float(currently_inf_data[index-10])
-            D0    = np.float(deaths_data[index])
+            pass # all good
         else:
             index=10
-            I0    = np.float(currently_inf_data[index])
-            I_ten = np.float(currently_inf_data[index-10])
-            D0    = np.float(deaths_data[index])
             print("dates didn't go far enough back")      
+        
+        I0    = np.float(currently_inf_data[index])
+        I_ten = np.float(currently_inf_data[index-10])
+        D0    = np.float(deaths_data[index])
 
+        prev_deaths = deaths_data[:index]
         # of resolved cases, fatality rate is 0.9%
         p = 0.009
         R0 = D0*(1-p)/p
@@ -136,9 +137,9 @@ def begin_date(date,country='uk'):
         H0 = Hospitalised_all*(1-crit_proportion)
         C0 = Hospitalised_all*crit_proportion
         # print(I0, R0, H0, C0, D0)
-        return I0, R0, H0, C0, D0, worked
+        return I0, R0, H0, C0, D0, worked, prev_deaths
     else:
-        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False # if data collection fails, use UK on 8th April as default
+        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False, prev_deaths # if data collection fails, use UK on 8th April as default
 
 
 
@@ -164,9 +165,7 @@ app.config.suppress_callback_exceptions = True
 ########################################################################################################################
 # setup
 
-initial_lr = 8
-initial_hr = 5
-initial_month = 8
+# initial_month = 8
 
 df = copy.deepcopy(df2)
 df = df.loc[:,'Age':'Pop']
@@ -174,8 +173,6 @@ df2 = df.loc[:,['Pop','Hosp','Crit']].astype(str) + '%'
 df = pd.concat([df.loc[:,'Age'],df2],axis=1)
 df = df.rename(columns={"Hosp": "Hospitalised", "Crit": "Requiring Critical Care", "Pop": "Population"})
 
-init_lr = params.fact_v[initial_lr]
-init_hr = params.fact_v[initial_hr]
 
 
 def generate_table(dataframe, max_rows=10):
@@ -206,20 +203,26 @@ presets_dict_dropdown = {'N': 'Do Nothing',
                 'LC': 'Lockdown Cycles (switching lockdown on and off)',
                 'C': 'Custom'}
 
-preset_dict_high = {'Q': 2, 'MSD': 7, 'LC': 2, 'HL': 2,  'H': 2, 'N':10}
-preset_dict_low  = {'Q': 2, 'MSD': 7, 'LC': 2, 'HL': 7, 'H': 10, 'N':10}
+ld = 4
+sd = 8
+noth = 10
+
+preset_dict_high = {'Q': ld, 'MSD': sd, 'LC': ld, 'HL': ld,  'H': ld,  'N':noth}
+preset_dict_low  = {'Q': ld, 'MSD': sd, 'LC': ld, 'HL': sd, 'H': noth, 'N':noth}
 
 month_len = 365/12
 
+initial_hr = preset_dict_high['LC']
+initial_lr = preset_dict_low['LC']
 
 group_vec = ['BR','HR','LR']
 
 longname = {'S': 'Susceptible',
         'I': 'Infected',
-        'R': 'Recovered (cumulative)',
+        'R': 'Recovered (total)',
         'H': 'Hospitalised',
         'C': 'Critical',
-        'D': 'Deaths (cumulative)',
+        'D': 'Deaths (total)',
 }
 
 linestyle = {'BR': 'solid',
@@ -543,7 +546,7 @@ def human_format(num,dp=0):
 
 
 ########################################################################################################################
-def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None):
+def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None,previous_deaths=None):
 
     # population_plot = POPULATIONS[country]
     try:
@@ -822,9 +825,36 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
     pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
     vec2 = [i*(population_plot) for i in pop_log_vec]
 
+    if previous_deaths is not None:
+        x_deaths = [startdate - datetime.timedelta(days=len(previous_deaths) - i ) for i in range(len(previous_deaths))]
+        y_deaths = [100*float(i)/population_plot for i in previous_deaths]
+        # if len(y_deaths)>10:
+        #     y_deaths = y_deaths[-10:]
+        #     x_deaths = x_deaths[-10:]
+
+        # print(y_deaths,x_deaths)
+        lines_to_plot.append(
+        dict(
+        type='scatter',
+            x = x_deaths,
+            y = y_deaths,
+            mode='lines',
+            opacity=0.85,
+            legendgroup='deaths',
+            line=dict(
+            color= 'purple',
+            dash = 'dash'
+            ),
+            hovertemplate = '%{y:.2f}%, %{text}',
+            text = [human_format(i*population_plot/100,dp=1) for i in y_deaths],
+            name= 'Recorded deaths'))
+        x0 = x_deaths[0]
+    else:
+        x0 = xx[0]
 
 
 
+    
 
     layout = go.Layout(
                     annotations=annotz,
@@ -841,7 +871,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                    ),
                    hovermode='x',
                    xaxis= dict(
-                        range= [xx[0], xx[floor((2/3)*len(xx))]],
+                        range= [x0, xx[floor((2/3)*len(xx))]],
                         showline=False,
                         # ticktext = time_axis_text[1],
                         # tickvals = time_axis_vals[1],
@@ -854,7 +884,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                     updatemenus = [dict(
                                             buttons=list([
                                                 dict(
-                                                    args = ["xaxis", {'range': [xx[0], xx[floor((1/3)*len(xx))]],
+                                                    args = ["xaxis", {'range': [x0, xx[floor((1/3)*len(xx))]],
                                                     'showline':False,
                                                     'hoverformat':'%d %b',
                                                     'showspikes' : True,
@@ -865,7 +895,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args = ["xaxis", {'range': [xx[0], xx[floor((2/3)*len(xx))]],
+                                                    args = ["xaxis", {'range': [x0, xx[floor((2/3)*len(xx))]],
                                                     'showline':False,
                                                     'hoverformat':'%d %b',
                                                     'showspikes' : True,
@@ -876,7 +906,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args = ["xaxis", {'range': [xx[0], xx[-1]],
+                                                    args = ["xaxis", {'range': [x0, xx[-1]],
                                                     'showline':False,
                                                     'hoverformat':'%d %b',
                                                     'showspikes' : True,
@@ -1887,6 +1917,7 @@ layout_inter = html.Div([
                                     # store results
                                     dcc.Store(id='sol-calculated'),
                                     dcc.Store(id='sol-calculated-do-nothing'),
+                                    dcc.Store(id='prev-deaths'),
                                     dcc.Store(id='store-initial-conds'),
                                     dcc.Store(id='store-get-data-worked'),
 
@@ -2119,7 +2150,7 @@ layout_inter = html.Div([
                                                                                                                                                                             step=1,
                                                                                                                                                                             # pushable=0,
                                                                                                                                                                             marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
-                                                                                                                                                                            value=[0,initial_month],
+                                                                                                                                                                            value=[0,17],
                                                                                                                                                                 ),
                                                                                                                                                                 ],
                                                                                                                                                                 # style={'fontSize': '180%'},
@@ -2215,7 +2246,7 @@ layout_inter = html.Div([
                                                                                                                                                                         max   = 18,
                                                                                                                                                                         step  = 3,
                                                                                                                                                                         marks = {i: 'Never' if i==9 else 'Month {}'.format(i) if i==12 else str(i) for i in range(9,19,3)},
-                                                                                                                                                                        value = 9,
+                                                                                                                                                                        value = 12,
                                                                                                                                                             ),
                                                                                                                                                             ],
                                                                                                                                                             # style={'fontSize': '180%'},
@@ -2303,7 +2334,7 @@ layout_inter = html.Div([
                                                                                                                                                                 id = 'preset',
                                                                                                                                                                 options=[{'label': presets_dict_dropdown[key],
                                                                                                                                                                 'value': key} for key in presets_dict_dropdown],
-                                                                                                                                                                value= 'MSD',
+                                                                                                                                                                value= 'LC',
                                                                                                                                                                 clearable = False,
                                                                                                                                                             ),],
                                                                                                                                                             style={'cursor': 'pointer'}),
@@ -2590,7 +2621,7 @@ layout_inter = html.Div([
                                                                                                                     max = 8,
                                                                                                                     step = 1,
                                                                                                                     marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
-                                                                                                                    value=3,
+                                                                                                                    value=8,
                                                                                                                 ),
                                                                                                             
                                                                                                             dbc.Popover(
@@ -2630,7 +2661,7 @@ layout_inter = html.Div([
                                                                                                                     max = 8,
                                                                                                                     step = 1,
                                                                                                                     marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
-                                                                                                                    value=2,
+                                                                                                                    value=1,
                                                                                                                 ),
                                                                                                             
                                                                                                             dbc.Popover(
@@ -4048,7 +4079,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     triggered = dash.callback_context.triggered[0]['prop_id']
 
     if init_stored is None or triggered in ['model-country-choice.value','model-start-date.date']:
-        I0, R0, H0, C0, D0, worked = begin_date(date,country)
+        I0, R0, H0, C0, D0, worked, prev_deaths = begin_date(date,country)
         initial_conds = [I0, R0, H0, C0, D0]
         # print('calculating new')
         # print(initial_conds)
@@ -4117,7 +4148,8 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
 
 
 @app.callback(
-    Output('sol-calculated-do-nothing', 'data'),
+    [Output('sol-calculated-do-nothing', 'data'),
+    Output('prev-deaths', 'data')],
     [
     Input('ICU-slider', 'value'),
     Input('model-start-date', 'date'),
@@ -4130,13 +4162,13 @@ def find_sol_do_noth(ICU_grow,date,country_num):
     except:
         country = 'uk'
 
-    I0, R0, H0, C0, D0, worked = begin_date(date,country)
+    I0, R0, H0, C0, D0, worked, prev_deaths = begin_date(date,country)
 
     t_stop = 365*3
     
     sol_do_nothing = simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=t_stop,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow)
     
-    return sol_do_nothing
+    return sol_do_nothing, prev_deaths
 
 
 
@@ -4220,9 +4252,11 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 State('vaccine-slider', 'value'),
                 State('ICU-slider','value'),
                 State('model-start-date','date'),
+                State('prev-deaths','data'),
+
                 ])
 def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
-                                t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date):
+                                t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date,prev_deaths):
 
     # print('render',sols is None)
     if sols is None:
@@ -4523,7 +4557,7 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
                 else:
                     fig1 = dummy_figure
 
-                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate)
+                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate, previous_deaths=prev_deaths)
                 fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , country = country,preset=preset,startdate=startdate)
 
 
