@@ -543,7 +543,7 @@ def human_format(num,dp=0):
 
 
 ########################################################################################################################
-def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,time_axis_text=None, time_axis_vals = None,country = 'uk',month_cycle=None,preset=None):
+def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None):
 
     # population_plot = POPULATIONS[country]
     try:
@@ -608,13 +608,13 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                     name_string = ': Strategy ' + str(ii+1)
                                 line_style_use = linestyle_numst[ii]
                             
-                            xx = [i/month_len for i in sol['t']]
+                            # xx = [i/month_len for i in sol['t']]
+                            xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
+
                             yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
                             
                             line =  {'x': xx, 'y': yyy_p,
-                                    'hovertemplate': group_hover_string[group] +
-                                                    longname[name] + ': %{y:.2f}%, ' + '%{text} <br>' +
-                                                    'Time: %{x:.1f} Months<extra></extra>',
+                                    'hovertemplate': '%{y:.2f}%, %{text}',
                                     'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
                                     'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name,
                                     'name': longname[name] + name_string}
@@ -651,9 +651,9 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
         shapez.append(dict(
                 # filled Blue Control Rectangle
                 type="rect",
-                x0= month[0], #month_len*
+                x0= startdate+datetime.timedelta(days=month_len*month[0]), #month_len*
                 y0=0,
-                x1= month[1], #month_len*
+                x1= startdate+datetime.timedelta(days=month_len*month[1]), #month_len*
                 y1=yax['range'][1],
                 line=dict(
                     color="LightSkyBlue",
@@ -677,9 +677,9 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                 shapez.append(dict(
                         # filled Pink ICU Rectangle
                         type="rect",
-                        x0=c_min/month_len,
+                        x0= startdate+datetime.timedelta(days=c_min), #month_len*  ##c_min/month_len,
                         y0=0,
-                        x1=c_max/month_len,
+                        x1= startdate+datetime.timedelta(days=c_max), #c_max/month_len,
                         y1=yax['range'][1],
                         line=dict(
                             color="pink",
@@ -691,7 +691,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                         yref = 'y'
                     ))
                 annotz.append(dict(
-                        x  = 0.5*(c_min+c_max)/month_len,
+                        x  = startdate+datetime.timedelta(days=0.5*(c_min+c_max)), # /month_len
                         y  = yval_pink,
                         text="<b>ICU<br>" + "<b> Capacity<br>" + "<b> Exceeded",
                         # hoverinfo='ICU Capacity Exceeded',
@@ -715,7 +715,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
 
     if month[0]!=month[1] and preset!='N':
         annotz.append(dict(
-                x  = max(0.5*(month[0]+month[1]), 0.5),
+                x  = startdate+datetime.timedelta(days=month_len*max(0.5*(month[0]+month[1]), 0.5)),
                 y  = yval_blue,
                 text="<b>Control<br>" + "<b> In <br>" + "<b> Place",
                 # hoverinfo='Control In Place',
@@ -736,9 +736,9 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
             shapez.append(dict(
                     # filled Blue Control Rectangle
                     type="rect",
-                    x0= month_cycle[i],
+                    x0= startdate+datetime.timedelta(days=month_len*month_cycle[i]),
                     y0=0,
-                    x1= month_cycle[i+1],
+                    x1= startdate+datetime.timedelta(days=month_len*month_cycle[i+1]),
                     y1=yax['range'][1],
                     line=dict(
                         color="LightSkyBlue",
@@ -770,7 +770,9 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
         lines_to_plot.append(
         dict(
         type='scatter',
-            x=[vaccine_time,vaccine_time], y=[yax['range'][0],yax['range'][1]],
+            x=[startdate+datetime.timedelta(days=month_len*vaccine_time),
+            startdate+datetime.timedelta(days=month_len*vaccine_time)],
+            y=[yax['range'][0],yax['range'][1]],
             mode='lines',
             opacity=0.9,
             legendgroup='thresholds',
@@ -786,7 +788,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
     lines_to_plot.append(
     dict(
         type='scatter',
-        x = [0,sol['t'][-1]],
+        x = [xx[0],xx[-1]],
         y = [ 0, population_plot],
         yaxis="y2",
         opacity=0,
@@ -837,26 +839,50 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                         automargin=True,
                         type = 'linear'
                    ),
+                   hovermode='x',
                    xaxis= dict(
-                        range= [0, (2/3)*max(sol['t'])/month_len],
+                        range= [xx[0], xx[floor((2/3)*len(xx))]],
                         showline=False,
-                        ticktext = time_axis_text[1],
-                        tickvals = time_axis_vals[1],
+                        # ticktext = time_axis_text[1],
+                        # tickvals = time_axis_vals[1],
+                        hoverformat='%d %b',
+                        showspikes = True,
+                        spikecolor = "black", 
+                        spikesnap  = "data", 
+                        spikemode  = "across"
                        ),
                     updatemenus = [dict(
                                             buttons=list([
                                                 dict(
-                                                    args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[0], 'tickvals': time_axis_vals[0], 'showline':False}], # 'title': 'Time (Months)', 
+                                                    args = ["xaxis", {'range': [xx[0], xx[floor((1/3)*len(xx))]],
+                                                    'showline':False,
+                                                    'hoverformat':'%d %b',
+                                                    'showspikes' : True,
+                                                    'spikecolor' : "black", 
+                                                    'spikesnap'  : "data", 
+                                                    'spikemode'  : "across"}], # 'title': 'Time (Months)', 
                                                     label="Years: 1",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args = ["xaxis", {'range': [0, (2/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[1], 'tickvals': time_axis_vals[1], 'showline':False}], #   'title': 'Time (Months)', 
+                                                    args = ["xaxis", {'range': [xx[0], xx[floor((2/3)*len(xx))]],
+                                                    'showline':False,
+                                                    'hoverformat':'%d %b',
+                                                    'showspikes' : True,
+                                                    'spikecolor' : "black", 
+                                                    'spikesnap'  : "data", 
+                                                    'spikemode'  : "across"}], # 'title': 'Time (Months)', 
                                                     label="Years: 2",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args = ["xaxis", {'range': [0, (3/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[2], 'tickvals': time_axis_vals[2], 'showline':False}], # 'title': 'Time (Months)', 
+                                                    args = ["xaxis", {'range': [xx[0], xx[-1]],
+                                                    'showline':False,
+                                                    'hoverformat':'%d %b',
+                                                    'showspikes' : True,
+                                                    'spikecolor' : "black", 
+                                                    'spikesnap'  : "data", 
+                                                    'spikemode'  : "across"}], # 'title': 'Time (Months)', 
                                                     label="Years: 3",
                                                     method="relayout"
                                                 )
@@ -923,7 +949,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
     return {'data': lines_to_plot, 'layout': layout}
 
 
-def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,time_axis_text=None, time_axis_vals = None,country = 'uk',preset=None):
+def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,country = 'uk',preset=None,startdate=None):
 
     # population_plot = POPULATIONS[country]
     try:
@@ -941,7 +967,6 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
     lines_to_plot = []
     # names = ['S','I','R','H','C','D']
     group_use = ['HR','LR']
-
     
     if sols is not None:
         sol = sols[0]
@@ -952,7 +977,10 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                         sol['y'] = np.asarray(sol['y'])
                         name_string = ':' + group_strings[group]
                         
-                        xx = [i/month_len for i in sol['t']]
+                        # xx = [i/month_len for i in sol['t']]
+
+                        xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
+
                         yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
                         ymax  = max(100*sol['y'][index[name],:] + 100*sol['y'][index[name] + params.number_compartments,:])
                         
@@ -960,9 +988,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                         yyy_p = [yyy_p[i] for i in range(1,len(yyy_p),2)]
 
                         line =  {'x': xx, 'y': yyy_p,
-                                'hovertemplate': group_hover_string[group] +
-                                                 longname[name] + ': %{y:.2f}%, ' + '%{text} <br>' +
-                                                 'Time: %{x:.1f} Months<extra></extra>',
+                                'hovertemplate': '%{y:.2f}%, %{text}',
                                 'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
                                 'type': 'bar',
                                 'legendgroup': name ,
@@ -996,7 +1022,9 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
         lines_to_plot.append(
         dict(
         type='scatter',
-            x=[month[0],month[0]], y=[0,ymax],
+            x=[startdate+datetime.timedelta(days=month_len*month[0]),
+            startdate+datetime.timedelta(days=month_len*month[0])],
+             y=[0,ymax],
             mode='lines',
             opacity=0.9,
             legendgroup='control',
@@ -1009,7 +1037,9 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
         lines_to_plot.append(
         dict(
         type='scatter',
-            x=[month[1],month[1]], y=[0,ymax],
+            x=[startdate+datetime.timedelta(days=month_len*month[1]),
+            startdate+datetime.timedelta(days=month_len*month[1])],
+            y=[0,ymax],
             mode='lines',
             opacity=0.9,
             legendgroup='control',
@@ -1025,7 +1055,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
 
     if month[0]!=month[1] and preset != 'N':
         annotz.append(dict(
-                x  = max(0.5*(month[0]+month[1]), 0.5),
+                x  = startdate+datetime.timedelta(days=month_len*max(0.5*(month[0]+month[1]), 0.5)),
                 y  = 0.5,
                 text="<b>Control<br>" + "<b> In <br>" + "<b> Place",
                 # hoverinfo='Control In Place',
@@ -1066,7 +1096,9 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
         lines_to_plot.append(
         dict(
         type='scatter',
-            x=[vaccine_time,vaccine_time], y=[0,ymax],
+            x=[startdate+datetime.timedelta(days=month_len*vaccine_time),
+            startdate+datetime.timedelta(days=month_len*vaccine_time)],
+            y=[0,ymax],
             mode='lines',
             opacity=0.9,
             legendgroup='thresholds',
@@ -1080,7 +1112,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
     lines_to_plot.append(
     dict(
         type='scatter',
-        x = [0,sol['t'][-1]],
+        x = [xx[0],xx[-1]],
         y = [ 0, ymax*population_plot],
         yaxis="y2",
         opacity=0,
@@ -1120,6 +1152,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                         automargin=True,
                         type = 'linear'
                    ),
+                   hovermode='x',
                     yaxis2 = dict(
                             title = 'Population (' + country_name + ')',
                             overlaying='y1',
@@ -1131,10 +1164,17 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                             automargin=True
                         ),
                    xaxis= dict(
-                        range= [0, (2/3)*max(sol['t'])/month_len],
+                        range= [xx[0]-datetime.timedelta(days=10), xx[floor((2/3)*len(xx))]], # so that first blue line shows
                         showline=False,
-                        ticktext = time_axis_text[1],
-                        tickvals = time_axis_vals[1],
+                        # ticktext = time_axis_text[1],
+                        # tickvals = time_axis_vals[1],
+                        # hoverinfo = None,
+                        hoverformat='%d %b',
+                        showspikes = True,
+                        spikecolor = "black", 
+                        spikesnap  = "data", 
+                        spikemode  = "across"
+
                        ),
                     barmode = 'stack',
                     legend = dict(
@@ -1149,17 +1189,35 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                     updatemenus = [dict(
                         buttons=list([
                             dict(
-                                args = ["xaxis", {'range': [0, (1/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[0], 'tickvals': time_axis_vals[0], 'showline':False}], # 'title': 'Time (Months)', 
+                                args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[floor((1/3)*len(xx))]],
+                                    'hoverformat':'%d %b',
+                                    'showline':False,
+                                    'showspikes': True,
+                                    'spikecolor': "black", 
+                                    'spikesnap' : "data", 
+                                    'spikemode' : "across"}], # 'title': 'Time (Months)', 
                                 label="Years: 1",
                                 method="relayout"
                             ),
                             dict(
-                                args = ["xaxis", {'range': [0, (2/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[1], 'tickvals': time_axis_vals[1], 'showline':False}], #   'title': 'Time (Months)', 
+                                args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[floor((2/3)*len(xx))]],
+                                'hoverformat':'%d %b',
+                                'showline':False,
+                                'showspikes': True,
+                                'spikecolor': "black", 
+                                'spikesnap' : "data", 
+                                'spikemode' : "across"}], #   'title': 'Time (Months)', 
                                 label="Years: 2",
                                 method="relayout"
                             ),
                             dict(
-                                args = ["xaxis", {'range': [0, (3/3)*max(sol['t'])/month_len] , 'ticktext': time_axis_text[2], 'tickvals': time_axis_vals[2], 'showline':False}], # 'title': 'Time (Months)', 
+                                args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[-1]],
+                                'hoverformat':'%d %b',
+                                'showline':False,
+                                'showspikes': True,
+                                'spikecolor': "black", 
+                                'spikesnap' : "data", 
+                                'spikemode' : "across"}], # 'title': 'Time (Months)', 
                                 label="Years: 3",
                                 method="relayout"
                             )
@@ -3163,7 +3221,7 @@ layout_inter = html.Div([
                                                                                                                                                                     options=[
                                                                                                                                                                         {'label': longname[key], 'value': key} for key in longname
                                                                                                                                                                     ],
-                                                                                                                                                                    value= ['S','I','R','H','C','D'],
+                                                                                                                                                                    value= ['I','R'],
                                                                                                                                                                     labelStyle = {'display': 'inline-block','fontSize': '80%'},
                                                                                                                                                                 ),
                                                                                                                                                     
@@ -3821,7 +3879,7 @@ for p in ["custom"]: # , "hospital"]:
 # popovers
 
 
-for p in [ "rt-data" ,"pick-strat","control", "months-control", "vaccination", "res-type" , "cc-care" ,"custom-options", "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd", 'cycles-off', 'cycles-on', 'groups-allowed']:
+for p in [ "pick-strat","control", "months-control", "vaccination", "res-type" , "cc-care" ,"custom-options", "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd", 'cycles-off', 'cycles-on', 'groups-allowed']:
     app.callback(
         Output(f"popover-{p}", "is_open"),
         [Input(f"popover-{p}-target", "n_clicks")
@@ -4373,9 +4431,15 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
             # DPC results
 
             if results_type=='DPC_dd':
-                
+                # print(datetime.datetime.today())
+                # print(date)
                 date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
-                date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
+                # print(date)
+                startdate = copy.deepcopy(date)
+
+                # date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
+                # print(date)
+
 
 
                 if vaccine_time==9:
@@ -4393,51 +4457,51 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
                 else:
                     ICU_plot = False
 
-                split = date.split('-')
+                # split = date.split('-')
 
-                day_start   = int(split[2])
-                month_start = int(split[1])
-                year_start  = int(split[0])
-                month_labelz = [[],[],[]]
+                # day_start   = int(split[2])
+                # month_start = int(split[1])
+                # year_start  = int(split[0])
+                # month_labelz = [[],[],[]]
 
-                for j in range(4):
-                    for i in range(1,13):
-                        if i == month_start and j==0:
-                            month_labelz[0].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
-                            month_labelz[1].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
-                            month_labelz[2].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
-                        elif i==1:
-                            month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                            month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                            month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                        elif i==2:
-                            month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                            month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                            month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                # for j in range(4):
+                #     for i in range(1,13):
+                #         if i == month_start and j==0:
+                #             month_labelz[0].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
+                #             month_labelz[1].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
+                #             month_labelz[2].append(datetime.date(year_start+j, i, day_start).strftime('%d %b-%y'))
+                #         elif i==1:
+                #             month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                #             month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                #             month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                #         elif i==2:
+                #             month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                #             month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                #             month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
                             
-                        elif i==3: # March
-                            month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
-                            month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-                            month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-                        else:
-                            month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-                            month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
-                            month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                #         elif i==3: # March
+                #             month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b %Y'))
+                #             month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                #             month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                #         else:
+                #             month_labelz[0].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                #             month_labelz[1].append(datetime.date(year_start+j, i, 1).strftime('%b'))
+                #             month_labelz[2].append(datetime.date(year_start+j, i, 1).strftime('%b'))
                 
-                month_labels = []
-                for list_m in month_labelz:
-                    month_labels.append(list_m[(month_start-1):(month_start-1+38)])
+                # month_labels = []
+                # for list_m in month_labelz:
+                #     month_labels.append(list_m[(month_start-1):(month_start-1+38)])
 
-                days_till_end_of_month = max(month_len-day_start,1)
-                time_vec = [0]
-                for i in range(36):
-                    time_vec.append(days_till_end_of_month/month_len+i)
+                # days_till_end_of_month = max(month_len-day_start,1)
+                # time_vec = [0]
+                # for i in range(36):
+                #     time_vec.append(days_till_end_of_month/month_len+i)
 
-                time_axis_text = []
-                time_axis_vals = []
-                for N in range(1,4,1):
-                    time_axis_text.append([str(month_labels[N-1][N*i]) for i in range(ceil(len(time_vec)/N))])
-                    time_axis_vals.append([time_vec[N*i] for i in range(ceil(len(time_vec)/N))])
+                # time_axis_text = []
+                # time_axis_vals = []
+                # for N in range(1,4,1):
+                #     time_axis_text.append([str(month_labels[N-1][N*i]) for i in range(ceil(len(time_vec)/N))])
+                #     time_axis_vals.append([time_vec[N*i] for i in range(ceil(len(time_vec)/N))])
 
                 
                 month_cycle = None
@@ -4455,12 +4519,12 @@ def render_interactive_content(tab,tab2,sols,groups,groups2,cats_to_plot_line,ca
                         mm = mm + time_off + time_on
 
                 if len(cats_to_plot_line)>0:
-                    fig1 = figure_generator(sols_to_plot,month,cats_to_plot_line,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country,month_cycle=month_cycle,preset=preset)
+                    fig1 = figure_generator(sols_to_plot,month,cats_to_plot_line,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate)
                 else:
                     fig1 = dummy_figure
 
-                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn,time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country,month_cycle=month_cycle,preset=preset)
-                fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , time_axis_text=time_axis_text, time_axis_vals = time_axis_vals, country = country,preset=preset)
+                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate)
+                fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , country = country,preset=preset,startdate=startdate)
 
 
             
