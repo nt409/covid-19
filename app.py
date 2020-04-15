@@ -2283,9 +2283,9 @@ layout_inter = html.Div([
 
                                                                                                                                                                 Use this to adjust the **healthcare provisions**, adjust **lockdown cycles options**, or choose a **custom strategy**.
 
-                                                                                                                                                                To adjust the **Lockdown Cycles Options**, you must first select '*Lockdown Cycles*' in the '**1b. Control Type**' selector above).
+                                                                                                                                                                To adjust the **Lockdown Cycles Options**, you must first select '*Lockdown Cycles*' in the '**2. Control Type**' selector above).
 
-                                                                                                                                                                To adjust the **Custom Options**, you must first select '*Custom*' in the '**1b. Control Type**' selector above). You can compare two strategies directly or consider one only.
+                                                                                                                                                                To adjust the **Custom Options**, you must first select '*Custom*' in the '**2. Control Type**' selector above). You can compare two strategies directly or consider one only.
                                                                                                                                                                 
                                                                                                                                                                 The custom choice consists of selecting by how much to decelerate spread of COVID-19 (using the 'infection rate' sliders). You can also choose different infection rates for the different risk groups.
                                                                                                                                                                 '''
@@ -2427,7 +2427,7 @@ layout_inter = html.Div([
                                                                                                     dbc.Col([
                                                                                                         html.H4("Lockdown Cycle Options ",style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
 
-                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**1b. Control Type**' is set to 'Lockdown Cycles'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
+                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**2. Control Type**' is set to 'Lockdown Cycles'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
 
                                                                                                     ],width=6),
 
@@ -2437,7 +2437,7 @@ layout_inter = html.Div([
                                                                                                         html.H4("Custom Options ",
                                                                                                         style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
 
-                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**1b. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
+                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**2. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
 
                                                                                                     ],width=6),
 
@@ -2618,7 +2618,7 @@ layout_inter = html.Div([
 
                                                                                                 html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
 
-                                                                                                # dcc.Markdown('''*Set '**1b. Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
+                                                                                                # dcc.Markdown('''*Set '**2. Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
                                                                                                 dbc.Row([
                                                                                                 dbc.RadioItems(
                                                                                                 id = 'number-strats-radio',
@@ -2668,7 +2668,7 @@ layout_inter = html.Div([
 
                                                                                                     The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
                                                                                                 
-                                                                                                    Adjust by choosing a preset strategy  or making your own custom choice ('**1b. Control Type**').
+                                                                                                    Adjust by choosing a preset strategy  or making your own custom choice ('**2. Control Type**').
 
 
                                                                                                     '''
