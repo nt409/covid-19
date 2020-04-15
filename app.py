@@ -2858,7 +2858,7 @@ layout_inter = html.Div([
 
                                                                 html.H3('Results',
                                                                 className='display-4',
-                                                                id='results_title',
+                                                                id='results-title',
                                                                 style={'fontSize': '250%', 'textAlign': 'center' ,'marginTop': "1vh",'marginBottom': "1vh"}),
 
                                                                 dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
@@ -3920,7 +3920,7 @@ app.index_string = """<!DOCTYPE html>
             )
 def change_pathname(pathname,saved_pathname):
 
-    print('change pathname')
+    # print('change pathname')
 
     if pathname==saved_pathname:
         raise PreventUpdate
@@ -3953,7 +3953,7 @@ def change_pathname(pathname,saved_pathname):
             Output('loading-page','children')],
             [Input('saved-url', 'data')])
 def display_page(pathname):
-    print('display page')
+    # print('display page')
     if pathname == '/inter':
         return layout_inter, None
     elif pathname == '/data':
@@ -4141,7 +4141,7 @@ def preset_sliders(preset,number_strs):
     State('store-get-data-worked','data'),
     ])
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
-    print('find sol')
+    # print('find sol')
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -4264,7 +4264,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 Output('strategy-outcome-content', 'style'),
                 
 
-                Output('results_title', 'children'),
+                Output('results-title', 'children'),
                 
 
                 Output('strategy-outcome-content', 'children'),
@@ -4333,9 +4333,9 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
                                 t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date,prev_deaths):
 
-    print('render ',pathname)
+    # print('render ',pathname)
     if sols is None or pathname!='/inter':
-        print('prevent')
+        # print('prevent')
         raise PreventUpdate
         # return [
         # {'display': 'block'},
@@ -4389,7 +4389,7 @@ def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,ca
 ########################################################################################################################
 
 
-    results_title = presets_dict[preset] + ' Results'
+    results_title = presets_dict[preset] + ' Result'
     strategy_outcome_text = ['']
 
 
@@ -4651,7 +4651,7 @@ def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,ca
                Output('display_percentage_text_daily_deaths', 'style')],
               [ Input('normalise-check', 'value')])
 def update_align_options(normalise_by_pop):
-    print('dan 1')
+    # print('dan 1')
 
     if normalise_by_pop:
         options_cases = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
@@ -4711,7 +4711,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                  align_active_cases_input, align_daily_cases_check, align_daily_cases_input,
                  align_daily_deaths_check, align_daily_deaths_input, saved_json_data, *args):
 
-    print('dan 2',dash.callback_context.triggered)
+    # print('dan 2',dash.callback_context.triggered)
 
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
