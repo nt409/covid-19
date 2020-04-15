@@ -3,6 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+from dash.exceptions import PreventUpdate
 from flask import Flask
 from gevent.pywsgi import WSGIServer
 import pandas as pd
@@ -162,6 +163,8 @@ app = dash.Dash(__name__, external_stylesheets=[external_stylesheets])
 server = app.server
 
 app.config.suppress_callback_exceptions = True
+# app.config['suppress_callback_exceptions'] = True
+
 ########################################################################################################################
 # setup
 
@@ -2858,8 +2861,8 @@ layout_inter = html.Div([
                                                                 id='results_title',
                                                                 style={'fontSize': '250%', 'textAlign': 'center' ,'marginTop': "1vh",'marginBottom': "1vh"}),
 
-                                                                dbc.Spinner(html.Div(id="loading-sol-1"),color='primary',type='grow'),
-                                                                dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary',type='grow'),
+                                                                dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
+                                                                dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary'),
                                                                 ],
                                                                 justify='center',
                                                                 style = {'marginTop': '3vh', 'marginBottom': '3vh'}
@@ -3719,35 +3722,49 @@ layout_model = html.Div([
 
 
 
-navbar = html.Nav([
-        html.Div([
-            dcc.Tabs([
-                dcc.Tab(children=
-                        layout_intro,
-                        label='Background',value='intro',
-                        style={'fontSize':'1.9vh'}
-                        ), #
-                dcc.Tab(children=
-                        layout_inter,
-                        label='Interactive Model',value='interactive',
-                        style={'fontSize':'1.9vh'}
-                        ),
-                dcc.Tab(children=
-                        layout_model,
-                        label='Model Explanation',value='model',
-                        style={'fontSize':'1.9vh'}
-                        ),
-                dcc.Tab(children=
-                        layout_dan,
-                        label='Real-Time Global Data Feed',
-                        style={'fontSize':'1.9vh'},
-                        value='data',
-                        ), #disabled=True),
-            ], id='main-tabs', value='intro'),
-        ], style={'width': '100vw'}, # , 'display': 'flex', 'justifyContent': 'center'},
-        ),
-    ],)
+# navbar = html.Nav([
+#         html.Div([
+#             dcc.Tabs([
+#                 dcc.Tab(children=
+#                         layout_intro,
+#                         label='Background',value='intro',
+#                         style={'fontSize':'1.9vh'}
+#                         ), #
+#                 dcc.Tab(children=
+#                         layout_inter,
+#                         label='Interactive Model',value='interactive',
+#                         style={'fontSize':'1.9vh'}
+#                         ),
+#                 dcc.Tab(children=
+#                         layout_model,
+#                         label='Model Explanation',value='model',
+#                         style={'fontSize':'1.9vh'}
+#                         ),
+#                 dcc.Tab(children=
+#                         layout_dan,
+#                         label='Real-Time Global Data Feed',
+#                         style={'fontSize':'1.9vh'},
+#                         value='data',
+#                         ),
+#             ], id='main-tabs', value='intro'),
+#         ], style={'width': '100vw'},
+#         ),
+#     ],)
 
+navbar2 = dbc.NavbarSimple(
+    children=[
+        dbc.NavItem(dbc.NavLink("Background", href="/intro")),
+        dbc.NavItem(dbc.NavLink("Interactive Model", href="/inter")),
+        dbc.NavItem(dbc.NavLink("Model Explanation", href="/model")),
+        dbc.NavItem(dbc.NavLink("Real-Time Global Data Feed", href="/data")),
+    ],
+    brand="Modelling control of COVID-19",
+    brand_href="/intro",
+    brand_style = {'fontSize': '3vh'},
+    color="primary",
+    sticky = 'top',
+    dark=True,
+)
 
 
 
@@ -3761,20 +3778,16 @@ navbar = html.Nav([
         
 page_layout = html.Div([
     
+        navbar2,
             
-            dbc.Row([
-                dbc.Col([
-                    html.H3(children='Modelling control of COVID-19',
-                    className="display-4",
-                    style={'marginTop': '1vh', 'textAlign': 'center','fontSize': '360%'}
-                    ),
-
-
-
-                    # html.P(
-                    # 'Disclaimer:',
-                    # style = {'marginTop': '0.5vh', 'fontSize': '100%','marginBottom': '0vh', 'color': '#446E9B', 'fontWeight': 'bold'}
+        dbc.Row([
+            dbc.Col([
+                    # html.H3(children='Modelling control of COVID-19',
+                    # className="display-4",
+                    # style={'marginTop': '1vh', 'textAlign': 'center','fontSize': '360%'}
                     # ),
+                    html.Div(style={'height': '2vh'}),
+
                     html.P([
                     html.Span('Disclaimer: ',style={'color': '#C37C10'}), # orange
                     'This work is for educational purposes only and not for accurate prediction of the pandemic.'],
@@ -3794,11 +3807,21 @@ page_layout = html.Div([
             ),
 
         # navbar
-        html.Div([navbar]),
+        # html.Div([navbar]),
         ##
 
         # # page content
-        dcc.Location(id='url', refresh=False),
+        dcc.Store(id='saved-url',data='/intro'),
+        dcc.Location(id='page-url', refresh=False),
+
+        dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg'),
+        html.Div(id='page-content',children=layout_intro),
+        # html.Div(layout_intro,id='layout-intro-div' ,style={'display': 'block'}),
+        # html.Div(layout_inter,id='layout-inter-div' ,style={'display': 'none'}),
+        # html.Div(layout_model,id='layout-model-div' ,style={'display': 'none'}),
+        # html.Div(layout_dan,  id='layout-dan-div' ,style={'display': 'none'}),
+
+
 
         html.Footer('This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.',
                     style={'textAlign': 'center', 'fontSize': '100%', 'marginBottom': '1.5vh' , 'color': '#446E9B', 'fontWeight': 'bold'}),
@@ -3872,22 +3895,73 @@ app.index_string = """<!DOCTYPE html>
 
 
 
-@app.callback(Output('main-tabs', 'value'),
-            [Input('url', 'pathname')])
-def display_page(pathname):
-    # print('disp page')
-    if pathname == '/inter':
-        return 'interactive'
-    elif pathname == '/data':
-        return 'data'
-    elif pathname == '/intro':
-        return 'intro'
+# @app.callback(Output('main-tabs', 'value'),
+#             [Input('url', 'pathname')])
+# def display_page(pathname):
+#     if pathname == '/inter':
+#         return 'interactive'
+#     elif pathname == '/data':
+#         return 'data'
+#     elif pathname == '/model':
+#         return 'model'
+#     elif pathname == '/intro':
+#         return 'intro'
+#     else:
+#         return 'intro'
+
+
+
+
+
+@app.callback(Output('saved-url', 'data'),
+            
+            [Input('page-url', 'pathname')],
+            [State('saved-url', 'data')],
+            )
+def change_pathname(pathname,saved_pathname):
+
+    print('change pathname')
+
+    if pathname==saved_pathname:
+        raise PreventUpdate
     else:
-        return 'intro'
+        return pathname
 
 
 
+# @app.callback(#Output('page-content', 'style'),
+#     [Output('layout-intro-div','style'),
+#     Output('layout-inter-div','style'),
+#     Output('layout-model-div','style'),
+#     Output('layout-dan-div','style')],
+#             [Input('saved-url', 'data')])
+# def display_page(pathname):
+#     print('display page')
+#     style_on = {'display': 'block'}
+#     style_off = {'display': 'none'}
+#     if pathname == '/inter':
+#         return style_off,style_on,style_off,style_off
+#     elif pathname == '/data':
+#         return style_off,style_off,style_off,style_on
+#     elif pathname == '/model':
+#         return style_off,style_off,style_on,style_off
+#     else:
+#         return style_on,style_off,style_off,style_off
 
+
+@app.callback([Output('page-content', 'children'),
+            Output('loading-page','children')],
+            [Input('saved-url', 'data')])
+def display_page(pathname):
+    print('display page')
+    if pathname == '/inter':
+        return layout_inter, None
+    elif pathname == '/data':
+        return layout_dan, None
+    elif pathname == '/model':
+        return layout_model, None
+    else:
+        return layout_intro, None
 
 ########################################################################################################################
 # collapse
@@ -4067,7 +4141,7 @@ def preset_sliders(preset,number_strs):
     State('store-get-data-worked','data'),
     ])
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
-    # print('find sol')
+    print('find sol')
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -4157,7 +4231,6 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     Input('model-country-choice', 'value'),
     ])
 def find_sol_do_noth(ICU_grow,date,country_num):
-
     try:
         country = COUNTRY_LIST_NICK[country_num]
     except:
@@ -4219,10 +4292,11 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 ],
                 [
                 # Input('interactive-tabs', 'active_tab'),
+                Input('saved-url', 'data'),
 
 
 
-                Input('main-tabs', 'value'),
+                # Input('main-tabs', 'value'),
 
                 
                 Input('sol-calculated', 'data'),
@@ -4256,32 +4330,34 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 State('prev-deaths','data'),
 
                 ])
-def render_interactive_content(tab2,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
+def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
                                 t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date,prev_deaths):
 
-    # print('render',sols is None)
-    if sols is None:
-        return [
-        {'display': 'block'},
-        {'display' : 'none'},
-        {'display' : 'none'},
+    print('render ',pathname)
+    if sols is None or pathname!='/inter':
+        print('prevent')
+        raise PreventUpdate
+        # return [
+        # {'display': 'block'},
+        # {'display' : 'none'},
+        # {'display' : 'none'},
 
-        'Strategy Outcome',
+        # 'Strategy Outcome',
 
-        [''],
+        # [''],
 
-        dummy_figure,
-        dummy_figure,
-        dummy_figure,
-        dummy_figure,
-        dummy_figure,
+        # dummy_figure,
+        # dummy_figure,
+        # dummy_figure,
+        # dummy_figure,
+        # dummy_figure,
 
-        dummy_figure,
-        dummy_figure,
-        dummy_figure,
+        # dummy_figure,
+        # dummy_figure,
+        # dummy_figure,
 
-        None
-        ]
+        # None
+        # ]
 
 
 
@@ -4317,14 +4393,14 @@ def render_interactive_content(tab2,sols,groups,groups2,cats_to_plot_line,cats_p
     strategy_outcome_text = ['']
 
 
-    if tab2!='interactive' or results_type!='BC_dd': # sols is None or 
+    if results_type!='BC_dd': # tab2!='interactive' # pathname!='inter' or 
         bar1 = dummy_figure
         bar2 = dummy_figure
         bar3 = dummy_figure
         bar4 = dummy_figure
         bar5 = dummy_figure
 
-    if tab2!='interactive' or results_type!='DPC_dd': # sols is None or 
+    if results_type!='DPC_dd': # tab2 'interactive' # pathname!='inter' or 
         fig1 = dummy_figure
         fig2 = dummy_figure
         fig3 = dummy_figure
@@ -4333,7 +4409,7 @@ def render_interactive_content(tab2,sols,groups,groups2,cats_to_plot_line,cats_p
 
 
 
-    if tab2=='interactive':
+    if pathname=='/inter': # tab2
    
    
         if preset!='C':
@@ -4573,9 +4649,10 @@ def render_interactive_content(tab2,sols,groups,groups2,cats_to_plot_line,cats_p
                Output('align-daily-deaths-check', 'options'),
                Output('align-daily-deaths-input', 'value'),
                Output('display_percentage_text_daily_deaths', 'style')],
-              [Input('normalise-check', 'value')])
+              [ Input('normalise-check', 'value')])
 def update_align_options(normalise_by_pop):
-    # print('dan 1')
+    print('dan 1')
+
     if normalise_by_pop:
         options_cases = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
                     'value': 'align'}]
@@ -4611,6 +4688,7 @@ def update_align_options(normalise_by_pop):
                Output("loading-icon", "children")],
               [
             #    Input('main-tabs', 'value'),
+
                Input('button-plot', 'n_clicks'),
                Input('start-date', 'date'),
                Input('end-date', 'date'),
@@ -4633,7 +4711,8 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                  align_active_cases_input, align_daily_cases_check, align_daily_cases_input,
                  align_daily_deaths_check, align_daily_deaths_input, saved_json_data, *args):
 
-    # print('dan 2',dash.callback_context.triggered)
+    print('dan 2',dash.callback_context.triggered)
+
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
