@@ -4334,31 +4334,33 @@ def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,ca
                                 t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date,prev_deaths):
 
     # print('render ',pathname)
-    if sols is None or pathname!='/inter':
+    if sols is None:
         # print('prevent')
+        # raise PreventUpdate
+        return [
+        {'display': 'block'},
+        {'display' : 'none'},
+        {'display' : 'none'},
+
+        'Strategy Outcome',
+
+        [''],
+
+        dummy_figure,
+        dummy_figure,
+        dummy_figure,
+        dummy_figure,
+        dummy_figure,
+
+        dummy_figure,
+        dummy_figure,
+        dummy_figure,
+
+        None
+        ]
+
+    if pathname!='/inter':
         raise PreventUpdate
-        # return [
-        # {'display': 'block'},
-        # {'display' : 'none'},
-        # {'display' : 'none'},
-
-        # 'Strategy Outcome',
-
-        # [''],
-
-        # dummy_figure,
-        # dummy_figure,
-        # dummy_figure,
-        # dummy_figure,
-        # dummy_figure,
-
-        # dummy_figure,
-        # dummy_figure,
-        # dummy_figure,
-
-        # None
-        # ]
-
 
 
 
