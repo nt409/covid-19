@@ -62,6 +62,9 @@ COUNTRY_LIST_NICK.remove('world')
 
 initial_country = COUNTRY_LIST_NICK.index('uk')
 
+backgroundColor = 'white' # '#f4f6f7'
+disclaimerColor = '#e9ecef'
+
 def begin_date(date,country='uk'):
 
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
@@ -1868,7 +1871,7 @@ xl=10
 
 ],
 justify = 'center',
-style= {'width': '90%','backgroundColor': '#f4f6f7'}
+style= {'width': '90%','backgroundColor': backgroundColor}
 ),
     
 ],
@@ -3358,7 +3361,7 @@ layout_inter = html.Div([
 
 
                                             html.H6([
-                                                'Change Results Type',
+                                                'Change Results Type ',
                                                 dbc.Button('🛈',
                                                     color='primary',
                                                     # className='mb-3',
@@ -3497,7 +3500,7 @@ layout_inter = html.Div([
 
 
                         ],
-                        style= {'width': '90%', 'backgroundColor': '#f4f6f7', 'marginLeft': '5vw', 'marginRight': '5vw', 'marginBottom': '5vh'}
+                        style= {'width': '90%', 'backgroundColor': backgroundColor, 'marginLeft': '5vw', 'marginRight': '5vw', 'marginBottom': '5vh'}
                         ),
 
                         # ],
@@ -3677,7 +3680,7 @@ layout_model = html.Div([
 
 
                         ],
-                        style= {'width': '90%', 'backgroundColor': '#f4f6f7', 'marginLeft': '5vw', 'marginRight': '5vw', 'marginBottom': '5vh'}
+                        style= {'width': '90%', 'backgroundColor': backgroundColor, 'marginLeft': '5vw', 'marginRight': '5vw', 'marginBottom': '5vh'}
                         ),    
                         ],
                         # no_gutters=True,
@@ -3803,7 +3806,7 @@ page_layout = html.Div([
                 ),
             ],
             align="center",
-            style={'backgroundColor': '#e9ecef'}
+            style={'backgroundColor': disclaimerColor}
             ),
 
         # navbar
