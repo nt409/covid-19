@@ -3205,7 +3205,7 @@ layout_inter = html.Div([
                                                                                                                                                                     options=[
                                                                                                                                                                         {'label': longname[key], 'value': key} for key in longname
                                                                                                                                                                     ],
-                                                                                                                                                                    value= ['I','R'],
+                                                                                                                                                                    value= ['I'],
                                                                                                                                                                     labelStyle = {'display': 'inline-block','fontSize': '80%'},
                                                                                                                                                                 ),
                                                                                                                                                     
@@ -3958,13 +3958,13 @@ def change_pathname(pathname,saved_pathname):
 def display_page(pathname):
     # print('display page')
     if pathname == '/inter':
-        return layout_inter, None
+        return [layout_inter, None]
     elif pathname == '/data':
-        return layout_dan, None
+        return [layout_dan, None]
     elif pathname == '/model':
-        return layout_model, None
+        return [layout_model, None]
     else:
-        return layout_intro, None
+        return [layout_intro, None]
 
 ########################################################################################################################
 # collapse
@@ -4110,9 +4110,9 @@ def preset_sliders(preset,number_strs):
             ]
         number_strats = 'one'
     if preset in preset_dict_low:
-        return preset_dict_low[preset], preset_dict_high[preset], dis, dis, options, number_strats, lockdown_cycles_dis, lockdown_cycles_dis, options_lockdown_cycles
+        return [preset_dict_low[preset], preset_dict_high[preset], dis, dis, options, number_strats, lockdown_cycles_dis, lockdown_cycles_dis, options_lockdown_cycles]
     else:
-        return preset_dict_low['N'], preset_dict_high['N'], dis, dis, options, number_strats, lockdown_cycles_dis, lockdown_cycles_dis, options_lockdown_cycles
+        return [preset_dict_low['N'], preset_dict_high['N'], dis, dis, options, number_strats, lockdown_cycles_dis, lockdown_cycles_dis, options_lockdown_cycles]
     
 
 
@@ -4221,7 +4221,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         sols.append(simulator().run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow,let_HR_out=let_HR_out))
 
 
-    return sols, None, initial_conds, worked, worked_div
+    return [sols, None, initial_conds, worked, worked_div]
 
 
 
@@ -4245,7 +4245,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
     
     sol_do_nothing = simulator().run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=t_stop,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow)
     
-    return sol_do_nothing, prev_deaths
+    return [sol_do_nothing, prev_deaths]
 
 
 
