@@ -126,14 +126,14 @@ class simulator:
         y0 = [S0_L,
             I0_L,
             R0_L,
-            C0_L,
             H0_L,
+            C0_L,
             D0_L,
             S0_H,
             I0_H,
             R0_H,
-            C0_H,
             H0_H,
+            C0_H,
             D0_H,
             ]
         # print(y0)

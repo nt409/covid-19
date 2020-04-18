@@ -94,6 +94,8 @@ def begin_date(date,country='uk'):
         dates = np.asarray(country_data['Currently Infected']['dates'])
         currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
         deaths_data        = np.asarray(country_data['Deaths']['data'])
+        cases        = np.asarray(country_data['Cases']['data'])
+
         # print(deaths_data)
         
 
@@ -108,14 +110,29 @@ def begin_date(date,country='uk'):
             worked = False
             print('Date error; ',e)
         
-        if index>=10:
+        if index>=26:
             pass # all good
         else:
-            index=10
+            index=-1
+            worked = False
             print("dates didn't go far enough back")      
         
-        I0    = np.float(currently_inf_data[index])
-        I_ten = np.float(currently_inf_data[index-10])
+        try:
+            I0    = np.float(cases[index]) - np.float(cases[index - 10]) # all cases in the last 10 days
+
+            # 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before.
+            # Anyone from previous 8 days could be in hosp 10-18 days
+            # Anyone from previous 8 days could be in crit 18-26 days
+            I_hosp_delay = np.float(cases[index - 10]) - np.float(cases[index - 18])  #sum( [np.float(currently_inf_data[index - i]) for i in range(10,19) ]  ) - 7*np.float(currently_inf_data[index - 18]) # counted too many times
+            I_crit_delay = np.float(cases[index - 18]) - np.float(cases[index - 26])  #sum( [np.float(currently_inf_data[index - i]) for i in range(18,27) ]  ) - 7*np.float(currently_inf_data[index - 26]) # counted too many times
+            # print(I0,I_hosp_delay,I_crit_delay)
+        except:
+            worked = False
+            I0           = np.float(currently_inf_data[index])
+            I_hosp_delay = np.float(currently_inf_data[index-10])
+            I_crit_delay = np.float(currently_inf_data[index-18])
+            print("dates didn't go far enough back, I_hosp_delay")      
+        
         D0    = np.float(deaths_data[index])
 
         prev_deaths = deaths_data[:index]
@@ -126,21 +143,24 @@ def begin_date(date,country='uk'):
         R0 = R0/population_country
         D0 = D0/population_country
 
-        I0 = 2*I0/population_country
+        factor_infections_underreported = 2*10 # only small fraction of cases reported (and usually only symptomatic)
 
-        #  H rate is 4.4% so 
-        hosp_proportion = 0.044
+        I0           = factor_infections_underreported*I0/population_country
+        I_hosp_delay = factor_infections_underreported*I_hosp_delay/population_country
+        I_crit_delay = factor_infections_underreported*I_crit_delay/population_country
+
+
+
+        #  H rate for symptomatic is 4.4% so 
+        hosp_proportion = 2*0.044
         #  30% of H cases critical
-        crit_proportion = 0.3
-        # and it takes 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before
-        I_ten = 2*I_ten/population_country # only half reported
+        crit_proportion = 0.3 # 0.3
 
-        Hospitalised_all = I_ten*hosp_proportion
-        I0 = I0 - Hospitalised_all
+        H0 = I_hosp_delay*hosp_proportion
+        C0 = I_crit_delay*hosp_proportion*crit_proportion
+        # print(H0,C0)
 
-        H0 = Hospitalised_all*(1-crit_proportion)
-        C0 = Hospitalised_all*crit_proportion
-        # print(I0, R0, H0, C0, D0)
+        I0 = I0 - H0 - C0 # since those in hosp/crit will be counted in current numbers
         return I0, R0, H0, C0, D0, worked, prev_deaths
     else:
         return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False, prev_deaths # if data collection fails, use UK on 8th April as default
@@ -759,7 +779,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
 
 
 
-    if ICU_to_plot:
+    if ICU_to_plot and 'C' in cats_to_plot:
         ICU_line = [100*params.ICU_capacity*(1 + ICU_grow*i/365) for i in sol['t']]
         lines_to_plot.append(
         dict(
@@ -882,10 +902,10 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                         # ticktext = time_axis_text[1],
                         # tickvals = time_axis_vals[1],
                         hoverformat='%d %b',
-                        showspikes = True,
-                        spikecolor = "black", 
-                        spikesnap  = "data", 
-                        spikemode  = "across"
+                        # showspikes = True,
+                        # spikecolor = "black", 
+                        # spikesnap  = "data", 
+                        # spikemode  = "across"
                        ),
                     updatemenus = [dict(
                                             buttons=list([
@@ -893,10 +913,11 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     args = ["xaxis", {'range': [x0, xx[floor((1/3)*len(xx))]],
                                                     'showline':False,
                                                     'hoverformat':'%d %b',
-                                                    'showspikes' : True,
-                                                    'spikecolor' : "black", 
-                                                    'spikesnap'  : "data", 
-                                                    'spikemode'  : "across"}], # 'title': 'Time (Months)', 
+                                                    # 'showspikes' : True,
+                                                    # 'spikecolor' : "black", 
+                                                    # 'spikesnap'  : "data", 
+                                                    # 'spikemode'  : "across"
+                                                    }], # 'title': 'Time (Months)', 
                                                     label="Years: 1",
                                                     method="relayout"
                                                 ),
@@ -904,10 +925,11 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     args = ["xaxis", {'range': [x0, xx[floor((2/3)*len(xx))]],
                                                     'showline':False,
                                                     'hoverformat':'%d %b',
-                                                    'showspikes' : True,
-                                                    'spikecolor' : "black", 
-                                                    'spikesnap'  : "data", 
-                                                    'spikemode'  : "across"}], # 'title': 'Time (Months)', 
+                                                    # 'showspikes' : True,
+                                                    # 'spikecolor' : "black", 
+                                                    # 'spikesnap'  : "data", 
+                                                    # 'spikemode'  : "across"
+                                                    }], # 'title': 'Time (Months)', 
                                                     label="Years: 2",
                                                     method="relayout"
                                                 ),
@@ -915,10 +937,11 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     args = ["xaxis", {'range': [x0, xx[-1]],
                                                     'showline':False,
                                                     'hoverformat':'%d %b',
-                                                    'showspikes' : True,
-                                                    'spikecolor' : "black", 
-                                                    'spikesnap'  : "data", 
-                                                    'spikemode'  : "across"}], # 'title': 'Time (Months)', 
+                                                    # 'showspikes' : True,
+                                                    # 'spikecolor' : "black", 
+                                                    # 'spikesnap'  : "data", 
+                                                    # 'spikemode'  : "across"
+                                                    }], # 'title': 'Time (Months)', 
                                                     label="Years: 3",
                                                     method="relayout"
                                                 )
@@ -1206,10 +1229,10 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                         # tickvals = time_axis_vals[1],
                         # hoverinfo = None,
                         hoverformat='%d %b',
-                        showspikes = True,
-                        spikecolor = "black", 
-                        spikesnap  = "data", 
-                        spikemode  = "across"
+                        # showspikes = True,
+                        # spikecolor = "black", 
+                        # spikesnap  = "data", 
+                        # spikemode  = "across"
 
                        ),
                     barmode = 'stack',
@@ -1228,10 +1251,11 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                                 args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[floor((1/3)*len(xx))]],
                                     'hoverformat':'%d %b',
                                     'showline':False,
-                                    'showspikes': True,
-                                    'spikecolor': "black", 
-                                    'spikesnap' : "data", 
-                                    'spikemode' : "across"}], # 'title': 'Time (Months)', 
+                                    # 'showspikes': True,
+                                    # 'spikecolor': "black", 
+                                    # 'spikesnap' : "data", 
+                                    # 'spikemode' : "across"
+                                    }], # 'title': 'Time (Months)', 
                                 label="Years: 1",
                                 method="relayout"
                             ),
@@ -1239,10 +1263,11 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                                 args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[floor((2/3)*len(xx))]],
                                 'hoverformat':'%d %b',
                                 'showline':False,
-                                'showspikes': True,
-                                'spikecolor': "black", 
-                                'spikesnap' : "data", 
-                                'spikemode' : "across"}], #   'title': 'Time (Months)', 
+                                # 'showspikes': True,
+                                # 'spikecolor': "black", 
+                                # 'spikesnap' : "data", 
+                                # 'spikemode' : "across"
+                                }], #   'title': 'Time (Months)', 
                                 label="Years: 2",
                                 method="relayout"
                             ),
@@ -1250,10 +1275,11 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                                 args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[-1]],
                                 'hoverformat':'%d %b',
                                 'showline':False,
-                                'showspikes': True,
-                                'spikecolor': "black", 
-                                'spikesnap' : "data", 
-                                'spikemode' : "across"}], # 'title': 'Time (Months)', 
+                                # 'showspikes': True,
+                                # 'spikecolor': "black", 
+                                # 'spikesnap' : "data", 
+                                # 'spikemode' : "across"
+                                }], # 'title': 'Time (Months)', 
                                 label="Years: 3",
                                 method="relayout"
                             )
@@ -2323,7 +2349,7 @@ layout_inter = html.Div([
                                                         dbc.Row([
                                                         dcc.DatePickerSingle(
                                                             id='model-start-date',
-                                                            min_date_allowed = min_date + datetime.timedelta(days=10), # datetime.date(2020, 2, 25),
+                                                            min_date_allowed = min_date + datetime.timedelta(days=26), # datetime.date(2020, 2, 25),
                                                             max_date_allowed = max_date, #datetime.date.today() - datetime.timedelta(days=1),
                                                             initial_visible_month =  max_date, # datetime.date.today() - datetime.timedelta(days=1),
                                                             date = max_date, # datetime.date.today() - datetime.timedelta(days=1),
@@ -3284,7 +3310,7 @@ layout_inter = html.Div([
                                                                                                                                                                 options=[
                                                                                                                                                                     {'label': 'Plot', 'value': 1},
                                                                                                                                                                 ],
-                                                                                                                                                                value= [1],
+                                                                                                                                                                value= [0],
                                                                                                                                                                 labelStyle = {'display': 'inline-block','fontSize': '80%'},
                                                                                                                                                             ),
 
@@ -4158,6 +4184,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
 
     if init_stored is None or triggered in ['model-country-choice.value','model-start-date.date']:
         I0, R0, H0, C0, D0, worked, prev_deaths = begin_date(date,country)
+        # print(prev_deaths)
         initial_conds = [I0, R0, H0, C0, D0]
         # print('calculating new')
         # print(initial_conds)
@@ -4240,6 +4267,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
         country = 'uk'
 
     I0, R0, H0, C0, D0, worked, prev_deaths = begin_date(date,country)
+    # print(prev_deaths)
 
     t_stop = 365*3
     
@@ -4317,6 +4345,8 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 Input('model-country-choice', 'value'),
 
 
+                Input('model-start-date','date'),
+                Input('prev-deaths','data'),
 
                 ],
                [
@@ -4329,12 +4359,10 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 State('number-strats-radio', 'value'),
                 State('vaccine-slider', 'value'),
                 State('ICU-slider','value'),
-                State('model-start-date','date'),
-                State('prev-deaths','data'),
 
                 ])
-def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num, 
-                                t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,date,prev_deaths):
+def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num,date,prev_deaths,
+                                t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow):
 
     # print('render ',pathname)
     if sols is None:

@@ -67,11 +67,12 @@ number_compartments = 6
 fact_v = np.concatenate([[0.02,0.1],np.linspace(0.20,1,9)])
 max_months_controlling = 18
 
-ICU_growth = 1
-ICU_capacity = 8/100000
 
 UK_population = 60 * 10**(6)
 import_rate = 1/(30*UK_population) # 1 per month
+
+ICU_growth = 1
+ICU_capacity = 10000/UK_population # approx 10000 in UK
 
 vaccinate_percent = 0.9 # vaccinate this many
 vaccinate_rate = 0.55/(365*2/3) #10000/UK_population # per day
