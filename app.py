@@ -692,10 +692,10 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                 opacity= blue_opacity
             ))
             
-    if ICU:
+    if ICU and 'C' in cats_to_plot:
         # if which_plots=='two':
-        control_font_size = font_size*(18/24) # '10em'
-        ICU_font_size = font_size*(18/24) # '10em'
+        control_font_size = font_size*(22/24) # '10em'
+        ICU_font_size = font_size*(22/24) # '10em'
 
         yval_pink = 0.3
         yval_blue = 0.82
