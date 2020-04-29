@@ -143,7 +143,7 @@ def begin_date(date,country='uk'):
         R0 = R0/population_country
         D0 = D0/population_country
 
-        factor_infections_underreported = 2*10 # only small fraction of cases reported (and usually only symptomatic)
+        factor_infections_underreported = 2*5 # only small fraction of cases reported (and usually only symptomatic) symptomatic is 50%
 
         I0           = factor_infections_underreported*I0/population_country
         I_hosp_delay = factor_infections_underreported*I_hosp_delay/population_country
@@ -1010,7 +1010,6 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
 
 def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,country = 'uk',preset=None,startdate=None):
 
-    # population_plot = POPULATIONS[country]
     try:
         population_plot = POPULATIONS[country]
     except:
@@ -1657,7 +1656,7 @@ layout_intro = html.Div([
 
             dbc.Row([
                     
-                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto/v1586536825/WhatIsModellingv2_172141_jwpplb.mp4', #vc_h264
+                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/c_scale,q_auto,w_800/v1586536825/WhatIsModellingv2_172141_jwpplb.mp4', #vc_h264
                     controls=True,
                     style={'maxWidth':'100%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
                     
@@ -1708,7 +1707,30 @@ layout_intro = html.Div([
 
             dbc.Row([
                     
-                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/q_auto/v1586536823/AllAboutR_173637_poxzmb.mp4',
+                    html.Video(src='https://res.cloudinary.com/hefjzc2gb/video/upload/c_scale,q_auto,w_800/v1586536823/AllAboutR_173637_poxzmb.mp4',
+                    controls=True,
+                    style={'maxWidth':'100%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
+                    
+                    ],
+                    justify='center'
+                    ),
+            
+            html.Hr(),
+
+            html.H3('Introducing Herd Immunity',className='display-4',
+            style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
+
+            html.Hr(),
+
+
+            dcc.Markdown('''
+            Watch Dr Cerian Webb introduce the concept of herd immunity.
+            ''',
+            style={'textAlign': 'justify'}),
+
+            dbc.Row([
+                    
+                    html.Video(src="https://res.cloudinary.com/hefjzc2gb/video/upload/c_scale,q_auto,w_800/v1588167893/HerdImmunity_144205_dyhaiy.mp4",
                     controls=True,
                     style={'maxWidth':'100%','height': 'auto','marginTop': '1vh','marginBottom': '3vh'}),
                     
@@ -3787,11 +3809,12 @@ navbar2 = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Model Explanation", href="/model")),
         dbc.NavItem(dbc.NavLink("Real-Time Global Data Feed", href="/data")),
     ],
-    brand="Modelling control of COVID-19",
+    brand="Modelling C-19",
     brand_href="/intro",
-    brand_style = {'fontSize': '3vh'},
+    brand_style = {'fontSize': '2.5vh'},
     color="primary",
     sticky = 'top',
+    style= {'fontSize': '2vh'},
     dark=True,
 )
 
@@ -3807,7 +3830,7 @@ navbar2 = dbc.NavbarSimple(
         
 page_layout = html.Div([
     
-        navbar2,
+        html.Div(navbar2,style={'width':'100%'}),
             
         dbc.Row([
             dbc.Col([
@@ -3820,11 +3843,11 @@ page_layout = html.Div([
                     html.P([
                     html.Span('Disclaimer: ',style={'color': '#C37C10'}), # orange
                     'This work is for educational purposes only and not for accurate prediction of the pandemic.'],
-                    style = {'marginTop': '0vh','marginBottom': '0vh', 'fontSize': '110%', 'color': '#446E9B', 'fontWeight': 'bold'}
+                    style = {'marginTop': '0vh','marginBottom': '0vh', 'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ),
                     html.P(
                     'There are many uncertainties in the COVID debate. The model is intended solely as an illustrative rather than predictive tool.',
-                    style = {'marginTop': '0vh','marginBottom': '2.5vh', 'fontSize': '110%', 'color': '#446E9B', 'fontWeight': 'bold'}
+                    style = {'marginTop': '0vh','marginBottom': '2.5vh', 'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ), # 
 
                 ],width=True,
@@ -3853,7 +3876,7 @@ page_layout = html.Div([
 
 
         html.Footer('This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.',
-                    style={'textAlign': 'center', 'fontSize': '100%', 'marginBottom': '1.5vh' , 'color': '#446E9B', 'fontWeight': 'bold'}),
+                    style={'textAlign': 'center', 'fontSize': '90%', 'marginBottom': '1.5vh' , 'color': '#446E9B', 'fontWeight': 'bold'}),
         html.Footer([
                     "Authors: ",
                      html.A('Nick P. Taylor', href='https://twitter.com/TaylorNickP'),", ",
