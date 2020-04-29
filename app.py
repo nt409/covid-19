@@ -3809,7 +3809,7 @@ navbar2 = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Model Explanation", href="/model")),
         dbc.NavItem(dbc.NavLink("Real-Time Global Data Feed", href="/data")),
     ],
-    brand="Modelling C-19",
+    brand="Modelling COVID-19",
     brand_href="/intro",
     brand_style = {'fontSize': '2.5vh'},
     color="primary",
@@ -3832,7 +3832,7 @@ navbar2 = dbc.NavbarSimple(
         
 page_layout = html.Div([
     
-        html.Div(navbar2,style={'width':'100%'}),
+        navbar2,
             
         dbc.Row([
             dbc.Col([
