@@ -3814,6 +3814,8 @@ navbar2 = dbc.NavbarSimple(
     brand_style = {'fontSize': '2.5vh'},
     color="primary",
     sticky = 'top',
+    expand = 'md',
+    # className = 'navbar-collapse collapse',
     style= {'fontSize': '2vh'},
     dark=True,
 )
