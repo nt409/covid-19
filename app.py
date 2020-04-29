@@ -2008,8 +2008,6 @@ layout_inter = html.Div([
                                                     dcc.Markdown('''
                                                     *In this Section we explore possible outcomes of different choices of **COVID-19 control**.*
                                                     
-                                                    *Pick a **strategy** below.*
-
                                                     '''
                                                     ,style = {'marginTop': '3vh', 'marginBottom': '3vh', 'textAlign': 'center'}
                                                     ),
@@ -2069,7 +2067,7 @@ layout_inter = html.Div([
                                                                                                                                                             style = {'cursor': 'pointer', 'marginBottom': '0.5vh'}),
                                                                                                                                                             ],
                                                                                                                                                             className = 'display-4',
-                                                                                                                                                            style={'fontSize': '230%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
+                                                                                                                                                            style={'fontSize': '180%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
 
                                                                                                                                                             
 
@@ -2079,11 +2077,10 @@ layout_inter = html.Div([
                                                                                                                                                                 dbc.PopoverHeader('Pick Your Strategy'),
                                                                                                                                                                 dbc.PopoverBody(dcc.Markdown(
                                                                                                                                                                 '''
-                                                                                                                                                                1. Pick the **country** you're interested in.
 
-                                                                                                                                                                2. Pick the **type of control**.
+                                                                                                                                                                1. Pick the **type of control**.
 
-                                                                                                                                                                3. Pick the **control timings** (how long control is applied for and when it starts).
+                                                                                                                                                                2. Pick the **control timings** (how long control is applied for and when it starts).
 
                                                                                                                                                                 *The other options below (under 'More Paramters') are optional custom choices that you may choose to investigate further or ignore altogether*.
 
@@ -2101,7 +2098,7 @@ layout_inter = html.Div([
                                                                                                                                                   
 
 
-                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'fontSize': '85%' ,'textAlign': 'center', 'marginBottom': '3vh'}), # 'textAlign': 'left', fs 80%
+                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'fontSize': '100%' ,'textAlign': 'center'}), # 'textAlign': 'left', fs 80%
 
                                                                                                                                                         
                                                                                                                                                     dbc.Row([
@@ -2113,24 +2110,10 @@ layout_inter = html.Div([
 
                                                                                                                                                             dbc.Col([
 
-                                                                                                                                                                
-                                                                                                                                                                html.H6('1. Country',style={'fontSize': '100%', 'textAlign': 'center'}),
-
-                                                                                                                                                            
-                                                                                                                                                                html.Div([
-                                                                                                                                                                dcc.Dropdown(
-                                                                                                                                                                    id = 'model-country-choice',
-                                                                                                                                                                    options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST_NICK)],
-                                                                                                                                                                    value= initial_country,
-                                                                                                                                                                    clearable = False,
-                                                                                                                                                                ),],
-                                                                                                                                                                style={'cursor': 'pointer','marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
-                                                                                                                                                                
-
-
+                                               
 
                                                                                                                                                             html.H6([
-                                                                                                                                                                '2. Control Type ',
+                                                                                                                                                                'Control Type ',
                                                                                                                                                                 dbc.Button('🛈',
                                                                                                                                                                     color='primary',
                                                                                                                                                                     # className='mb-3',
@@ -2139,7 +2122,7 @@ layout_inter = html.Div([
                                                                                                                                                                     style={'cursor': 'pointer','marginBottom': '0.5vh'}
                                                                                                                                                                     ),
                                                                                                                                                                 ],
-                                                                                                                                                                style={'fontSize': '100%', 'marginTop': '3vh', 'marginBottom': '1vh','textAlign': 'center'}),
+                                                                                                                                                                style={'fontSize': '100%', 'marginTop': '2vh', 'marginBottom': '1vh','textAlign': 'center'}),
 
 
                                                                                                                                                             dbc.Popover(
@@ -2179,7 +2162,7 @@ layout_inter = html.Div([
 
 
                                                                                                                                                                 html.H6([
-                                                                                                                                                                '3. Months of Control ',
+                                                                                                                                                                'Months of Control ',
                                                                                                                                                                 dbc.Button('🛈',
                                                                                                                                                                 color='primary',
                                                                                                                                                                 size='sm',
@@ -2334,9 +2317,9 @@ layout_inter = html.Div([
 
                                                                                                                                                                 Use this to adjust the **healthcare provisions**, adjust **lockdown cycles options**, or choose a **custom strategy**.
 
-                                                                                                                                                                To adjust the **Lockdown Cycles Options**, you must first select '*Lockdown Cycles*' in the '**2. Control Type**' selector above).
+                                                                                                                                                                To adjust the **Lockdown Cycles Options**, you must first select '*Lockdown Cycles*' in the '**Control Type**' selector above).
 
-                                                                                                                                                                To adjust the **Custom Options**, you must first select '*Custom*' in the '**2. Control Type**' selector above). You can compare two strategies directly or consider one only.
+                                                                                                                                                                To adjust the **Custom Options**, you must first select '*Custom*' in the '**Control Type**' selector above). You can compare two strategies directly or consider one only.
                                                                                                                                                                 
                                                                                                                                                                 The custom choice consists of selecting by how much to decelerate spread of COVID-19 (using the 'infection rate' sliders). You can also choose different infection rates for the different risk groups.
                                                                                                                                                                 '''
@@ -2478,7 +2461,7 @@ layout_inter = html.Div([
                                                                                                     dbc.Col([
                                                                                                         html.H4("Lockdown Cycle Options ",style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
 
-                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**2. Control Type**' is set to 'Lockdown Cycles'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
+                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**Control Type**' is set to 'Lockdown Cycles'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
 
                                                                                                     ],width=6),
 
@@ -2488,7 +2471,7 @@ layout_inter = html.Div([
                                                                                                         html.H4("Custom Options ",
                                                                                                         style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
 
-                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**2. Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
+                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
 
                                                                                                     ],width=6),
 
@@ -2669,7 +2652,7 @@ layout_inter = html.Div([
 
                                                                                                 html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
 
-                                                                                                # dcc.Markdown('''*Set '**2. Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
+                                                                                                # dcc.Markdown('''*Set '**Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
                                                                                                 dbc.Row([
                                                                                                 dbc.RadioItems(
                                                                                                 id = 'number-strats-radio',
@@ -2719,7 +2702,7 @@ layout_inter = html.Div([
 
                                                                                                     The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
                                                                                                 
-                                                                                                    Adjust by choosing a preset strategy  or making your own custom choice ('**2. Control Type**').
+                                                                                                    Adjust by choosing a preset strategy  or making your own custom choice ('**Control Type**').
 
 
                                                                                                     '''
@@ -3407,8 +3390,25 @@ layout_inter = html.Div([
 
                                             html.Hr(style={'marginTop': '5vh'}),
 
+                                                                                                                                                             
+                                            dbc.Col([
+                                                html.H6('Change Country',style={'fontSize': '180%', 'textAlign': 'center'}),
 
-                                            html.H6([
+                                            
+                                                html.Div([
+                                                dcc.Dropdown(
+                                                    id = 'model-country-choice',
+                                                    options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST_NICK)],
+                                                    value= initial_country,
+                                                    clearable = False,
+                                                ),],
+                                                style={'cursor': 'pointer','marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
+                                            
+
+
+
+
+                                                html.H6([
                                                 'Change Results Type ',
                                                 dbc.Button('🛈',
                                                     color='primary',
@@ -3421,6 +3421,25 @@ layout_inter = html.Div([
                                                 style={'fontSize': '180%', 'marginTop': '3vh', 'marginBottom': '3vh','textAlign': 'center'}),
 
 
+
+
+
+
+
+                                                    html.Div([
+                                                    dcc.Dropdown(
+                                                        id = 'dropdown',
+                                                        options=[{'label': 'Disease Progress Curves','value': 'DPC_dd'},
+                                                        {'label': 'Bar Charts','value': 'BC_dd'},
+                                                        {'label': 'Strategy Overview','value': 'SO_dd'},
+                                                        ],
+                                                        value= 'DPC_dd',
+                                                        clearable = False,
+                                                    ),],
+                                                    style={'cursor': 'pointer'}),
+
+                                            ],width={'size': 8, 'offset': 2}),
+                                                
                                             dbc.Popover(
                                                     [
                                                     dbc.PopoverHeader('Results'),
@@ -3437,26 +3456,6 @@ layout_inter = html.Div([
                                                     target="popover-res-type-target",
                                                     placement='left',
                                                 ),
-
-
-                                                dbc.Col([
-
-
-
-                                                    html.Div([
-                                                    dcc.Dropdown(
-                                                        id = 'dropdown',
-                                                        options=[{'label': 'Disease Progress Curves','value': 'DPC_dd'},
-                                                        {'label': 'Bar Charts','value': 'BC_dd'},
-                                                        {'label': 'Strategy Overview','value': 'SO_dd'},
-                                                        ],
-                                                        value= 'DPC_dd',
-                                                        clearable = False,
-                                                    ),],
-                                                    style={'cursor': 'pointer'}),
-
-                                                ],width={'size': 8, 'offset': 2}),
-                                                
 
                                                     
 
