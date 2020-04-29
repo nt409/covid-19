@@ -3802,24 +3802,6 @@ layout_model = html.Div([
 #         ),
 #     ],)
 
-navbar2 = dbc.NavbarSimple(
-    children=[
-        dbc.NavItem(dbc.NavLink("Background", href="/intro")),
-        dbc.NavItem(dbc.NavLink("Interactive Model", href="/inter")),
-        dbc.NavItem(dbc.NavLink("Model Explanation", href="/model")),
-        dbc.NavItem(dbc.NavLink("Real-Time Global Data Feed", href="/data")),
-    ],
-    brand="Modelling COVID-19",
-    brand_href="/intro",
-    brand_style = {'fontSize': '2.5vh'},
-    color="primary",
-    sticky = 'top',
-    expand = 'md',
-    # className = 'navbar-collapse collapse',
-    style= {'fontSize': '2vh'},
-    dark=True,
-)
-
 
 
 
@@ -3832,8 +3814,26 @@ navbar2 = dbc.NavbarSimple(
         
 page_layout = html.Div([
     
-        navbar2,
-            
+        dbc.NavbarSimple(
+            children=[
+                dbc.NavItem(dbc.NavLink("Background", href="/intro")),
+                dbc.NavItem(dbc.NavLink("Interactive Model", href="/inter")),
+                dbc.NavItem(dbc.NavLink("Model Explanation", href="/model")),
+                dbc.NavItem(dbc.NavLink("Real-Time Global Data Feed", href="/data")),
+            ],
+            brand="Modelling COVID-19",
+            brand_href="/intro",
+            brand_style = {'fontSize': '120%'},
+            color="primary",
+            sticky = 'top',
+            expand = 'xl',
+            # className = 'navbar-collapse',
+            style= {'fontSize': '120%'},
+            dark=True,
+        ),
+
+
+
         dbc.Row([
             dbc.Col([
                     # html.H3(children='Modelling control of COVID-19',
@@ -3845,11 +3845,11 @@ page_layout = html.Div([
                     html.P([
                     html.Span('Disclaimer: ',style={'color': '#C37C10'}), # orange
                     'This work is for educational purposes only and not for accurate prediction of the pandemic.'],
-                    style = {'marginTop': '0vh','marginBottom': '0vh', 'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'}
+                    style = {'marginTop': '0vh','marginBottom': '0vh', 'fontSize': '100%', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ),
                     html.P(
                     'There are many uncertainties in the COVID debate. The model is intended solely as an illustrative rather than predictive tool.',
-                    style = {'marginTop': '0vh','marginBottom': '2.5vh', 'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'}
+                    style = {'marginTop': '0vh','marginBottom': '2.5vh', 'fontSize': '100%', 'color': '#446E9B', 'fontWeight': 'bold'}
                     ), # 
 
                 ],width=True,
@@ -3878,25 +3878,26 @@ page_layout = html.Div([
 
 
         html.Footer('This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.',
-                    style={'textAlign': 'center', 'fontSize': '90%', 'marginBottom': '1.5vh' , 'color': '#446E9B', 'fontWeight': 'bold'}),
+                    style={'textAlign': 'center', 'fontSize': '100%', 'marginBottom': '1.5vh' , 'color': '#446E9B', 'fontWeight': 'bold'}),
         html.Footer([
                     "Authors: ",
                      html.A('Nick P. Taylor', href='https://twitter.com/TaylorNickP'),", ",
                      html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'),
                      " and Dr Cerian Webb. ",
                      ],
-        style={'textAlign': 'center', 'fontSize': '90%'}),
+        style={'textAlign': 'center', 'fontSize': '100%'}),
         html.Footer([
                      html.A('Source code', href='https://github.com/nt409/covid-19'), ". ",
                      "Data is taken from ",
                      html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
                      html.A("Johns Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
                     ],
-                    style={'textAlign': 'center', 'fontSize': '90%'}),
+                    style={'textAlign': 'center', 'fontSize': '100%'}),
 
         
 
         ],
+        style={'fontSize': '1.9vh'}
         # 
         )
 ##
