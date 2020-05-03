@@ -435,10 +435,10 @@ def Bar_chart_generator(data,data2 = None, data_group = None,name1=None,name2=No
                     yaxis_tickformat = yax_tick_form,
                     height=450,
                     legend = ledge,
-                    xaxis=dict(showline=False),
+                    # xaxis=dict(showline=False),
                     yaxis = dict(
                         automargin = True,
-                        showline=False,
+                        # showline=False,
                         title = y_title,
                         title_font = dict(size=yax_font_size),
                     ),
@@ -891,14 +891,14 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                    yaxis= dict(mirror= True,
                         title='Percentage of Total Population',
                         range= yax['range'],
-                        showline=False,
+                        # showline=False,
                         automargin=True,
                         type = 'linear'
                    ),
                    hovermode='x',
                    xaxis= dict(
                         range= [x0, xx[floor((2/3)*len(xx))]],
-                        showline=False,
+                        # showline=False,
                         # ticktext = time_axis_text[1],
                         # tickvals = time_axis_vals[1],
                         hoverformat='%d %b',
@@ -911,7 +911,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                             buttons=list([
                                                 dict(
                                                     args = ["xaxis", {'range': [x0, xx[floor((1/3)*len(xx))]],
-                                                    'showline':False,
+                                                    # 'showline':False,
                                                     'hoverformat':'%d %b',
                                                     # 'showspikes' : True,
                                                     # 'spikecolor' : "black", 
@@ -923,7 +923,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                 ),
                                                 dict(
                                                     args = ["xaxis", {'range': [x0, xx[floor((2/3)*len(xx))]],
-                                                    'showline':False,
+                                                    # 'showline':False,
                                                     'hoverformat':'%d %b',
                                                     # 'showspikes' : True,
                                                     # 'spikecolor' : "black", 
@@ -935,7 +935,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                 ),
                                                 dict(
                                                     args = ["xaxis", {'range': [x0, xx[-1]],
-                                                    'showline':False,
+                                                    # 'showline':False,
                                                     'hoverformat':'%d %b',
                                                     # 'showspikes' : True,
                                                     # 'spikecolor' : "black", 
@@ -958,15 +958,15 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                         dict(
                                             buttons=list([
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'linear', 'range': yax['range'], 'automargin': True, 'showline':False},
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'showline':False,'side':'right'}
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'linear', 'range': yax['range'], 'automargin': True}, # , 'showline':False
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True,'side':'right'} # , 'showline':False,
                                                     }], # tickformat
                                                     label="Linear",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'log', 'range': log_range,'automargin': True, 'showline':False},
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True, 'showline':False,'side':'right'}
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'log', 'range': log_range,'automargin': True}, # , 'showline':False
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True,'side':'right'} #  'showline':False,
                                                     }], # 'tickformat': yax_form_log,
                                                     label="Logarithmic",
                                                     method="relayout"
@@ -993,7 +993,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                         yaxis2 = dict(
                                                         title = 'Population (' + country_name + ')',
                                                         overlaying='y1',
-                                                        showline=False,
+                                                        # showline=False,
                                                         range = yax['range'],
                                                         side='right',
                                                         ticktext = [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))],
@@ -1363,14 +1363,14 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                    yaxis= dict(mirror= True,
                         title='Percentage of Total Population',
                         range= yax['range'],
-                        showline=False,
+                        # showline=False,
                         automargin=True,
                         type = 'linear'
                    ),
                    hovermode='x',
                    xaxis= dict(
                         range= [x0, xx[floor((2/3)*len(xx))]],
-                        showline=False,
+                        # showline=False,
                         # ticktext = time_axis_text[1],
                         # tickvals = time_axis_vals[1],
                         hoverformat='%d %b',
@@ -1383,7 +1383,7 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                                             buttons=list([
                                                 dict(
                                                     args = ["xaxis", {'range': [x0, xx[floor((1/3)*len(xx))]],
-                                                    'showline':False,
+                                                    # 'showline':False,
                                                     'hoverformat':'%d %b',
                                                     # 'showspikes' : True,
                                                     # 'spikecolor' : "black", 
@@ -1395,24 +1395,15 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                                                 ),
                                                 dict(
                                                     args = ["xaxis", {'range': [x0, xx[floor((2/3)*len(xx))]],
-                                                    'showline':False,
+                                                    # 'showline':False,
                                                     'hoverformat':'%d %b',
-                                                    # 'showspikes' : True,
-                                                    # 'spikecolor' : "black", 
-                                                    # 'spikesnap'  : "data", 
-                                                    # 'spikemode'  : "across"
                                                     }], # 'title': 'Time (Months)', 
                                                     label="Years: 2",
                                                     method="relayout"
                                                 ),
                                                 dict(
                                                     args = ["xaxis", {'range': [x0, xx[-1]],
-                                                    'showline':False,
                                                     'hoverformat':'%d %b',
-                                                    # 'showspikes' : True,
-                                                    # 'spikecolor' : "black", 
-                                                    # 'spikesnap'  : "data", 
-                                                    # 'spikemode'  : "across"
                                                     }], # 'title': 'Time (Months)', 
                                                     label="Years: 3",
                                                     method="relayout"
@@ -1430,15 +1421,15 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                                         dict(
                                             buttons=list([
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'linear', 'range': yax['range'], 'automargin': True, 'showline':False},
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'showline':False,'side':'right'}
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'linear', 'range': yax['range'], 'automargin': True}, # , 'showline':False
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'side':'right'} # , 'showline':False,
                                                     }], # tickformat
                                                     label="Linear",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'log', 'range': log_range,'automargin': True, 'showline':False},
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True, 'showline':False,'side':'right'}
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'log', 'range': log_range,'automargin': True}, #, 'showline':False},
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True,'side':'right'}
                                                     }], # 'tickformat': yax_form_log,
                                                     label="Logarithmic",
                                                     method="relayout"
@@ -1465,7 +1456,7 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                                         yaxis2 = dict(
                                                         title = 'Population (' + country_name + ')',
                                                         overlaying='y1',
-                                                        showline=False,
+                                                        #showline=False,
                                                         range = yax['range'],
                                                         side='right',
                                                         ticktext = [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))],
@@ -1681,7 +1672,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                    yaxis= dict(mirror= True,
                         title='Percentage of Total Population',
                         range = [0,ymax],
-                        showline=False,
+                        # showline=False,
                         automargin=True,
                         type = 'linear'
                    ),
@@ -1689,7 +1680,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                     yaxis2 = dict(
                             title = 'Population (' + country_name + ')',
                             overlaying='y1',
-                            showline=False,
+                            # showline=False,
                             range = [0,ymax],
                             side='right',
                             ticktext = [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))],
@@ -1698,7 +1689,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                         ),
                    xaxis= dict(
                         range= [xx[0]-datetime.timedelta(days=10), xx[floor((2/3)*len(xx))]], # so that first blue line shows
-                        showline=False,
+                        # showline=False,
                         # ticktext = time_axis_text[1],
                         # tickvals = time_axis_vals[1],
                         # hoverinfo = None,
@@ -1724,7 +1715,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                             dict(
                                 args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[floor((1/3)*len(xx))]],
                                     'hoverformat':'%d %b',
-                                    'showline':False,
+                                    
                                     # 'showspikes': True,
                                     # 'spikecolor': "black", 
                                     # 'spikesnap' : "data", 
@@ -1736,7 +1727,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                             dict(
                                 args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[floor((2/3)*len(xx))]],
                                 'hoverformat':'%d %b',
-                                'showline':False,
+                                
                                 # 'showspikes': True,
                                 # 'spikecolor': "black", 
                                 # 'spikesnap' : "data", 
@@ -1748,7 +1739,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                             dict(
                                 args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[-1]],
                                 'hoverformat':'%d %b',
-                                'showline':False,
+                                
                                 # 'showspikes': True,
                                 # 'spikecolor': "black", 
                                 # 'spikesnap' : "data", 
@@ -3714,7 +3705,7 @@ layout_inter = html.Div([
                                                                 dcc.Graph(id='line-plot-4',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
                                                                 dcc.Markdown('''
-                                                                            This plot shows a projection for the fatalities caused by the choice of control. It contains an upper and a lower estimate to give a range of possible values as a basic indication of uncertainty (but only in the initial conditions and the validity of the control).
+                                                                            This plot shows a projection for the fatalities caused by the choice of control. It contains an upper and a lower estimate to give a range of possible values as a basic indication of uncertainty (but only in the initial conditions and the effectiveness of the control).
 
                                                                             ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '6vh', 'marginBottom': '3vh'}),
 
