@@ -114,10 +114,10 @@ def get_data_from_worldometer(country_name):
 
         done = 0
         for k, key in enumerate(keys):
-            if 'categories' in key:
+            if 'categories' in key and 'xAxis' in keys[k-1]:
                 plot_dates = keys[k + 1].replace('[', '').split(']')[0].replace('"', '').split(',')
                 plot_dates = convert_dates(plot_dates)
-            if 'name' in key:
+            if 'name' in key and 'series' in keys[k-1]:
                 name = keys[k + 1].replace("\\'", "").split(',')[0]
                 if name not in titles:
                     break
