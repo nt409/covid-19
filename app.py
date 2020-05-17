@@ -40,9 +40,13 @@ from json import JSONEncoder
 # dumped = json.dumps(sols_dump,cls=NumpyArrayEncoder)
 # loaded = json.loads(dumped)['sols']
 # sols_new  = np.asarray(loaded['sols'])
-
-min_date = get_data('uk')['Currently Infected']['dates'][0]
-max_date = get_data('uk')['Currently Infected']['dates'][-1]
+try:
+    min_date = get_data('uk')['Cases']['dates'][0]
+    max_date = get_data('uk')['Cases']['dates'][-1]
+except:
+    print("Cannnot get dates from Worldometer")
+    min_date = '2020-2-15'
+    max_date = '2020-5-17'
 
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
@@ -91,8 +95,8 @@ def begin_date(date,country='uk'):
     if not pre_defined:
         worked = True
 
-        dates = np.asarray(country_data['Currently Infected']['dates'])
-        currently_inf_data = np.asarray(country_data['Currently Infected']['data'])
+        dates = np.asarray(country_data['Cases']['dates'])
+        # currently_inf_data = np.asarray(country_data['Currently Infected']['data']) # wolrdometer no longer has currently infected
         deaths_data        = np.asarray(country_data['Deaths']['data'])
         cases        = np.asarray(country_data['Cases']['data'])
 
@@ -128,9 +132,9 @@ def begin_date(date,country='uk'):
             # print(I0,I_hosp_delay,I_crit_delay)
         except:
             worked = False
-            I0           = np.float(currently_inf_data[index])
-            I_hosp_delay = np.float(currently_inf_data[index-10])
-            I_crit_delay = np.float(currently_inf_data[index-18])
+            I0           = 0.01 # np.float(currently_inf_data[index])
+            I_hosp_delay = 0.01 # np.float(currently_inf_data[index-10])
+            I_crit_delay = 0.01 # np.float(currently_inf_data[index-18])
             print("dates didn't go far enough back, I_hosp_delay")      
         
         D0    = np.float(deaths_data[index])
