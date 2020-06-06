@@ -147,7 +147,7 @@ def begin_date(date,country='uk'):
         R0 = R0/population_country
         D0 = D0/population_country
 
-        factor_infections_underreported = 2*5 # only small fraction of cases reported (and usually only symptomatic) symptomatic is 50%
+        factor_infections_underreported = 2*2 # only small fraction of cases reported (and usually only symptomatic) symptomatic is 50%
 
         I0           = factor_infections_underreported*I0/population_country
         I_hosp_delay = factor_infections_underreported*I_hosp_delay/population_country
@@ -895,6 +895,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                    yaxis= dict(mirror= True,
                         title='Percentage of Total Population',
                         range= yax['range'],
+                        fixedrange= True,
                         # showline=False,
                         automargin=True,
                         type = 'linear'
@@ -906,6 +907,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                         # ticktext = time_axis_text[1],
                         # tickvals = time_axis_vals[1],
                         hoverformat='%d %b',
+                        fixedrange= True,
                         # showspikes = True,
                         # spikecolor = "black", 
                         # spikesnap  = "data", 
@@ -917,6 +919,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     args = ["xaxis", {'range': [x0, xx[floor((1/3)*len(xx))]],
                                                     # 'showline':False,
                                                     'hoverformat':'%d %b',
+                                                    'fixedrange': True,
                                                     # 'showspikes' : True,
                                                     # 'spikecolor' : "black", 
                                                     # 'spikesnap'  : "data", 
@@ -929,6 +932,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     args = ["xaxis", {'range': [x0, xx[floor((2/3)*len(xx))]],
                                                     # 'showline':False,
                                                     'hoverformat':'%d %b',
+                                                    'fixedrange': True,
                                                     # 'showspikes' : True,
                                                     # 'spikecolor' : "black", 
                                                     # 'spikesnap'  : "data", 
@@ -941,6 +945,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     args = ["xaxis", {'range': [x0, xx[-1]],
                                                     # 'showline':False,
                                                     'hoverformat':'%d %b',
+                                                    'fixedrange': True,
                                                     # 'showspikes' : True,
                                                     # 'spikecolor' : "black", 
                                                     # 'spikesnap'  : "data", 
@@ -962,15 +967,15 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                         dict(
                                             buttons=list([
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'linear', 'range': yax['range'], 'automargin': True}, # , 'showline':False
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True,'side':'right'} # , 'showline':False,
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population','fixedrange': True, 'type': 'linear', 'range': yax['range'], 'automargin': True}, # , 'showline':False
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','fixedrange': True, 'type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True,'side':'right'} # , 'showline':False,
                                                     }], # tickformat
                                                     label="Linear",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'log', 'range': log_range,'automargin': True}, # , 'showline':False
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True,'side':'right'} #  'showline':False,
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'fixedrange': True, 'type': 'log', 'range': log_range,'automargin': True}, # , 'showline':False
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True,'side':'right'} #  'showline':False,
                                                     }], # 'tickformat': yax_form_log,
                                                     label="Logarithmic",
                                                     method="relayout"
@@ -997,6 +1002,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                         yaxis2 = dict(
                                                         title = 'Population (' + country_name + ')',
                                                         overlaying='y1',
+                                                        fixedrange= True,
                                                         # showline=False,
                                                         range = yax['range'],
                                                         side='right',
@@ -1367,6 +1373,7 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                    yaxis= dict(mirror= True,
                         title='Percentage of Total Population',
                         range= yax['range'],
+                        fixedrange= True,
                         # showline=False,
                         automargin=True,
                         type = 'linear'
@@ -1374,6 +1381,7 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                    hovermode='x',
                    xaxis= dict(
                         range= [x0, xx[floor((2/3)*len(xx))]],
+                        fixedrange= True,
                         # showline=False,
                         # ticktext = time_axis_text[1],
                         # tickvals = time_axis_vals[1],
@@ -1389,6 +1397,7 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                                                     args = ["xaxis", {'range': [x0, xx[floor((1/3)*len(xx))]],
                                                     # 'showline':False,
                                                     'hoverformat':'%d %b',
+                                                    'fixedrange': True,
                                                     # 'showspikes' : True,
                                                     # 'spikecolor' : "black", 
                                                     # 'spikesnap'  : "data", 
@@ -1408,6 +1417,7 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                                                 dict(
                                                     args = ["xaxis", {'range': [x0, xx[-1]],
                                                     'hoverformat':'%d %b',
+                                                    'fixedrange': True,
                                                     }], # 'title': 'Time (Months)', 
                                                     label="Years: 3",
                                                     method="relayout"
@@ -1425,15 +1435,15 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
                                         dict(
                                             buttons=list([
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'linear', 'range': yax['range'], 'automargin': True}, # , 'showline':False
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'side':'right'} # , 'showline':False,
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'linear', 'range': yax['range'], 'fixedrange': True, 'automargin': True}, # , 'showline':False
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'fixedrange': True, 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'side':'right'} # , 'showline':False,
                                                     }], # tickformat
                                                     label="Linear",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'log', 'range': log_range,'automargin': True}, #, 'showline':False},
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True,'side':'right'}
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'log', 'range': log_range, 'fixedrange': True, 'automargin': True}, #, 'showline':False},
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'fixedrange': True, 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True,'side':'right'}
                                                     }], # 'tickformat': yax_form_log,
                                                     label="Logarithmic",
                                                     method="relayout"
@@ -1676,6 +1686,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                    yaxis= dict(mirror= True,
                         title='Percentage of Total Population',
                         range = [0,ymax],
+                        fixedrange=True,
                         # showline=False,
                         automargin=True,
                         type = 'linear'
@@ -1684,6 +1695,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                     yaxis2 = dict(
                             title = 'Population (' + country_name + ')',
                             overlaying='y1',
+                            fixedrange= True,
                             # showline=False,
                             range = [0,ymax],
                             side='right',
@@ -1698,6 +1710,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                         # tickvals = time_axis_vals[1],
                         # hoverinfo = None,
                         hoverformat='%d %b',
+                        fixedrange=True,
                         # showspikes = True,
                         # spikecolor = "black", 
                         # spikesnap  = "data", 
@@ -1719,6 +1732,8 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                             dict(
                                 args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[floor((1/3)*len(xx))]],
                                     'hoverformat':'%d %b',
+                                    'fixedrange': True,
+
                                     
                                     # 'showspikes': True,
                                     # 'spikecolor': "black", 
@@ -1731,6 +1746,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                             dict(
                                 args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[floor((2/3)*len(xx))]],
                                 'hoverformat':'%d %b',
+                                'fixedrange': True,
                                 
                                 # 'showspikes': True,
                                 # 'spikecolor': "black", 
@@ -1743,6 +1759,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
                             dict(
                                 args = ["xaxis", {'range': [xx[0]-datetime.timedelta(days=10), xx[-1]],
                                 'hoverformat':'%d %b',
+                                'fixedrange': True,
                                 
                                 # 'showspikes': True,
                                 # 'spikecolor': "black", 
@@ -2054,31 +2071,31 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
 
 
-card_model  = dbc.Card(
-    [
-        html.A([
-            dbc.CardImg(src="https://res.cloudinary.com/hefjzc2gb/image/upload/c_fill,h_465,w_1100/v1588428400/model_fvg9af.png", top=True),
-            ],
-            href = '/model',
-            style = {'cursor': 'pointer'}
-        ),
-        dbc.CardBody(
-            [
-                html.H4("Model Explanation",style={'textAlign': 'center'},  className="card-title"),
-                html.P(
-                    "Find out more about the mathematical model used to make these predictions about control of coronavirus.",
-                    className="card-text",
-                    style={'textAlign': 'justify'}
-                ),
-        dbc.Row([
-                dbc.Button("Learn more", href = '/model',color="primary"),
-        ],
-        justify='center'),
-            ]
-        ),
-    ],
-    # style={"width": "18rem"},
-)
+# card_model  = dbc.Card(
+#     [
+#         html.A([
+#             dbc.CardImg(src="https://res.cloudinary.com/hefjzc2gb/image/upload/c_fill,h_465,w_1100/v1588428400/model_fvg9af.png", top=True),
+#             ],
+#             href = '/model',
+#             style = {'cursor': 'pointer'}
+#         ),
+#         dbc.CardBody(
+#             [
+#                 html.H4("Model Explanation",style={'textAlign': 'center'},  className="card-title"),
+#                 html.P(
+#                     "Find out more about the mathematical model used to make these predictions about control of coronavirus.",
+#                     className="card-text",
+#                     style={'textAlign': 'justify'}
+#                 ),
+#         dbc.Row([
+#                 dbc.Button("Learn more", href = '/model',color="primary"),
+#         ],
+#         justify='center'),
+#             ]
+#         ),
+#     ],
+#     # style={"width": "18rem"},
+# )
 
 
 card_inter  = dbc.Card(
@@ -2174,38 +2191,33 @@ layout_enter = html.Div(
                 card_intro,
                 ],
                 width=10,
-                lg = 4,
-                style = {'marginRight': '2vw', 'marginLeft': '2vw'}
+                # lg = 4,
+                lg = 6,
+                style = {'marginRight': '2vw', 'marginLeft': '2vw', 'marginTop': '2vh', 'marginBottom': '2vh'}
                 ),
                 
                 dbc.Col([
                 card_inter,
                 ],
                 width=10,
-                lg = 4,
-                style = {'marginRight': '2vw', 'marginLeft': '2vw'}
+                # lg = 4,
+                lg = 6,
+                style = {'marginRight': '2vw', 'marginLeft': '2vw', 'marginTop': '2vh', 'marginBottom': '2vh'}
                 ),
-            ],
-            justify='center',
-            style = {'marginTop': '3vh', 'marginBottom': '3vh'}
-            ),
+            # ],
+            # justify='center',
+            # style = {'marginTop': '3vh', 'marginBottom': '3vh'}
+            # ),
 
-            dbc.Row([
-                dbc.Col([
-                card_model,
-                ],
-                width=10,
-                lg = 4,
-                style = {'marginRight': '2vw', 'marginLeft': '2vw'}
-                ),
-
+            # dbc.Row([
                 dbc.Col([
                 card_data,
-                ],     
+                ],
                 width=10,
-                lg = 4,
-                style = {'marginRight': '2vw', 'marginLeft': '2vw'}
+                lg = 6,
+                style = {'marginRight': '2vw', 'marginLeft': '2vw', 'marginTop': '2vh', 'marginBottom': '2vh'}
                 ),
+
             ],
             justify='center',
             style = {'marginTop': '3vh', 'marginBottom': '3vh'}
@@ -2223,6 +2235,185 @@ layout_enter = html.Div(
 
 
         ])
+
+
+
+
+
+
+
+
+########################################################################################################################
+layout_model = html.Div([
+    # dbc.Row([
+        # html.Div([
+            # dbc.Row([
+                # dbc.Col([
+                    # html.Div([
+
+                                                                                                                                                                # dbc.Col([
+
+                                                                                                                                                                    html.H3('Model Explanation',
+                                                                                                                                                                    className = 'display-4',
+                                                                                                                                                                    style = {'marginTop': '1vh', 'marginBottom': '1vh', 'textAlign': 'center', 'fontSize': '250%'}),
+
+                                                                                                                                                                    html.Hr(),
+                                                                                                                                                                    dcc.Markdown(
+                                                                                                                                                                    '''
+                                                                                                                                                                    *Underlying all of the predictions is a mathematical model. In this Section we explain how the mathematical model works.*
+
+                                                                                                                                                                    We present a compartmental model for COVID-19, split by risk categories. That is to say that everyone in the population is **categorised** based on **disease status** (susceptible/ infected/ recovered/ hospitalised/ critical care/ dead) and based on **COVID risk**.
+                                                                                                                                                                    
+                                                                                                                                                                    The model is very simplistic but still captures the basic spread mechanism. It is far simpler than the [**Imperial College model**](https://spiral.imperial.ac.uk/handle/10044/1/77482), but it uses similar parameter values and can capture much of the relevant information in terms of how effective control will be.
+
+                                                                                                                                                                    It is intended solely as an illustrative, rather than predictive, tool. We plan to increase the sophistication of the model and to update parameters as more (and better) data become available to us.
+                                                                                                                                                                    
+                                                                                                                                                                    We have **two risk categories**: high and low. **Susceptible** people get **infected** after contact with an infected person (from either risk category). A fraction of infected people (*h*) are **hospitalised** and the rest **recover**. Of these hospitalised cases, a fraction (*c*) require **critical care** and the rest recover. Of those in critical care, a fraction (*d*) **die** and the rest recover.
+
+                                                                                                                                                                    The recovery fractions depend on which risk category the individual is in.
+                                                                                                                                                                
+
+                                                                                                                                                                    ''',
+                                                                                                                                                                    style = {'textAlign': 'justify'}
+
+                                                                                                                                                                    ),
+
+
+
+                                                                                                                                                                    dbc.Row([
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/Capture_lomery.png',
+                                                                                                                                                                    style={'maxWidth':'90%','height': 'auto', 'display': 'block','marginTop': '1vh','marginBottom': '1vh'}
+                                                                                                                                                                    ),
+                                                                                                                                                                    ],
+                                                                                                                                                                    justify='center'
+                                                                                                                                                                    ),
+
+                                                                                                                                                                    dcc.Markdown('''
+
+                                                                                                                                                                    The selection of risk categories is done in the crudest way possible - an age split at 60 years (based on the age structure data below). A more nuanced split would give a more effective control result, since there are older people who are at low risk and younger people who are at high risk. In many cases, these people will have a good idea of which risk category they belong to.
+
+                                                                                                                                                                    *For the more mathematically inclined reader, a translation of the above into a mathematical system is described below.*
+
+                                                                                                                                                                    ''',style={'textAlign': 'justify','marginTop' : '2vh','marginBottom' : '2vh'}),
+                                                                                                                                                                    
+                                                                                                                                                                    
+
+                                                                                                                                                                    dbc.Row([
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/eqs_f3esyu.png',
+                                                                                                                                                                    style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'})
+                                                                                                                                                                    ],
+                                                                                                                                                                    justify='center'
+                                                                                                                                                                    ),
+
+
+                                                                                                                                                                    dbc.Row([
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/text_toshav.png',
+                                                                                                                                                                    style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'}
+                                                                                                                                                                    ),
+                                                                                                                                                                    ],
+                                                                                                                                                                    justify='center'
+                                                                                                                                                                    ),
+
+                                                                                                                                                                    
+                                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                                    Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. If they do not receive it they die, taking 2 days. The number able to get treatment must be lower than the number of ICU beds available.
+                                                                                                                                                                    ''',
+                                                                                                                                                                    style={'textAlign': 'justify'}),
+
+
+
+                                                                                                                                                                    html.Hr(),
+
+                                                                                                                                                                    html.H4('Parameter Values',style={'fontSize': '180%', 'textAlign': 'center'}),
+
+                                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                                    The model uses a weighted average across the age classes below and above 60 to calculate the probability of a member of each class getting hospitalised or needing critical care. Our initial conditions are updated to match new data every day (meaning the model output is updated every day, although in '**Custom Options**' there is the choice to start from any given day).
+
+                                                                                                                                                                    We assume a 10 day delay on hospitalisations, so we use the number infected 10 days ago to inform the number hospitalised (0.044 of infected) and in critical care (0.3 of hospitalised). We calculate the approximate number recovered based on the number dead, assuming that 0.009 infections cause death. All these estimates are as per the Imperial College paper ([**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482)).
+
+                                                                                                                                                                    The number of people infected, hospitalised and in critical care are calculated from the recorded data. We assume that only half the infections are reported ([**Fraser et al.**](https://science.sciencemag.org/content/early/2020/03/30/science.abb6936)), so we double the recorded number of current infections. The estimates for the initial conditions are then distributed amongst the risk groups. These proportions are calculated using conditional probability, according to risk (so that the initial number of infections is split proportionally by size of the risk categories, whereas the initially proportion of high risk deaths is much higher than low risk deaths).
+
+                                                                                                                                                                    ''',
+                                                                                                                                                                    style={'textAlign': 'justify'}),
+
+
+
+                                                                                                                                                                    
+
+                                                                                                                                                                    dbc.Row([
+                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1586345773/table_fhy8sf.png',
+                                                                                                                                                                    style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'}
+                                                                                                                                                                    ),
+                                                                                                                                                                    ],
+                                                                                                                                                                    justify='center'
+                                                                                                                                                                    ),
+
+
+
+                                                                                                                                                                    html.P('** the Imperial paper uses 8 days in hospital if critical care is not required (as do we). It uses 16 days (with 10 in ICU) if critical care is required. Instead, if critical care is required we use 8 days in hospital (non-ICU) and then either recovery or a further 8 in intensive care (leading to either recovery or death).',
+                                                                                                                                                                    style={'fontSize':'85%'}),
+
+                                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                                    Please use the following links: [**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482), [**Anderson et al**](https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30567-5/fulltext) and [**Zhao et al**](https://journals.plos.org/plosntds/article/file?rev=2&id=10.1371/journal.pntd.0006158&type=printable)
+                                                                                                                                                                    ''',
+                                                                                                                                                                    style={'textAlign': 'justify'}),
+
+
+                                                                                                                                                                    html.H4('Age Structure',style={'fontSize': '180%', 'textAlign': 'center'}),
+                                                                                                                                                                    
+                                                                                                                                                                    dcc.Markdown('''
+                                                                                                                                                                    The age data is taken from [**GOV.UK**](https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](https://spiral.imperial.ac.uk/handle/10044/1/77482) (Ferguson et al.). This means that the age structure will not be accurate when modelling other countries.
+
+                                                                                                                                                                    To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population. Note that the figures below are proportion of *symptomatic* cases that are hospitalised, which we estimate to be 55% of cases ([**Ferguson et al.**](https://spiral.imperial.ac.uk/handle/10044/1/77482)). The number requiring critical care is a proportion of this hospitalised number.
+
+                                                                                                                                                                    *The table below shows the age structure data that was used to calculate these weighted averages across the low risk category (under 60) and high risk (over 60) category.*
+                                                                                                                                                                    
+                                                                                                                                                                    ''',
+                                                                                                                                                                    style={'textAlign': 'justify','marginTop': '2vh','marginBottom': '2vh'}
+                                                                                                                                                                    
+                                                                                                                                                                    ),
+
+                                                                                                                                                                    generate_table(df),
+
+
+
+                        # ],
+                        # style= {'width': '90%', 'marginLeft': '5vw', 'marginRight': '5vw', 'marginTop': '10vh', 'marginBottom': '5vh'}
+                        # ),
+
+                    
+                        # ],
+                        # width=12,
+                        # xl=10
+                        # ),
+                        
+                        # ],
+                        # justify='center'
+                        # )
+
+
+
+
+
+                        # ],
+                        # style= {'width': '90%', 'backgroundColor': backgroundColor, 'marginLeft': '5vw', 'marginRight': '5vw', 'marginBottom': '5vh'}
+                        # ),    
+                        # ],
+                        # # no_gutters=True,
+                        # justify='center'
+                        # ),
+
+                        ],style={'fontSize': '12'})
+                                                                                                                        # ]),
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2509,12 +2700,16 @@ layout_intro = html.Div([
 
                         #end of tab 1
                     ]),
+                    
+        dbc.Tab(label='Model Explanation', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_explan', children=[
+                    layout_model
+                    ]),
 
             
     #end of tabs
     ])
 ],
-style={'fontSize': '1.9vh'}
+style={'fontSize': '12'}
 )
 
 
@@ -2541,11 +2736,11 @@ justify='center')
 
 Results_interpretation =  html.Div([
     
+    # The results show a prediction for how coronavirus will affect the population given a choice of control measure. It is assumed that control measures are in place for a **maximum of 18 months**. Explore the effect of the different control measures and the amount of time for which they are implemented.
+    
+    # The figures illustrate how a vaccine, coupled with an effective quarantine, can drastically decrease the death toll.
     dcc.Markdown('''
 
-    The results show a prediction for how coronavirus will affect the population given a choice of control measure. It is assumed that control measures are in place for a **maximum of 18 months**. Explore the effect of the different control measures and the amount of time for which they are implemented.
-    
-    The figures illustrate how a vaccine, coupled with an effective quarantine, can drastically decrease the death toll.
 
     For further explanation, read the [**Background**](/intro).
     
@@ -2560,6 +2755,707 @@ Results_interpretation =  html.Div([
 
 
 #########################################################################################################################################################
+
+
+
+
+
+
+############################################################################################################################################################################################################################
+                                                                                                                        # form group 1
+control_choices = dbc.FormGroup([
+    dbc.Col([                                                   
+
+    dbc.Row([
+
+    dbc.Col([ ###
+
+
+
+    html.H3(['Pick Your Strategy ',
+    dbc.Button(' ? ',
+    color='primary',
+    # className='mb-3',
+    id="popover-pick-strat-target",
+    size='md',
+    style = {'cursor': 'pointer', 'marginBottom': '0.5vh'}),
+    ],
+    className = 'display-4',
+    style={'fontSize': '180%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
+
+
+
+
+    dbc.Popover(
+    [
+    dbc.PopoverHeader('Pick Your Strategy'),
+    dbc.PopoverBody(dcc.Markdown(
+    '''
+
+    1. Pick the **type of control**.
+
+    2. Pick the **control timings** (how long control is applied for and when it starts).
+
+    *The other options below (under 'More Paramters') are optional custom choices that you may choose to investigate further or ignore altogether*.
+
+    *Click the button to dismiss*.
+
+    '''
+    ),),
+    ],
+    id = "popover-pick-strat",
+    target="popover-pick-strat-target",
+    is_open=False,
+    placement='right',
+    ),
+
+
+
+
+    # dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'fontSize': '100%' ,'textAlign': 'center'}), # 'textAlign': 'left', fs 80%
+
+
+
+    html.H6([
+    'Control Type ',
+    dbc.Button(' ? ',
+        color='primary',
+        # className='mb-3',
+        size='sm',
+        id='popover-control-target',
+        style={'cursor': 'pointer','marginBottom': '0.5vh'}
+        ),
+    ],
+    style={'fontSize': '100%', 'marginTop': '2vh', 'marginBottom': '1vh','textAlign': 'center'}),
+
+
+    dbc.Popover(
+    [
+    dbc.PopoverHeader('Control'),
+    dbc.PopoverBody(dcc.Markdown(
+    '''
+
+    The type of **control** determines how much we can reduce the **infection rate** of the disease (how quickly the disease is transmitted between people).
+    
+    We consider control of **two risk groups**; high risk and low risk. High risk groups are more likely to get seriously ill if they catch the disease.
+
+    *For further explanation, read the [**Background**](/intro)*.
+
+    '''
+    ),),
+    ],
+    id = "popover-control",
+    is_open=False,
+    target="popover-control-target",
+    placement='right',
+    ),
+
+        
+
+    html.Div([
+    dcc.Dropdown(
+        id = 'preset',
+        options=[{'label': presets_dict_dropdown[key],
+        'value': key} for key in presets_dict_dropdown],
+        value= 'LC',
+        clearable = False,
+    ),],
+    style={'cursor': 'pointer','marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
+        
+
+
+
+    html.H6([
+    'Months of Control ',
+    dbc.Button(' ? ',
+    color='primary',
+    size='sm',
+    id='popover-months-control-target',
+    style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+    ],
+    style={'fontSize': '100%','marginTop': '3vh', 'marginBottom': '1vh','textAlign': 'center'}),
+
+
+    
+    html.Div([
+    dcc.RangeSlider(
+                id='month-slider',
+                min=0,
+                max=floor(params.max_months_controlling),
+                step=1,
+                # pushable=0,
+                marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
+                value=[0,17],
+    ),
+    ],
+    # style={'fontSize': '180%'},
+    ),
+
+
+    dbc.Popover(
+        [
+        dbc.PopoverHeader('Control Timing'),
+        dbc.PopoverBody(dcc.Markdown(
+        '''
+
+        Use this slider to determine when control **starts** and **finishes**.
+
+        When control is in place the infection rate is reduced by an amount depending on the strategy choice.
+
+        When control is not in place the infection rate returns to the baseline level (100%).
+        
+        '''
+        ),),
+        ],
+        id = "popover-months-control",
+        is_open=False,
+        target="popover-months-control-target",
+        placement='right',
+    ),
+
+
+    ],
+    width={'size' : 8,'offset': 2},
+    ),### Col
+
+
+
+    ]),### Row
+
+    ],
+    width=True,
+    ),### Col
+
+    # end of form group 1
+    ],
+    row=True
+    )
+########################################################################################################################
+
+                                                                                                                                                                    
+                                                                                                                                                    # html.Hr(),
+                                                                                        ###################################
+
+# control_choices_2 = #  dbc.FormGroup([
+
+control_choices_2 =  dbc.Row([
+        dbc.Col([
+            dbc.Row([
+
+
+
+
+    dbc.ButtonGroup([
+    dbc.Button('More Parameters (Optional)',
+    color='primary',
+    outline=True,
+    className='mb-3',
+    id="collapse-button-custom",
+    style={'fontSize': '100%', 'cursor': 'pointer'}
+    ),
+
+    dbc.Button(' ? ',
+    color='primary',
+    className='mb-3',
+    id="popover-custom-options-target",
+    style={'cursor': 'pointer'}
+    )
+    ],
+    ),
+    ],
+    style={'marginTop': '0vh', 'marginBottom': '0vh'},
+    justify='center'),
+
+
+    dbc.Popover(
+        [
+        dbc.PopoverHeader('More Options'),
+        dbc.PopoverBody(dcc.Markdown(
+        '''
+
+        Use this to adjust the **healthcare provisions**, adjust **lockdown cycles options**, or choose a **custom strategy**.
+
+        To adjust the **Lockdown Cycles Options**, you must first select '*Lockdown Cycles*' in the '**Control Type**' selector above).
+
+        To adjust the **Custom Options**, you must first select '*Custom*' in the '**Control Type**' selector above). You can compare two strategies directly or consider one only.
+        
+        The custom choice consists of selecting by how much to decelerate spread of COVID-19 (using the 'infection rate' sliders). You can also choose different infection rates for the different risk groups.
+        '''
+        ),),
+        ],
+        id = "popover-custom-options",
+        is_open=False,
+        target="popover-custom-options-target",
+        placement='bottom',
+    ),
+
+                                    
+dbc.Collapse(
+[
+dbc.Row([
+
+dbc.Col([
+
+
+
+dbc.Row([
+dbc.Col([
+
+
+
+
+# dbc.Col([
+html.H6('Model Start Date',style={'fontSize': '100%', 'textAlign': 'center'}),
+
+dbc.Row([
+dcc.DatePickerSingle(
+id='model-start-date',
+min_date_allowed = min_date + datetime.timedelta(days=26), # datetime.date(2020, 2, 25),
+max_date_allowed = max_date, #datetime.date.today() - datetime.timedelta(days=1),
+initial_visible_month =  max_date, # datetime.date.today() - datetime.timedelta(days=1),
+date = max_date, # datetime.date.today() - datetime.timedelta(days=1),
+display_format='D-MMM-YYYY',
+style={'textAlign': 'center', 'marginTop': '0.5vh', 'marginBottom': '2vh'}
+),
+],justify='center'),
+# ],width=4),
+
+
+
+                                        
+html.H6([
+'Vaccination starts ',
+dbc.Button(' ? ',
+color='primary',
+size='sm',
+id='popover-vaccination-target',
+style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+],
+style={'fontSize': '100%','marginTop': '1vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+
+
+html.Div([
+dcc.Slider(
+id='vaccine-slider',
+min   = 9,
+max   = 18,
+step  = 3,
+marks = {i: 'Never' if i==9 else 'Month {}'.format(i) if i==12 else str(i) for i in range(9,19,3)},
+value = 12,
+),
+],
+# style={'fontSize': '180%'},
+),
+
+
+
+dbc.Popover(
+[
+dbc.PopoverHeader('Vaccination'),
+dbc.PopoverBody(dcc.Markdown(
+'''
+
+We assume a vaccine will not be available for 12 months.
+
+See how the introduction of a vaccine can drastically reduce the death toll if a sufficiently small proportion of the population have been infected.
+
+'''
+),),
+],
+id = "popover-vaccination",
+is_open=False,
+target="popover-vaccination-target",
+placement='left',
+),
+
+
+
+html.H6(['Critical Care Capacity Increase ',
+dbc.Button(' ? ',
+color='primary',
+size='sm',
+id='popover-cc-care-target',
+style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+],
+style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+
+dcc.Slider(
+id='ICU-slider',
+min = 0,
+max = 5,
+step = 1,
+marks={i: str(i)+'x' for i in range(6)},
+value=1,
+),
+
+dbc.Popover(
+[
+dbc.PopoverHeader('ICU Capacity'),
+dbc.PopoverBody(dcc.Markdown(
+'''
+
+Select '0x' to assume that ICU capacity stays constant, or pick an amount by which capacity is bulked up each year (relative to the amount initially).
+
+'''
+),),
+],
+id = "popover-cc-care",
+is_open=False,
+target="popover-cc-care-target",
+placement='top',
+),
+],width=6),
+
+],justify='center'),
+
+
+
+
+html.Hr(),
+
+dbc.Row([
+dbc.Col([
+html.H4("Lockdown Cycle Options ",style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
+
+dcc.Markdown('''*To adjust the following, make sure '**Control Type**' is set to 'Lockdown Cycles'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
+
+],width=6),
+
+
+
+dbc.Col([
+html.H4("Custom Options ",
+style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
+
+dcc.Markdown('''*To adjust the following, make sure '**Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
+
+],width=6),
+
+],justify='center'),
+
+dbc.Row([
+
+dbc.Col([
+
+
+
+dbc.Row([
+
+
+
+dbc.Col([
+
+html.H6(['Lockdown Cycles: groups allowed out of lockdown ',
+dbc.Button(' ? ',
+color='primary',
+size='sm',
+id='popover-groups-allowed-target',
+style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+],
+style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+
+
+dbc.Popover(
+[
+dbc.PopoverHeader('Lockdown Cycles: Groups'),
+dbc.PopoverBody(dcc.Markdown(
+'''
+
+In a strategy where lockdowns are 'switched on and off', you may choose to continue to protect the high risk by continuing their lockdown.
+
+Choose whether to keep high risk in lockdown or allow all groups to leave lockdown (this is the default setting).
+
+'''
+),),
+],
+id = "popover-groups-allowed",
+is_open=False,
+target="popover-groups-allowed-target",
+placement='top',
+),
+
+
+dbc.Row([
+dbc.RadioItems(
+id = 'hr-ld',
+options=[
+{'label': 'Low Risk Only', 'value': 0},
+{'label': 'Both Groups', 'value': 1},
+],
+value= 1,
+inline=True,
+labelStyle = {'fontSize': '80%'}
+),
+],justify='center'),
+
+
+
+                                                        
+html.H6(['Lockdown Cycles: Time On ',
+dbc.Button(' ? ',
+color='primary',
+size='sm',
+id='popover-cycles-on-target',
+style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+],
+style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+
+dcc.Slider(
+id='cycle-on',
+min = 1,
+max = 8,
+step = 1,
+marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
+value=8,
+),
+
+dbc.Popover(
+[
+dbc.PopoverHeader('Lockdown Cycles: Time On'),
+dbc.PopoverBody(dcc.Markdown(
+'''
+
+Use this slider to adjust the amount of time that the country is in lockdown under the strategy 'Lockdown cycles'.
+
+This allows us to consider a system where the country is in lockdown for 3 weeks say, followed by a week of normality.
+
+'''
+),),
+],
+id = "popover-cycles-on",
+is_open=False,
+target="popover-cycles-on-target",
+placement='top',
+),
+# ],width=6),
+
+
+# dbc.Col([
+html.H6(['Lockdown Cycles: Time Off ',
+dbc.Button(' ? ',
+color='primary',
+size='sm',
+id='popover-cycles-off-target',
+style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+],
+style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+
+dcc.Slider(
+id='cycle-off',
+min = 1,
+max = 8,
+step = 1,
+marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
+value=1,
+),
+
+dbc.Popover(
+[
+dbc.PopoverHeader('Lockdown Cycles: Time Off'),
+dbc.PopoverBody(dcc.Markdown(
+'''
+
+Use this slider to adjust the amount of time that the country is out of lockdown under the strategy 'Lockdown cycles'.
+
+This allows us to consider a system where the country is in lockdown for 3 weeks say, followed by a week of normality.
+
+'''
+),),
+],
+id = "popover-cycles-off",
+is_open=False,
+target="popover-cycles-off-target",
+placement='top',
+),
+],width=True),
+],
+justify='center'),
+
+
+],width=6),
+
+
+
+
+
+
+
+# html.Hr(),
+dbc.Col([
+
+
+
+
+dbc.Row([
+
+
+dbc.Col([
+
+
+html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
+
+# dcc.Markdown('''*Set '**Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
+dbc.Row([
+dbc.RadioItems(
+id = 'number-strats-radio',
+options=[
+{'label': 'One', 'value': 'one'},
+{'label': 'Two', 'value': 'two'},
+],
+value= 'one',
+inline=True,
+labelStyle = {'fontSize': '80%'}
+),
+],justify='center'),
+],width=6),
+
+],justify='center',
+style={'marginTop': '2vh', 'marginBottom': '2vh'}),
+
+
+
+
+dbc.Row([
+
+dbc.Button('Infection rate 🛈',
+size='sm',
+color='primary',
+className='mb-3',
+# id="popover-custom-options-target",
+id = 'popover-inf-rate-target',
+style={'cursor': 'pointer'}
+),
+],justify='center'),
+
+dbc.Popover(
+[
+dbc.PopoverHeader('Infection Rate'),
+dbc.PopoverBody(dcc.Markdown(
+'''
+
+The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
+
+Adjust by choosing a preset strategy  or making your own custom choice ('**Control Type**').
+
+
+'''
+),),
+],
+id = "popover-inf-rate",
+is_open=False,
+target="popover-inf-rate-target",
+placement='top',
+),
+
+dbc.Row([
+
+
+
+
+dbc.Col([
+
+
+
+html.Div(id='strat-lr-infection',style = {'textAlign': 'center','fontSize': '100%'}),
+
+
+dcc.Slider(
+id='low-risk-slider',
+min=0,
+max=len(params.fact_v)-1,
+step = 1,
+marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+value=initial_lr,
+),
+
+
+html.Div(id='strat-hr-infection',style = {'textAlign': 'center','fontSize': '100%'}),
+dcc.Slider(
+id='high-risk-slider',
+min=0,
+max=len(params.fact_v)-1,
+step = 1,
+marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+value=initial_hr,
+),
+],width=True),
+
+
+
+
+
+dbc.Col([
+html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '100%','textAlign': 'center'}),
+
+dcc.Slider(
+id='low-risk-slider-2',
+min=0,
+max=len(params.fact_v)-1,
+step = 1,
+marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+value=5,
+),
+
+html.H6('Strategy Two: High Risk Infection Rate (%)', style = {'fontSize': '100%','textAlign': 'center'}),
+
+dcc.Slider(
+id='high-risk-slider-2',
+min=0,
+max=len(params.fact_v)-1,
+step = 1,
+marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+value=8,
+),
+],width=True,
+id='strat-2-id'),
+
+],justify='center'),
+
+                                                    # html.Hr(),
+
+
+],width=6),
+
+
+]), # row with custom options and lockdown cycles
+                                            
+],width=True),
+
+
+
+
+
+
+
+],
+justify='center'),
+
+
+
+
+],
+id="collapse-custom",
+is_open=False,
+),
+
+],
+width=12,
+),
+
+],justify='center')
+
+
+#########################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2623,836 +3519,24 @@ layout_inter = html.Div([
                                                     ),
                                              
                                              
-                                                    html.Hr(),
+                                                    # html.Hr(),
 
 
 
 
-############################################################################################################################################################################################################################
+                                                    dbc.Card(
+                                                        [control_choices,
+                                                        control_choices_2],
+                                                        color='light',
+                                                        style = {'marginTop': '3vh', 'marginBottom': '3vh'}
+                                                        # inverse=True
+                                                    ),
 
-                                                                                                                        # form group 1
-                                                                                                                        dbc.FormGroup([
-
-                                                                                ########################################################################################################################
-
-                                                                                                                                                    dbc.Col([
-                                                                                                                                                            
-
-
-                                                                                                                                                            
-
-
-                                                                                ########################################################################################################################
-
-
-                                                                                                                                                            
-                                                                                                                                                dbc.Row([
-                                                                                                                                                        dbc.Col([
-
-
-
-
-
-                                                                                                                                                            # html.Hr(),
-                                                                                                                                                            
-                                                                                                                                                            html.H3(['Pick Your Strategy ',
-                                                                                                                                                            dbc.Button(' ? ',
-                                                                                                                                                            color='primary',
-                                                                                                                                                            # className='mb-3',
-                                                                                                                                                            id="popover-pick-strat-target",
-                                                                                                                                                            size='md',
-                                                                                                                                                            style = {'cursor': 'pointer', 'marginBottom': '0.5vh'}),
-                                                                                                                                                            ],
-                                                                                                                                                            className = 'display-4',
-                                                                                                                                                            style={'fontSize': '180%', 'marginTop': "3vh", 'marginBottom': "3vh", 'textAlign': 'center'}),
-
-                                                                                                                                                            
-
-
-                                                                                                                                                            dbc.Popover(
-                                                                                                                                                                [
-                                                                                                                                                                dbc.PopoverHeader('Pick Your Strategy'),
-                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                                                                                '''
-
-                                                                                                                                                                1. Pick the **type of control**.
-
-                                                                                                                                                                2. Pick the **control timings** (how long control is applied for and when it starts).
-
-                                                                                                                                                                *The other options below (under 'More Paramters') are optional custom choices that you may choose to investigate further or ignore altogether*.
-
-                                                                                                                                                                *Click the button to dismiss*.
-
-                                                                                                                                                                '''
-                                                                                                                                                                ),),
-                                                                                                                                                                ],
-                                                                                                                                                                id = "popover-pick-strat",
-                                                                                                                                                                target="popover-pick-strat-target",
-                                                                                                                                                                is_open=False,
-                                                                                                                                                                placement='right',
-                                                                                                                                                                ),
-
-                                                                                                                                                  
-
-
-                                                                                                                                                        dcc.Markdown('''*Choose the type of control and when to implement it.*''', style = {'fontSize': '100%' ,'textAlign': 'center'}), # 'textAlign': 'left', fs 80%
-
-                                                                                                                                                        
-                                                                                                                                                    dbc.Row([
-
-
-                                                                                                                                                           
-
-
-
-                                                                                                                                                            dbc.Col([
-
-                                               
-
-                                                                                                                                                            html.H6([
-                                                                                                                                                                'Control Type ',
-                                                                                                                                                                dbc.Button(' ? ',
-                                                                                                                                                                    color='primary',
-                                                                                                                                                                    # className='mb-3',
-                                                                                                                                                                    size='sm',
-                                                                                                                                                                    id='popover-control-target',
-                                                                                                                                                                    style={'cursor': 'pointer','marginBottom': '0.5vh'}
-                                                                                                                                                                    ),
-                                                                                                                                                                ],
-                                                                                                                                                                style={'fontSize': '100%', 'marginTop': '2vh', 'marginBottom': '1vh','textAlign': 'center'}),
-
-
-                                                                                                                                                            dbc.Popover(
-                                                                                                                                                                [
-                                                                                                                                                                dbc.PopoverHeader('Control'),
-                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                                                                                '''
-
-                                                                                                                                                                The type of **control** determines how much we can reduce the **infection rate** of the disease (how quickly the disease is transmitted between people).
-                                                                                                                                                                
-                                                                                                                                                                We consider control of **two risk groups**; high risk and low risk. High risk groups are more likely to get seriously ill if they catch the disease.
-
-                                                                                                                                                                *For further explanation, read the [**Background**](/intro)*.
-
-                                                                                                                                                                '''
-                                                                                                                                                                ),),
-                                                                                                                                                                ],
-                                                                                                                                                                id = "popover-control",
-                                                                                                                                                                is_open=False,
-                                                                                                                                                                target="popover-control-target",
-                                                                                                                                                                placement='right',
-                                                                                                                                                                ),
-
-                                                                                                                                                                
-
-                                                                                                                                                                html.Div([
-                                                                                                                                                                dcc.Dropdown(
-                                                                                                                                                                    id = 'preset',
-                                                                                                                                                                    options=[{'label': presets_dict_dropdown[key],
-                                                                                                                                                                    'value': key} for key in presets_dict_dropdown],
-                                                                                                                                                                    value= 'LC',
-                                                                                                                                                                    clearable = False,
-                                                                                                                                                                ),],
-                                                                                                                                                                style={'cursor': 'pointer','marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
-                                                                                                                                                                
-
-
-
-                                                                                                                                                                html.H6([
-                                                                                                                                                                'Months of Control ',
-                                                                                                                                                                dbc.Button(' ? ',
-                                                                                                                                                                color='primary',
-                                                                                                                                                                size='sm',
-                                                                                                                                                                id='popover-months-control-target',
-                                                                                                                                                                style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-                                                                                                                                                                ],
-                                                                                                                                                                style={'fontSize': '100%','marginTop': '3vh', 'marginBottom': '1vh','textAlign': 'center'}),
-
-
-                                                                                                                                                            
-                                                                                                                                                                html.Div([
-                                                                                                                                                                dcc.RangeSlider(
-                                                                                                                                                                            id='month-slider',
-                                                                                                                                                                            min=0,
-                                                                                                                                                                            max=floor(params.max_months_controlling),
-                                                                                                                                                                            step=1,
-                                                                                                                                                                            # pushable=0,
-                                                                                                                                                                            marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
-                                                                                                                                                                            value=[0,17],
-                                                                                                                                                                ),
-                                                                                                                                                                ],
-                                                                                                                                                                # style={'fontSize': '180%'},
-                                                                                                                                                                ),
-
-
-                                                                                                                                                            dbc.Popover(
-                                                                                                                                                                [
-                                                                                                                                                                dbc.PopoverHeader('Control Timing'),
-                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                                                                                '''
-
-                                                                                                                                                                Use this slider to determine when control **starts** and **finishes**.
-
-                                                                                                                                                                When control is in place the infection rate is reduced by an amount depending on the strategy choice.
-
-                                                                                                                                                                When control is not in place the infection rate returns to the baseline level (100%).
-                                                                                                                                                                
-                                                                                                                                                                '''
-                                                                                                                                                                ),),
-                                                                                                                                                                ],
-                                                                                                                                                                id = "popover-months-control",
-                                                                                                                                                                is_open=False,
-                                                                                                                                                                target="popover-months-control-target",
-                                                                                                                                                                placement='right',
-                                                                                                                                                            ),
-
-
-                                                                                                                                                            ],
-                                                                                                                                                            width={'size' : 8,'offset': 2},
-                                                                                                                                                            ),
-
-
-
-                                                                                                                                                        # dbc.Col([
-
-
-                                                                                                                                                        # ],width=6),
-
-
-
-
-
-
-                                                                                                                                                    ]),
-
-
-
-                                                                                                                                                # dbc.Row([
-
-
-                                                                                                                                                #     dbc.Col([
-
-
-
-
-                                                                                                                                                            
-
-
-                                                                                                                                                #         ],
-                                                                                                                                                #         width=7,
-                                                                                                                                                #         ),
-
-
-
-                                                                                                                                                #     ]),
-
-
-
-
-
-
-
-                                                                                                                                                        ],width=True),
-                                                                                                                                                        #end of PYS row
-                                                                                                                                                    ]),
-
-                                                                                                                                                                    
-                                                                                                                                                        html.Hr(),
-                                                                                        ###################################
-
-
-
-                                                                                                                                                    dbc.Row([
-                                                                                                                                                        dbc.Col([
-                                                                                                                                                            dbc.Row([
-
-                                                                                                                                                            # dbc.Row([
-                                                                                                                                                            # dbc.ButtonGroup(
-                                                                                                                                                            #     children=[
-                                                                                                                                                            #         dbc.Button("Disease Progress Curves",color='primary',outline=True,style={'minWidth': '17vw'},id='DPC_dd',active=True),
-                                                                                                                                                            #         dbc.Button("Bar Charts",             color='primary',outline=True,style={'minWidth': '17vw'},id='BC_dd'),
-                                                                                                                                                            #         dbc.Button("Strategy Overview",      color='primary',outline=True,style={'minWidth': '17vw'},id='SO_dd'),
-                                                                                                                                                            #     ],
-                                                                                                                                                            #     className="mb-3",
-                                                                                                                                                            #     size='md',
-                                                                                                                                                            #     # outline=True,
-                                                                                                                                                            #     style = {'marginTop': '1vh', 'marginBottom': '2vh', 'textAlign': 'center'}
-                                                                                                                                                            # ),
-                                                                                                                                                            # ],
-                                                                                                                                                            # justify='center'),
-
-
-
-
-                                                                                                                                                            dbc.ButtonGroup([
-                                                                                                                                                            dbc.Button('More Parameters (Optional)',
-                                                                                                                                                            color='primary',
-                                                                                                                                                            outline=True,
-                                                                                                                                                            className='mb-3',
-                                                                                                                                                            id="collapse-button-custom",
-                                                                                                                                                            style={'fontSize': '100%', 'cursor': 'pointer'}
-                                                                                                                                                            ),
-
-                                                                                                                                                            dbc.Button(' ? ',
-                                                                                                                                                            color='primary',
-                                                                                                                                                            className='mb-3',
-                                                                                                                                                            id="popover-custom-options-target",
-                                                                                                                                                            style={'cursor': 'pointer'}
-                                                                                                                                                            )
-                                                                                                                                                            ],
-                                                                                                                                                            ),
-                                                                                                                                                            ],
-                                                                                                                                                            style={'marginTop': '0vh', 'marginBottom': '0vh'},
-                                                                                                                                                            justify='center'),
-
-
-                                                                                                                                                            dbc.Popover(
-                                                                                                                                                                [
-                                                                                                                                                                dbc.PopoverHeader('More Options'),
-                                                                                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                                                                                '''
-
-                                                                                                                                                                Use this to adjust the **healthcare provisions**, adjust **lockdown cycles options**, or choose a **custom strategy**.
-
-                                                                                                                                                                To adjust the **Lockdown Cycles Options**, you must first select '*Lockdown Cycles*' in the '**Control Type**' selector above).
-
-                                                                                                                                                                To adjust the **Custom Options**, you must first select '*Custom*' in the '**Control Type**' selector above). You can compare two strategies directly or consider one only.
-                                                                                                                                                                
-                                                                                                                                                                The custom choice consists of selecting by how much to decelerate spread of COVID-19 (using the 'infection rate' sliders). You can also choose different infection rates for the different risk groups.
-                                                                                                                                                                '''
-                                                                                                                                                                ),),
-                                                                                                                                                                ],
-                                                                                                                                                                id = "popover-custom-options",
-                                                                                                                                                                is_open=False,
-                                                                                                                                                                target="popover-custom-options-target",
-                                                                                                                                                                placement='bottom',
-                                                                                                                                                            ),
-                                                                                                                                                            
-
-                                                                                                                                                            
-                                                                    dbc.Collapse(
-                                                                        [
-                                                                            dbc.Row([
-
-                                                                                dbc.Col([
-
-                                                                                                # dbc.Row([
-
-
-                                                                                                        dbc.Row([
-                                                                                                            dbc.Col([
-
-                                                        
-
-
-                                                        # dbc.Col([
-                                                        html.H6('Model Start Date',style={'fontSize': '100%', 'textAlign': 'center'}),
-
-                                                        dbc.Row([
-                                                        dcc.DatePickerSingle(
-                                                            id='model-start-date',
-                                                            min_date_allowed = min_date + datetime.timedelta(days=26), # datetime.date(2020, 2, 25),
-                                                            max_date_allowed = max_date, #datetime.date.today() - datetime.timedelta(days=1),
-                                                            initial_visible_month =  max_date, # datetime.date.today() - datetime.timedelta(days=1),
-                                                            date = max_date, # datetime.date.today() - datetime.timedelta(days=1),
-                                                            display_format='D-MMM-YYYY',
-                                                            style={'textAlign': 'center', 'marginTop': '0.5vh', 'marginBottom': '2vh'}
-                                                        ),
-                                                        ],justify='center'),
-                                                        # ],width=4),
-
-                                                        
-
-                                                                                                                                                                
-                                                        html.H6([
-                                                            'Vaccination starts ',
-                                                            dbc.Button(' ? ',
-                                                            color='primary',
-                                                            size='sm',
-                                                            id='popover-vaccination-target',
-                                                            style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-                                                            ],
-                                                            style={'fontSize': '100%','marginTop': '1vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
-
-
-                                                        html.Div([
-                                                        dcc.Slider(
-                                                                    id='vaccine-slider',
-                                                                    min   = 9,
-                                                                    max   = 18,
-                                                                    step  = 3,
-                                                                    marks = {i: 'Never' if i==9 else 'Month {}'.format(i) if i==12 else str(i) for i in range(9,19,3)},
-                                                                    value = 12,
-                                                        ),
-                                                        ],
-                                                        # style={'fontSize': '180%'},
-                                                        ),
-
-
-
-                                                        dbc.Popover(
-                                                            [
-                                                            dbc.PopoverHeader('Vaccination'),
-                                                            dbc.PopoverBody(dcc.Markdown(
-                                                            '''
-
-                                                            We assume a vaccine will not be available for 12 months.
-                                                            
-                                                            See how the introduction of a vaccine can drastically reduce the death toll if a sufficiently small proportion of the population have been infected.
-
-                                                            '''
-                                                            ),),
-                                                            ],
-                                                            id = "popover-vaccination",
-                                                            is_open=False,
-                                                            target="popover-vaccination-target",
-                                                            placement='left',
-                                                        ),
-
-
-
-                                                        html.H6(['Critical Care Capacity Increase ',
-                                                        dbc.Button(' ? ',
-                                                            color='primary',
-                                                            size='sm',
-                                                            id='popover-cc-care-target',
-                                                            style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-                                                            ],
-                                                            style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
-
-                                                        dcc.Slider(
-                                                                id='ICU-slider',
-                                                                min = 0,
-                                                                max = 5,
-                                                                step = 1,
-                                                                marks={i: str(i)+'x' for i in range(6)},
-                                                                value=1,
-                                                            ),
-                                                        
-                                                        dbc.Popover(
-                                                            [
-                                                            dbc.PopoverHeader('ICU Capacity'),
-                                                            dbc.PopoverBody(dcc.Markdown(
-                                                            '''
-
-                                                            Select '0x' to assume that ICU capacity stays constant, or pick an amount by which capacity is bulked up each year (relative to the amount initially).
-
-                                                            '''
-                                                            ),),
-                                                            ],
-                                                            id = "popover-cc-care",
-                                                            is_open=False,
-                                                            target="popover-cc-care-target",
-                                                            placement='top',
-                                                        ),
-                                                                                                        ],width=6),
-
-                                                                                                        ],justify='center'),
-
-
-
-
-                                                                                                        html.Hr(),
-
-                                                                                                dbc.Row([
-                                                                                                    dbc.Col([
-                                                                                                        html.H4("Lockdown Cycle Options ",style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
-
-                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**Control Type**' is set to 'Lockdown Cycles'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
-
-                                                                                                    ],width=6),
-
-
-
-                                                                                                    dbc.Col([
-                                                                                                        html.H4("Custom Options ",
-                                                                                                        style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '150%'}),
-
-                                                                                                        dcc.Markdown('''*To adjust the following, make sure '**Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
-
-                                                                                                    ],width=6),
-
-                                                                                                ],justify='center'),
-
-                                                                                                dbc.Row([
-
-                                                                                                        dbc.Col([
-
-
-
-                                                                                                        dbc.Row([
-
-
-
-                                                                                                        dbc.Col([
-
-                                                                                                            html.H6(['Lockdown Cycles: groups allowed out of lockdown ',
-                                                                                                            dbc.Button(' ? ',
-                                                                                                                color='primary',
-                                                                                                                size='sm',
-                                                                                                                id='popover-groups-allowed-target',
-                                                                                                                style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-                                                                                                                ],
-                                                                                                                style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
-
-
-                                                                                                            dbc.Popover(
-                                                                                                                [
-                                                                                                                dbc.PopoverHeader('Lockdown Cycles: Groups'),
-                                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                                '''
-
-                                                                                                                In a strategy where lockdowns are 'switched on and off', you may choose to continue to protect the high risk by continuing their lockdown.
-
-                                                                                                                Choose whether to keep high risk in lockdown or allow all groups to leave lockdown (this is the default setting).
-
-                                                                                                                '''
-                                                                                                                ),),
-                                                                                                                ],
-                                                                                                                id = "popover-groups-allowed",
-                                                                                                                is_open=False,
-                                                                                                                target="popover-groups-allowed-target",
-                                                                                                                placement='top',
-                                                                                                            ),
-
-
-                                                                                                            dbc.Row([
-                                                                                                            dbc.RadioItems(
-                                                                                                                id = 'hr-ld',
-                                                                                                                options=[
-                                                                                                                    {'label': 'Low Risk Only', 'value': 0},
-                                                                                                                    {'label': 'Both Groups', 'value': 1},
-                                                                                                                ],
-                                                                                                                value= 1,
-                                                                                                                inline=True,
-                                                                                                                labelStyle = {'fontSize': '80%'}
-                                                                                                                ),
-                                                                                                                ],justify='center'),
-
-
-
-                                                                                                                        
-                                                                                                        # ],width=True),
-
-                                                                                                        # ],justify='center'),
-
-
-                                                                                                        #                         # html.Hr(),
-
-
-
-                                                                                                        #                                                             dbc.Row([
-                                                                                                        #                                                             dbc.Col([
-
-
-                                                                                                                                                                                
-                                                                                                            html.H6(['Lockdown Cycles: Time On ',
-                                                                                                            dbc.Button(' ? ',
-                                                                                                                color='primary',
-                                                                                                                size='sm',
-                                                                                                                id='popover-cycles-on-target',
-                                                                                                                style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-                                                                                                                ],
-                                                                                                                style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
-
-                                                                                                            dcc.Slider(
-                                                                                                                    id='cycle-on',
-                                                                                                                    min = 1,
-                                                                                                                    max = 8,
-                                                                                                                    step = 1,
-                                                                                                                    marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
-                                                                                                                    value=8,
-                                                                                                                ),
-                                                                                                            
-                                                                                                            dbc.Popover(
-                                                                                                                [
-                                                                                                                dbc.PopoverHeader('Lockdown Cycles: Time On'),
-                                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                                '''
-
-                                                                                                                Use this slider to adjust the amount of time that the country is in lockdown under the strategy 'Lockdown cycles'.
-
-                                                                                                                This allows us to consider a system where the country is in lockdown for 3 weeks say, followed by a week of normality.
-
-                                                                                                                '''
-                                                                                                                ),),
-                                                                                                                ],
-                                                                                                                id = "popover-cycles-on",
-                                                                                                                is_open=False,
-                                                                                                                target="popover-cycles-on-target",
-                                                                                                                placement='top',
-                                                                                                            ),
-                                                                                                        # ],width=6),
-
-
-                                                                                                        # dbc.Col([
-                                                                                                            html.H6(['Lockdown Cycles: Time Off ',
-                                                                                                            dbc.Button(' ? ',
-                                                                                                                color='primary',
-                                                                                                                size='sm',
-                                                                                                                id='popover-cycles-off-target',
-                                                                                                                style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-                                                                                                                ],
-                                                                                                                style={'fontSize': '100%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
-
-                                                                                                            dcc.Slider(
-                                                                                                                    id='cycle-off',
-                                                                                                                    min = 1,
-                                                                                                                    max = 8,
-                                                                                                                    step = 1,
-                                                                                                                    marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
-                                                                                                                    value=1,
-                                                                                                                ),
-                                                                                                            
-                                                                                                            dbc.Popover(
-                                                                                                                [
-                                                                                                                dbc.PopoverHeader('Lockdown Cycles: Time Off'),
-                                                                                                                dbc.PopoverBody(dcc.Markdown(
-                                                                                                                '''
-
-                                                                                                                Use this slider to adjust the amount of time that the country is out of lockdown under the strategy 'Lockdown cycles'.
-
-                                                                                                                This allows us to consider a system where the country is in lockdown for 3 weeks say, followed by a week of normality.
-
-                                                                                                                '''
-                                                                                                                ),),
-                                                                                                                ],
-                                                                                                                id = "popover-cycles-off",
-                                                                                                                is_open=False,
-                                                                                                                target="popover-cycles-off-target",
-                                                                                                                placement='top',
-                                                                                                            ),
-                                                                                                        ],width=True),
-                                                                                                            ],
-                                                                                                            justify='center'),
-
-                                                                                                        
-                                                                                                        ],width=6),
-
-
-
-
-
-
-
-                                                                                            # html.Hr(),
-                                                                dbc.Col([
-
-                                                                                                
-                                                                                                
-
-                                                                                                dbc.Row([
-
-
-                                                                                                dbc.Col([
-
-
-                                                                                                html.H6('Number Of Strategies',style={'fontSize': '100%','textAlign': 'center'}),
-
-                                                                                                # dcc.Markdown('''*Set '**Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
-                                                                                                dbc.Row([
-                                                                                                dbc.RadioItems(
-                                                                                                id = 'number-strats-radio',
-                                                                                                options=[
-                                                                                                    {'label': 'One', 'value': 'one'},
-                                                                                                    {'label': 'Two', 'value': 'two'},
-                                                                                                ],
-                                                                                                value= 'one',
-                                                                                                inline=True,
-                                                                                                labelStyle = {'fontSize': '80%'}
-                                                                                                ),
-                                                                                                ],justify='center'),
-                                                                                                ],width=6),
-
-                                                                                                ],justify='center',
-                                                                                                style={'marginTop': '2vh', 'marginBottom': '2vh'}),
-
-
-
-                                                                                                # html.Hr(),
-                                                                                                
-
-
-
-
-                                                                                                # html.Hr(),
-                                                                                                
-
-
-                                                                                                dbc.Row([
-
-                                                                                                dbc.Button('Infection rate 🛈',
-                                                                                                        size='sm',
-                                                                                                        color='primary',
-                                                                                                        className='mb-3',
-                                                                                                        # id="popover-custom-options-target",
-                                                                                                        id = 'popover-inf-rate-target',
-                                                                                                        style={'cursor': 'pointer'}
-                                                                                                        ),
-                                                                                                ],justify='center'),
-
-                                                                                                dbc.Popover(
-                                                                                                    [
-                                                                                                    dbc.PopoverHeader('Infection Rate'),
-                                                                                                    dbc.PopoverBody(dcc.Markdown(
-                                                                                                    '''
-
-                                                                                                    The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
-                                                                                                
-                                                                                                    Adjust by choosing a preset strategy  or making your own custom choice ('**Control Type**').
-
-
-                                                                                                    '''
-                                                                                                    ),),
-                                                                                                    ],
-                                                                                                    id = "popover-inf-rate",
-                                                                                                    is_open=False,
-                                                                                                    target="popover-inf-rate-target",
-                                                                                                    placement='top',
-                                                                                                ),
-
-                                                                                                dbc.Row([
-
-                                                                                                    
-
-
-                                                                                                    dbc.Col([
-                                                                                              
-                                                                                              
-
-                                                                                                    html.Div(id='strat-lr-infection',style = {'textAlign': 'center','fontSize': '100%'}),
-                                                                                                    
-                                                                                                    
-                                                                                                    dcc.Slider(
-                                                                                                        id='low-risk-slider',
-                                                                                                        min=0,
-                                                                                                        max=len(params.fact_v)-1,
-                                                                                                        step = 1,
-                                                                                                        marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                        value=initial_lr,
-                                                                                                    ),
-
-
-                                                                                                    html.Div(id='strat-hr-infection',style = {'textAlign': 'center','fontSize': '100%'}),
-                                                                                                    dcc.Slider(
-                                                                                                            id='high-risk-slider',
-                                                                                                            min=0,
-                                                                                                            max=len(params.fact_v)-1,
-                                                                                                            step = 1,
-                                                                                                            marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                            value=initial_hr,
-                                                                                                            ),
-                                                                                                    ],width=True),
-
-                                                                                                            
-
-
-
-                                                                                                    dbc.Col([
-                                                                                                            html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '100%','textAlign': 'center'}),
-
-                                                                                                            dcc.Slider(
-                                                                                                                id='low-risk-slider-2',
-                                                                                                                min=0,
-                                                                                                                max=len(params.fact_v)-1,
-                                                                                                                step = 1,
-                                                                                                                marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                                value=5,
-                                                                                                            ),
-
-                                                                                                            html.H6('Strategy Two: High Risk Infection Rate (%)', style = {'fontSize': '100%','textAlign': 'center'}),
-                                                                                                        
-                                                                                                            dcc.Slider(
-                                                                                                                id='high-risk-slider-2',
-                                                                                                                min=0,
-                                                                                                                max=len(params.fact_v)-1,
-                                                                                                                step = 1,
-                                                                                                                marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-                                                                                                                value=8,
-                                                                                                                ),
-                                                                                                    ],width=True,
-                                                                                                    id='strat-2-id'),
-                                                                                                    
-                                                                                                ],justify='center'),
-
-                                                                                                                                                                            # html.Hr(),
-
-
-                                                                        ],width=6),
-
-
-                                                                        ]), # row with custom options and lockdown cycles
-                                                                                                                                                                    
-                                                                ],width=True),
-
-
-
-
-
-
-
-                                                                                                                                                                    ],
-                                                                                                                                                                    justify='center'),
-
-
-
-                                                                                                                                                
-                                                                                                                                                                ],
-                                                                                                                                                                id="collapse-custom",
-                                                                                                                                                                is_open=False,
-                                                                                                                                                            ),
-
-                                                                                                                                                        ],
-                                                                                                                                                        width=12,
-                                                                                                                                                        ),
-                                                                                                                                                        #### end of custom row
-                                                                                                                                                        ]),
-
-                                                                                                                                                        # dbc.Row([
-
-
-
-                                                                                                
-                                                                                                
-                                                                                                
-                                                                                                
-                                                                                                
-                                                                                                
-
-
-                                                                                #########################################################################################################################################################
-
-
-                                                                                                                                                    ],
-                                                                                                                                                    width = True
-                                                                                                                                                    ),
-
-                                                                                                                                                    # ],
-                                                                                                                                                    # style={'backgroundColor': "#FFFFFF", 'marginLeft': '1vw','marginRight': '1vw','marginBottom': '2vh','marginTop': '2vh'}
-                                                                                                                                                    # ),        
-                                                                                                                                        
-
-                                                                                                                                                    # ],
-                                                                                                                                                    # style={'backgroundColor': "#FFFFFF",'height': '100%','width': '100%'}),
-
-                                                                                                                                                    # ],
-                                                                                                                                                    # ),        
-                                                                                                                                                    
-                                                                                ########################################################################################################################
-
-                                                                                                                        # end of form group 1
-                                                                                                                        ],
-                                                                                                                        row=True
-                                                                                                                        ),
-                                                                                ########################################################################################################################
-
-                                                                                                        # ],
-                                                                                                        # style={'marginLeft':'2vh', 'marginRight':'2vh'}
-                                                                                                        # ),
-
-
-
-
+                                                    # dbc.Card(
+                                                    #     color='light',
+                                                    #     style = {'marginTop': '3vh', 'marginBottom': '3vh'}
+                                                    #     # inverse=True
+                                                    # ),
 
 
 
@@ -3461,7 +3545,7 @@ layout_inter = html.Div([
 
 ############################################################################################################################################################################################################################    
 
-                                                    html.Hr(),
+                                                    # html.Hr(),
                                     ##############################################################################################################################################################################################################################
                                             # start of results col
 
@@ -3682,13 +3766,45 @@ layout_inter = html.Div([
                                                                 
                                                                 
 
+                                                                dbc.Card(
+                                                                html.Div([
+                                                                dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '100%'}),
+                                                                ],
+                                                                style={'margin': '10px'}
+                                                                ),
+                                                                color='light'
+                                                                ),
+                                                                dbc.Card(
+                                                                html.Div([
+                                                                dcc.Graph(id='line-plot-4',style={'height': '70vh', 'width': '100%'}),
+                                                                ],
+                                                                style={'margin': '10px'}
+                                                                ),
+                                                                color='light'
+                                                                ),
+                                                                dbc.Card(
+                                                                html.Div([
+                                                                dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '100%'}),
+                                                                ],
+                                                                style={'margin': '10px'}
+                                                                ),
+                                                                color='light'
+                                                                ),
+                                                                dbc.Card(
+                                                                html.Div([
+                                                                dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '100%'}),
+                                                                ],
+                                                                style={'margin': '10px'}
+                                                                ),
+                                                                color='light'
+                                                                ),
 
 
                                                                 html.H4("Hospital Categories",
                                                                 style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                 ),
 
-                                                                dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
+                                                                # dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
                                                                 dcc.Markdown('''
                                                                             In the **Hospital Categories** plot, you can see how quickly the **ICU capacity** (relating to the number of intensive care beds available) could be overwhelmed (within April if no control measures are implemented). This is shown by the pink boxes if the black 'Critical Care' curve exceeds the purple line specifying the critical care capacity.
@@ -3706,7 +3822,7 @@ layout_inter = html.Div([
                                                                 style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                 ),
 
-                                                                dcc.Graph(id='line-plot-4',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
+                                                                # dcc.Graph(id='line-plot-4',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
                                                                 dcc.Markdown('''
                                                                             This plot shows a projection for the fatalities caused by the choice of control. It contains an upper and a lower estimate to give a range of possible values as a basic indication of uncertainty (but only in the initial conditions and the effectiveness of the control).
@@ -3721,7 +3837,7 @@ layout_inter = html.Div([
                                                                 style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
                                                                 ),
 
-                                                                dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
+                                                                # dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
 
 
@@ -3763,7 +3879,7 @@ layout_inter = html.Div([
                                                                 html.Hr(),
 
                                                                 
-                                                                dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
+                                                                # dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
 
                                                                 # dbc.Col([
@@ -3974,13 +4090,13 @@ layout_inter = html.Div([
 
                                                 html.H6([
                                                 'Change Results Type ',
-                                                dbc.Button(' ? ',
-                                                    color='primary',
-                                                    # className='mb-3',
-                                                    size='sm',
-                                                    id='popover-res-type-target',
-                                                    style={'cursor': 'pointer','marginBottom': '0.5vh'}
-                                                    ),
+                                                # dbc.Button(' ? ',
+                                                #     color='primary',
+                                                #     # className='mb-3',
+                                                #     size='sm',
+                                                #     id='popover-res-type-target',
+                                                #     style={'cursor': 'pointer','marginBottom': '0.5vh'}
+                                                #     ),
                                                 ],
                                                 style={'fontSize': '180%', 'marginTop': '3vh', 'marginBottom': '3vh','textAlign': 'center'}),
 
@@ -4004,22 +4120,22 @@ layout_inter = html.Div([
 
                                             ],width={'size': 8, 'offset': 2}),
                                                 
-                                            dbc.Popover(
-                                                    [
-                                                    dbc.PopoverHeader('Results'),
-                                                    dbc.PopoverBody(dcc.Markdown(
-                                                    '''
+                                            # dbc.Popover(
+                                            #         [
+                                            #         dbc.PopoverHeader('Results'),
+                                            #         dbc.PopoverBody(dcc.Markdown(
+                                            #         '''
 
-                                                    Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.
+                                            #         Choose between disease progress curves, bar charts and strategy overviews to explore the outcome of your strategy choice.
 
-                                                    '''
-                                                    ),),
-                                                    ],
-                                                    id = "popover-res-type",
-                                                    is_open=False,
-                                                    target="popover-res-type-target",
-                                                    placement='left',
-                                                ),
+                                            #         '''
+                                            #         ),),
+                                            #         ],
+                                            #         id = "popover-res-type",
+                                            #         is_open=False,
+                                            #         target="popover-res-type-target",
+                                            #         placement='left',
+                                            #     ),
 
                                                     
 
@@ -4060,8 +4176,8 @@ layout_inter = html.Div([
                                                     
                                                     html.Hr(style={'marginTop': '5vh'}),
     
-                                                    html.H3("Interpretation", className="display-4",style={'fontSize': '250%','textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
-                                                    html.Hr(),
+                                                    # html.H3("Interpretation", className="display-4",style={'fontSize': '250%','textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
+                                                    # html.Hr(),
 
                                                     Results_interpretation,
 
@@ -4107,191 +4223,9 @@ layout_inter = html.Div([
     # no_gutters=True,
     justify='center'
     )],
-    style={'fontSize' : '1.9vh'},
+    style={'fontSize': '12'},
     id='main-page-id'
     )
-
-
-
-
-
-
-
-###########################################################################################################################################
-
-layout_model = html.Div([
-    dbc.Row([
-        html.Div([
-            dbc.Row([
-                dbc.Col([
-                    html.Div([
-
-                                                                                                                                                                # dbc.Col([
-
-                                                                                                                                                                    html.H3('Model Explanation',
-                                                                                                                                                                    className = 'display-4',
-                                                                                                                                                                    style = {'marginTop': '1vh', 'marginBottom': '1vh', 'textAlign': 'center', 'fontSize': '250%'}),
-
-                                                                                                                                                                    html.Hr(),
-                                                                                                                                                                    dcc.Markdown(
-                                                                                                                                                                    '''
-                                                                                                                                                                    *Underlying all of the predictions is a mathematical model. In this Section we explain how the mathematical model works.*
-
-                                                                                                                                                                    We present a compartmental model for COVID-19, split by risk categories. That is to say that everyone in the population is **categorised** based on **disease status** (susceptible/ infected/ recovered/ hospitalised/ critical care/ dead) and based on **COVID risk**.
-                                                                                                                                                                    
-                                                                                                                                                                    The model is very simplistic but still captures the basic spread mechanism. It is far simpler than the [**Imperial College model**](https://spiral.imperial.ac.uk/handle/10044/1/77482), but it uses similar parameter values and can capture much of the relevant information in terms of how effective control will be.
-
-                                                                                                                                                                    It is intended solely as an illustrative, rather than predictive, tool. We plan to increase the sophistication of the model and to update parameters as more (and better) data become available to us.
-                                                                                                                                                                    
-                                                                                                                                                                    We have **two risk categories**: high and low. **Susceptible** people get **infected** after contact with an infected person (from either risk category). A fraction of infected people (*h*) are **hospitalised** and the rest **recover**. Of these hospitalised cases, a fraction (*c*) require **critical care** and the rest recover. Of those in critical care, a fraction (*d*) **die** and the rest recover.
-
-                                                                                                                                                                    The recovery fractions depend on which risk category the individual is in.
-                                                                                                                                                                
-
-                                                                                                                                                                    ''',
-                                                                                                                                                                    style = {'textAlign': 'justify'}
-
-                                                                                                                                                                    ),
-
-
-
-                                                                                                                                                                    dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/Capture_lomery.png',
-                                                                                                                                                                    style={'maxWidth':'90%','height': 'auto', 'display': 'block','marginTop': '1vh','marginBottom': '1vh'}
-                                                                                                                                                                    ),
-                                                                                                                                                                    ],
-                                                                                                                                                                    justify='center'
-                                                                                                                                                                    ),
-
-                                                                                                                                                                    dcc.Markdown('''
-
-                                                                                                                                                                    The selection of risk categories is done in the crudest way possible - an age split at 60 years (based on the age structure data below). A more nuanced split would give a more effective control result, since there are older people who are at low risk and younger people who are at high risk. In many cases, these people will have a good idea of which risk category they belong to.
-
-                                                                                                                                                                    *For the more mathematically inclined reader, a translation of the above into a mathematical system is described below.*
-
-                                                                                                                                                                    ''',style={'textAlign': 'justify','marginTop' : '2vh','marginBottom' : '2vh'}),
-                                                                                                                                                                    
-                                                                                                                                                                    
-
-                                                                                                                                                                    dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/eqs_f3esyu.png',
-                                                                                                                                                                    style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'})
-                                                                                                                                                                    ],
-                                                                                                                                                                    justify='center'
-                                                                                                                                                                    ),
-
-
-                                                                                                                                                                    dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1585831217/text_toshav.png',
-                                                                                                                                                                    style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'}
-                                                                                                                                                                    ),
-                                                                                                                                                                    ],
-                                                                                                                                                                    justify='center'
-                                                                                                                                                                    ),
-
-                                                                                                                                                                    
-                                                                                                                                                                    dcc.Markdown('''
-                                                                                                                                                                    Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. If they do not receive it they die, taking 2 days. The number able to get treatment must be lower than the number of ICU beds available.
-                                                                                                                                                                    ''',
-                                                                                                                                                                    style={'textAlign': 'justify'}),
-
-
-
-                                                                                                                                                                    html.Hr(),
-
-                                                                                                                                                                    html.H4('Parameter Values',style={'fontSize': '180%', 'textAlign': 'center'}),
-
-                                                                                                                                                                    dcc.Markdown('''
-                                                                                                                                                                    The model uses a weighted average across the age classes below and above 60 to calculate the probability of a member of each class getting hospitalised or needing critical care. Our initial conditions are updated to match new data every day (meaning the model output is updated every day, although in '**Custom Options**' there is the choice to start from any given day).
-
-                                                                                                                                                                    We assume a 10 day delay on hospitalisations, so we use the number infected 10 days ago to inform the number hospitalised (0.044 of infected) and in critical care (0.3 of hospitalised). We calculate the approximate number recovered based on the number dead, assuming that 0.009 infections cause death. All these estimates are as per the Imperial College paper ([**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482)).
-
-                                                                                                                                                                    The number of people infected, hospitalised and in critical care are calculated from the recorded data. We assume that only half the infections are reported ([**Fraser et al.**](https://science.sciencemag.org/content/early/2020/03/30/science.abb6936)), so we double the recorded number of current infections. The estimates for the initial conditions are then distributed amongst the risk groups. These proportions are calculated using conditional probability, according to risk (so that the initial number of infections is split proportionally by size of the risk categories, whereas the initially proportion of high risk deaths is much higher than low risk deaths).
-
-                                                                                                                                                                    ''',
-                                                                                                                                                                    style={'textAlign': 'justify'}),
-
-
-
-                                                                                                                                                                    
-
-                                                                                                                                                                    dbc.Row([
-                                                                                                                                                                    html.Img(src='https://res.cloudinary.com/hefjzc2gb/image/upload/v1586345773/table_fhy8sf.png',
-                                                                                                                                                                    style={'maxWidth':'90%','height': 'auto','display': 'block','marginTop': '1vh','marginBottom': '1vh'}
-                                                                                                                                                                    ),
-                                                                                                                                                                    ],
-                                                                                                                                                                    justify='center'
-                                                                                                                                                                    ),
-
-
-
-                                                                                                                                                                    html.P('** the Imperial paper uses 8 days in hospital if critical care is not required (as do we). It uses 16 days (with 10 in ICU) if critical care is required. Instead, if critical care is required we use 8 days in hospital (non-ICU) and then either recovery or a further 8 in intensive care (leading to either recovery or death).',
-                                                                                                                                                                    style={'fontSize':'85%'}),
-
-                                                                                                                                                                    dcc.Markdown('''
-                                                                                                                                                                    Please use the following links: [**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482), [**Anderson et al**](https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30567-5/fulltext) and [**Zhao et al**](https://journals.plos.org/plosntds/article/file?rev=2&id=10.1371/journal.pntd.0006158&type=printable)
-                                                                                                                                                                    ''',
-                                                                                                                                                                    style={'textAlign': 'justify'}),
-
-
-                                                                                                                                                                    html.H4('Age Structure',style={'fontSize': '180%', 'textAlign': 'center'}),
-                                                                                                                                                                    
-                                                                                                                                                                    dcc.Markdown('''
-                                                                                                                                                                    The age data is taken from [**GOV.UK**](https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest) and the hospitalisation and critical care data is from the [**Imperial College Paper**](https://spiral.imperial.ac.uk/handle/10044/1/77482) (Ferguson et al.). This means that the age structure will not be accurate when modelling other countries.
-
-                                                                                                                                                                    To find the probability of a low risk case getting hospitalised (or subsequently put in critical care), we take a weighted average by proportion of population. Note that the figures below are proportion of *symptomatic* cases that are hospitalised, which we estimate to be 55% of cases ([**Ferguson et al.**](https://spiral.imperial.ac.uk/handle/10044/1/77482)). The number requiring critical care is a proportion of this hospitalised number.
-
-                                                                                                                                                                    *The table below shows the age structure data that was used to calculate these weighted averages across the low risk category (under 60) and high risk (over 60) category.*
-                                                                                                                                                                    
-                                                                                                                                                                    ''',
-                                                                                                                                                                    style={'textAlign': 'justify','marginTop': '2vh','marginBottom': '2vh'}
-                                                                                                                                                                    
-                                                                                                                                                                    ),
-
-                                                                                                                                                                    generate_table(df),
-
-
-
-                        ],
-                        style= {'width': '90%', 'marginLeft': '5vw', 'marginRight': '5vw', 'marginTop': '10vh', 'marginBottom': '5vh'}
-                        ),
-
-                    
-                        ],
-                        width=12,
-                        xl=10),
-                        
-                        ],
-                        justify='center'
-                        )
-
-
-
-
-
-                        ],
-                        style= {'width': '90%', 'backgroundColor': backgroundColor, 'marginLeft': '5vw', 'marginRight': '5vw', 'marginBottom': '5vh'}
-                        ),    
-                        ],
-                        # no_gutters=True,
-                        justify='center'
-                        ),
-
-                        ],style={'fontSize': '1.9vh'})
-                                                                                                                        # ]),
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4331,14 +4265,14 @@ page_layout = html.Div([
             children=[
                 dbc.NavItem(dbc.NavLink("Background", href="/intro")),
                 dbc.NavItem(dbc.NavLink("Interactive Model", href="/inter")),
-                dbc.NavItem(dbc.NavLink("Model Explanation", href="/model")),
+                # dbc.NavItem(dbc.NavLink("Model Explanation", href="/model")),
                 dbc.NavItem(dbc.NavLink("Real-Time Global Data Feed", href="/data")),
             ],
             brand="Modelling COVID-19",
             brand_href="/",
             brand_style = {'fontSize': '120%'},
             color="primary",
-            sticky = 'top',
+            # sticky = 'top',
             expand = 'xl',
             # className = 'navbar-collapse',
             style= {'fontSize': '120%'},
@@ -4386,7 +4320,7 @@ page_layout = html.Div([
         
 
         ],
-        style={'fontSize': '1.9vh'}
+        style={'fontSize': '12'} # 1.9vh
         # 
         )
 ##
@@ -4502,8 +4436,6 @@ def display_page(pathname):
         return [layout_inter, None]
     elif pathname == '/data':
         return [layout_dan, None]
-    elif pathname == '/model':
-        return [layout_model, None]
     elif pathname == '/intro':
         return [layout_intro, None]
     else:
@@ -4520,7 +4452,6 @@ def toggle(n, is_open):
 for p in ["custom"]: # , "hospital"]:
     app.callback(
         Output(f"collapse-{p}", "is_open"),
-        # Output(f"collapse-button-{p}", "color")],
         [Input(f"collapse-button-{p}", "n_clicks")
         ],
         [State(f"collapse-{p}", "is_open")],
@@ -4531,7 +4462,7 @@ for p in ["custom"]: # , "hospital"]:
 # popovers
 
 
-for p in [ "pick-strat","control", "months-control", "vaccination", "res-type" , "cc-care" ,"custom-options", "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd", 'cycles-off', 'cycles-on', 'groups-allowed']:
+for p in [ "pick-strat","control", "months-control", "vaccination",  "cc-care" ,"custom-options", "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd", 'cycles-off', 'cycles-on', 'groups-allowed']: # "res-type" ,
     app.callback(
         Output(f"popover-{p}", "is_open"),
         [Input(f"popover-{p}-target", "n_clicks")
