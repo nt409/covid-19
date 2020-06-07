@@ -66,7 +66,7 @@ COUNTRY_LIST_NICK.remove('world')
 
 initial_country = COUNTRY_LIST_NICK.index('uk')
 
-backgroundColor = 'white' # '#f4f6f7'
+backgroundColor = None # 'white' # '#f4f6f7'
 disclaimerColor = '#e9ecef'
 
 def begin_date(date,country='uk'):
@@ -175,7 +175,7 @@ def begin_date(date,country='uk'):
 
 # external_stylesheets = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
 tab_label_color = 'black' # "#00AEF9"
-external_stylesheets = dbc.themes.SPACELAB
+external_stylesheets = dbc.themes.LITERA
 # Cerulean
 # COSMO
 # JOURNAL
@@ -184,6 +184,8 @@ external_stylesheets = dbc.themes.SPACELAB
 # SIMPLEX - not red danger
 # spacelab good too
 # UNITED
+
+# spacelab
 
 app = dash.Dash(__name__, external_stylesheets=[external_stylesheets])
 
@@ -258,6 +260,7 @@ longname = {'S': 'Susceptible',
 linestyle = {'BR': 'solid',
         'HR': 'dot',
         'LR': 'dash'}
+
 group_strings = {'BR': ' All',
         'HR': ' High Risk',
         'LR': ' Low Risk'}
@@ -574,11 +577,33 @@ def human_format(num,dp=0):
     else:
         return '%.1f%s' % (num, ['', 'K', 'M', 'B'][magnitude])
 
+########################################################################################################################
+def solnIntoDataframe(sol,startdate):
+    time = pd.Series([startdate + datetime.timedelta(days=i) for i in sol['t']])
+    df = pd.DataFrame(time)
+    df.columns = ['t']
+
+    sol['y'] = np.asarray(sol['y'])
+    for name in index.keys():
+        # print(index[name])
+        # print(sol['y'][index[name],:])
+        #str()
+        y_Low   = 100*pd.Series(sol['y'][index[name],:]).values
+        y_High  = 100*pd.Series(sol['y'][index[name]+params.number_compartments,:]).values
+        y_Total = y_Low + y_High
+
+
+        # df = df.assign(e = pd.Series(sol['y'][index[name],:]).values)
+        df[longname[name]+': LR'] = y_Low
+        df[longname[name]+': HR'] = y_High
+        df[longname[name]+': BR'] = y_Total
+
+    return df
+
 
 ########################################################################################################################
-def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None,previous_deaths=None):
+def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None):
 
-    # population_plot = POPULATIONS[country]
     try:
         population_plot = POPULATIONS[country]
     except:
@@ -589,7 +614,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
     else:
         country_name = country.title()
     
-    font_size = 13
+    font_size = 12
     
 
     lines_to_plot = []
@@ -612,52 +637,52 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
     else:
         strat_list = ['']
 
-    ii = -1
+    ss = -1
     for sol in sols:
-        ii += 1
-        if num_strat == 'one' and not comp_dn and ii>0:
+        dataframe = solnIntoDataframe(sol,startdate)
+        ss += 1
+        if num_strat == 'one' and not comp_dn and ss>0:
             pass
         else:
-            for name in longname.keys():
-                if name in cats_to_plot:
-                    for group in group_vec:
-                        if group in group_use:
-                            sol['y'] = np.asarray(sol['y'])
-                            if num_strat=='one':
-                                name_string = strat_list[ii] + ';' + group_strings[group]
-                                if group_use == ['BR']: # getting rid of 'all' if not needed
-                                    name_string = ''
-                                elif group_use == 'BR': # getting rid of 'all' if not needed
-                                    name_string = strat_list[ii]
-                                line_style_use = linestyle[group]
-                                if comp_dn:
-                                    if ii == 0:
-                                        line_style_use = 'solid'
-                                    else:
-                                        line_style_use = 'dot'
-                            else:
-                                name_string = ': Strategy ' + str(ii+1) + '; ' + group_strings[group]
-                                if group_use == 'BR':
-                                    name_string = ': Strategy ' + str(ii+1)
-                                line_style_use = linestyle_numst[ii]
-                            
-                            # xx = [i/month_len for i in sol['t']]
-                            xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
+            for name in cats_to_plot:
+                for group in group_use:
 
-                            yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
-                            
-                            line =  {'x': xx, 'y': yyy_p,
-                                    'hovertemplate': '%{y:.2f}%, %{text}',
-                                    'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
-                                    'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name,
-                                    'name': longname[name] + name_string}
-                            lines_to_plot.append(line)
+                    sol['y'] = np.asarray(sol['y'])
+                        
+                    if num_strat=='one':
+                        name_string = strat_list[ss] + ';' + group_strings[group]
+                        if group_use == ['BR']: # getting rid of 'all' if not needed
+                            name_string = ''
+                        elif group_use == 'BR': # getting rid of 'all' if not needed
+                            name_string = strat_list[ss]
+                        line_style_use = linestyle[group]
+                        if comp_dn:
+                            if ss == 0:
+                                line_style_use = 'solid'
+                            else:
+                                line_style_use = 'dot'
+                    else:
+                        name_string = ': Strategy ' + str(ss+1) + '; ' + group_strings[group]
+                        if group_use == 'BR':
+                            name_string = ': Strategy ' + str(ss+1)
+                        line_style_use = linestyle_numst[ss]
+                    
+                    xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
+
+                    yyy_p = np.asarray(dataframe[f'{longname[name]}: {group}'])
+                    
+                    line =  {'x': xx, 'y': yyy_p,
+                            'hovertemplate': '%{y:.2f}%, %{text}',
+                            'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
+                            'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name,
+                            'name': longname[name] + name_string}
+                    lines_to_plot.append(line)
 
 
         # setting up pink boxes
         ICU = False
-        # print(ii,num_strat,group_use,cats_to_plot)
-        if ii==0 and num_strat=='one' and len(group_use)>0 and len(cats_to_plot)>0: # 'True_deaths' in hosp 
+        # print(ss,num_strat,group_use,cats_to_plot)
+        if ss==0 and num_strat=='one' and len(group_use)>0 and len(cats_to_plot)>0: # 'True_deaths' in hosp 
             yyy = sol['y']
             ttt = sol['t']
             c_low, c_high, ICU = time_exceeded_function(yyy,ttt,ICU_grow)
@@ -831,7 +856,6 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
 
 
     
-    # yy2 = [0, 10**(-6), 2*10**(-6), 5*10**(-6), 10**(-5), 2*10**(-5), 5*10**(-5), 10**(-4), 2*10**(-4), 5*10**(-4), 10**(-3), 2*10**(-3), 5*10**(-3), 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50, 100, 200]
     yy2 = [0]
     for i in range(8):
         yy2.append(10**(i-5))
@@ -855,32 +879,6 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
     pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
     vec2 = [i*(population_plot) for i in pop_log_vec]
 
-    if previous_deaths is not None:
-        x_deaths = [startdate - datetime.timedelta(days=len(previous_deaths) - i ) for i in range(len(previous_deaths))]
-        y_deaths = [100*float(i)/population_plot for i in previous_deaths]
-        # if len(y_deaths)>10:
-        #     y_deaths = y_deaths[-10:]
-        #     x_deaths = x_deaths[-10:]
-
-        # print(y_deaths,x_deaths)
-        lines_to_plot.append(
-        dict(
-        type='scatter',
-            x = x_deaths,
-            y = y_deaths,
-            mode='lines',
-            opacity=0.85,
-            legendgroup='deaths',
-            line=dict(
-            color= 'purple',
-            dash = 'dash'
-            ),
-            hovertemplate = '%{y:.2f}%, %{text}',
-            text = [human_format(i*population_plot/100,dp=1) for i in y_deaths],
-            name= 'Recorded deaths'))
-        x0 = x_deaths[0]
-    else:
-        x0 = xx[0]
 
 
 
@@ -902,7 +900,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                    ),
                    hovermode='x',
                    xaxis= dict(
-                        range= [x0, xx[floor((2/3)*len(xx))]],
+                        range= [xx[0], xx[floor((2/3)*len(xx))]],
                         # showline=False,
                         # ticktext = time_axis_text[1],
                         # tickvals = time_axis_vals[1],
@@ -916,7 +914,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                     updatemenus = [dict(
                                             buttons=list([
                                                 dict(
-                                                    args = ["xaxis", {'range': [x0, xx[floor((1/3)*len(xx))]],
+                                                    args = ["xaxis", {'range': [xx[0], xx[floor((1/3)*len(xx))]],
                                                     # 'showline':False,
                                                     'hoverformat':'%d %b',
                                                     'fixedrange': True,
@@ -929,7 +927,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args = ["xaxis", {'range': [x0, xx[floor((2/3)*len(xx))]],
+                                                    args = ["xaxis", {'range': [xx[0], xx[floor((2/3)*len(xx))]],
                                                     # 'showline':False,
                                                     'hoverformat':'%d %b',
                                                     'fixedrange': True,
@@ -942,7 +940,7 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args = ["xaxis", {'range': [x0, xx[-1]],
+                                                    args = ["xaxis", {'range': [xx[0], xx[-1]],
                                                     # 'showline':False,
                                                     'hoverformat':'%d %b',
                                                     'fixedrange': True,
@@ -1019,6 +1017,640 @@ def figure_generator(sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plo
 
 
 
+def string_function(len_sols,num_strat,ss,comp_dn):
+    if len_sols>1:
+        strat_list = [': Strategy',': Do Nothing']
+    else:
+        strat_list = ['']
+
+    linestyle_numst = ['solid','dash','dot','dashdot','longdash','longdashdot']
+
+    if num_strat=='one':
+        name_string = strat_list[ss]
+        line_style_use = linestyle['BR']
+        if comp_dn:
+            if ss == 0:
+                line_style_use = 'solid'
+            else:
+                line_style_use = 'dot'
+    else:
+        name_string = ': Strategy ' + str(ss+1)
+        line_style_use = linestyle_numst[ss]
+    
+    return line_style_use, name_string
+
+
+
+
+
+def yaxis_function(Yrange,population_plot):
+
+    yy2 = [0]
+    for i in range(8):
+        yy2.append(10**(i-5))
+        yy2.append(2*10**(i-5))
+        yy2.append(5*10**(i-5))
+
+    yy = [i for i in yy2]
+
+
+    for i in range(len(yy)-1):
+        if Yrange[1]>yy[i] and Yrange[1] <= yy[i+1]:
+            pop_vec_lin = np.linspace(0,yy2[i+1],11)
+
+    linTicks = [i*(population_plot) for i in pop_vec_lin]
+
+    log_bottom = -8
+    log_range = [log_bottom,np.log10(Yrange[1])]
+
+    pop_vec_log_intermediate = np.linspace(log_range[0],ceil(np.log10(pop_vec_lin[-1])), 1+ ceil(np.log10(pop_vec_lin[-1])-log_range[0]) )
+
+    pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
+    logTicks = [i*(population_plot) for i in pop_log_vec]
+    
+    return linTicks, pop_vec_lin, log_range, logTicks, pop_log_vec
+
+
+def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,Yrange):
+    annotz = []
+    shapez = []
+
+
+    blue_opacity = 0.25
+    if month_cycle is not None:
+        blue_opacity = 0.1
+
+    if month[0]!=month[1] and preset != 'N':
+        shapez.append(dict(
+                # filled Blue Control Rectangle
+                type="rect",
+                x0= startdate+datetime.timedelta(days=month_len*month[0]), #month_len*
+                y0=0,
+                x1= startdate+datetime.timedelta(days=month_len*month[1]), #month_len*
+                y1=Yrange[1],
+                line=dict(
+                    color="LightSkyBlue",
+                    width=0,
+                ),
+                fillcolor="LightSkyBlue",
+                opacity= blue_opacity
+            ))
+            
+    if ICU: #  and 'C' in cats_to_plot:
+        # if which_plots=='two':
+        control_font_size = font_size*(22/24) # '10em'
+        ICU_font_size = font_size*(22/24) # '10em'
+
+        yval_pink = 0.3
+        yval_blue = 0.82
+
+
+        for c_min, c_max in zip(c_low, c_high):
+            if c_min>=0 and c_max>=0:
+                shapez.append(dict(
+                        # filled Pink ICU Rectangle
+                        type="rect",
+                        x0= startdate+datetime.timedelta(days=c_min), #month_len*  ##c_min/month_len,
+                        y0=0,
+                        x1= startdate+datetime.timedelta(days=c_max), #c_max/month_len,
+                        y1=Yrange[1],
+                        line=dict(
+                            color="pink",
+                            width=0,
+                        ),
+                        fillcolor="pink",
+                        opacity=0.5,
+                        xref = 'x',
+                        yref = 'y'
+                    ))
+                annotz.append(dict(
+                        x  = startdate+datetime.timedelta(days=0.5*(c_min+c_max)), # /month_len
+                        y  = yval_pink,
+                        text="<b>ICU<br>" + "<b> Capacity<br>" + "<b> Exceeded",
+                        # hoverinfo='ICU Capacity Exceeded',
+                        showarrow=False,
+                        textangle= 0,
+                        font=dict(
+                            size= ICU_font_size,
+                            color="purple"
+                        ),
+                        opacity=0.6,
+                        xref = 'x',
+                        yref = 'paper',
+                ))
+
+    else:
+        control_font_size = font_size*(30/24) #'11em'
+        yval_blue = 0.4
+
+
+
+
+    if month[0]!=month[1] and preset!='N':
+        annotz.append(dict(
+                x  = startdate+datetime.timedelta(days=month_len*max(0.5*(month[0]+month[1]), 0.5)),
+                y  = yval_blue,
+                text="<b>Control<br>" + "<b> In <br>" + "<b> Place",
+                # hoverinfo='Control In Place',
+                textangle=0,
+                font=dict(
+                    size= control_font_size,
+                    color="blue"
+                ),
+                showarrow=False,
+                opacity=0.5,
+                xshift= 0,
+                xref = 'x',
+                yref = 'paper',
+        ))
+    
+    if month_cycle is not None:
+        for i in range(0,len(month_cycle),2):
+            shapez.append(dict(
+                    # filled Blue Control Rectangle
+                    type="rect",
+                    x0= startdate+datetime.timedelta(days=month_len*month_cycle[i]),
+                    y0=0,
+                    x1= startdate+datetime.timedelta(days=month_len*month_cycle[i+1]),
+                    y1=Yrange[1],
+                    line=dict(
+                        color="LightSkyBlue",
+                        width=0,
+                    ),
+                    fillcolor="LightSkyBlue",
+                    opacity=0.3
+                ))
+
+
+        
+    return annotz, shapez
+
+
+
+def lineplot(sols,population_plot,startdate,num_strat,comp_dn):
+    cats_to_plot = ['S','I','R','H','C','D']
+    lines_to_plot = []
+    group_use = ['BR']
+    ss = -1
+    for sol in sols:
+        dataframe = solnIntoDataframe(sol,startdate)
+        ss += 1
+        if num_strat == 'one' and not comp_dn and ss>0:
+            pass
+        else:
+            for name in cats_to_plot:
+                for group in group_use:
+                    if name in ['S','R']:
+                        vis = False
+                    else:
+                        vis = True
+
+                    line_style_use, name_string = string_function(len(sols),num_strat,ss,comp_dn)
+
+                    xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
+                    yyy_p = np.asarray(dataframe[f'{longname[name]}: {group}'])
+                    
+                    line =  {'x': xx, 'y': yyy_p,
+                            'hovertemplate': '%{y:.2f}%, %{text}',
+                            'visible': vis,
+                            'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
+                            'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name,
+                            'name': longname[name] + name_string}
+                    lines_to_plot.append(line)
+    return lines_to_plot, xx
+
+
+
+def stackPlot(sols,population_plot,startdate):
+    lines_to_plot = []
+
+    sol = sols[0]
+    dataframe = solnIntoDataframe(sol,startdate)
+    
+    group_use = ['HR','LR']
+
+    # name= cats_to_plot[0]
+    # cats_to_plot = ['S','I','R','H','C','D']
+    cats_to_plot = ['C']
+
+    for name in cats_to_plot:
+        for group in group_use:
+
+            
+            name_string = ':' + group_strings[group]
+
+            xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
+            yyy_p = np.asarray(dataframe[f'{longname[name]}: {group}'])
+            
+            xx = [xx[i] for i in range(1,len(xx),2)]
+            yyy_p = [yyy_p[i] for i in range(1,len(yyy_p),2)]
+
+
+            line =  {'x': xx, 'y': yyy_p,
+                    'hovertemplate': '%{y:.2f}%, %{text}',
+                    'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
+                    'type': 'bar',
+                    'legendgroup': name ,
+                    'name': longname[name] + name_string}
+                    
+            if group=='LR':
+                line['marker'] = dict(color='LightSkyBlue')
+            elif group=='HR':
+                line['marker'] = dict(color='orange')
+            
+            line['visible'] = False
+            
+            lines_to_plot.append(line)
+
+    return lines_to_plot, xx
+
+
+
+
+
+
+
+def uncertPlot(upper_lower_sol,population_plot,startdate):
+    lines_to_plot = []
+    ii = -1
+    name = 'D'
+    # group_use = ['BR']
+
+    for sol in upper_lower_sol:
+        ii += 1
+        sol['y'] = np.asarray(sol['y'])
+                
+        if ii == 0:
+            fill = None
+            label_add = '; lower estimate'
+        else:
+            fill = 'tonexty'
+            label_add = '; upper estimate'
+
+        xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
+
+        yyy_p = (100*sol['y'][index[name],:] + 100*sol['y'][index[name] + params.number_compartments,:])
+        
+        line =  {'x': xx, 'y': yyy_p,
+                'hovertemplate': '%{y:.2f}%, %{text}',
+                'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
+                'line': {'width': 0, 'color': str(colors[name])},
+                'fillcolor': 'rgba(128,0,128,0.4)',
+                # 'legendgroup': name,
+                'visible': False,
+                'showlegend': False,
+                'fill': fill,
+                'name': longname[name] + label_add}
+        lines_to_plot.append(line)
+
+    return lines_to_plot
+
+
+def prevDeaths(previous_deaths,startdate,population_plot):
+    lines_to_plot = []
+    if previous_deaths is not None:
+        x_deaths = [startdate - datetime.timedelta(days=len(previous_deaths) - i ) for i in range(len(previous_deaths))]
+        y_deaths = [100*float(i)/population_plot for i in previous_deaths]
+
+        lines_to_plot.append(
+        dict(
+        type='scatter',
+            x = x_deaths,
+            y = y_deaths,
+            mode='lines',
+            opacity=0.85,
+            legendgroup='deaths',
+            line=dict(
+            color= 'purple',
+            dash = 'dash'
+            ),
+            hovertemplate = '%{y:.2f}%, %{text}',
+            text = [human_format(i*population_plot/100,dp=1) for i in y_deaths],
+            name= 'Recorded deaths'))
+        x0 = x_deaths[0]
+    return lines_to_plot, x0
+
+
+def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None, previous_deaths=None):
+    
+    # cats_to_plot = ['S','I','R','C','H','D']
+    try:
+        population_plot = POPULATIONS[country]
+    except:
+        population_plot = 100
+
+    if country in ['us','uk']:
+        country_name = country.upper()
+    else:
+        country_name = country.title()
+    
+    font_size = 12
+    
+    
+    # if num_strat=='one':
+    #     group_use = groups
+    # if num_strat=='two' or comp_dn:
+    #     group_use = groups2
+   
+   
+    lines_to_plot_line, xx = lineplot(sols,population_plot,startdate,num_strat,comp_dn)
+    lines_to_plot_stack, xx = stackPlot(sols,population_plot,startdate)
+    lines_to_plot_uncert = uncertPlot(upper_lower_sol,population_plot,startdate)
+    lines_PrevDeaths, x0 = prevDeaths(previous_deaths,startdate,population_plot)
+    # lines_to_plot, xx = lineplot(sols,cats_to_plot,group_use,population_plot,startdate,num_strat,comp_dn)
+    # for line in lines_to_plot_stack:
+    #     line['visible'] = False
+
+
+
+    # setting up pink boxes
+    ICU = False
+    if num_strat=='one': #  and len(cats_to_plot)>0:
+        yyy = np.asarray(sols[0]['y'])
+        ttt = sols[0]['t']
+        c_low, c_high, ICU = time_exceeded_function(yyy,ttt,ICU_grow)
+    
+    ymax = 0.01
+    for line in lines_to_plot_line:
+        if line['visible']:
+            ymax = max(ymax,max(line['y']))
+
+    yax = dict(range= [0,min(1.02*ymax,100)])
+    ##
+
+
+
+    moreLines = []
+    if ICU_to_plot: # and 'C' in cats_to_plot:
+        ICU_line = [100*params.ICU_capacity*(1 + ICU_grow*i/365) for i in sols[0]['t']]
+        moreLines.append(
+        dict(
+        type='scatter',
+            x=xx, y=ICU_line,
+            mode='lines',
+            opacity=0.5,
+            legendgroup='thresholds',
+            line=dict(
+            color= 'black',
+            dash = 'dot'
+            ),
+            hovertemplate= 'ICU Capacity<extra></extra>',
+            name= 'ICU Capacity'))
+
+    if vaccine_time is not None:
+        moreLines.append(
+        dict(
+        type='scatter',
+            x=[startdate+datetime.timedelta(days=month_len*vaccine_time),
+            startdate+datetime.timedelta(days=month_len*vaccine_time)],
+            y=[yax['range'][0],yax['range'][1]],
+            mode='lines',
+            opacity=0.9,
+            legendgroup='thresholds',
+            line=dict(
+            color= 'green',
+            dash = 'dash'
+            ),
+            hovertemplate= 'Vaccination starts<extra></extra>',
+            name= 'Vaccination starts'))
+
+    
+    
+    moreLines.append(
+    dict(
+        type='scatter',
+        x = [xx[0],xx[-1]],
+        y = [0, population_plot],
+        yaxis="y2",
+        opacity=0,
+        hoverinfo = 'skip',
+        showlegend=False
+    ))
+
+    controlLines = []
+    if month[0]!=month[1] and preset != 'N':
+        controlLines.append(
+        dict(
+        type='scatter',
+            x=[startdate+datetime.timedelta(days=min(month_len*month[0],5)),
+            startdate+datetime.timedelta(days=min(month_len*month[0],5))], # +1 to make it visible when at 0
+             y=[0,ymax],
+            mode='lines',
+            opacity=0.9,
+            legendgroup='control',
+            visible = False,
+            line=dict(
+            color= 'blue',
+            dash = 'dash'
+            ),
+            hovertemplate= 'Control starts<extra></extra>',
+            name= 'Control starts'))
+        controlLines.append(
+        dict(
+        type='scatter',
+            x=[startdate+datetime.timedelta(days=month_len*month[1]),
+            startdate+datetime.timedelta(days=month_len*month[1])],
+            y=[0,ymax],
+            mode='lines',
+            opacity=0.9,
+            legendgroup='control',
+            visible = False,
+            line=dict(
+            color= 'blue',
+            dash = 'dot'
+            ),
+            hovertemplate= 'Control ends<extra></extra>',
+            name= 'Control ends'))
+
+
+
+
+    linTicks, pop_vec_lin, log_range, logTicks, pop_log_vec = yaxis_function(yax['range'],population_plot)
+    annotz, shapez = annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,yax['range'])
+
+
+    
+
+    layout = go.Layout(
+                    annotations=annotz,
+                    shapes=shapez,
+                    barmode = 'stack',
+                    template="simple_white",
+                    font = dict(size= font_size),
+                    margin=dict(t=5, b=5, l=10, r=10,pad=15),
+                    # visible= [True]*len(lines_to_plot_line) + [False]*len(lines_to_plot_stack)  + [True]*len(moreLines),
+                    yaxis= dict(mirror= True,
+                            title='Percentage of Total Population',
+                            range= yax['range'],
+                            fixedrange= True,
+                            automargin=True,
+                            type = 'linear'
+                    ),
+                    hovermode='x',
+                    xaxis= dict(
+                            range= [xx[0], xx[floor((2/3)*len(xx))]],
+                            hoverformat='%d %b',
+                            fixedrange= True,
+                        ),
+                        updatemenus = [dict(
+                                                buttons=list([
+                                                    dict(
+                                                        args = ["xaxis", {'range': [xx[0], xx[floor((1/3)*len(xx))]],
+                                                        'hoverformat':'%d %b',
+                                                        'fixedrange': True,
+                                                        }],
+                                                        label="Years: 1",
+                                                        method="relayout"
+                                                    ),
+                                                    dict(
+                                                        args = ["xaxis", {'range': [xx[0], xx[floor((2/3)*len(xx))]],
+                                                        'hoverformat':'%d %b',
+                                                        'fixedrange': True,
+                                                        }],
+                                                        label="Years: 2",
+                                                        method="relayout"
+                                                    ),
+                                                    dict(
+                                                        args = ["xaxis", {'range': [xx[0], xx[-1]],
+                                                        'hoverformat':'%d %b',
+                                                        'fixedrange': True,
+                                                        }],
+                                                        label="Years: 3",
+                                                        method="relayout"
+                                                    )
+                                            ]),
+                                            x= 0.5,
+                                            xanchor = 'left',
+                                            pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                            showactive=True,
+                                            active=1,
+                                            direction='up',
+                                            y=-0.13,
+                                            yanchor="top"
+                                            ),
+                                            dict(
+                                                buttons=list([
+                                                    dict(
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population','fixedrange': True, 'type': 'linear', 'range': yax['range'], 'automargin': True}, # , 'showline':False
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')','fixedrange': True, 'type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*linTicks[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True,'side':'right'} # , 'showline':False,
+                                                    }], # tickformat
+                                                    label="Linear",
+                                                    method="relayout"
+                                                ),
+                                                dict(
+                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'fixedrange': True, 'type': 'log', 'range': log_range,'automargin': True}, # , 'showline':False
+                                                    "yaxis2": {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*logTicks[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True,'side':'right'} #  'showline':False,
+                                                    }], # 'tickformat': yax_form_log,
+                                                    label="Logarithmic",
+                                                    method="relayout"
+                                                )
+                                        ]),
+                                        x= 0.5,
+                                        xanchor="right",
+                                        pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                        active=0,
+                                        y=-0.13,
+                                        showactive=True,
+                                        direction='up',
+                                        yanchor="top"
+                                        ),
+
+                                        dict(
+                                                buttons=list([
+                                                    dict(
+                                                    args=[
+                                                    {'visible':
+                                                    [True]*len(lines_to_plot_line) + [False]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines)
+                                                    },
+                                                    {
+                                                    # "annotations": annotz,
+                                                    "shapes": shapez
+                                                    },
+                                                    ],
+                                                    label="Line",
+                                                    method="update"
+                                                ),
+                                                dict(
+                                                    args=[
+                                                    {"visible":[False]*len(lines_to_plot_line) + [True]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [True]*len(controlLines)},
+                                                    {
+                                                    # "annotations":[],
+                                                    "shapes":[],
+                                                    "barmode":'stack'
+                                                    },
+                                                    ],
+                                                    label="Stacked Bar",
+                                                    method="update"
+                                                ),
+                                                dict(
+                                                    args=[
+                                                    {"visible":[False]*(len(lines_to_plot_line)-1) + [True] + [False]*len(lines_to_plot_stack) + [True]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines)},
+                                                    {
+                                                    # "annotations":[],
+                                                    # "shapes":[],
+                                                    "shapes": shapez,
+                                                    # "barmode":'stack'
+                                                    },
+                                                    ],
+                                                    label="Fatalities",
+                                                    method="update"
+                                                )
+                                        ]),
+                                        x= 0.8,
+                                        xanchor="right",
+                                        pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                        active=0,
+                                        y=-0.13,
+                                        showactive=True,
+                                        direction='up',
+                                        yanchor="top"
+                                        )
+                                        
+                                        ],
+                                        legend = dict(
+                                                        font=dict(size=font_size*(20/24)),
+                                                        x = 0.5,
+                                                        y = 1.03,
+                                                        xanchor= 'center',
+                                                        yanchor= 'bottom'
+                                                    ),
+                                        legend_orientation  = 'h',
+                                        legend_title        = '<b> Key </b>',
+                                        yaxis2 = dict(
+                                                        title = 'Population (' + country_name + ')',
+                                                        overlaying='y1',
+                                                        fixedrange= True,
+                                                        # showline=False,
+                                                        range = yax['range'],
+                                                        side='right',
+                                                        ticktext = [human_format(0.01*linTicks[i]) for i in range(len(pop_vec_lin))],
+                                                        tickvals = [i for i in  pop_vec_lin],
+                                                        automargin=True
+                                                    )
+                            )
+
+    linesUse = lines_to_plot_line + lines_to_plot_stack + lines_to_plot_uncert + moreLines + controlLines
+
+    return {'data': linesUse, 'layout': layout}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None,previous_deaths=None):
 
@@ -1033,7 +1665,7 @@ def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,
     else:
         country_name = country.title()
     
-    font_size = 13
+    font_size = 12
     
 
     lines_to_plot = []
@@ -1500,7 +2132,7 @@ def stacked_figure_generator(sols,month,cats_to_plot,ICU_to_plot=False,vaccine_t
     else:
         country_name = country.title()
 
-    font_size = 13
+    font_size = 12
 
     lines_to_plot = []
     # names = ['S','I','R','H','C','D']
@@ -2734,20 +3366,20 @@ justify='center')
 
 
 
-Results_interpretation =  html.Div([
+# Results_interpretation =  html.Div([
     
-    # The results show a prediction for how coronavirus will affect the population given a choice of control measure. It is assumed that control measures are in place for a **maximum of 18 months**. Explore the effect of the different control measures and the amount of time for which they are implemented.
+#     # The results show a prediction for how coronavirus will affect the population given a choice of control measure. It is assumed that control measures are in place for a **maximum of 18 months**. Explore the effect of the different control measures and the amount of time for which they are implemented.
     
-    # The figures illustrate how a vaccine, coupled with an effective quarantine, can drastically decrease the death toll.
-    dcc.Markdown('''
+#     # The figures illustrate how a vaccine, coupled with an effective quarantine, can drastically decrease the death toll.
 
+#     dcc.Markdown('''
 
-    For further explanation, read the [**Background**](/intro).
+#     For further explanation, read the [**Background**](/intro).
     
-    '''
-    ,style={'fontSize': '100%','textAlign': 'justify'},
-    ),
-])
+#     '''
+#     ,style={'fontSize': '100%','textAlign': 'justify'},
+#     ),
+# ])
 
 
 
@@ -3480,17 +4112,17 @@ layout_inter = html.Div([
                         dbc.Row([
                         dbc.Col([
 
-                                html.Div(style={'height': '2vh'}),
+                                # html.Div(style={'height': '1vh'}),
 
                                 html.P([
                                 html.Span('Disclaimer: ',style={'color': '#C37C10'}), # orange
                                 'This work is for educational purposes only and not for accurate prediction of the pandemic.'],
-                                style = {'marginTop': '0vh','marginBottom': '0vh', 'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'}
+                                style = {'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'} # 'marginTop': '0vh','marginBottom': '0vh', 
                                 ),
-                                html.P(
-                                'There are many uncertainties in the COVID debate. The model is intended solely as an illustrative rather than predictive tool.',
-                                style = {'marginTop': '0vh','marginBottom': '2.5vh', 'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'}
-                                ), # 
+                                # html.P(
+                                # 'There are many uncertainties in the COVID debate. The model is intended solely as an illustrative rather than predictive tool.',
+                                # style = {'marginTop': '0vh','marginBottom': '2.5vh', 'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'}
+                                # ), # 
 
                             ],width=True,
                             style={'textAlign': 'center'}
@@ -3508,15 +4140,15 @@ layout_inter = html.Div([
 
 
 
-                                                    html.H3('Strategy Outcomes',className="display-4",style={'fontSize': '250%','textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '1vh'}),
+                                                    # html.H3('Strategy Outcomes',className="display-4",style={'fontSize': '250%','textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
 
 
-                                                    dcc.Markdown('''
-                                                    *In this Section we explore possible outcomes of different choices of **COVID-19 control**.*
+                                                    # dcc.Markdown('''
+                                                    # *Explore the possible outcomes of different choices of **COVID-19 control**.*
                                                     
-                                                    '''
-                                                    ,style = {'marginTop': '3vh', 'marginBottom': '3vh', 'textAlign': 'center'}
-                                                    ),
+                                                    # '''
+                                                    # ,style = {'marginTop': '1vh', 'marginBottom': '1vh', 'textAlign': 'center'}
+                                                    # ),
                                              
                                              
                                                     # html.Hr(),
@@ -3774,249 +4406,256 @@ layout_inter = html.Div([
                                                                 ),
                                                                 color='light'
                                                                 ),
-                                                                dbc.Card(
-                                                                html.Div([
-                                                                dcc.Graph(id='line-plot-4',style={'height': '70vh', 'width': '100%'}),
-                                                                ],
-                                                                style={'margin': '10px'}
-                                                                ),
-                                                                color='light'
-                                                                ),
-                                                                dbc.Card(
-                                                                html.Div([
-                                                                dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '100%'}),
-                                                                ],
-                                                                style={'margin': '10px'}
-                                                                ),
-                                                                color='light'
-                                                                ),
-                                                                dbc.Card(
-                                                                html.Div([
-                                                                dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '100%'}),
-                                                                ],
-                                                                style={'margin': '10px'}
-                                                                ),
-                                                                color='light'
-                                                                ),
+                                                                # dbc.Card(
+                                                                # html.Div([
+                                                                # dcc.Graph(id='line-plot-4',style={'height': '70vh', 'width': '100%'}),
+                                                                # ],
+                                                                # style={'margin': '10px'}
+                                                                # ),
+                                                                # color='light'
+                                                                # ),
+
+                                                                # dbc.Card(
+                                                                # html.Div([
+                                                                # dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '100%'}),
+                                                                # ],
+                                                                # style={'margin': '10px'}
+                                                                # ),
+                                                                # color='light'
+                                                                # ),
+                                                                # dbc.Card(
+                                                                # html.Div([
+                                                                # dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '100%'}),
+                                                                # ],
+                                                                # style={'margin': '10px'}
+                                                                # ),
+                                                                # color='light'
+                                                                # ),
 
 
-                                                                html.H4("Hospital Categories",
-                                                                style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
-                                                                ),
+                                                                # html.H4("Hospital Categories",
+                                                                # style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
+                                                                # ),
 
                                                                 # dcc.Graph(id='line-plot-2',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
+                                                                # In the **Hospital Categories** plot, you can see how quickly the **ICU capacity** (relating to the number of intensive care beds available) could be overwhelmed (within April if no control measures are implemented). This is shown by the pink boxes if the black 'Critical Care' curve exceeds the purple line specifying the critical care capacity.
+                                                                # Control measures allow us to 'flatten the curve'. In addition it's essential that the healthcare capacity is rapidly increased.
                                                                 dcc.Markdown('''
-                                                                            In the **Hospital Categories** plot, you can see how quickly the **ICU capacity** (relating to the number of intensive care beds available) could be overwhelmed (within April if no control measures are implemented). This is shown by the pink boxes if the black 'Critical Care' curve exceeds the purple line specifying the critical care capacity.
 
                                                                             You may choose to adjust the graph axes. Choosing a logarithmic scale for the *y* axis makes it easier to compare the different quantities and their rates of growth or decay. However a linear scale makes it easiest to draw comparisons between the relative sizes of the categories.
                                                                             
-                                                                            Control measures allow us to 'flatten the curve'. In addition it's essential that the healthcare capacity is rapidly increased.
 
                                                                             ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '6vh', 'marginBottom': '3vh'}),
 
 
-                                                                html.Hr(),
+                                                                # html.Hr(),
 
-                                                                html.H4("Fatalities Projection",
-                                                                style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
-                                                                ),
+                                                                # html.H4("Fatalities Projection",
+                                                                # style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
+                                                                # ),
 
-                                                                # dcc.Graph(id='line-plot-4',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
+                                                                # # dcc.Graph(id='line-plot-4',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
-                                                                dcc.Markdown('''
-                                                                            This plot shows a projection for the fatalities caused by the choice of control. It contains an upper and a lower estimate to give a range of possible values as a basic indication of uncertainty (but only in the initial conditions and the effectiveness of the control).
+                                                                # dcc.Markdown('''
+                                                                #             This plot shows a projection for the fatalities caused by the choice of control. It contains an upper and a lower estimate to give a range of possible values as a basic indication of uncertainty (but only in the initial conditions and the effectiveness of the control).
 
-                                                                            ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '6vh', 'marginBottom': '3vh'}),
+                                                                #             ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '6vh', 'marginBottom': '3vh'}),
 
-                                                                html.Hr(),
+                                                                # html.Hr(),
 
 
 
-                                                                html.H4("Low Risk/High Risk Breakdown By Category",
-                                                                style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
-                                                                ),
+                                                                # html.H4("Low Risk/High Risk Breakdown By Category",
+                                                                # style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '5vh','fontSize': '180%'} # 'marginLeft': '2vw', 
+                                                                # ),
 
                                                                 # dcc.Graph(id='line-plot-3',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
 
 
 
-                                                                html.H6("Risk Breakdown Plot Category",style={'fontSize': '100%','textAlign': 'center', 'marginTop': '2vh'}),
+                                                                # html.H6("Risk Breakdown Plot Category",style={'fontSize': '100%','textAlign': 'center', 'marginTop': '2vh'}),
                                                                 
 
-                                                                dbc.Row([
-                                                                dbc.Col([
-                                                                dcc.Markdown('''
-                                                                *Select different categories to see the split between low and high risk individuals.*
-                                                                ''',style={'fontSize': '85%',  'textAlign': 'center', 'marginTop': '0vh'}),
+                                                                # dbc.Row([
+                                                                # dbc.Col([
+                                                                # dcc.Markdown('''
+                                                                # *Select different categories to see the split between low and high risk individuals.*
+                                                                # ''',style={'fontSize': '85%',  'textAlign': 'center', 'marginTop': '0vh'}),
 
-                                                                dbc.RadioItems(id='categories-to-plot-stacked',
-                                                                                options=[
-                                                                                    {'label': longname[key], 'value': key} for key in longname
-                                                                                ],
-                                                                                value= 'D',
-                                                                                inline=True,
-                                                                                labelStyle = {'display': 'inline-block', 'textAlign': 'center' ,'fontSize': '80%'},
-                                                                            ),
+                                                                # dbc.RadioItems(id='categories-to-plot-stacked',
+                                                                #                 options=[
+                                                                #                     {'label': longname[key], 'value': key} for key in longname
+                                                                #                 ],
+                                                                #                 value= 'D',
+                                                                #                 inline=True,
+                                                                #                 labelStyle = {'display': 'inline-block', 'textAlign': 'center' ,'fontSize': '80%'},
+                                                                #             ),
 
 
-                                                                ],width={'size': 8} # , 'offset': 2
-                                                                ),
-                                                                ],
-                                                                justify='center'),
+                                                                # ],width={'size': 8} # , 'offset': 2
+                                                                # ),
+                                                                # ],
+                                                                # justify='center'),
 
-                                                                dcc.Markdown('''
+                                                                # dcc.Markdown('''
                                                                             
-                                                                            In the **Risk Breakdown** plot each bar shows the **number** in that category **at each time**. Recovery and death are cumulative, since once you enter one of those categories you cannot leave it.
+                                                                #             In the **Risk Breakdown** plot each bar shows the **number** in that category **at each time**. Recovery and death are cumulative, since once you enter one of those categories you cannot leave it.
                                                                             
-                                                                            In most scenarios, many more high risk people die or need critical care than low risk, despite the fact that high risk people make up a relatively small proportion of the population. This is why it is essential that the strategy chosen adequately protects those higher risk individuals.
+                                                                #             In most scenarios, many more high risk people die or need critical care than low risk, despite the fact that high risk people make up a relatively small proportion of the population. This is why it is essential that the strategy chosen adequately protects those higher risk individuals.
                                                                             
-                                                                            Most of the immunity in the population comes from the bigger, low risk class.
-                                                                            ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '3vh', 'marginBottom': '3vh'}),
+                                                                #             Most of the immunity in the population comes from the bigger, low risk class.
+                                                                #             ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '3vh', 'marginBottom': '3vh'}),
 
 
-                                                                html.Hr(),
+                                                                # html.Hr(),
 
                                                                 
                                                                 # dcc.Graph(id='line-plot-1',style={'height': '70vh', 'width': '100%'}), # figure=dummy_figure,
 
 
                                                                 # dbc.Col([
-                                                                        dbc.Row([
-                                                                            dbc.Col([
-
-
-                                                                                dbc.Row(
-
-
-                                                                                    html.H4("Plot Settings ",
-                                                                                    style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '180%'}),
 
 
 
-                                                                                justify =  'center'
-                                                                                ),
 
-                                                                                dbc.Col([
-                                                                                dcc.Markdown('''*Plot different disease progress categories, different risk groups, compare the outcome of your strategy with the outcome of 'Do Nothing', or plot the ICU capacity.*''', 
-                                                                                style = {'textAlign': 'center', 'fontSize': '85%','marginBottom': '1vh' , 'marginTop': '1vh'}),
-                                                                                ],width={'size':8, 'offset': 2}),
+
+
+                                                                        # dbc.Row([
+                                                                            # dbc.Col([
+
+
+                                                                                # dbc.Row(
+
+
+                                                                                #     html.H4("Plot Settings ",
+                                                                                #     style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '4vh','fontSize': '180%'}),
+
+
+
+                                                                                # justify =  'center'
+                                                                                # ),
+
+                                                                                # dbc.Col([
+                                                                                # dcc.Markdown('''*Plot different disease progress categories, different risk groups, compare the outcome of your strategy with the outcome of 'Do Nothing', or plot the ICU capacity.*''', 
+                                                                                # style = {'textAlign': 'center', 'fontSize': '85%','marginBottom': '1vh' , 'marginTop': '1vh'}),
+                                                                                # ],width={'size':8, 'offset': 2}),
 
                             
-                                                                                                            dbc.Row([
-                                                                                                                                        dbc.Col([
+                                                                                                            # dbc.Row([
+                                                                                                            #                             dbc.Col([
 
 
-                                                                                                                                                html.H6('Categories To Plot',style={'fontSize': '100%','textAlign': 'center'}),
-                                                                                                                                                dbc.Col([
+                                                                                                            #                                     html.H6('Categories To Plot',style={'fontSize': '100%','textAlign': 'center'}),
+                                                                                                            #                                     dbc.Col([
 
 
-                                                                                                                                                    dbc.Checklist(id='categories-to-plot-checklist',
-                                                                                                                                                                    options=[
-                                                                                                                                                                        {'label': longname[key], 'value': key} for key in longname
-                                                                                                                                                                    ],
-                                                                                                                                                                    value= ['I'],
-                                                                                                                                                                    labelStyle = {'display': 'inline-block','fontSize': '80%'},
-                                                                                                                                                                ),
+                                                                                                            #                                         dbc.Checklist(id='categories-to-plot-checklist',
+                                                                                                            #                                                         options=[
+                                                                                                            #                                                             {'label': longname[key], 'value': key} for key in longname
+                                                                                                            #                                                         ],
+                                                                                                            #                                                         value= ['I'],
+                                                                                                            #                                                         labelStyle = {'display': 'inline-block','fontSize': '80%'},
+                                                                                                            #                                                     ),
                                                                                                                                                     
-                                                                                                                                                    dcc.Markdown('''
-                                                                                                                                                        *Category choice is for the plot above. Hospital categories are shown in the plot below.*
-                                                                                                                                                        ''',style={'fontSize': '75%', 'textAlign': 'justify', 'marginTop': '0vh'}),
+                                                                                                            #                                         dcc.Markdown('''
+                                                                                                            #                                             *Category choice is for the plot above. Hospital categories are shown in the plot below.*
+                                                                                                            #                                             ''',style={'fontSize': '75%', 'textAlign': 'justify', 'marginTop': '0vh'}),
                                                                                                                                                         
 
-                                                                                                                                                ],width={'size':6 , 'offset': 3}),
+                                                                                                            #                                     ],width={'size':6 , 'offset': 3}),
 
-                                                                                                                                        ],width=4),
-
-
+                                                                                                            #                             ],width=4),
 
 
 
-                                                                                                                                        dbc.Col([
-
-                                                                                                                                                        html.H6('Groups To Plot',style={'fontSize': '100%','textAlign': 'center'}),
 
 
-                                                                                                                                                        dbc.Col([
-                                                                                                                                                            dbc.Checklist(
-                                                                                                                                                                id = 'groups-checklist-to-plot',
-                                                                                                                                                                options=[
-                                                                                                                                                                    {'label': 'Low Risk Group', 'value': 'LR'},
-                                                                                                                                                                    {'label': 'High Risk Group', 'value': 'HR'},
-                                                                                                                                                                    {'label': 'All Risk Groups (Sum Of Both)', 'value': 'BR'},
-                                                                                                                                                                ],
-                                                                                                                                                                value= ['BR'],
-                                                                                                                                                                # inline=True,
-                                                                                                                                                                labelStyle = {'display': 'inline-block','fontSize': '80%'},
-                                                                                                                                                            ),
+                                                                                                                                        # dbc.Col([
+
+                                                                                                                                        #                 html.H6('Groups To Plot',style={'fontSize': '100%','textAlign': 'center'}),
 
 
-                                                                                                                                                            dbc.RadioItems(
-                                                                                                                                                                id = 'groups-to-plot-radio',
-                                                                                                                                                                options=[
-                                                                                                                                                                    {'label': 'Low Risk Group', 'value': 'LR'},
-                                                                                                                                                                    {'label': 'High Risk Group', 'value': 'HR'},
-                                                                                                                                                                    {'label': 'All Risk Groups (Sum Of Both)', 'value': 'BR'},
-                                                                                                                                                                ],
-                                                                                                                                                                value= 'BR',
-                                                                                                                                                                # inline=True,
-                                                                                                                                                                labelStyle = {'display': 'inline-block','fontSize': '80%'},
-                                                                                                                                                            ),
-                                                                                                                                                        ],width={'size':6 , 'offset': 3}),
-                                                                                                                                        ],width=4),
+                                                                                                                                        #                 dbc.Col([
+                                                                                                                                        #                     dbc.Checklist(
+                                                                                                                                        #                         id = 'groups-checklist-to-plot',
+                                                                                                                                        #                         options=[
+                                                                                                                                        #                             {'label': 'Low Risk Group', 'value': 'LR'},
+                                                                                                                                        #                             {'label': 'High Risk Group', 'value': 'HR'},
+                                                                                                                                        #                             {'label': 'All Risk Groups (Sum Of Both)', 'value': 'BR'},
+                                                                                                                                        #                         ],
+                                                                                                                                        #                         value= ['BR'],
+                                                                                                                                        #                         # inline=True,
+                                                                                                                                        #                         labelStyle = {'display': 'inline-block','fontSize': '80%'},
+                                                                                                                                        #                     ),
 
 
-                                                                                                                                        dbc.Col([
+                                                                                                                                        #                     dbc.RadioItems(
+                                                                                                                                        #                         id = 'groups-to-plot-radio',
+                                                                                                                                        #                         options=[
+                                                                                                                                        #                             {'label': 'Low Risk Group', 'value': 'LR'},
+                                                                                                                                        #                             {'label': 'High Risk Group', 'value': 'HR'},
+                                                                                                                                        #                             {'label': 'All Risk Groups (Sum Of Both)', 'value': 'BR'},
+                                                                                                                                        #                         ],
+                                                                                                                                        #                         value= 'BR',
+                                                                                                                                        #                         # inline=True,
+                                                                                                                                        #                         labelStyle = {'display': 'inline-block','fontSize': '80%'},
+                                                                                                                                        #                     ),
+                                                                                                                                        #                 ],width={'size':6 , 'offset': 3}),
+                                                                                                                                        # ],width=4),
 
 
-                                                                                                                                                        html.H6("Compare with 'Do Nothing'",style={'fontSize': '100%','textAlign': 'center'}),
-
-                                                                                                                                                        dbc.Col([
+                                                                                                                        #                 dbc.Col([
 
 
-                                                                                                                                                            dbc.Checklist(
-                                                                                                                                                                id = 'plot-with-do-nothing',
-                                                                                                                                                                options=[
-                                                                                                                                                                    {'label': 'Compare', 'value': 1},
-                                                                                                                                                                ],
-                                                                                                                                                                value= 0,
-                                                                                                                                                                labelStyle = {'display': 'inline-block','fontSize': '80%'},
-                                                                                                                                                            ),
+                                                                                                                        #                                 html.H6("Compare with 'Do Nothing'",style={'fontSize': '100%','textAlign': 'center'}),
 
-                                                                                                                                                        ],width={'size':6 , 'offset': 3}),
-
-                                                                                                                                                        html.H6("Plot Intensive Care Capacity",style={'fontSize': '100%','textAlign': 'center', 'marginTop': '2vh'}),
+                                                                                                                        #                                 dbc.Col([
 
 
-                                                                                                                                                        dbc.Col([
-                                                                                                                                                            dbc.Checklist(
-                                                                                                                                                                id = 'plot-ICU-cap',
-                                                                                                                                                                options=[
-                                                                                                                                                                    {'label': 'Plot', 'value': 1},
-                                                                                                                                                                ],
-                                                                                                                                                                value= [0],
-                                                                                                                                                                labelStyle = {'display': 'inline-block','fontSize': '80%'},
-                                                                                                                                                            ),
+                                                                                                                        #                                     dbc.Checklist(
+                                                                                                                        #                                         id = 'plot-with-do-nothing',
+                                                                                                                        #                                         options=[
+                                                                                                                        #                                             {'label': 'Compare', 'value': 1},
+                                                                                                                        #                                         ],
+                                                                                                                        #                                         value= 0,
+                                                                                                                        #                                         labelStyle = {'display': 'inline-block','fontSize': '80%'},
+                                                                                                                        #                                     ),
 
-                                                                                                                                                        ],width={'size':6 , 'offset': 3}
-                                                                                                                                                        ,style={'marginBottom': '0vh'}
-                                                                                                                                                        ),
-                                                                                                                                                        dcc.Markdown('''
-                                                                                                                                                        *ICU capacity will only be clear on small y-scales (hospital categories only), or logarithmic scales. For the classic 'flatten the curve' picture, check this box and then select 'Critical' and no others in the '**Categories To Plot**' checklist.*
-                                                                                                                                                        ''',style={'fontSize': '75%', 'textAlign': 'justify', 'marginTop': '0vh'}),
+                                                                                                                        #                                 ],width={'size':6 , 'offset': 3}),
+
+                                                                                                                        #                                 html.H6("Plot Intensive Care Capacity",style={'fontSize': '100%','textAlign': 'center', 'marginTop': '2vh'}),
 
 
-                                                                                                                                        ],width=4),
+                                                                                                                        #                                 dbc.Col([
+                                                                                                                        #                                     dbc.Checklist(
+                                                                                                                        #                                         id = 'plot-ICU-cap',
+                                                                                                                        #                                         options=[
+                                                                                                                        #                                             {'label': 'Plot', 'value': 1},
+                                                                                                                        #                                         ],
+                                                                                                                        #                                         value= [0],
+                                                                                                                        #                                         labelStyle = {'display': 'inline-block','fontSize': '80%'},
+                                                                                                                        #                                     ),
+
+                                                                                                                        #                                 ],width={'size':6 , 'offset': 3}
+                                                                                                                        #                                 ,style={'marginBottom': '0vh'}
+                                                                                                                        #                                 ),
+                                                                                                                        #                                 dcc.Markdown('''
+                                                                                                                        #                                 *ICU capacity will only be clear on small y-scales (hospital categories only), or logarithmic scales. For the classic 'flatten the curve' picture, check this box and then select 'Critical' and no others in the '**Categories To Plot**' checklist.*
+                                                                                                                        #                                 ''',style={'fontSize': '75%', 'textAlign': 'justify', 'marginTop': '0vh'}),
+
+
+                                                                                                                        #                 ],width=4),
 
 
                                                                                                                                                                         
 
-                                                                                                                        ],
-                                                                                                                        id='outputs-div',
-                                                                                                                        no_gutters=True,
-                                                                                                                        # justify='center'
-                                                                                                                        ),
+                                                                                                                        # ],
+                                                                                                                        # id='outputs-div',
+                                                                                                                        # no_gutters=True,
+                                                                                                                        # # justify='center'
+                                                                                                                        # ),
                                                                                                                         
                                                                                                                         # html.Hr(),
                                                                                         # ],
@@ -4024,26 +4663,26 @@ layout_inter = html.Div([
                                                                                         # is_open=False,
                                                                                         # ),
 
-                                                                                ],
-                                                                                width=12,
-                                                                                ),
+                                                                                # ],
+                                                                                # width=12,
+                                                                                # ),
 
 
-                                                                                # end of plot settings row
-                                                                                ],
-                                                                                justify='center',
-                                                                                no_gutters=True
-                                                                                # style={'textAlign': 'center'}
-                                                                                ),
+                                                                                # # end of plot settings row
+                                                                                # ],
+                                                                                # justify='center',
+                                                                                # no_gutters=True
+                                                                                # # style={'textAlign': 'center'}
+                                                                                # ),
 
                                                                 # html.Hr(style={'marginTop': '3vh'}),
 
-                                                                dcc.Markdown('''
-                                                                            Each line displays the number of people in that category at each time point. Two of the categories are cumulative, since once you recover, or you die, you remain in that category. The time for which control is in place is shown in light blue. This may be adjusted using the '**Pick Your Strategy** sliders above. The time for which the intensive care capacity is exceeded is shown in pink. The extent to which healthcare capacity is increased is a strategy choice under '**Custom Options**'.
+                                                                # Each line displays the number of people in that category at each time point. Two of the categories are cumulative, since once you recover, or you die, you remain in that category. The time for which control is in place is shown in light blue. This may be adjusted using the '**Pick Your Strategy** sliders above. The time for which the intensive care capacity is exceeded is shown in pink. The extent to which healthcare capacity is increased is a strategy choice under '**Custom Options**'.
+                                                                # dcc.Markdown('''
 
-                                                                            An interesting way to compare the strategies is their effectiveness relative to 'do nothing'; that is, relative to no control measure at all. To see this, select the '*Compare with Do Nothing*' checkbox in '**Plot Settings**'.
+                                                                #             An interesting way to compare the strategies is their effectiveness relative to 'do nothing'; that is, relative to no control measure at all. To see this, select the '*Compare with Do Nothing*' checkbox in '**Plot Settings**'.
 
-                                                                            ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '6vh', 'marginBottom': '3vh'}),
+                                                                #             ''',style={'fontSize': '100%', 'textAlign': 'justify', 'marginTop': '6vh', 'marginBottom': '3vh'}),
 
 
 
@@ -4174,12 +4813,12 @@ layout_inter = html.Div([
                                                     
                                              ##################################################################################################
                                                     
-                                                    html.Hr(style={'marginTop': '5vh'}),
+                                                    # html.Hr(style={'marginTop': '5vh'}),
     
                                                     # html.H3("Interpretation", className="display-4",style={'fontSize': '250%','textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
                                                     # html.Hr(),
 
-                                                    Results_interpretation,
+                                                    # Results_interpretation,
 
                                              
                                              
@@ -4485,8 +5124,8 @@ for p in [ "pick-strat","control", "months-control", "vaccination",  "cc-care" ,
     Output('strat-hr-infection','children'),
     Output('strat-lr-infection','children'),
 
-    Output('groups-to-plot-radio','style'),
-    Output('groups-checklist-to-plot','style'),
+    # Output('groups-to-plot-radio','style'),
+    # Output('groups-checklist-to-plot','style'),
     Output('plot-with-do-nothing','options'),
 
     ],
@@ -4506,8 +5145,8 @@ def invisible_or_not(num,preset,do_nothing):
     if num=='two':
         strat_H = [html.H6('Strategy One: High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
         strat_L = [html.H6('Strategy One: Low Risk Infection Rate (%)',style={'fontSize': '100%'}),]
-        groups_checklist = {'display': 'none'}
-        groups_radio = None
+        # groups_checklist = {'display': 'none'}
+        # groups_radio = None
         says_strat_2 = None
         do_nothing_dis = True
         do_n_val = 0
@@ -4519,12 +5158,12 @@ def invisible_or_not(num,preset,do_nothing):
             do_nothing_dis = True
             do_n_val = 0
 
-        if do_nothing==[1]:
-            groups_checklist = {'display': 'none'}
-            groups_radio = None
-        else:
-            groups_checklist = None
-            groups_radio = {'display': 'none'}
+        # if do_nothing==[1]:
+        #     groups_checklist = {'display': 'none'}
+        #     groups_radio = None
+        # else:
+        #     groups_checklist = None
+        #     groups_radio = {'display': 'none'}
         says_strat_2 = {'display': 'none'}
 
     if preset!='C':
@@ -4533,7 +5172,9 @@ def invisible_or_not(num,preset,do_nothing):
     options=[{'label': 'Compare', 'value': do_n_val, 'disabled': do_nothing_dis}]
     
 
-    return [says_strat_2,strat_H, strat_L ,groups_radio,groups_checklist,options]
+    
+    return [says_strat_2,strat_H, strat_L, options]
+    # groups_radio,groups_checklist,
 
 ########################################################################################################################
 
@@ -4780,10 +5421,10 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 Output('bar-plot-5', 'figure'),
 
 
-                Output('line-plot-1', 'figure'),
+                # Output('line-plot-1', 'figure'),
                 Output('line-plot-2', 'figure'),
-                Output('line-plot-3', 'figure'),
-                Output('line-plot-4', 'figure'),
+                # Output('line-plot-3', 'figure'),
+                # Output('line-plot-4', 'figure'),
 
 
 
@@ -4807,12 +5448,12 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 Input('sol-calculated', 'data'),
 
                 # or any of the plot categories
-                Input('groups-checklist-to-plot', 'value'),
-                Input('groups-to-plot-radio','value'),                                      
-                Input('categories-to-plot-checklist', 'value'),
-                Input('categories-to-plot-stacked', 'value'),
-                Input('plot-with-do-nothing','value'),
-                Input('plot-ICU-cap','value'),
+                # Input('groups-checklist-to-plot', 'value'),
+                # Input('groups-to-plot-radio','value'),                                      
+                # Input('categories-to-plot-checklist', 'value'),
+                # Input('categories-to-plot-stacked', 'value'),
+                # Input('plot-with-do-nothing','value'),
+                # Input('plot-ICU-cap','value'),
 
                 
                 Input('dropdown', 'value'),
@@ -4837,7 +5478,10 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 
                 State('store-upper-lower', 'data'),
                 ])
-def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,results_type,country_num,date,prev_deaths,
+def render_interactive_content(pathname,sols,
+                                # groups,groups2,
+                                # cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,
+                                results_type,country_num,date,prev_deaths,
                                 t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,upper_lower_sol):
 
     # print('render ',pathname)
@@ -4860,9 +5504,9 @@ def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,ca
         dummy_figure,
 
         dummy_figure,
-        dummy_figure,
-        dummy_figure,
-        dummy_figure,
+        # dummy_figure,
+        # dummy_figure,
+        # dummy_figure,
 
         None
         ]
@@ -4899,7 +5543,7 @@ def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,ca
 ########################################################################################################################
 
 
-    results_title = presets_dict[preset] + ' Result'
+    results_title =  f'Result: {presets_dict[preset]}'
     strategy_outcome_text = ['']
 
 
@@ -4911,10 +5555,10 @@ def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,ca
         bar5 = dummy_figure
 
     if results_type!='DPC_dd': # tab2 'interactive' # pathname!='inter' or 
-        fig1 = dummy_figure
+        # fig1 = dummy_figure
         fig2 = dummy_figure
-        fig3 = dummy_figure
-        fig4 = dummy_figure
+        # fig3 = dummy_figure
+        # fig4 = dummy_figure
 
 
 
@@ -5054,28 +5698,25 @@ def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,ca
             # DPC results
 
             if results_type=='DPC_dd':
-                # print(datetime.datetime.today())
-                # print(date)
+
                 date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
-                # print(date)
+
                 startdate = copy.deepcopy(date)
 
-                # date = datetime.datetime.strftime(date, '%Y-%#m-%d' )
-                # print(date)
 
 
 
                 if vaccine_time==9:
                     vaccine_time = None
 
-                if plot_with_do_nothing==[1] and num_strat=='one' and preset!='N':
+                if False: # plot_with_do_nothing==[1] and num_strat=='one' and preset!='N':
                     sols_to_plot = sols
                     comp_dn = True
                 else:
                     sols_to_plot = sols[:-1]
                     comp_dn = False
 
-                if plot_ICU_cap!=[1]:
+                if True: # plot_ICU_cap!=[1]:
                     ICU_plot = False
                 else:
                     ICU_plot = True
@@ -5096,16 +5737,16 @@ def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,ca
                         month_cycle.append(mm+time_off+time_on)
                         mm = mm + time_off + time_on
 
-                if len(cats_to_plot_line)>0:
-                    fig1 = figure_generator(sols_to_plot,month,cats_to_plot_line,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate)
-                else:
-                    fig1 = dummy_figure
+                # if len(cats_to_plot_line)>0:
+                #     fig1 = figure_generator(sols_to_plot,month,cats_to_plot_line,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate)
+                # else:
+                #     fig1 = dummy_figure
 
-                fig2 = figure_generator(sols_to_plot,month,['C','H','D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate)
+                fig2 = MultiFigureGenerator(upper_lower_sol,sols_to_plot,month,num_strat,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate, previous_deaths=prev_deaths)
 
-                fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , country = country,preset=preset,startdate=startdate)
+                # fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , country = country,preset=preset,startdate=startdate)
 
-                fig4 = death_plot(upper_lower_sol,sols_to_plot,month,['D'],groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate, previous_deaths=prev_deaths)
+                # fig4 = death_plot(upper_lower_sol,sols_to_plot,month,['D'],['BR'],num_strat,['BR'],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate, previous_deaths=prev_deaths)
 
             
 
@@ -5127,10 +5768,10 @@ def render_interactive_content(pathname,sols,groups,groups2,cats_to_plot_line,ca
     bar4,
     bar5,
 
-    fig1,
+    # fig1,
     fig2,
-    fig3,
-    fig4,
+    # fig3,
+    # fig4,
 
 
 
