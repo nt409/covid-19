@@ -585,7 +585,6 @@ def lineplot(sols,population_plot,startdate,num_strat,comp_dn):
                         vis = True
 
                     line_style_use, name_string = string_function(len(sols),num_strat,ss,comp_dn)
-
                     xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
                     yyy_p = np.asarray(dataframe[f'{longname[name]}: {group}'])
                     
@@ -625,6 +624,7 @@ def stackPlot(sols,population_plot,startdate):
             name_string = ':' + group_strings[group]
 
             xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
+            # print(xx[0])
             yyy_p = np.asarray(dataframe[f'{longname[name]}: {group}'])
             
             xx = [xx[i] for i in range(1,len(xx),2)]
@@ -739,7 +739,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
    
    
     lines_to_plot_line, xx = lineplot(sols,population_plot,startdate,num_strat,comp_dn)
-    lines_to_plot_stack, xx = stackPlot(sols,population_plot,startdate)
+    lines_to_plot_stack, xxx = stackPlot(sols,population_plot,startdate)
     lines_to_plot_uncert = uncertPlot(upper_lower_sol,population_plot,startdate)
     lines_PrevDeaths, x0 = prevDeaths(previous_deaths,startdate,population_plot)
     # lines_to_plot, xx = lineplot(sols,cats_to_plot,group_use,population_plot,startdate,num_strat,comp_dn)
@@ -747,7 +747,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
     #     line['visible'] = False
 
 
-
+    # print(xx[0])
     # setting up pink boxes
     ICU = False
     if num_strat=='one': #  and len(cats_to_plot)>0:
@@ -759,8 +759,11 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
     for line in lines_to_plot_line:
         if line['visible']:
             ymax = max(ymax,max(line['y']))
+            # print(ymax,line['name'])
 
-    yax = dict(range= [0,min(1.02*ymax,100)])
+    yax = dict(range= [0,min(1.1*ymax,100)])
+    
+    # print(ymax)
     ##
 
 
@@ -817,8 +820,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
         controlLines.append(
         dict(
         type='scatter',
-            x=[startdate+datetime.timedelta(days=min(month_len*month[0],5)),
-            startdate+datetime.timedelta(days=min(month_len*month[0],5))], # +1 to make it visible when at 0
+            x=[startdate+datetime.timedelta(days=month_len*month[0]),
+            startdate+datetime.timedelta(days= month_len*month[0])], # +1 to make it visible when at 0
              y=[0,ymax],
             mode='lines',
             opacity=0.9,
@@ -904,7 +907,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                         method="relayout"
                                                     )
                                             ]),
-                                            x= 0.5,
+                                            x= 0.3,
                                             xanchor = 'left',
                                             pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                             showactive=True,
@@ -930,7 +933,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     method="relayout"
                                                 )
                                         ]),
-                                        x= 0.5,
+                                        x= 0.3,
                                         xanchor="right",
                                         pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
@@ -981,8 +984,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     method="update"
                                                 )
                                         ]),
-                                        x= 0.8,
-                                        xanchor="right",
+                                        x= 0.7,
+                                        xanchor="left",
                                         pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
                                         y=-0.13,
