@@ -144,9 +144,9 @@ def poly_calc_ode(I0,R0,H0,C0,D0,beta_L_factor,beta_H_factor,t_control,T_stop,va
 
     sol = ode(poly_solv_ode,jac=None)
     
+    # sol.set_integrator('lsoda')
     # if min(y0)<0: # shouldn't ever be needed
     #     return None
-    
     otherArgs = beta_L_factor,beta_H_factor,t_control,vaccine_time,ICU_grow,let_HR_out
     sol.set_f_params(*otherArgs)
     

@@ -157,7 +157,7 @@ def begin_date(date,country='uk'):
 
 # external_stylesheets = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
 tab_label_color = 'black' # "#00AEF9"
-external_stylesheets = dbc.themes.CERULEAN
+external_stylesheets = dbc.themes.LITERA
 # Cerulean
 # COSMO
 # JOURNAL
