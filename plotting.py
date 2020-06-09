@@ -430,6 +430,7 @@ def yaxis_function(Yrange,population_plot):
             pop_vec_lin = np.linspace(0,yy2[i+1],11)
 
     linTicks = [i*(population_plot) for i in pop_vec_lin]
+    LinText = [human_format(0.01*ll) for ll in linTicks]
 
     log_bottom = -8
     log_range = [log_bottom,np.log10(Yrange[1])]
@@ -438,8 +439,11 @@ def yaxis_function(Yrange,population_plot):
 
     pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
     logTicks = [i*(population_plot) for i in pop_log_vec]
+
+    LogText = [human_format(0.01*ll) for ll in logTicks]
+
     
-    return linTicks, pop_vec_lin, log_range, logTicks, pop_log_vec
+    return LinText, pop_vec_lin, log_range, LogText, pop_log_vec
 
 
 def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,Yrange):
@@ -762,14 +766,14 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
             ymax = max(ymax,max(line['y']))
             # print(ymax,line['name'])
 
-    yax = dict(range= [0,min(1.1*ymax,100)])
+    yRange = [0,min(1.1*ymax,100)]
     
     ##
     yMaxDeath = 0.05
     for line in lines_to_plot_uncert:
         yMaxDeath = max(yMaxDeath,max(line['y']))
 
-    yaxMaxDeath = dict(range= [0,min(1.1*yMaxDeath,100)])
+    yMaxDeathRange = [0,min(1.1*yMaxDeath,100)]
 
 
     moreLines = []
@@ -795,7 +799,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
         type='scatter',
             x=[startdate+datetime.timedelta(days=month_len*vaccine_time),
             startdate+datetime.timedelta(days=month_len*vaccine_time)],
-            y=[yax['range'][0],yax['range'][1]],
+            y=[yRange[0],yRange[1]],
             mode='lines',
             opacity=0.9,
             legendgroup='thresholds',
@@ -857,11 +861,26 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
 
 
-    linTicks, pop_vec_lin, log_range, logTicks, pop_log_vec = yaxis_function(yax['range'],population_plot)
-    annotz, shapez = annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,yax['range'])
+    LinText, pop_vec_lin, log_range, LogText, pop_log_vec = yaxis_function(yRange,population_plot)
+    LinDeathText, pop_vec_linDeath, *_ = yaxis_function(yMaxDeathRange,population_plot)
 
+    annotz, shapez = annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,yRange)
 
+    yAxisLinear    = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'linear', 'range': yRange, 'automargin': True}
+    yAxisPopLinear = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'linear', 'range': yRange, 'overlaying': 'y1', 'ticktext': LinText, 'tickvals': pop_vec_lin,'automargin': True,'side':'right'}
     
+    yAxisLog       = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'log', 'range': log_range,'automargin': True}
+    yAxisPopLog    = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'log', 'range': log_range, 'overlaying': 'y1', 'ticktext': LogText, 'tickvals': pop_log_vec,'automargin': True,'side':'right'}
+    
+    yAxisLinearDeaths    = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'linear', 'range': yMaxDeathRange, 'automargin': True}
+    yAxisPopLinearDeaths = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'linear', 'range': yMaxDeathRange, 'overlaying': 'y1', 'ticktext': LinDeathText, 'tickvals': pop_vec_linDeath,'automargin': True,'side':'right'}
+
+
+    # xAx1Year = {'range': [xx[0], xx[floor((1/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
+    xAx2Year = {'range': [xx[0], xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
+    # xAx3Year = {'range': [xx[0], xx[-1]],'hoverformat':'%d %b','fixedrange': True}
+
+    xAx2FromFeb = {'range': [x0, xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
 
     layout = go.Layout(
                     annotations=annotz,
@@ -870,75 +889,56 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                     template="simple_white",
                     font = dict(size= font_size),
                     margin=dict(t=5, b=5, l=10, r=10,pad=15),
-                    # visible= [True]*len(lines_to_plot_line) + [False]*len(lines_to_plot_stack)  + [True]*len(moreLines),
-                    yaxis= dict(mirror= True,
-                            title='Percentage of Total Population',
-                            range= yax['range'],
-                            fixedrange= True,
-                            automargin=True,
-                            type = 'linear'
-                    ),
+                    yaxis= yAxisLinear,
                     hovermode='x',
-                    xaxis= dict(
-                            range= [xx[0], xx[floor((2/3)*len(xx))]],
-                            hoverformat='%d %b',
-                            fixedrange= True,
-                        ),
-                        updatemenus = [dict(
-                                                buttons=list([
-                                                    dict(
-                                                        args = ["xaxis", {'range': [xx[0], xx[floor((1/3)*len(xx))]],
-                                                        'hoverformat':'%d %b',
-                                                        'fixedrange': True,
-                                                        }],
-                                                        label="Years: 1",
-                                                        method="relayout"
-                                                    ),
-                                                    dict(
-                                                        args = ["xaxis", {'range': [xx[0], xx[floor((2/3)*len(xx))]],
-                                                        'hoverformat':'%d %b',
-                                                        'fixedrange': True,
-                                                        }],
-                                                        label="Years: 2",
-                                                        method="relayout"
-                                                    ),
-                                                    dict(
-                                                        args = ["xaxis", {'range': [xx[0], xx[-1]],
-                                                        'hoverformat':'%d %b',
-                                                        'fixedrange': True,
-                                                        }],
-                                                        label="Years: 3",
-                                                        method="relayout"
-                                                    )
-                                            ]),
-                                            x= 0.3,
-                                            xanchor = 'left',
-                                            pad={"r": 5, "t": 30, "b": 10, "l": 5},
-                                            showactive=True,
-                                            active=1,
-                                            direction='up',
-                                            y=-0.13,
-                                            yanchor="top"
-                                            ),
+                    xaxis= xAx2Year,
+                        updatemenus = [
+                                        # dict(
+                                            #     buttons=list([
+                                            #         dict(
+                                            #             args = ["xaxis", xAx1Year],
+                                            #             label="Years: 1",
+                                            #             method="relayout"
+                                            #         ),
+                                            #         dict(
+                                            #             args = ["xaxis", xAx2Year],
+                                            #             label="Years: 2",
+                                            #             method="relayout"
+                                            #         ),
+                                            #         dict(
+                                            #             args = ["xaxis", xAx3Year],
+                                            #             label="Years: 3",
+                                            #             method="relayout"
+                                            #         )
+                                            # ]),
+                                            # x= 0.3,
+                                            # xanchor = 'left',
+                                            # pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                            # showactive=True,
+                                            # active=1,
+                                            # direction='up',
+                                            # y=-0.13,
+                                            # yanchor="top"
+                                            # ),
                                             dict(
                                                 buttons=list([
                                                     dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population','fixedrange': True, 'type': 'linear', 'range': yax['range'], 'automargin': True}, # , 'showline':False
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')','fixedrange': True, 'type': 'linear', 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*linTicks[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True,'side':'right'} # , 'showline':False,
-                                                    }], # tickformat
-                                                    label="Linear",
+                                                    args=[{"yaxis": yAxisLinear,
+                                                    "yaxis2": yAxisPopLinear,
+                                                    }],
+                                                    label="Axis: Linear",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args=[{"yaxis": {'title': 'Percentage of Total Population', 'fixedrange': True, 'type': 'log', 'range': log_range,'automargin': True}, # , 'showline':False
-                                                    "yaxis2": {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'log', 'overlaying': 'y1', 'range': log_range, 'ticktext': [human_format(0.01*logTicks[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True,'side':'right'} #  'showline':False,
-                                                    }], # 'tickformat': yax_form_log,
-                                                    label="Logarithmic",
+                                                    args=[{"yaxis": yAxisLog,   
+                                                    "yaxis2":       yAxisPopLog,
+                                                    }],
+                                                    label="Axis: Logarithmic",
                                                     method="relayout"
                                                 )
                                         ]),
-                                        x= 0.3,
-                                        xanchor="right",
+                                        x= 0.5,
+                                        xanchor="center",
                                         pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
                                         y=-0.13,
@@ -962,7 +962,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                         }
                                                     },
                                                     ],
-                                                    label="Line",
+                                                    label="Plot: Line",
                                                     method="update"
                                                 ),
                                                 dict(
@@ -970,15 +970,13 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     {"visible":[False]*len(lines_to_plot_line) + [True]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [True]*len(controlLines) + [False]*len(lines_PrevDeaths)},
                                                     {
                                                     "shapes":[],
-                                                    "yaxis": {'title': 'Percentage of Total Population','fixedrange': True, 'type': 'linear', 'range': yaxMaxDeath['range'], 'automargin': True},
+                                                    "yaxis":  yAxisLinearDeaths,
+                                                    "yaxis2": yAxisPopLinearDeaths,
                                                     "barmode":'stack',
-                                                    "xaxis": {'range': [xx[0], xx[floor((2/3)*len(xx))]],
-                                                        'hoverformat':'%d %b',
-                                                        'fixedrange': True,
-                                                        }
+                                                    "xaxis": xAx2Year
                                                     },
                                                     ],
-                                                    label="Stacked Bar",
+                                                    label="Plot: Stacked Bar",
                                                     method="update"
                                                 ),
                                                 dict(
@@ -986,18 +984,16 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     {"visible":[False]*(len(lines_to_plot_line)-1) + [True] + [False]*len(lines_to_plot_stack) + [True]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines) + [True]*len(lines_PrevDeaths)},
                                                     {
                                                     "shapes": shapez,
-                                                    "yaxis": {'title': 'Percentage of Total Population','fixedrange': True, 'type': 'linear', 'range': yaxMaxDeath['range'], 'automargin': True},
-                                                    "xaxis": {'range': [x0, xx[floor((2/3)*len(xx))]],
-                                                        'hoverformat':'%d %b',
-                                                        'fixedrange': True,
-                                                        }
+                                                    "yaxis":  yAxisLinearDeaths,
+                                                    "yaxis2": yAxisPopLinearDeaths,
+                                                    "xaxis": xAx2FromFeb
                                                     },
                                                     ],
-                                                    label="Fatalities",
+                                                    label="Plot: Fatalities",
                                                     method="update"
                                                 )
                                         ]),
-                                        x= 0.7,
+                                        x= 0.9,
                                         xanchor="left",
                                         pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
@@ -1017,17 +1013,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     ),
                                         legend_orientation  = 'h',
                                         legend_title        = '<b> Key </b>',
-                                        yaxis2 = dict(
-                                                        title = 'Population (' + country_name + ')',
-                                                        overlaying='y1',
-                                                        fixedrange= True,
-                                                        # showline=False,
-                                                        range = yax['range'],
-                                                        side='right',
-                                                        ticktext = [human_format(0.01*linTicks[i]) for i in range(len(pop_vec_lin))],
-                                                        tickvals = [i for i in  pop_vec_lin],
-                                                        automargin=True
-                                                    )
+                                        yaxis2 = yAxisPopLinear
                             )
 
     linesUse = lines_to_plot_line + lines_to_plot_stack + lines_to_plot_uncert + moreLines + controlLines + lines_PrevDeaths
