@@ -707,6 +707,7 @@ def prevDeaths(previous_deaths,startdate,population_plot):
             legendgroup='deaths',
             line=dict(
             color= 'purple',
+            visible= False,
             dash = 'dash'
             ),
             hovertemplate = '%{y:.2f}%, %{text}',
@@ -755,7 +756,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
         ttt = sols[0]['t']
         c_low, c_high, ICU = time_exceeded_function(yyy,ttt,ICU_grow)
     
-    ymax = 0.01
+    ymax = 0.05
     for line in lines_to_plot_line:
         if line['visible']:
             ymax = max(ymax,max(line['y']))
@@ -763,9 +764,12 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
     yax = dict(range= [0,min(1.1*ymax,100)])
     
-    # print(ymax)
     ##
+    yMaxDeath = 0.05
+    for line in lines_to_plot_uncert:
+        yMaxDeath = max(yMaxDeath,max(line['y']))
 
+    yaxMaxDeath = dict(range= [0,min(1.1*yMaxDeath,100)])
 
 
     moreLines = []
@@ -948,11 +952,14 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     dict(
                                                     args=[
                                                     {'visible':
-                                                    [True]*len(lines_to_plot_line) + [False]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines)
+                                                    [True]*len(lines_to_plot_line) + [False]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines)  + [False]*len(lines_PrevDeaths)
                                                     },
                                                     {
-                                                    # "annotations": annotz,
-                                                    "shapes": shapez
+                                                    "shapes": shapez,
+                                                    "xaxis": {'range': [xx[0], xx[floor((2/3)*len(xx))]],
+                                                        'hoverformat':'%d %b',
+                                                        'fixedrange': True,
+                                                        }
                                                     },
                                                     ],
                                                     label="Line",
@@ -960,11 +967,15 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                 ),
                                                 dict(
                                                     args=[
-                                                    {"visible":[False]*len(lines_to_plot_line) + [True]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [True]*len(controlLines)},
+                                                    {"visible":[False]*len(lines_to_plot_line) + [True]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [True]*len(controlLines) + [False]*len(lines_PrevDeaths)},
                                                     {
-                                                    # "annotations":[],
                                                     "shapes":[],
-                                                    "barmode":'stack'
+                                                    "yaxis": {'title': 'Percentage of Total Population','fixedrange': True, 'type': 'linear', 'range': yaxMaxDeath['range'], 'automargin': True},
+                                                    "barmode":'stack',
+                                                    "xaxis": {'range': [xx[0], xx[floor((2/3)*len(xx))]],
+                                                        'hoverformat':'%d %b',
+                                                        'fixedrange': True,
+                                                        }
                                                     },
                                                     ],
                                                     label="Stacked Bar",
@@ -972,12 +983,14 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                 ),
                                                 dict(
                                                     args=[
-                                                    {"visible":[False]*(len(lines_to_plot_line)-1) + [True] + [False]*len(lines_to_plot_stack) + [True]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines)},
+                                                    {"visible":[False]*(len(lines_to_plot_line)-1) + [True] + [False]*len(lines_to_plot_stack) + [True]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines) + [True]*len(lines_PrevDeaths)},
                                                     {
-                                                    # "annotations":[],
-                                                    # "shapes":[],
                                                     "shapes": shapez,
-                                                    # "barmode":'stack'
+                                                    "yaxis": {'title': 'Percentage of Total Population','fixedrange': True, 'type': 'linear', 'range': yaxMaxDeath['range'], 'automargin': True},
+                                                    "xaxis": {'range': [x0, xx[floor((2/3)*len(xx))]],
+                                                        'hoverformat':'%d %b',
+                                                        'fixedrange': True,
+                                                        }
                                                     },
                                                     ],
                                                     label="Fatalities",
@@ -1017,7 +1030,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     )
                             )
 
-    linesUse = lines_to_plot_line + lines_to_plot_stack + lines_to_plot_uncert + moreLines + controlLines
+    linesUse = lines_to_plot_line + lines_to_plot_stack + lines_to_plot_uncert + moreLines + controlLines + lines_PrevDeaths
 
     return {'data': linesUse, 'layout': layout}
 

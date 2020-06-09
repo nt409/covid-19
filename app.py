@@ -1673,6 +1673,7 @@ control_choices = html.Div([
         options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST_NICK)],
         value= initial_country,
         clearable = False,
+        style={'white-space':'nowrap'}
     ),],
     style={'cursor': 'pointer', 'fontSize': '70%', 'marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
                                             
@@ -1720,6 +1721,7 @@ control_choices = html.Div([
         'value': key} for key in presets_dict_dropdown],
         value= 'LC',
         clearable = False,
+        style={'white-space':'nowrap'}
     ),],
     style={'cursor': 'pointer', 'fontSize': '70%', 'marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
         
@@ -2579,8 +2581,9 @@ layout_inter = html.Div([
                                             ],
                                             value= 'DPC_dd',
                                             clearable = False,
+                                            style={'white-space':'nowrap'}
                                         ),],
-                                        style={'cursor': 'pointer'}),
+                                        style={'cursor': 'pointer','marginBottom': '3vh'}),
 
                                         ],
                                         width=10
