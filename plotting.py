@@ -414,7 +414,7 @@ def string_function(len_sols,num_strat,ss,comp_dn):
 
 
 
-def yaxis_function(Yrange,population_plot):
+def yaxis_function(Yrange,population_plot,country_name):
 
     yy2 = [0]
     for i in range(8):
@@ -424,7 +424,7 @@ def yaxis_function(Yrange,population_plot):
 
     yy = [i for i in yy2]
 
-
+    pop_vec_lin = np.linspace(0,1,11) # temp
     for i in range(len(yy)-1):
         if Yrange[1]>yy[i] and Yrange[1] <= yy[i+1]:
             pop_vec_lin = np.linspace(0,yy2[i+1],11)
@@ -433,17 +433,26 @@ def yaxis_function(Yrange,population_plot):
     LinText = [human_format(0.01*ll) for ll in linTicks]
 
     log_bottom = -8
-    log_range = [log_bottom,np.log10(Yrange[1])]
+    # log_range = [log_bottom,np.log10(Yrange[1])]
+    log_range = [log_bottom,np.log10(100)]
 
-    pop_vec_log_intermediate = np.linspace(log_range[0],ceil(np.log10(pop_vec_lin[-1])), 1+ ceil(np.log10(pop_vec_lin[-1])-log_range[0]) )
 
-    pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
+    # pop_vec_log_intermediate = np.linspace(log_range[0],ceil(np.log10(pop_vec_lin[-1])), 1+ ceil(np.log10(pop_vec_lin[-1])-log_range[0]) )
+    # pop_vec_log_intermediate = np.linspace(log_range[0], log_range[1], 1+ ceil(log_range[1]-log_range[0]))
+
+
+    pop_log_vec = [10**(i) for i in range(log_range[0], int(log_range[1]+1),2)]
     logTicks = [i*(population_plot) for i in pop_log_vec]
 
     LogText = [human_format(0.01*ll) for ll in logTicks]
 
+    yAxisLinear    = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'linear', 'range': Yrange, 'automargin': True}
+    yAxisPopLinear = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'linear', 'range': Yrange, 'overlaying': 'y1', 'ticktext': LinText, 'tickvals': pop_vec_lin,'automargin': True,'side':'right'}
+    yAxisLog       = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'log', 'range': log_range,'automargin': True}
+    yAxisPopLog    = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'log', 'range': log_range, 'overlaying': 'y1', 'ticktext': LogText, 'tickvals': pop_log_vec,'automargin': True,'side':'right'}
+
     
-    return LinText, pop_vec_lin, log_range, LogText, pop_log_vec
+    return yAxisLinear, yAxisPopLinear, yAxisLog, yAxisPopLog
 
 
 def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,Yrange):
@@ -462,7 +471,7 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
                 x0= startdate+datetime.timedelta(days=month_len*month[0]), #month_len*
                 y0=0,
                 x1= startdate+datetime.timedelta(days=month_len*month[1]), #month_len*
-                y1=Yrange[1],
+                y1=100,
                 line=dict(
                     color="LightSkyBlue",
                     width=0,
@@ -488,7 +497,7 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
                         x0= startdate+datetime.timedelta(days=c_min), #month_len*  ##c_min/month_len,
                         y0=0,
                         x1= startdate+datetime.timedelta(days=c_max), #c_max/month_len,
-                        y1=Yrange[1],
+                        y1=100,
                         line=dict(
                             color="pink",
                             width=0,
@@ -547,7 +556,7 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
                     x0= startdate+datetime.timedelta(days=month_len*month_cycle[i]),
                     y0=0,
                     x1= startdate+datetime.timedelta(days=month_len*month_cycle[i+1]),
-                    y1=Yrange[1],
+                    y1=100,
                     line=dict(
                         color="LightSkyBlue",
                         width=0,
@@ -583,10 +592,10 @@ def lineplot(sols,population_plot,startdate,num_strat,comp_dn):
         else:
             for name in cats_to_plot:
                 for group in group_use:
-                    if name in ['S','R']:
-                        vis = False
-                    else:
+                    if name in ['H','C']:
                         vis = True
+                    else:
+                        vis = False
 
                     line_style_use, name_string = string_function(len(sols),num_strat,ss,comp_dn)
                     xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
@@ -721,6 +730,37 @@ def prevDeaths(previous_deaths,startdate,population_plot):
     return lines_to_plot, x0
 
 
+def CategoryFunction(CategoryList,Indices,Name,lines_to_plot_line,population_plot,country_name,BooleanString,xAxis):
+
+    FalseList = [False]*len(lines_to_plot_line)
+    LineMaxTemp = 0
+    for index, line in enumerate(lines_to_plot_line):
+        if index in Indices: # corresponds to hosp/crit
+            FalseList[index] = True
+            LineMaxTemp = max(max(1.1*line['y']),0.01,LineMaxTemp) # makes sure above 0
+            LineRangeTemp = [0,min(LineMaxTemp,100)]
+    
+    yAxisLinTemp, yAxisPopLinTemp, *_ = yaxis_function(LineRangeTemp,population_plot,country_name)
+    
+    CategoryDict = dict(
+        args=[{
+        "visible": 
+        FalseList + BooleanString
+        },
+        {
+        "xaxis": xAxis,
+        "yaxis": yAxisLinTemp,
+        "yaxis2": yAxisPopLinTemp,
+        }],
+        label  = Name,
+        method = "update"
+    )
+    CategoryList.append(CategoryDict)
+    return CategoryList
+
+
+
+
 def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None, previous_deaths=None):
     
     # cats_to_plot = ['S','I','R','C','H','D']
@@ -736,17 +776,13 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
     
     font_size = 12
     
-    
-    # if num_strat=='one':
-    #     group_use = groups
-    # if num_strat=='two' or comp_dn:
-    #     group_use = groups2
    
    
     lines_to_plot_line, xx = lineplot(sols,population_plot,startdate,num_strat,comp_dn)
     lines_to_plot_stack, xxx = stackPlot(sols,population_plot,startdate)
     lines_to_plot_uncert = uncertPlot(upper_lower_sol,population_plot,startdate)
     lines_PrevDeaths, x0 = prevDeaths(previous_deaths,startdate,population_plot)
+    
     # lines_to_plot, xx = lineplot(sols,cats_to_plot,group_use,population_plot,startdate,num_strat,comp_dn)
     # for line in lines_to_plot_stack:
     #     line['visible'] = False
@@ -760,16 +796,15 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
         ttt = sols[0]['t']
         c_low, c_high, ICU = time_exceeded_function(yyy,ttt,ICU_grow)
     
-    ymax = 0.05
+    ymax = 0.001
     for line in lines_to_plot_line:
         if line['visible']:
             ymax = max(ymax,max(line['y']))
-            # print(ymax,line['name'])
 
     yRange = [0,min(1.1*ymax,100)]
     
     ##
-    yMaxDeath = 0.05
+    yMaxDeath = 0.001
     for line in lines_to_plot_uncert:
         yMaxDeath = max(yMaxDeath,max(line['y']))
 
@@ -799,7 +834,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
         type='scatter',
             x=[startdate+datetime.timedelta(days=month_len*vaccine_time),
             startdate+datetime.timedelta(days=month_len*vaccine_time)],
-            y=[yRange[0],yRange[1]],
+            y=[yRange[0],100],
             mode='lines',
             opacity=0.9,
             legendgroup='thresholds',
@@ -861,26 +896,50 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
 
 
-    LinText, pop_vec_lin, log_range, LogText, pop_log_vec = yaxis_function(yRange,population_plot)
-    LinDeathText, pop_vec_linDeath, *_ = yaxis_function(yMaxDeathRange,population_plot)
+    yAxisLinear, yAxisPopLinear, yAxisLog, yAxisPopLog = yaxis_function(yRange,population_plot,country_name)
+    yAxisLinearDeaths, yAxisPopLinearDeaths, *_ = yaxis_function(yMaxDeathRange,population_plot,country_name)
 
     annotz, shapez = annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,yRange)
 
-    yAxisLinear    = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'linear', 'range': yRange, 'automargin': True}
-    yAxisPopLinear = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'linear', 'range': yRange, 'overlaying': 'y1', 'ticktext': LinText, 'tickvals': pop_vec_lin,'automargin': True,'side':'right'}
-    
-    yAxisLog       = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'log', 'range': log_range,'automargin': True}
-    yAxisPopLog    = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'log', 'range': log_range, 'overlaying': 'y1', 'ticktext': LogText, 'tickvals': pop_log_vec,'automargin': True,'side':'right'}
-    
-    yAxisLinearDeaths    = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'linear', 'range': yMaxDeathRange, 'automargin': True}
-    yAxisPopLinearDeaths = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'linear', 'range': yMaxDeathRange, 'overlaying': 'y1', 'ticktext': LinDeathText, 'tickvals': pop_vec_linDeath,'automargin': True,'side':'right'}
-
-
-    # xAx1Year = {'range': [xx[0], xx[floor((1/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
     xAx2Year = {'range': [xx[0], xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
+    # xAx1Year = {'range': [xx[0], xx[floor((1/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
     # xAx3Year = {'range': [xx[0], xx[-1]],'hoverformat':'%d %b','fixedrange': True}
 
     xAx2FromFeb = {'range': [x0, xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
+
+
+
+
+
+
+
+    CategoryList = []
+
+    BoolString = [False]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines)  + [False]*len(lines_PrevDeaths)
+    config = lines_to_plot_line, population_plot, country_name, BoolString, xAx2Year
+    
+    CategoryList = CategoryFunction(CategoryList,[3,4],'Hosp. Categories',*config)
+    CategoryList = CategoryFunction(CategoryList,[0,1,2,3,4,5],'All',*config)
+    CategoryList = CategoryFunction(CategoryList,[1,3,4,5],'Pathology',*config)
+
+
+
+    for index, line in enumerate(lines_to_plot_line):
+        
+        CategoryList = CategoryFunction(CategoryList,[index],line['name'],*config)
+        
+        if line['name']=='Deaths (total)':
+            LineMax = max(max(1.1*line['y']),0.01) # makes sure above 0
+            LineRange = [0,min(LineMax,100)]
+            yAxisLinDeaths, yAxisPopLinDeaths, *_ = yaxis_function(LineRange,population_plot,country_name)
+
+
+
+
+
+
+
+
 
     layout = go.Layout(
                     annotations=annotz,
@@ -920,6 +979,21 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                             # y=-0.13,
                                             # yanchor="top"
                                             # ),
+
+                                            dict(
+                                                buttons= CategoryList,
+                                            x= 0.01,
+                                            xanchor="right",
+                                            pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                            active=0,
+                                            y=-0.13,
+                                            showactive=True,
+                                            direction='up',
+                                            yanchor="top"
+                                            ),
+
+
+
                                             dict(
                                                 buttons=list([
                                                     dict(
@@ -956,10 +1030,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     },
                                                     {
                                                     "shapes": shapez,
-                                                    "xaxis": {'range': [xx[0], xx[floor((2/3)*len(xx))]],
-                                                        'hoverformat':'%d %b',
-                                                        'fixedrange': True,
-                                                        }
+                                                    "xaxis": xAx2Year
                                                     },
                                                     ],
                                                     label="Plot: Line",
@@ -970,8 +1041,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     {"visible":[False]*len(lines_to_plot_line) + [True]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [True]*len(controlLines) + [False]*len(lines_PrevDeaths)},
                                                     {
                                                     "shapes":[],
-                                                    "yaxis":  yAxisLinearDeaths,
-                                                    "yaxis2": yAxisPopLinearDeaths,
+                                                    "yaxis":  yAxisLinDeaths,
+                                                    "yaxis2": yAxisPopLinDeaths,
                                                     "barmode":'stack',
                                                     "xaxis": xAx2Year
                                                     },
@@ -993,7 +1064,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     method="update"
                                                 )
                                         ]),
-                                        x= 0.9,
+                                        x= 0.99,
                                         xanchor="left",
                                         pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
