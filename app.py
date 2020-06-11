@@ -1030,7 +1030,7 @@ card_inter  = dbc.Card(
             [
                 html.H4("Interactive Model",style={'textAlign': 'center'},  className="card-title"),
                 html.P(
-                    "See how different control measures implemented today could impact on deaths, hospitalisations and ICU requirements.",
+                    "See how different control measures implemented today could impact on infections, hospitalisations and deaths.",
                     className="card-text",
                     style={'textAlign': 'justify'}
                 ),
@@ -1069,7 +1069,6 @@ card_intro  = dbc.Card(
             justify='center'),
             ],
             ),
-    # style={"width": "18rem"},
     ]
     )
 
@@ -1085,7 +1084,7 @@ card_data  = dbc.Card(
             [
                 html.H4("Global Data Feed", style={'textAlign': 'center'}, className="card-title"),
                 html.P(
-                    "Real time data on coronavirus cases and deaths from hundreds of countries around the world.",
+                    "Real-time data on coronavirus cases and deaths from hundreds of countries around the world.",
                     className="card-text",
                     style={'textAlign': 'justify'}
                 ),
@@ -1110,32 +1109,25 @@ layout_enter = html.Div(
                 dbc.Col([
                 card_intro,
                 ],
-                width=10,
-                # lg = 4,
-                lg = 6,
-                style = {'marginRight': '2vw', 'marginLeft': '2vw', 'marginTop': '2vh', 'marginBottom': '2vh'}
+                width=5,
+                md = 3,
+                style = {'marginRight': '2vw', 'marginLeft': '2vw', 'marginTop': '2vh', 'marginBottom': '2vh', 'textAlign': 'center'}
                 ),
                 
                 dbc.Col([
                 card_inter,
                 ],
-                width=10,
-                # lg = 4,
-                lg = 6,
-                style = {'marginRight': '2vw', 'marginLeft': '2vw', 'marginTop': '2vh', 'marginBottom': '2vh'}
+                width=5,
+                md = 3,
+                style = {'marginRight': '2vw', 'marginLeft': '2vw', 'marginTop': '2vh', 'marginBottom': '2vh', 'textAlign': 'center'}
                 ),
-            # ],
-            # justify='center',
-            # style = {'marginTop': '3vh', 'marginBottom': '3vh'}
-            # ),
-
-            # dbc.Row([
+  
                 dbc.Col([
                 card_data,
                 ],
-                width=10,
-                lg = 6,
-                style = {'marginRight': '2vw', 'marginLeft': '2vw', 'marginTop': '2vh', 'marginBottom': '2vh'}
+                width=5,
+                lg = 3,
+                style = {'marginRight': '2vw', 'marginLeft': '2vw', 'marginTop': '2vh', 'marginBottom': '2vh', 'textAlign': 'center'}
                 ),
 
             ],
@@ -1151,7 +1143,7 @@ layout_enter = html.Div(
         ),
         ],
         justify = 'center',
-        style = {'marginTop': '3vh'}),
+        style = {'marginTop': '3vh', 'fontSize': '80%'}),
 
 
         ])
@@ -1334,11 +1326,6 @@ layout_intro = html.Div([
         dbc.Tab(label='Introduction to modelling',  tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_0', children=[
 
             
-            dcc.Markdown('''
-            The aim of this website is to demystify modelling of infectious diseases through short videos and an interactive model which lets you explore how different control strategies will affect the rate that COVID-19 spreads. The website has been developed by experts in epidemiology and modelling from the University of Cambridge.
-            ''',
-            style={'textAlign': 'justify','marginTop': '3vh', 'marginBottom': '7vh'}),
-
             html.H3('Introduction to mathematical modelling',className='display-4',
             style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
 
@@ -1433,14 +1420,22 @@ layout_intro = html.Div([
                     justify='center'
                     ),
             
-            html.Hr(),
+            # html.Hr(),
             
+            
+        ]),
+
+        dbc.Tab(label='Definitions', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_defs',
+            children=[
+                
             html.H3('Definitions',className='display-4',
-            style = { 'fontSize': '250%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '3vh'}),
+            style = { 'fontSize': '250%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
+
+            html.Hr(),
 
             dcc.Markdown('''            
 
-            There are **two vital concepts** that you need to understand before we can fully explore how the control measures work.
+            There are two **key concepts** that you need to understand before we can fully explore how the control measures work.
             '''),
             
             html.H4('1. Basic Reproduction Number',
@@ -1449,7 +1444,7 @@ layout_intro = html.Div([
             dcc.Markdown('''            
             Any infectious disease requires both infectious individuals and susceptible individuals to be present in a population to spread. The higher the number of susceptible individuals, the faster it can spread since an infectious person can spread the disease to more susceptible people before recovering.
 
-            The average number of infections caused by a single infected person is known as the '**basic reproduction number**' (*R*). If this number is less than 1 (each infected person infects less than one other on average) then the disease will not continue to spread. If it is greater than 1 then the disease will spread. For COVID-19 most estimates for *R* are between 2 and 3. We use the value *R*=2.4.
+            The average number of infections caused by a single infected person is known as the '**effective reproduction number**' (*R*). If this number is less than 1 (each infected person infects less than one other on average) then the disease will not continue to spread. If it is greater than 1 then the disease will spread. For COVID-19 most estimates for *R* are between 2 and 3. We use the value *R*=2.4.
             '''),
 
             html.H4('2. Herd Immunity',
@@ -1470,10 +1465,11 @@ layout_intro = html.Div([
             ''',
             style={'textAlign': 'justify'}),
 
-            
-        ]),
+            ]
+        ),
 
         dbc.Tab(label='COVID-19 Control Strategies',tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_control', children=[
+
             html.H3('Keys to a successful control strategy',
             className = 'display-4',
             style = {'fontSize': '250%', 'textAlign': 'center', 'marginTop': '1vh', 'marginBottom': '1vh'}),
@@ -1566,12 +1562,6 @@ layout_intro = html.Div([
 
                     Stricter measures (e.g. lockdown) have a more dramatic effect on the infection rate than less stringent measures.
                     
-                    There are **two** ways to adjust control:
-
-                    1. Adjust the infection rates from their baseline level,
-                    
-                    2. Adjust the time for which control is applied.
-
                     To start predicting the outcome of different strategies, press the button below!
 
                     ''',
@@ -2496,6 +2486,7 @@ layout_inter = html.Div([
 
                                                 dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
                                                 dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary'),
+                                                
                                                 ],
                                                 justify='center',
                                                 style = {'marginTop': '0vh', 'marginBottom': '2vh'}
@@ -3490,8 +3481,6 @@ def render_interactive_content(pathname,sols,
     DPC_style,
     BC_style,
     SO_style,
-
-    # results_title,
 
     strategy_outcome_text,
 

@@ -441,7 +441,7 @@ def yaxis_function(Yrange,population_plot,country_name):
     # pop_vec_log_intermediate = np.linspace(log_range[0], log_range[1], 1+ ceil(log_range[1]-log_range[0]))
 
 
-    pop_log_vec = [10**(i) for i in range(log_range[0], int(log_range[1]+1),2)]
+    pop_log_vec = [10**(i) for i in range(log_range[0], int(log_range[1]+1),2)] # will always give 6 values
     logTicks = [i*(population_plot) for i in pop_log_vec]
 
     LogText = [human_format(0.01*ll) for ll in logTicks]
