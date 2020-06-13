@@ -2639,7 +2639,7 @@ page_layout = html.Div([
                 dbc.NavItem(dbc.NavLink("Real-Time Global Data Feed", href="/data")),
             ],
             brand="Modelling COVID-19",
-            brand_href="/",
+            brand_href="/home",
             brand_style = {'fontSize': '120%'},
             color="primary",
             # sticky = 'top',
@@ -2660,7 +2660,7 @@ page_layout = html.Div([
         dcc.Location(id='page-url', refresh=False),
 
         dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg'),
-        html.Div(id='page-content',children=layout_enter),
+        html.Div(id='page-content',children=layout_inter),
 
 
 
@@ -2802,14 +2802,14 @@ def change_pathname(pathname,saved_pathname):
             [Input('saved-url', 'data')])
 def display_page(pathname):
     # print('display page')
-    if pathname == '/inter':
-        return [layout_inter, None]
-    elif pathname == '/data':
+    if pathname == '/data':
         return [layout_dan, None]
     elif pathname == '/intro':
         return [layout_intro, None]
-    else:
+    elif pathname == '/home':
         return [layout_enter, None]
+    else:
+        return [layout_inter, None]
 
 ########################################################################################################################
 # collapse
@@ -2877,8 +2877,8 @@ def invisible_or_not(num,preset):
         strat_H = [html.H6('Strategy One: High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
         strat_L = [html.H6('Strategy One: Low Risk Infection Rate (%)',style={'fontSize': '100%'}),]
         says_strat_2 = None
-        do_nothing_dis = True
-        do_n_val = 0
+        # do_nothing_dis = True
+        # do_n_val = 0
 
     else:
         strat_H = [html.H6('High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
