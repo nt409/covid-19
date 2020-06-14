@@ -2794,7 +2794,7 @@ def render_interactive_content(pathname,sols,
         None
         ]
 
-    if pathname!='/inter':
+    if pathname in ['/data','/intro','/home']:
         raise PreventUpdate
 
 
@@ -2848,190 +2848,190 @@ def render_interactive_content(pathname,sols,
 
 
 
-    if pathname=='/inter': # tab2
+    # if True: # pathname=='/inter': # tab2
    
-   
-        if preset!='C':
-            num_strat = 'one'
-            
 
-        if True: # sols is not None:
-            sols.append(sol_do_nothing)
+    if preset!='C':
+        num_strat = 'one'
         
-            # bar plot data
-            time_reached_data = []
-            time_exceeded_data = []
-            crit_cap_data_L_3yr = []
-            crit_cap_data_H_3yr = []
-            crit_cap_quoted_3yr = []
-            ICU_data_3yr = []
-            herd_list_3yr = []
+
+    # if True: # sols is not None:
+    sols.append(sol_do_nothing)
+
+    # bar plot data
+    time_reached_data = []
+    time_exceeded_data = []
+    crit_cap_data_L_3yr = []
+    crit_cap_data_H_3yr = []
+    crit_cap_quoted_3yr = []
+    ICU_data_3yr = []
+    herd_list_3yr = []
 
 
-            crit_cap_data_L_1yr = []
-            crit_cap_data_H_1yr = []
-            crit_cap_quoted_1yr = []
-            ICU_data_1yr = []
-            herd_list_1yr = []
+    crit_cap_data_L_1yr = []
+    crit_cap_data_H_1yr = []
+    crit_cap_quoted_1yr = []
+    ICU_data_1yr = []
+    herd_list_1yr = []
 
-            crit_cap_data_L_2yr = []
-            crit_cap_data_H_2yr = []
-            crit_cap_quoted_2yr = []
-            ICU_data_2yr = []
-            herd_list_2yr = []
+    crit_cap_data_L_2yr = []
+    crit_cap_data_H_2yr = []
+    crit_cap_quoted_2yr = []
+    ICU_data_2yr = []
+    herd_list_2yr = []
 
-            crit_cap_data_L_3yr = []
-            crit_cap_data_H_3yr = []
-            crit_cap_quoted_3yr = []
-            ICU_data_3yr = []
-            herd_list_3yr = []
-            for ii in range(len(sols)):
-                if sols[ii] is not None and ii<len(sols)-1:
-                    sol = sols[ii]
+    crit_cap_data_L_3yr = []
+    crit_cap_data_H_3yr = []
+    crit_cap_quoted_3yr = []
+    ICU_data_3yr = []
+    herd_list_3yr = []
+    for ii in range(len(sols)):
+        if sols[ii] is not None and ii<len(sols)-1:
+            sol = sols[ii]
 
 ########################################################################################################################
-            if results_type!='DPC_dd': # tab != DPC
+    if results_type!='DPC_dd': # tab != DPC
 
-                #loop start
-                for ii in range(len(sols)):
-                    # 
-                    if sols[ii] is not None:
-                        sol = sols[ii]
-                        
-                        yy = np.asarray(sol['y'])
-                        tt = np.asarray(sol['t'])
-
-                        
-                        num_t_points = yy.shape[1]
-
-                        metric_val_L_3yr, metric_val_H_3yr, ICU_val_3yr, herd_fraction_out, time_exc, time_reached = extract_info(yy,tt,num_t_points,ICU_grow)
-                        
-                        crit_cap_data_L_3yr.append(metric_val_L_3yr) #
-                        crit_cap_data_H_3yr.append(metric_val_H_3yr) #
-                        ICU_data_3yr.append(ICU_val_3yr)
-                        herd_list_3yr.append(herd_fraction_out) ##
-                        time_exceeded_data.append(time_exc) ##
-                        time_reached_data.append(time_reached) ##
-
-
-                        num_t_2yr = ceil(2*num_t_points/3)
-                        metric_val_L_2yr, metric_val_H_2yr, ICU_val_2yr, herd_fraction_out = extract_info(yy,tt,num_t_2yr,ICU_grow)[:4]
-
-                        crit_cap_data_L_2yr.append(metric_val_L_2yr) #
-                        crit_cap_data_H_2yr.append(metric_val_H_2yr) #
-                        ICU_data_2yr.append(ICU_val_2yr)
-                        herd_list_2yr.append(herd_fraction_out) ##
-
-
-                        num_t_1yr = ceil(num_t_points/3)
-                        metric_val_L_1yr, metric_val_H_1yr, ICU_val_1yr, herd_fraction_out = extract_info(yy,tt,num_t_1yr,ICU_grow)[:4]
-
-                        crit_cap_data_L_1yr.append(metric_val_L_1yr) #
-                        crit_cap_data_H_1yr.append(metric_val_H_1yr) #
-                        ICU_data_1yr.append(ICU_val_1yr)
-                        herd_list_1yr.append(herd_fraction_out) ##
-
-
-             
-                # loop end
-
-                for jj in range(len(crit_cap_data_H_3yr)):
-                    crit_cap_quoted_1yr.append( (1 - (crit_cap_data_L_1yr[jj] + crit_cap_data_H_1yr[jj])/(crit_cap_data_L_1yr[-1] + crit_cap_data_H_1yr[-1]) ))
-
-                    crit_cap_quoted_2yr.append( (1 - (crit_cap_data_L_2yr[jj] + crit_cap_data_H_2yr[jj])/(crit_cap_data_L_2yr[-1] + crit_cap_data_H_2yr[-1]) ))
-
-                    crit_cap_quoted_3yr.append( (1 - (crit_cap_data_L_3yr[jj] + crit_cap_data_H_3yr[jj])/(crit_cap_data_L_3yr[-1] + crit_cap_data_H_3yr[-1]) ))
-
-                ########################################################################################################################
-                # SO results
-                if  results_type=='SO_dd':
-
-                    strategy_outcome_text = html.Div([
-
-                        dcc.Markdown('''
-                            *Click on the info buttons for explanations*.
-                            ''',style = {'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '3vh'}),
-                        
-                        outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[0],herd_list_2yr[0],ICU_data_2yr[0],preset,number_strategies = num_strat,which_strat=1), # hosp,
-                        html.Hr(),
-                        outcome_fn(month,sols[1]['beta_L'],sols[1]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[1],herd_list_2yr[1],ICU_data_2yr[1],preset,number_strategies = num_strat,which_strat=2), # hosp,
-                        ],
-                        style = {'fontSize': '2vh'}
-                        )
+        #loop start
+        for ii in range(len(sols)):
+            # 
+            if sols[ii] is not None:
+                sol = sols[ii]
+                
+                yy = np.asarray(sol['y'])
+                tt = np.asarray(sol['t'])
 
                 
-                ########################################################################################################################
-                # BC results
+                num_t_points = yy.shape[1]
 
-                if results_type=='BC_dd':
-
-                    crit_cap_bar_1yr = [crit_cap_data_L_1yr[i] + crit_cap_data_H_1yr[i] for i in range(len(crit_cap_data_H_1yr))]
-                    crit_cap_bar_3yr = [crit_cap_data_L_3yr[i] + crit_cap_data_H_3yr[i] for i in range(len(crit_cap_data_H_3yr))]
-
-
-                    bar1 = Bar_chart_generator(crit_cap_bar_1yr      ,text_addition='%'         , y_title='Population'                    , hover_form = '%{x}, %{y:.3%}'                         ,color = 'LightSkyBlue' ,data_group=crit_cap_bar_3yr, yax_tick_form='.1%')
-                    bar2 = Bar_chart_generator(herd_list_1yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'  , hover_form = '%{x}, %{y:.1%}<extra></extra>'          ,color = 'LightSkyBlue' ,data_group=herd_list_3yr,yax_tick_form='.1%',maxi=False,yax_font_size_multiplier=0.8)
-                    bar3 = Bar_chart_generator(ICU_data_1yr          ,text_addition='x current' , y_title='Multiple of Capacity'  , hover_form = '%{x}, %{y:.1f}x Current<extra></extra>' ,color = 'LightSkyBlue'     ,data_group=ICU_data_3yr  )
-                    bar4 = Bar_chart_generator(time_exceeded_data    ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'LightSkyBlue'   )
-                    bar5 = Bar_chart_generator(time_reached_data     ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'LightSkyBlue')
+                metric_val_L_3yr, metric_val_H_3yr, ICU_val_3yr, herd_fraction_out, time_exc, time_reached = extract_info(yy,tt,num_t_points,ICU_grow)
+                
+                crit_cap_data_L_3yr.append(metric_val_L_3yr) #
+                crit_cap_data_H_3yr.append(metric_val_H_3yr) #
+                ICU_data_3yr.append(ICU_val_3yr)
+                herd_list_3yr.append(herd_fraction_out) ##
+                time_exceeded_data.append(time_exc) ##
+                time_reached_data.append(time_reached) ##
 
 
+                num_t_2yr = ceil(2*num_t_points/3)
+                metric_val_L_2yr, metric_val_H_2yr, ICU_val_2yr, herd_fraction_out = extract_info(yy,tt,num_t_2yr,ICU_grow)[:4]
+
+                crit_cap_data_L_2yr.append(metric_val_L_2yr) #
+                crit_cap_data_H_2yr.append(metric_val_H_2yr) #
+                ICU_data_2yr.append(ICU_val_2yr)
+                herd_list_2yr.append(herd_fraction_out) ##
+
+
+                num_t_1yr = ceil(num_t_points/3)
+                metric_val_L_1yr, metric_val_H_1yr, ICU_val_1yr, herd_fraction_out = extract_info(yy,tt,num_t_1yr,ICU_grow)[:4]
+
+                crit_cap_data_L_1yr.append(metric_val_L_1yr) #
+                crit_cap_data_H_1yr.append(metric_val_H_1yr) #
+                ICU_data_1yr.append(ICU_val_1yr)
+                herd_list_1yr.append(herd_fraction_out) ##
+
+
+        
+        # loop end
+
+        for jj in range(len(crit_cap_data_H_3yr)):
+            crit_cap_quoted_1yr.append( (1 - (crit_cap_data_L_1yr[jj] + crit_cap_data_H_1yr[jj])/(crit_cap_data_L_1yr[-1] + crit_cap_data_H_1yr[-1]) ))
+
+            crit_cap_quoted_2yr.append( (1 - (crit_cap_data_L_2yr[jj] + crit_cap_data_H_2yr[jj])/(crit_cap_data_L_2yr[-1] + crit_cap_data_H_2yr[-1]) ))
+
+            crit_cap_quoted_3yr.append( (1 - (crit_cap_data_L_3yr[jj] + crit_cap_data_H_3yr[jj])/(crit_cap_data_L_3yr[-1] + crit_cap_data_H_3yr[-1]) ))
 
         ########################################################################################################################
-            # DPC results
+        # SO results
+        if  results_type=='SO_dd':
 
-            if results_type=='DPC_dd':
+            strategy_outcome_text = html.Div([
 
-                date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
-
-                startdate = copy.deepcopy(date)
-
-
-
-
-                if vaccine_time==9:
-                    vaccine_time = None
-
-                if False: # plot_with_do_nothing==[1] and num_strat=='one' and preset!='N':
-                    sols_to_plot = sols
-                    comp_dn = True
-                else:
-                    sols_to_plot = sols[:-1]
-                    comp_dn = False
-
-                if True: # plot_ICU_cap!=[1]:
-                    ICU_plot = False
-                else:
-                    ICU_plot = True
-
-
+                dcc.Markdown('''
+                    *Click on the info buttons for explanations*.
+                    ''',style = {'textAlign': 'center', 'marginTop': '3vh', 'marginBottom': '3vh'}),
                 
-                month_cycle = None
-                if preset=='LC':
-                    time_start = month[0]
-                    time_end   = month[1]
-                    time_on = t_on*7/month_len
-                    time_off = t_off*7/month_len
+                outcome_fn(month,sols[0]['beta_L'],sols[0]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[0],herd_list_2yr[0],ICU_data_2yr[0],preset,number_strategies = num_strat,which_strat=1), # hosp,
+                html.Hr(),
+                outcome_fn(month,sols[1]['beta_L'],sols[1]['beta_H'],crit_cap_quoted_1yr[0],herd_list_1yr[0],ICU_data_1yr[0],crit_cap_quoted_2yr[1],herd_list_2yr[1],ICU_data_2yr[1],preset,number_strategies = num_strat,which_strat=2), # hosp,
+                ],
+                style = {'fontSize': '2vh'}
+                )
 
-                    month_cycle = [time_start,time_on]
-                    mm = month_cycle[1]
-                    while mm + time_off+time_on < time_end:
-                        month_cycle.append(mm+time_off)
-                        month_cycle.append(mm+time_off+time_on)
-                        mm = mm + time_off + time_on
+        
+        ########################################################################################################################
+        # BC results
 
-                # if len(cats_to_plot_line)>0:
-                #     fig1 = figure_generator(sols_to_plot,month,cats_to_plot_line,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate)
-                # else:
-                #     fig1 = dummy_figure
+        if results_type=='BC_dd':
 
-                fig2 = MultiFigureGenerator(upper_lower_sol,sols_to_plot,month,num_strat,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate, previous_deaths=prev_deaths)
+            crit_cap_bar_1yr = [crit_cap_data_L_1yr[i] + crit_cap_data_H_1yr[i] for i in range(len(crit_cap_data_H_1yr))]
+            crit_cap_bar_3yr = [crit_cap_data_L_3yr[i] + crit_cap_data_H_3yr[i] for i in range(len(crit_cap_data_H_3yr))]
 
-                # fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , country = country,preset=preset,startdate=startdate)
 
-                # fig4 = death_plot(upper_lower_sol,sols_to_plot,month,['D'],['BR'],num_strat,['BR'],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate, previous_deaths=prev_deaths)
+            bar1 = Bar_chart_generator(crit_cap_bar_1yr      ,text_addition='%'         , y_title='Population'                    , hover_form = '%{x}, %{y:.3%}'                         ,color = 'LightSkyBlue' ,data_group=crit_cap_bar_3yr, yax_tick_form='.1%')
+            bar2 = Bar_chart_generator(herd_list_1yr         ,text_addition='%'         , y_title='Percentage of Safe Threshold'  , hover_form = '%{x}, %{y:.1%}<extra></extra>'          ,color = 'LightSkyBlue' ,data_group=herd_list_3yr,yax_tick_form='.1%',maxi=False,yax_font_size_multiplier=0.8)
+            bar3 = Bar_chart_generator(ICU_data_1yr          ,text_addition='x current' , y_title='Multiple of Capacity'  , hover_form = '%{x}, %{y:.1f}x Current<extra></extra>' ,color = 'LightSkyBlue'     ,data_group=ICU_data_3yr  )
+            bar4 = Bar_chart_generator(time_exceeded_data    ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'LightSkyBlue'   )
+            bar5 = Bar_chart_generator(time_reached_data     ,text_addition=' Months'   , y_title='Time (Months)'                 , hover_form = '%{x}: %{y:.1f} Months<extra></extra>'   ,color = 'LightSkyBlue')
 
-            
+
+
+########################################################################################################################
+    # DPC results
+
+    if results_type=='DPC_dd':
+
+        date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
+
+        startdate = copy.deepcopy(date)
+
+
+
+
+        if vaccine_time==9:
+            vaccine_time = None
+
+        if False: # plot_with_do_nothing==[1] and num_strat=='one' and preset!='N':
+            sols_to_plot = sols
+            comp_dn = True
+        else:
+            sols_to_plot = sols[:-1]
+            comp_dn = False
+
+        if True: # plot_ICU_cap!=[1]:
+            ICU_plot = False
+        else:
+            ICU_plot = True
+
+
+        
+        month_cycle = None
+        if preset=='LC':
+            time_start = month[0]
+            time_end   = month[1]
+            time_on = t_on*7/month_len
+            time_off = t_off*7/month_len
+
+            month_cycle = [time_start,time_on]
+            mm = month_cycle[1]
+            while mm + time_off+time_on < time_end:
+                month_cycle.append(mm+time_off)
+                month_cycle.append(mm+time_off+time_on)
+                mm = mm + time_off + time_on
+
+        # if len(cats_to_plot_line)>0:
+        #     fig1 = figure_generator(sols_to_plot,month,cats_to_plot_line,groups,num_strat,groups2,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate)
+        # else:
+        #     fig1 = dummy_figure
+
+        fig2 = MultiFigureGenerator(upper_lower_sol,sols_to_plot,month,num_strat,vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate, previous_deaths=prev_deaths)
+
+        # fig3 = stacked_figure_generator(sols_to_plot,month,[cats_plot_stacked],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot , country = country,preset=preset,startdate=startdate)
+
+        # fig4 = death_plot(upper_lower_sol,sols_to_plot,month,['D'],['BR'],num_strat,['BR'],vaccine_time=vaccine_time,ICU_grow=ICU_grow, ICU_to_plot=ICU_plot ,comp_dn=comp_dn, country = country,month_cycle=month_cycle,preset=preset,startdate=startdate, previous_deaths=prev_deaths)
+
+    
 
         
 ########################################################################################################################
