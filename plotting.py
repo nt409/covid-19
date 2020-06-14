@@ -706,6 +706,7 @@ def uncertPlot(upper_lower_sol,population_plot,startdate):
 
 def prevDeaths(previous_deaths,startdate,population_plot):
     lines_to_plot = []
+    x0 = 0
     if previous_deaths is not None:
         x_deaths = [startdate - datetime.timedelta(days=len(previous_deaths) - i ) for i in range(len(previous_deaths))]
         y_deaths = [100*float(i)/population_plot for i in previous_deaths]
@@ -779,7 +780,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
    
    
     lines_to_plot_line, xx = lineplot(sols,population_plot,startdate,num_strat,comp_dn)
-    lines_to_plot_stack, xxx = stackPlot(sols,population_plot,startdate)
+    lines_to_plot_stack, _ = stackPlot(sols,population_plot,startdate)
     lines_to_plot_uncert = uncertPlot(upper_lower_sol,population_plot,startdate)
     lines_PrevDeaths, x0 = prevDeaths(previous_deaths,startdate,population_plot)
     
@@ -865,7 +866,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
         type='scatter',
             x=[startdate+datetime.timedelta(days=month_len*month[0]),
             startdate+datetime.timedelta(days= month_len*month[0])], # +1 to make it visible when at 0
-             y=[0,ymax],
+             y=[0,100],
             mode='lines',
             opacity=0.9,
             legendgroup='control',
@@ -881,7 +882,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
         type='scatter',
             x=[startdate+datetime.timedelta(days=month_len*month[1]),
             startdate+datetime.timedelta(days=month_len*month[1])],
-            y=[0,ymax],
+            y=[0,100],
             mode='lines',
             opacity=0.9,
             legendgroup='control',

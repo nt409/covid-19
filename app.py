@@ -4,8 +4,6 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
-import flask
-from flask import Flask
 from gevent.pywsgi import WSGIServer
 import pandas as pd
 from math import floor, ceil, exp
@@ -16,6 +14,11 @@ from plotly.validators.scatter.marker import SymbolValidator
 import copy
 from cov_functions import run_model
 from plotting import Bar_chart_generator, MultiFigureGenerator, longname, month_len, extract_info
+
+# import flask
+from flask import Flask
+from flask_caching import Cache
+import os
 
 
 from dan import layout_dan, COUNTRY_LIST, colours
@@ -228,7 +231,13 @@ initial_lr = preset_dict_low['LC']
 
 
 
+cache = Cache(app.server, config={
+    # try 'filesystem' if you don't want to setup redis
+    'CACHE_TYPE': 'redis',
+    'CACHE_REDIS_URL': 'redis://h:paa75aa4b983ba337eb43b831e6833be6b6887e56023aa417e392dd2bf337e8b8@ec2-18-213-184-148.compute-1.amazonaws.com:31119'
+})
 
+# print(os.environ.get('REDIS_URL', ''))
 
 
 
@@ -239,473 +248,6 @@ initial_lr = preset_dict_low['LC']
 
 
 
-
-
-
-
-# def death_plot(upper_lower_sol,sols,month,cats_to_plot,groups,num_strat,groups2,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None,previous_deaths=None):
-
-#     # population_plot = POPULATIONS[country]
-#     try:
-#         population_plot = POPULATIONS[country]
-#     except:
-#         population_plot = 100
-
-#     if country in ['us','uk']:
-#         country_name = country.upper()
-#     else:
-#         country_name = country.title()
-    
-#     font_size = 12
-    
-
-#     lines_to_plot = []
-
-#     ymax = 0
-
-#     # names = ['S','I','R','H','C','D']
-    
-    
-#     if num_strat=='one':
-#         group_use = groups
-#     if num_strat=='two' or comp_dn:
-#         group_use = groups2
-   
-
-#     linestyle_numst = ['solid','dash','dot','dashdot','longdash','longdashdot']
-    
-#     if len(sols)>1:
-#         strat_list = [': Strategy',': Do Nothing']
-#     else:
-#         strat_list = ['']
-
-#     ii = -1
-#     name = 'D'
-#     for sol in upper_lower_sol:
-#         ii += 1
-#         for group in group_vec:
-#             if group in group_use:
-#                 sol['y'] = np.asarray(sol['y'])
-                
-#                 if ii == 0:
-#                     fill = None
-#                     label_add = '; lower estimate'
-#                 else:
-#                     fill = 'tonexty'
-#                     label_add = '; upper estimate'
-
-#                 xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
-
-#                 yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
-                
-#                 line =  {'x': xx, 'y': yyy_p,
-#                         'hovertemplate': '%{y:.2f}%, %{text}',
-#                         'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
-#                         'line': {'width': 0, 'color': str(colors[name])},
-#                         'fillcolor': 'rgba(128,0,128,0.4)',
-#                         # 'legendgroup': name,
-#                         'showlegend': False,
-#                         'fill': fill,
-#                         'name': longname[name] + label_add}
-#                 lines_to_plot.append(line)
-
-
-
-
-#     ii = -1
-#     for sol in sols:
-#         ii += 1
-#         if num_strat == 'one' and not comp_dn and ii>0:
-#             pass
-#         else:
-#             for name in longname.keys():
-#                 if name in cats_to_plot:
-#                     for group in group_vec:
-#                         if group in group_use:
-#                             sol['y'] = np.asarray(sol['y'])
-#                             if num_strat=='one':
-#                                 name_string = strat_list[ii] + ';' + group_strings[group]
-#                                 if group_use == ['BR']: # getting rid of 'all' if not needed
-#                                     name_string = ''
-#                                 elif group_use == 'BR': # getting rid of 'all' if not needed
-#                                     name_string = strat_list[ii]
-#                                 line_style_use = linestyle[group]
-#                                 if comp_dn:
-#                                     if ii == 0:
-#                                         line_style_use = 'solid'
-#                                     else:
-#                                         line_style_use = 'dot'
-#                             else:
-#                                 name_string = ': Strategy ' + str(ii+1) + '; ' + group_strings[group]
-#                                 if group_use == 'BR':
-#                                     name_string = ': Strategy ' + str(ii+1)
-#                                 line_style_use = linestyle_numst[ii]
-                            
-#                             # xx = [i/month_len for i in sol['t']]
-#                             xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
-
-#                             yyy_p = (100*factor_L[group]*sol['y'][index[name],:] + 100*factor_H[group]*sol['y'][index[name] + params.number_compartments,:])
-                            
-#                             line =  {'x': xx, 'y': yyy_p,
-#                                     'hovertemplate': '%{y:.2f}%, %{text}',
-#                                     'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
-#                                     'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name,
-#                                     'name': longname[name] + name_string}
-#                             lines_to_plot.append(line)
-
-
-
-#         # setting up pink boxes
-#         ICU = False
-#         # print(ii,num_strat,group_use,cats_to_plot)
-#         if ii==0 and num_strat=='one' and len(group_use)>0 and len(cats_to_plot)>0: # 'True_deaths' in hosp 
-#             yyy = sol['y']
-#             ttt = sol['t']
-#             c_low, c_high, ICU = time_exceeded_function(yyy,ttt,ICU_grow)
-    
-#     # y_stack = []
-#     for line in lines_to_plot:
-#         ymax = max(ymax,max(line['y']))
-
-
-
-
-#     yax = dict(range= [0,min(1.1*ymax,100)])
-#     ##
-
-#     annotz = []
-#     shapez = []
-
-
-#     blue_opacity = 0.25
-#     if month_cycle is not None:
-#         blue_opacity = 0.1
-
-#     if month[0]!=month[1] and preset != 'N':
-#         shapez.append(dict(
-#                 # filled Blue Control Rectangle
-#                 type="rect",
-#                 x0= startdate+datetime.timedelta(days=month_len*month[0]), #month_len*
-#                 y0=0,
-#                 x1= startdate+datetime.timedelta(days=month_len*month[1]), #month_len*
-#                 y1=yax['range'][1],
-#                 line=dict(
-#                     color="LightSkyBlue",
-#                     width=0,
-#                 ),
-#                 fillcolor="LightSkyBlue",
-#                 opacity= blue_opacity
-#             ))
-            
-#     if ICU and 'C' in cats_to_plot:
-#         # if which_plots=='two':
-#         control_font_size = font_size*(22/24) # '10em'
-#         ICU_font_size = font_size*(22/24) # '10em'
-
-#         yval_pink = 0.3
-#         yval_blue = 0.82
-
-
-#         for c_min, c_max in zip(c_low, c_high):
-#             if c_min>=0 and c_max>=0:
-#                 shapez.append(dict(
-#                         # filled Pink ICU Rectangle
-#                         type="rect",
-#                         x0= startdate+datetime.timedelta(days=c_min), #month_len*  ##c_min/month_len,
-#                         y0=0,
-#                         x1= startdate+datetime.timedelta(days=c_max), #c_max/month_len,
-#                         y1=yax['range'][1],
-#                         line=dict(
-#                             color="pink",
-#                             width=0,
-#                         ),
-#                         fillcolor="pink",
-#                         opacity=0.5,
-#                         xref = 'x',
-#                         yref = 'y'
-#                     ))
-#                 annotz.append(dict(
-#                         x  = startdate+datetime.timedelta(days=0.5*(c_min+c_max)), # /month_len
-#                         y  = yval_pink,
-#                         text="<b>ICU<br>" + "<b> Capacity<br>" + "<b> Exceeded",
-#                         # hoverinfo='ICU Capacity Exceeded',
-#                         showarrow=False,
-#                         textangle= 0,
-#                         font=dict(
-#                             size= ICU_font_size,
-#                             color="purple"
-#                         ),
-#                         opacity=0.6,
-#                         xref = 'x',
-#                         yref = 'paper',
-#                 ))
-
-#     else:
-#         control_font_size = font_size*(30/24) #'11em'
-#         yval_blue = 0.4
-
-
-
-
-#     if month[0]!=month[1] and preset!='N':
-#         annotz.append(dict(
-#                 x  = startdate+datetime.timedelta(days=month_len*max(0.5*(month[0]+month[1]), 0.5)),
-#                 y  = yval_blue,
-#                 text="<b>Control<br>" + "<b> In <br>" + "<b> Place",
-#                 # hoverinfo='Control In Place',
-#                 textangle=0,
-#                 font=dict(
-#                     size= control_font_size,
-#                     color="blue"
-#                 ),
-#                 showarrow=False,
-#                 opacity=0.5,
-#                 xshift= 0,
-#                 xref = 'x',
-#                 yref = 'paper',
-#         ))
-    
-#     if month_cycle is not None:
-#         for i in range(0,len(month_cycle),2):
-#             shapez.append(dict(
-#                     # filled Blue Control Rectangle
-#                     type="rect",
-#                     x0= startdate+datetime.timedelta(days=month_len*month_cycle[i]),
-#                     y0=0,
-#                     x1= startdate+datetime.timedelta(days=month_len*month_cycle[i+1]),
-#                     y1=yax['range'][1],
-#                     line=dict(
-#                         color="LightSkyBlue",
-#                         width=0,
-#                     ),
-#                     fillcolor="LightSkyBlue",
-#                     opacity=0.3
-#                 ))
-
-
-
-#     if ICU_to_plot and 'C' in cats_to_plot:
-#         ICU_line = [100*params.ICU_capacity*(1 + ICU_grow*i/365) for i in sol['t']]
-#         lines_to_plot.append(
-#         dict(
-#         type='scatter',
-#             x=xx, y=ICU_line,
-#             mode='lines',
-#             opacity=0.5,
-#             legendgroup='thresholds',
-#             line=dict(
-#             color= 'black',
-#             dash = 'dot'
-#             ),
-#             hovertemplate= 'ICU Capacity<extra></extra>',
-#             name= 'ICU Capacity'))
-
-#     if vaccine_time is not None:
-#         lines_to_plot.append(
-#         dict(
-#         type='scatter',
-#             x=[startdate+datetime.timedelta(days=month_len*vaccine_time),
-#             startdate+datetime.timedelta(days=month_len*vaccine_time)],
-#             y=[yax['range'][0],yax['range'][1]],
-#             mode='lines',
-#             opacity=0.9,
-#             legendgroup='thresholds',
-#             line=dict(
-#             color= 'green',
-#             dash = 'dash'
-#             ),
-#             hovertemplate= 'Vaccination starts<extra></extra>',
-#             name= 'Vaccination starts'))
-
-    
-    
-#     lines_to_plot.append(
-#     dict(
-#         type='scatter',
-#         x = [xx[0],xx[-1]],
-#         y = [ 0, population_plot],
-#         yaxis="y2",
-#         opacity=0,
-#         hoverinfo = 'skip',
-#         showlegend=False
-#     ))
-
-
-    
-#     # yy2 = [0, 10**(-6), 2*10**(-6), 5*10**(-6), 10**(-5), 2*10**(-5), 5*10**(-5), 10**(-4), 2*10**(-4), 5*10**(-4), 10**(-3), 2*10**(-3), 5*10**(-3), 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 50, 100, 200]
-#     yy2 = [0]
-#     for i in range(8):
-#         yy2.append(10**(i-5))
-#         yy2.append(2*10**(i-5))
-#         yy2.append(5*10**(i-5))
-
-#     yy = [i for i in yy2]
-
-
-#     for i in range(len(yy)-1):
-#         if yax['range'][1]>yy[i] and yax['range'][1] <= yy[i+1]:
-#             pop_vec_lin = np.linspace(0,yy2[i+1],11)
-
-#     vec = [i*(population_plot) for i in pop_vec_lin]
-
-#     log_bottom = -8
-#     log_range = [log_bottom,np.log10(yax['range'][1])]
-
-#     pop_vec_log_intermediate = np.linspace(log_range[0],ceil(np.log10(pop_vec_lin[-1])), 1+ ceil(np.log10(pop_vec_lin[-1])-log_range[0]) )
-
-#     pop_log_vec = [10**(i) for i in pop_vec_log_intermediate]
-#     vec2 = [i*(population_plot) for i in pop_log_vec]
-
-#     if previous_deaths is not None:
-#         x_deaths = [startdate - datetime.timedelta(days=len(previous_deaths) - i ) for i in range(len(previous_deaths))]
-#         y_deaths = [100*float(i)/population_plot for i in previous_deaths]
-#         # if len(y_deaths)>10:
-#         #     y_deaths = y_deaths[-10:]
-#         #     x_deaths = x_deaths[-10:]
-
-#         # print(y_deaths,x_deaths)
-#         lines_to_plot.append(
-#         dict(
-#         type='scatter',
-#             x = x_deaths,
-#             y = y_deaths,
-#             mode='lines',
-#             opacity=0.85,
-#             legendgroup='deaths',
-#             line=dict(
-#             color= 'purple',
-#             dash = 'dash'
-#             ),
-#             hovertemplate = '%{y:.2f}%, %{text}',
-#             text = [human_format(i*population_plot/100,dp=1) for i in y_deaths],
-#             name= 'Recorded deaths'))
-#         x0 = x_deaths[0]
-#     else:
-#         x0 = xx[0]
-
-
-
-    
-
-#     layout = go.Layout(
-#                     annotations=annotz,
-#                     shapes=shapez,
-#                     template="simple_white",
-#                     font = dict(size= font_size), #'12em'),
-#                    margin=dict(t=5, b=5, l=10, r=10,pad=15),
-#                    yaxis= dict(mirror= True,
-#                         title='Percentage of Total Population',
-#                         range= yax['range'],
-#                         fixedrange= True,
-#                         # showline=False,
-#                         automargin=True,
-#                         type = 'linear'
-#                    ),
-#                    hovermode='x',
-#                    xaxis= dict(
-#                         range= [x0, xx[floor((2/3)*len(xx))]],
-#                         fixedrange= True,
-#                         # showline=False,
-#                         # ticktext = time_axis_text[1],
-#                         # tickvals = time_axis_vals[1],
-#                         hoverformat='%d %b',
-#                         # showspikes = True,
-#                         # spikecolor = "black", 
-#                         # spikesnap  = "data", 
-#                         # spikemode  = "across"
-#                        ),
-#                     updatemenus = [dict(
-#                                             buttons=list([
-#                                                 dict(
-#                                                     args = ["xaxis", {'range': [x0, xx[floor((1/3)*len(xx))]],
-#                                                     # 'showline':False,
-#                                                     'hoverformat':'%d %b',
-#                                                     'fixedrange': True,
-#                                                     # 'showspikes' : True,
-#                                                     # 'spikecolor' : "black", 
-#                                                     # 'spikesnap'  : "data", 
-#                                                     # 'spikemode'  : "across"
-#                                                     }], # 'title': 'Time (Months)', 
-#                                                     label="Years: 1",
-#                                                     method="relayout"
-#                                                 ),
-#                                                 dict(
-#                                                     args = ["xaxis", {'range': [x0, xx[floor((2/3)*len(xx))]],
-#                                                     # 'showline':False,
-#                                                     'hoverformat':'%d %b',
-#                                                     }], # 'title': 'Time (Months)', 
-#                                                     label="Years: 2",
-#                                                     method="relayout"
-#                                                 ),
-#                                                 dict(
-#                                                     args = ["xaxis", {'range': [x0, xx[-1]],
-#                                                     'hoverformat':'%d %b',
-#                                                     'fixedrange': True,
-#                                                     }], # 'title': 'Time (Months)', 
-#                                                     label="Years: 3",
-#                                                     method="relayout"
-#                                                 )
-#                                         ]),
-#                                         x= 0.5,
-#                                         xanchor = 'left',
-#                                         pad={"r": 5, "t": 30, "b": 10, "l": 5},
-#                                         showactive=True,
-#                                         active=1,
-#                                         direction='up',
-#                                         y=-0.13,
-#                                         yanchor="top"
-#                                         ),
-#                                         dict(
-#                                             buttons=list([
-#                                                 dict(
-#                                                     args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'linear', 'range': yax['range'], 'fixedrange': True, 'automargin': True}, # , 'showline':False
-#                                                     "yaxis2": {'title': 'Population (' + country_name + ')','type': 'linear', 'fixedrange': True, 'overlaying': 'y1', 'range': yax['range'], 'ticktext': [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))], 'tickvals': [i for i in  pop_vec_lin],'automargin': True, 'side':'right'} # , 'showline':False,
-#                                                     }], # tickformat
-#                                                     label="Linear",
-#                                                     method="relayout"
-#                                                 ),
-#                                                 dict(
-#                                                     args=[{"yaxis": {'title': 'Percentage of Total Population', 'type': 'log', 'range': log_range, 'fixedrange': True, 'automargin': True}, #, 'showline':False},
-#                                                     "yaxis2": {'title': 'Population (' + country_name + ')','type': 'log', 'overlaying': 'y1', 'fixedrange': True, 'range': log_range, 'ticktext': [human_format(0.01*vec2[i]) for i in range(len(pop_log_vec))], 'tickvals': [i for i in  pop_log_vec],'automargin': True,'side':'right'}
-#                                                     }], # 'tickformat': yax_form_log,
-#                                                     label="Logarithmic",
-#                                                     method="relayout"
-#                                                 )
-#                                         ]),
-#                                         x= 0.5,
-#                                         xanchor="right",
-#                                         pad={"r": 5, "t": 30, "b": 10, "l": 5},
-#                                         active=0,
-#                                         y=-0.13,
-#                                         showactive=True,
-#                                         direction='up',
-#                                         yanchor="top"
-#                                         )],
-#                                         legend = dict(
-#                                                         font=dict(size=font_size*(20/24)),
-#                                                         x = 0.5,
-#                                                         y = 1.03,
-#                                                         xanchor= 'center',
-#                                                         yanchor= 'bottom'
-#                                                     ),
-#                                         legend_orientation  = 'h',
-#                                         legend_title        = '<b> Key </b>',
-#                                         yaxis2 = dict(
-#                                                         title = 'Population (' + country_name + ')',
-#                                                         overlaying='y1',
-#                                                         #showline=False,
-#                                                         range = yax['range'],
-#                                                         side='right',
-#                                                         ticktext = [human_format(0.01*vec[i]) for i in range(len(pop_vec_lin))],
-#                                                         tickvals = [i for i in  pop_vec_lin],
-#                                                         automargin=True
-#                                                     )
-
-#                             )
-
-
-
-#     return {'data': lines_to_plot, 'layout': layout}
 
 
 
@@ -2438,12 +1980,21 @@ barChart_content =  dbc.Col([
 
 layout_inter = html.Div([
                     # store results
-                    dcc.Store(id='sol-calculated'),
-                    dcc.Store(id='sol-calculated-do-nothing'),
-                    dcc.Store(id='prev-deaths'),
-                    dcc.Store(id='store-initial-conds'),
-                    dcc.Store(id='store-get-data-worked'),
-                    dcc.Store(id='store-upper-lower'),
+                    dcc.Store(id='sol-calculated-cache'),
+                    dcc.Store(id='sol-calculated-do-nothing-cache'),
+                    dcc.Store(id='prev-deaths-cache'),
+                    dcc.Store(id='store-initial-conds-cache'),
+                    dcc.Store(id='store-get-data-worked-cache'),
+                    dcc.Store(id='store-upper-lower-cache'),
+
+                    # replace with Cache soon!
+
+                    # dcc.Store(id='sol-calculated'),
+                    # dcc.Store(id='sol-calculated-do-nothing'),
+                    # dcc.Store(id='prev-deaths'),
+                    # dcc.Store(id='store-initial-conds'),
+                    # dcc.Store(id='store-get-data-worked'),
+                    # dcc.Store(id='store-upper-lower'),
                     
 
         # dbc.Row([  # R2505
@@ -2956,12 +2507,12 @@ def preset_sliders(preset,number_strs):
 
 
 @app.callback(
-    [Output('sol-calculated', 'data'),
+    [Output('sol-calculated-cache', 'data'),
     Output('loading-sol-1','children'),
-    Output('store-initial-conds', 'data'),
-    Output('store-get-data-worked', 'data'),
+    Output('store-initial-conds-cache', 'data'),
+    Output('store-get-data-worked-cache', 'data'),
     Output('worked-div', 'children'),
-    Output('store-upper-lower', 'data'),
+    Output('store-upper-lower-cache', 'data'),
     ],
     [
     Input('preset', 'value'),
@@ -2979,12 +2530,13 @@ def preset_sliders(preset,number_strs):
     Input('cycle-on', 'value'),
     Input('hr-ld', 'value'),
     ],
-    [State('store-initial-conds','data'),
-    State('store-get-data-worked','data'),
+    [State('store-initial-conds-cache','data'),
+    State('store-get-data-worked-cache','data'),
     ])
+@cache.memoize()
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
     # print('find sol')
-    # print(dash.callback_context.triggered)
+    print(dash.callback_context.triggered)
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -2997,7 +2549,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     triggered = dash.callback_context.triggered[0]['prop_id']
 
     if init_stored is None or triggered in ['model-country-choice.value','model-start-date.date']:
-        I0, R0, H0, C0, D0, worked, prev_deaths = begin_date(date,country)
+        I0, R0, H0, C0, D0, worked, _ = begin_date(date,country)
         # print(prev_deaths)
         initial_conds = [I0, R0, H0, C0, D0]
         # print('calculating new')
@@ -3044,8 +2596,6 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
             mm = mm + time_off + time_on
     
     
-    t_stop = 365*3
-
 
     months_controlled = [month_len*i for i in month]
 
@@ -3053,16 +2603,20 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     if month[0]==month[1]:
         months_controlled= None
     
-    # if 
-        # print(lr,hr,months_controlled,t_stop,vaccine,I0,R0,H0,C0,D0)
     sols = []
-    sols.append(run_model(beta_L_factor=lr,beta_H_factor=hr,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow,let_HR_out=let_HR_out))
+    sols.append(run_model(beta_L_factor=lr,beta_H_factor=hr,
+                            t_control=months_controlled,
+                            vaccine_time=vaccine,
+                            I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
+                            ICU_grow=ICU_grow,let_HR_out=let_HR_out))
     if num_strat=='two':
         lr2 = params.fact_v[int(lr2_in)]
         hr2 = params.fact_v[int(hr2_in)]
-        sols.append(run_model(beta_L_factor=lr2,beta_H_factor=hr2,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow,let_HR_out=let_HR_out))
-    # else:
-        # sols = None
+        sols.append(run_model(beta_L_factor=lr2,beta_H_factor=hr2,
+                                t_control=months_controlled,
+                                vaccine_time=vaccine,
+                                I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
+                                ICU_grow=ICU_grow,let_HR_out=let_HR_out))
     
     sols_upper_lower = []
     jj = 0
@@ -3086,20 +2640,27 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         R0_new = R0
         D0_new = D0
 
-        sols_upper_lower.append(run_model(beta_L_factor=lr_new,beta_H_factor=hr_new,t_control=months_controlled,T_stop=t_stop,vaccine_time=vaccine,I0=I0_new,R0=R0_new,H0=H0_new,C0=C0_new,D0=D0_new,ICU_grow=ICU_grow,let_HR_out=let_HR_out))
+        upp_low = run_model(beta_L_factor=lr_new,beta_H_factor=hr_new,
+                                t_control=months_controlled,
+                                vaccine_time=vaccine,
+                                I0=I0_new,R0=R0_new,H0=H0_new,C0=C0_new,D0=D0_new,
+                                ICU_grow=ICU_grow,let_HR_out=let_HR_out)
+
+        sols_upper_lower.append(upp_low)
 
     return [sols, None, initial_conds, worked, worked_div, sols_upper_lower]
 
 
 
 @app.callback(
-    [Output('sol-calculated-do-nothing', 'data'),
-    Output('prev-deaths', 'data')],
+    [Output('sol-calculated-do-nothing-cache', 'data'),
+    Output('prev-deaths-cache', 'data')],
     [
     Input('ICU-slider', 'value'),
     Input('model-start-date', 'date'),
     Input('model-country-choice', 'value'),
     ])
+@cache.memoize()  # in seconds
 def find_sol_do_noth(ICU_grow,date,country_num):
     # print(dash.callback_context.triggered,'do nothing')
     try:
@@ -3107,11 +2668,12 @@ def find_sol_do_noth(ICU_grow,date,country_num):
     except:
         country = 'uk'
 
-    I0, R0, H0, C0, D0, worked, prev_deaths = begin_date(date,country)
+    I0, R0, H0, C0, D0, _, prev_deaths = begin_date(date,country)
 
-    t_stop = 365*3
-    
-    sol_do_nothing = run_model(beta_L_factor=1,beta_H_factor=1,t_control=None,T_stop=t_stop,I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,ICU_grow=ICU_grow)
+    sol_do_nothing = run_model(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
+                                    beta_L_factor=1,beta_H_factor=1,
+                                    t_control=None,
+                                    ICU_grow=ICU_grow)
     
     return [sol_do_nothing, prev_deaths]
 
@@ -3169,7 +2731,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 # Input('main-tabs', 'value'),
 
                 
-                Input('sol-calculated', 'data'),
+                Input('sol-calculated-cache', 'data'),
 
                 # or any of the plot categories
                 # Input('groups-checklist-to-plot', 'value'),
@@ -3185,13 +2747,13 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 
 
                 Input('model-start-date','date'),
-                Input('prev-deaths','data'),
+                Input('prev-deaths-cache','data'),
 
                 ],
                [
                 State('cycle-off', 'value'),
                 State('cycle-on', 'value'),
-                State('sol-calculated-do-nothing', 'data'),
+                State('sol-calculated-do-nothing-cache', 'data'),
                 State('preset', 'value'),
                 State('month-slider', 'value'),
 
@@ -3200,7 +2762,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 State('vaccine-slider', 'value'),
                 State('ICU-slider','value'),
 
-                State('store-upper-lower', 'data'),
+                State('store-upper-lower-cache', 'data'),
                 ])
 def render_interactive_content(pathname,sols,
                                 # groups,groups2,
@@ -3208,7 +2770,7 @@ def render_interactive_content(pathname,sols,
                                 results_type,country_num,date,prev_deaths,
                                 t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,upper_lower_sol):
 
-    # print('render ',pathname)
+    print('render ',pathname)
     if sols is None:
         # print('prevent')
         # raise PreventUpdate
@@ -3267,7 +2829,7 @@ def render_interactive_content(pathname,sols,
 ########################################################################################################################
 
 
-    results_title =  f'Result: {presets_dict[preset]}'
+    # results_title =  f'Result: {presets_dict[preset]}'
     strategy_outcome_text = ['']
 
 
