@@ -135,7 +135,7 @@ def extract_info(yy,tt,t_index,ICU_grow):
     time_exc = 0
 
     # if True:
-    c_low, c_high, ICU = time_exceeded_function(yy,tt,ICU_grow)
+    c_low, c_high, _ = time_exceeded_function(yy,tt,ICU_grow)
 
     time_exc = [c_high[jj] - c_low[jj] for jj in range(1,len(c_high)-1)]
     time_exc = sum(time_exc)
@@ -902,11 +902,15 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
     annotz, shapez = annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,yRange)
 
-    xAx2Year = {'range': [xx[0], xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
+    # xAx2Year = {'range': [xx[0], xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
+    xAx2Year = {'range': [xx[0], xx[-1]],'hoverformat':'%d %b','fixedrange': True}
+
     # xAx1Year = {'range': [xx[0], xx[floor((1/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
     # xAx3Year = {'range': [xx[0], xx[-1]],'hoverformat':'%d %b','fixedrange': True}
 
-    xAx2FromFeb = {'range': [x0, xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
+    # xAx2FromFeb = {'range': [x0, xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
+    xAx2FromFeb = {'range': [x0, xx[-1]],'hoverformat':'%d %b','fixedrange': True}
+
 
 
 

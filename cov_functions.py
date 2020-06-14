@@ -149,7 +149,7 @@ def solve_it(y0,
     y_list = []
     tVecFinal = []
     
-    T_stop = 365*3
+    T_stop = 365*2
     if vaccine_time is None:
         vaccine_timing = [0]
     else:
@@ -170,7 +170,7 @@ def solve_it(y0,
     for i in range(len(KeyTimesList)-1):
         tVecList.append(np.linspace(KeyTimesList[i],
                                     KeyTimesList[i+1],
-                                    max(1+ceil((KeyTimesList[i+1]-KeyTimesList[i])/3),4)
+                                    max(1+ceil((KeyTimesList[i+1]-KeyTimesList[i])/2),4)
                                     )
                         )
 

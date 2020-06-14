@@ -1188,14 +1188,19 @@ justify='center')
 
 
 ############################################################################################################################################################################################################################
-                                                                                                                        # form group 1
-control_choices = html.Div([
+Control_text = dcc.Markdown('''
+*Use the options to choose a COVID-19 control strategy. The model will predict the outcome of the chosen strategy each time you change any of these options.*
+
+''',
+style = {'fontSize': '85%', 'marginTop': '1vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+
+
+
+control_choices_main = html.Div([
     dbc.Row([ # R1662
 
     dbc.Col([ #C1666
 
-    dcc.Markdown('''*Use the following options to choose a COVID-19 control strategy. The model will automatically predict the outcome of the chosen strategy each time you make a change to any of these options. If you are unsure about the meaning of any of the options, use the question mark buttons for a brief explanation.*''',
-     style = {'fontSize': '85%', 'marginTop': '1vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
 
     html.H6('Country', style={'fontSize': '80%', 'marginTop': '1vh', 'marginBottom': '1vh','textAlign': 'center'}),
                                             
@@ -1326,69 +1331,13 @@ control_choices = html.Div([
                                                                                                                                                                     
 
 
-control_choices_2 =  html.Div([
+control_choices_other =  html.Div([
     dbc.Row([ # R1871
         dbc.Col([ # C1872
 
-
-
-
-    dbc.Row([ # R1877
-    dbc.ButtonGroup([
-    dbc.Button('More Parameters (Optional)',
-    color='primary',
-    outline=True,
-    size='sm',
-    className='mb-3',
-    id="collapse-button-custom",
-    style={'fontSize': '80%', 'cursor': 'pointer'}
+html.H6('Model Start Date',
+    style={'fontSize': '80%', 'textAlign': 'center', 'marginTop': '2vh', 'marginBottom': '1vh'}
     ),
-
-    dbc.Button(' ? ',
-    color='primary',
-    className='mb-3',
-    size='sm',
-    id="popover-custom-options-target",
-    style={'cursor': 'pointer'}
-    )
-    ],
-    ),
-
-    ],
-    style={'marginTop': '0vh', 'marginBottom': '0vh'},
-    justify='center'
-    ), # R1877
-
-
-    dbc.Popover(
-        [
-        dbc.PopoverHeader('More Options'),
-        dbc.PopoverBody(dcc.Markdown(
-        '''
-
-        Use this to adjust the **healthcare provisions**, adjust **lockdown cycles options**, or choose a **custom strategy**.
-
-        To adjust the **Lockdown Cycles Options**, you must first select '*Lockdown Cycles*' in the '**Control Type**' selector above).
-
-        To adjust the **Custom Options**, you must first select '*Custom*' in the '**Control Type**' selector above). You can compare two strategies directly or consider one only.
-        
-        The custom choice consists of selecting by how much to decelerate spread of COVID-19 (using the 'infection rate' sliders). You can also choose different infection rates for the different risk groups.
-        '''
-        ),),
-        ],
-        id = "popover-custom-options",
-        is_open=False,
-        target="popover-custom-options-target",
-        placement='bottom',
-    ),
-
-                                    
-dbc.Collapse( # CC1927
-[
-
-html.Hr(),
-
-html.H6('Model Start Date',style={'fontSize': '80%', 'textAlign': 'center'}),
 
 dbc.Row([ # R1943
 dcc.DatePickerSingle(
@@ -1413,7 +1362,7 @@ size='sm',
 id='popover-vaccination-target',
 style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
 ],
-style={'fontSize': '80%', 'marginTop': '1vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+style={'fontSize': '80%', 'marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
 
 
 html.Div([
@@ -1458,7 +1407,7 @@ size='sm',
 id='popover-cc-care-target',
 style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
 ],
-style={'fontSize': '80%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+style={'fontSize': '80%', 'marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
 
 dcc.Slider(
 id='ICU-slider',
@@ -1489,9 +1438,206 @@ placement='top',
 
 
 
-html.Hr(),
+html.H6([
+'Results Type ',
+],
+style={'fontSize': '80%', 'marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
 
-html.H4("Lockdown Cycle Options ",style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '2vh','fontSize': '120%'}),
+# style={'fontSize': '150%', 'marginTop': '3vh', 'marginBottom': '3vh','textAlign': 'center'}),
+
+html.Div([
+dcc.Dropdown(
+id = 'dropdown',
+options=[{'label': 'Disease Progress Curves','value': 'DPC_dd'},
+{'label': 'Bar Charts','value': 'BC_dd'},
+{'label': 'Strategy Overview','value': 'SO_dd'},
+],
+value= 'DPC_dd',
+clearable = False,
+style={'white-space':'nowrap'}
+),],
+style={'cursor': 'pointer', 'textAlign': 'center', 'marginBottom': '3vh'}),
+
+
+
+
+
+
+
+],
+width=True,
+), # C1872
+
+],
+justify='center',
+style =  {'margin': '5px'}
+), # R1871
+
+])
+
+
+
+########################################################################################################################
+
+                                                                                                                                                                    
+
+
+control_choices_custom =  html.Div([
+    dbc.Row([ # 3R1871
+        dbc.Col([ # 3C1872
+
+
+
+
+
+html.H4("Custom Options ",
+style={'marginBottom': '1vh', 'textAlign': 'center', 'marginTop': '2vh','fontSize': '120%'}),
+
+dcc.Markdown('''*To adjust the following, make sure '**Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
+
+
+
+
+
+html.H6('Number Of Strategies',style={'fontSize': '80%','textAlign': 'center'}),
+
+# dcc.Markdown('''*Set '**Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
+dbc.Row([ #R2225
+dbc.RadioItems(
+id = 'number-strats-radio',
+options=[
+{'label': 'One', 'value': 'one'},
+{'label': 'Two', 'value': 'two'},
+],
+value= 'one',
+inline=True,
+labelStyle = {'fontSize': '70%'}
+),
+],justify='center'), #R2225
+
+
+
+html.H6(
+['Infection Rate ',
+dbc.Button(' ? ',
+color='primary',
+size='sm',
+id = 'popover-inf-rate-target',
+style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
+],
+style={'fontSize': '80%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
+
+
+dbc.Popover(
+[
+dbc.PopoverHeader('Infection Rate'),
+dbc.PopoverBody(dcc.Markdown(
+'''
+
+The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
+
+Adjust by choosing a preset strategy  or making your own custom choice ('**Control Type**').
+
+
+'''
+),),
+],
+id = "popover-inf-rate",
+is_open=False,
+target="popover-inf-rate-target",
+placement='top',
+),
+
+
+
+html.Div(id='strat-lr-infection',style = {'textAlign': 'center','fontSize': '80%'}),
+
+
+dcc.Slider(
+id='low-risk-slider',
+min=0,
+max=len(params.fact_v)-1,
+step = 1,
+marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+value=initial_lr,
+),
+
+
+html.Div(id='strat-hr-infection',style = {'textAlign': 'center','fontSize': '80%'}),
+dcc.Slider(
+id='high-risk-slider',
+min=0,
+max=len(params.fact_v)-1,
+step = 1,
+marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+value=initial_hr,
+),
+
+
+
+
+
+dbc.Col([ # 3C2258
+html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '80%','textAlign': 'center'}),
+
+dcc.Slider(
+id='low-risk-slider-2',
+min=0,
+max=len(params.fact_v)-1,
+step = 1,
+marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+value=5,
+),
+
+html.H6('Strategy Two: High Risk Infection Rate (%)', style = {'fontSize': '80%','textAlign': 'center'}),
+
+dcc.Slider(
+id='high-risk-slider-2',
+min=0,
+max=len(params.fact_v)-1,
+step = 1,
+marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
+value=8,
+),
+],width=True, # 3C2258
+id='strat-2-id'),
+
+
+
+
+
+
+
+
+
+
+],
+width=True,
+), # 3C1872
+
+],
+justify='center',
+style =  {'margin': '5px'}
+), # 3R1871
+
+])
+
+
+
+
+
+
+
+
+
+
+
+control_choices_lockdown =  html.Div([
+    dbc.Row([ # 2R1871
+        dbc.Col([ # 2C1872
+
+
+html.H4("Lockdown Cycle Options ",style={'marginBottom': '2vh', 'textAlign': 'center' ,'marginTop': '2vh','fontSize': '120%'}),
 
 dcc.Markdown('''*To adjust the following, make sure '**Control Type**' is set to 'Lockdown Cycles'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
 
@@ -1527,7 +1673,7 @@ placement='top',
 ),
 
 
-dbc.Row([ # R2088
+dbc.Row([ # 2R2088
 dbc.RadioItems(
 id = 'hr-ld',
 options=[
@@ -1538,7 +1684,7 @@ value= 1,
 inline=True,
 labelStyle = {'fontSize': '70%'}
 ),
-],justify='center'),  # R2088
+],justify='center'),  # 2R2088
 
 
 
@@ -1620,153 +1766,14 @@ placement='top',
 
 
 
-html.Hr(),
-
-
-
-
-html.H4("Custom Options ",
-style={'marginBottom': '1vh', 'textAlign': 'center' ,'marginTop': '2vh','fontSize': '120%'}),
-
-dcc.Markdown('''*To adjust the following, make sure '**Control Type**' is set to 'Custom'.*''', style = {'fontSize': '85%', 'marginTop': '2vh', 'textAlign': 'center'}),
-
-
-
-
-
-html.H6('Number Of Strategies',style={'fontSize': '80%','textAlign': 'center'}),
-
-# dcc.Markdown('''*Set '**Control Type**' to 'Custom'.*''', style = {'fontSize': '75%', 'marginTop': '1vh', 'textAlign': 'center'}),
-dbc.Row([ #R2225
-dbc.RadioItems(
-id = 'number-strats-radio',
-options=[
-{'label': 'One', 'value': 'one'},
-{'label': 'Two', 'value': 'two'},
-],
-value= 'one',
-inline=True,
-labelStyle = {'fontSize': '70%'}
-),
-],justify='center'), #R2225
-
-
-
-
-# html.H6(['Cycle: Time Off ',
-# dbc.Button(' ? ',
-# color='primary',
-# size='sm',
-# id='popover-cycles-off-target',
-# style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-# ],
-# style={'fontSize': '70%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
-
-html.H6(
-['Infection Rate ',
-dbc.Button(' ? ',
-color='primary',
-size='sm',
-id = 'popover-inf-rate-target',
-style= {'cursor': 'pointer','marginBottom': '0.5vh'}),
-],
-style={'fontSize': '80%','marginTop': '2vh', 'marginBottom': '1vh', 'textAlign': 'center'}),
-
-
-dbc.Popover(
-[
-dbc.PopoverHeader('Infection Rate'),
-dbc.PopoverBody(dcc.Markdown(
-'''
-
-The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
-
-Adjust by choosing a preset strategy  or making your own custom choice ('**Control Type**').
-
-
-'''
-),),
-],
-id = "popover-inf-rate",
-is_open=False,
-target="popover-inf-rate-target",
-placement='top',
-),
-
-
-
-html.Div(id='strat-lr-infection',style = {'textAlign': 'center','fontSize': '80%'}),
-
-
-dcc.Slider(
-id='low-risk-slider',
-min=0,
-max=len(params.fact_v)-1,
-step = 1,
-marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-value=initial_lr,
-),
-
-
-html.Div(id='strat-hr-infection',style = {'textAlign': 'center','fontSize': '80%'}),
-dcc.Slider(
-id='high-risk-slider',
-min=0,
-max=len(params.fact_v)-1,
-step = 1,
-marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-value=initial_hr,
-),
-
-
-
-
-
-dbc.Col([ # C2258
-html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '80%','textAlign': 'center'}),
-
-dcc.Slider(
-id='low-risk-slider-2',
-min=0,
-max=len(params.fact_v)-1,
-step = 1,
-marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-value=5,
-),
-
-html.H6('Strategy Two: High Risk Infection Rate (%)', style = {'fontSize': '80%','textAlign': 'center'}),
-
-dcc.Slider(
-id='high-risk-slider-2',
-min=0,
-max=len(params.fact_v)-1,
-step = 1,
-marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
-value=8,
-),
-],width=True, # C2258
-id='strat-2-id'),
-
-
-
-
-
-
-
-
-],
-id="collapse-custom",
-is_open=False,
-), # CC1927
-
 ],
 width=True,
-), # C1872
+), # 2C1872
 
 ],
 justify='center',
 style =  {'margin': '5px'}
-), # R1871
+), # 2R1871
 
 ])
 
@@ -1972,8 +1979,80 @@ barChart_content =  dbc.Col([
 
 
 
+controls = dbc.Card([
+        
+dbc.Row([
+    dbc.Col([
+
+        html.Div(Control_text),
+                                                                
+        dbc.Tabs(
+            active_tab='tab_main',
+            children = [
+                
+            dbc.Tab(label='Main controls',
+                        tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
+                        label_style={"color": tab_label_color, 'fontSize':'120%'}, 
+                        tab_id='tab_main',
+                        children=control_choices_main
+                        ),
+            dbc.Tab(label='Custom options',
+                        tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
+                        label_style={"color": tab_label_color, 'fontSize':'120%'}, 
+                        # tab_id='tab_main',
+                        children=[control_choices_lockdown,
+                        html.Hr(),
+                        control_choices_custom]
+                        ),
+            dbc.Tab(label='Other',
+                        tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
+                        label_style={"color": tab_label_color, 'fontSize':'120%'}, 
+                        # tab_id='tab_main',
+                        children=control_choices_other
+                        ),
+            ]) # end of tabs
+
+        ],
+        width=True,
+        style={'margin': '10px'}
+        )
+],
+justify='center'
+),
+                                                                
+],
+color='light',
+)
 
 
+
+textCard = dbc.Card([
+dbc.Row([
+    dbc.Col([
+    dcc.Markdown('''
+
+        The model predicts how the epidemic will progress, depending on the disease status of members of the population within each country.
+
+        Change the control strategy to see the effect on the predicted number of infections, hospitalisations, and deaths.
+
+        ''',
+        style={'fontSize': '100%', 'textAlign': 'center', 'marginTop': '2vh'}
+        ),
+
+    html.Div(id='worked-div'),
+
+    ],
+    width=True,
+    style={'margin': '10px'}
+    )
+
+],
+justify='center'
+),
+
+],
+color='light'
+)
 
 
 
@@ -1997,7 +2076,6 @@ layout_inter = html.Div([
                     # dcc.Store(id='store-upper-lower'),
                     
 
-        # dbc.Row([  # R2505
 
                     dbc.Row([ # R2507
                         dbc.Col([
@@ -2021,34 +2099,32 @@ layout_inter = html.Div([
 
 
 
-                        # html.Div([
 
-                                        dbc.Row([
-                                        html.Div(id='worked-div'),
-                                        ],justify='center'),
+                                    
 
 
                                         dbc.Row([  # R2583
-
-                                                # html.H3('Results',
-                                                # className='display-4',
-                                                # id='results-title',
-                                                # style={'fontSize': '200%', 'textAlign': 'center' ,'marginTop': "1vh",'marginBottom': "1vh"}),
 
                                                 dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
                                                 dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary'),
                                                 
                                                 ],
                                                 justify='center',
-                                                style = {'marginTop': '0vh', 'marginBottom': '2vh'}
+                                                style = {'marginTop': '2vh', 'marginBottom': '2vh'}
                                         ),  # R2583
 
 
                                         dbc.Row([ # R2599
                                             dbc.Col([
+                                                    html.Div(textCard,
+                                                    style={'marginBottom': '3vh'}
+                                                    ),
                                                     html.Div(dpc_content,id='DPC-content'),                                                                                        
                                                     html.Div(barChart_content,id='bc-content',style={'display': 'none'}),
                                                     html.Div(id = 'strategy-outcome-content',style={'display': 'none'}),
+                                                    html.Div(controls,
+                                                    style={'marginTop': '3vh'}
+                                                    )
                                             ],
                                             width=True,
                                             ),
@@ -2059,93 +2135,14 @@ layout_inter = html.Div([
                                         style={'margin': '15px'}
                                         ),  # R2599
 
-                                        dbc.Row([
-                                            dbc.Col([
-                                            dbc.DropdownMenu([
-                                                    # dbc.Card(
-                                                    html.Div(
-                                                            [control_choices,
-                                                            control_choices_2],
-                                                    # color='light',
-                                                    ),
-                                            ],
-                                            label="Pick Your Strategy",
-                                            direction="left",
-                                            bs_size="lg",
-                                            style={'textAlign': 'center'}
-                                            ),
-
-
-                                            dcc.Markdown('''
-
-                                            The model predicts how the epidemic will progress, depending on the disease status of members of the population within each country.
-
-                                            Change the control strategy to see the effect on the predicted number of infections, hospitalisations, and deaths.
-
-                                            ''',style={'fontSize': '100%', 'textAlign': 'center', 'marginTop': '2vh'}),
-
-
-                                            ],
-                                            width=12,
-                                            style = {'margin': '30px'}
-                                            # md=4
-                                            ),
-
-
-                                        ],
-                                        justify='center'
-                                        ),
-
                                         
 
 #########################################################################################################################################################
                                                                                                                                                              
-                                               
 
-
-
-                                        dbc.Row([ # R2584
-                                        dbc.Col([ # C2585
-                                        
-                                        html.Hr(), # style={'marginTop': '5vh'}
-
-                                        html.H6([
-                                        'Change Results Type ',
-                                        ],
-                                        style={'fontSize': '150%', 'marginTop': '3vh', 'marginBottom': '3vh','textAlign': 'center'}),
-
-                                        html.Div([
-                                        dcc.Dropdown(
-                                            id = 'dropdown',
-                                            options=[{'label': 'Disease Progress Curves','value': 'DPC_dd'},
-                                            {'label': 'Bar Charts','value': 'BC_dd'},
-                                            {'label': 'Strategy Overview','value': 'SO_dd'},
-                                            ],
-                                            value= 'DPC_dd',
-                                            clearable = False,
-                                            style={'white-space':'nowrap'}
-                                        ),],
-                                        style={'cursor': 'pointer','marginBottom': '3vh'}),
-
-                                        ],
-                                        width=10
-                                        ), #C2585
-
-                                        ],
-                                        justify='center'
-                                        ), #C2584
-                                                
-
-
-########################################################################################################################
-
-
-    # ],
-    # justify='center'
-    # ),  # R2505
 
     ],
-    style={'fontSize': '11'},
+    style={'fontSize': '11', 'marginBottom': '20vh'},
     )
 
 
@@ -2194,7 +2191,7 @@ page_layout = html.Div([
             brand_style = {'fontSize': '120%'},
             color="primary",
             # sticky = 'top',
-            expand = 'xl',
+            expand = 'lg',
             # className = 'navbar-collapse',
             style= {'fontSize': '120%'},
             dark=True,
@@ -2219,7 +2216,7 @@ page_layout = html.Div([
                     "Contact us at: ",
                      html.A('covid.at.plants@gmail.com',href='')
                      ],
-        style={'textAlign': 'center', 'fontSize': '100%', 'marginBottom': '1.5vh', 'marginTop': '2vh'}),
+        style={'textAlign': 'center', 'fontSize': '90%', 'marginBottom': '1.5vh', 'marginTop': '2vh'}),
 
         html.Footer('This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.',
                     style={'textAlign': 'center', 'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'}),
@@ -2383,7 +2380,7 @@ for p in ["custom"]: # , "hospital"]:
 # popovers
 
 
-for p in [ "control", "months-control", "vaccination",  "cc-care" ,"custom-options", "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd", 'cycles-off', 'cycles-on', 'groups-allowed']: # "res-type" , "pick-strat",
+for p in [ "control", "months-control", "vaccination",  "cc-care" , "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd", 'cycles-off', 'cycles-on', 'groups-allowed']: # "res-type" , "pick-strat",
     app.callback(
         Output(f"popover-{p}", "is_open"),
         [Input(f"popover-{p}-target", "n_clicks")
