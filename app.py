@@ -231,14 +231,11 @@ initial_lr = preset_dict_low['LC']
 
 
 
-# cache = Cache(app.server, config={
-#     # try 'filesystem' if you don't want to setup redis
-#     'CACHE_TYPE': 'redis',
-#     'CACHE_REDIS_URL': 'redis://h:paa75aa4b983ba337eb43b831e6833be6b6887e56023aa417e392dd2bf337e8b8@ec2-18-213-184-148.compute-1.amazonaws.com:31119'
-# })
-
-# print(os.environ.get('REDIS_URL', ''))
-
+cache = Cache(app.server, config={
+    # try 'filesystem' if you don't want to setup redis
+    'CACHE_TYPE': 'redis',
+    'CACHE_REDIS_URL': 'redis://h:paa75aa4b983ba337eb43b831e6833be6b6887e56023aa417e392dd2bf337e8b8@ec2-18-213-184-148.compute-1.amazonaws.com:31119'
+})
 
 
 
@@ -2530,8 +2527,8 @@ def preset_sliders(preset,number_strs):
     [State('store-initial-conds-cache','data'),
     State('store-get-data-worked-cache','data'),
     ])
+@cache.memoize()
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
-# @cache.memoize()
     # print('find sol')
     print(dash.callback_context.triggered)
 
@@ -2657,8 +2654,8 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     Input('model-start-date', 'date'),
     Input('model-country-choice', 'value'),
     ])
+@cache.memoize()  # in seconds
 def find_sol_do_noth(ICU_grow,date,country_num):
-# @cache.memoize()  # in seconds
     # print(dash.callback_context.triggered,'do nothing')
     try:
         country = COUNTRY_LIST_NICK[country_num]
