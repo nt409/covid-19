@@ -157,7 +157,8 @@ def solve_it(y0,
     if vaccine_time is None:
         vaccine_timing = [0]
     else:
-        vaccine_timing = [365*(vaccine_time/12)]
+        # - 0.01 so different to control month
+        vaccine_timing = [365*(vaccine_time/12)-0.01]
     
     if t_control is not None:
         KeyTimesList = [0,T_stop] + t_control + vaccine_timing
