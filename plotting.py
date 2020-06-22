@@ -355,15 +355,12 @@ def solnIntoDataframe(sol,startdate):
 
     sol['y'] = np.asarray(sol['y'])
     for name in index.keys():
-        # print(index[name])
-        # print(sol['y'][index[name],:])
-        #str()
+        
         y_Low   = 100*pd.Series(sol['y'][index[name],:]).values
         y_High  = 100*pd.Series(sol['y'][index[name]+params.number_compartments,:]).values
         y_Total = y_Low + y_High
 
 
-        # df = df.assign(e = pd.Series(sol['y'][index[name],:]).values)
         df[longname[name]+': LR'] = y_Low
         df[longname[name]+': HR'] = y_High
         df[longname[name]+': BR'] = y_Total
@@ -784,12 +781,6 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
     lines_to_plot_uncert = uncertPlot(upper_lower_sol,population_plot,startdate)
     lines_PrevDeaths, x0 = prevDeaths(previous_deaths,startdate,population_plot)
     
-    # lines_to_plot, xx = lineplot(sols,cats_to_plot,group_use,population_plot,startdate,num_strat,comp_dn)
-    # for line in lines_to_plot_stack:
-    #     line['visible'] = False
-
-
-    # print(xx[0])
     # setting up pink boxes
     ICU = False
     if num_strat=='one': #  and len(cats_to_plot)>0:
@@ -902,13 +893,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
     annotz, shapez = annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,yRange)
 
-    # xAx2Year = {'range': [xx[0], xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
     xAx2Year = {'range': [xx[0], xx[-1]],'hoverformat':'%d %b','fixedrange': True}
 
-    # xAx1Year = {'range': [xx[0], xx[floor((1/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
-    # xAx3Year = {'range': [xx[0], xx[-1]],'hoverformat':'%d %b','fixedrange': True}
-
-    # xAx2FromFeb = {'range': [x0, xx[floor((2/3)*len(xx))]],'hoverformat':'%d %b','fixedrange': True}
     xAx2FromFeb = {'range': [x0, xx[-1]],'hoverformat':'%d %b','fixedrange': True}
 
 
@@ -957,33 +943,6 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                     hovermode='x',
                     xaxis= xAx2Year,
                         updatemenus = [
-                                        # dict(
-                                            #     buttons=list([
-                                            #         dict(
-                                            #             args = ["xaxis", xAx1Year],
-                                            #             label="Years: 1",
-                                            #             method="relayout"
-                                            #         ),
-                                            #         dict(
-                                            #             args = ["xaxis", xAx2Year],
-                                            #             label="Years: 2",
-                                            #             method="relayout"
-                                            #         ),
-                                            #         dict(
-                                            #             args = ["xaxis", xAx3Year],
-                                            #             label="Years: 3",
-                                            #             method="relayout"
-                                            #         )
-                                            # ]),
-                                            # x= 0.3,
-                                            # xanchor = 'left',
-                                            # pad={"r": 5, "t": 30, "b": 10, "l": 5},
-                                            # showactive=True,
-                                            # active=1,
-                                            # direction='up',
-                                            # y=-0.13,
-                                            # yanchor="top"
-                                            # ),
 
                                             dict(
                                                 buttons= CategoryList,
