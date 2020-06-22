@@ -219,7 +219,7 @@ presets_dict_dropdown = {'N': 'Do Nothing',
                 'C': 'Custom'}
 
 ld = 4
-sd = 8
+sd = 7
 noth = 10
 
 preset_dict_high = {'Q': ld, 'MSD': sd, 'LC': ld, 'HL': ld,  'H': ld,  'N':noth}
@@ -2523,6 +2523,7 @@ def preset_sliders(preset,number_strs):
     ])
 @cache.memoize()
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
+
     # print('find sol')
     print(dash.callback_context.triggered)
 

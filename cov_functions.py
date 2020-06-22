@@ -115,13 +115,17 @@ def set_initial_condition(I0,R0,H0,C0,D0):
 
 
 def determine_betas(t, t_control, beta_L_factor, beta_H_factor, let_HR_out):
+    
+    # to avoid the boundary
+    # t = t+0.001 
+    
     if t_control is None:
         beta_L_factor = 1
         beta_H_factor = 1
     else:
         
         if len(t_control)==2:
-            if t<t_control[0] or t>t_control[1]: # outside of window
+            if t<t_control[0] or t>=t_control[1]: # outside of window
                 beta_L_factor = 1
                 beta_H_factor = 1
         
@@ -165,7 +169,7 @@ def solve_it(y0,
     MoreThan0 = filter(lambda number: number > 0, KeyTimesList)
     MoreThan0 = list(MoreThan0)
     KeyTimesList = [0] + MoreThan0
-    
+
     tVecList = []
     for i in range(len(KeyTimesList)-1):
         tVecList.append(np.linspace(KeyTimesList[i],
@@ -198,7 +202,7 @@ def solve_it(y0,
                 vaccinate_rate = params.vaccinate_rate
         
         betaLfact, betaHfact = determine_betas(t, t_control, beta_L_factor, beta_H_factor, let_HR_out)
-
+        
         ICU_grow = np.float(ICU_grow)
 
         odeSolver.set_f_params(betaLfact,
