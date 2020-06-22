@@ -2096,6 +2096,18 @@ layout_inter = html.Div([
                                                     html.Div(textCard,
                                                     style={'marginBottom': '15px'}
                                                     ),
+
+
+                                                    dbc.Row([  # R2583
+
+                                                            dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
+                                                            dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary'),
+                                                            
+                                                            ],
+                                                            justify='center',
+                                                            style = {'marginTop': '20px', 'marginBottom': '20px'}
+                                                    ),  # R2583
+
                                                     html.Div(dpc_content,id='DPC-content'),                                                                                        
                                                     html.Div(barChart_content,id='bc-content',style={'display': 'none'}),
                                                     html.Div(id = 'strategy-outcome-content',style={'display': 'none'}),
@@ -2112,16 +2124,6 @@ layout_inter = html.Div([
                                         style={'margin': '15px'}
                                         ),  # R2599
 
-
-                                        dbc.Row([  # R2583
-
-                                                dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
-                                                dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary'),
-                                                
-                                                ],
-                                                justify='center',
-                                                style = {'marginTop': '20px', 'marginBottom': '20px'}
-                                        ),  # R2583
 
                                         
 
