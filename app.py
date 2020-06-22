@@ -2521,8 +2521,8 @@ def preset_sliders(preset,number_strs):
     [State('store-initial-conds-cache','data'),
     State('store-get-data-worked-cache','data'),
     ])
-@cache.memoize()
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
+    # @cache.memoize()
 
     # print('find sol')
     print(dash.callback_context.triggered)
