@@ -2422,9 +2422,9 @@ def invisible_or_not(num,preset):
     else:
         strat_H = [html.H6('High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
         strat_L = [html.H6('Low Risk Infection Rate (%)',style={'fontSize': '100%'}),]
-        if preset=='N':
-            do_nothing_dis = True
-            do_n_val = 0
+        # if preset=='N':
+        #     do_nothing_dis = True
+        #     do_n_val = 0
 
         says_strat_2 = {'display': 'none'}
 
@@ -2521,8 +2521,8 @@ def preset_sliders(preset,number_strs):
     [State('store-initial-conds-cache','data'),
     State('store-get-data-worked-cache','data'),
     ])
-@cache.memoize()
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
+    # @cache.memoize()
 
     # print('find sol')
     print(dash.callback_context.triggered)
@@ -2650,8 +2650,8 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     Input('model-start-date', 'date'),
     Input('model-country-choice', 'value'),
     ])
-@cache.memoize()  # in seconds
 def find_sol_do_noth(ICU_grow,date,country_num):
+    # @cache.memoize()  # in seconds
     # print(dash.callback_context.triggered,'do nothing')
     try:
         country = COUNTRY_LIST_NICK[country_num]
