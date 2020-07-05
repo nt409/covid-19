@@ -1180,6 +1180,7 @@ control_choices_main = html.Div([
         options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST_NICK)],
         value= initial_country,
         clearable = False,
+        searchable=False,
         style={'white-space':'nowrap'}
     ),],
     style={'cursor': 'pointer', 'fontSize': '70%', 'marginTop': '10px', 'marginBottom': '10px','textAlign': 'center'}),
@@ -1230,6 +1231,7 @@ control_choices_main = html.Div([
         'value': key} for key in presets_dict_dropdown],
         value= 'LC',
         clearable = False,
+        searchable=False,
         style={'white-space':'nowrap'}
     ),],
     style={'cursor': 'pointer', 'fontSize': '70%', 'marginTop': '10px', 'marginBottom': '10px','textAlign': 'center'}),
@@ -1429,6 +1431,7 @@ options=[{'label': 'Disease Progress Curves','value': 'DPC_dd'},
 ],
 value= 'DPC_dd',
 clearable = False,
+searchable=False,
 style={'white-space':'nowrap'}
 ),],
 style={'cursor': 'pointer', 'textAlign': 'center', 'marginBottom': '30px'}),
