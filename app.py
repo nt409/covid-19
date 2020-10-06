@@ -12,32 +12,35 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.validators.scatter.marker import SymbolValidator
 import copy
-from cov_functions import run_model, test_probs
-from plotting import Bar_chart_generator, MultiFigureGenerator, \
-    longname, month_len, extract_info, test_bar_plot
 
-# import flask
+
 from flask import Flask
 from flask_caching import Cache
 import os
-
-
-from dan import layout_dan, COUNTRY_LIST, colours
-from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
-from dan_constants import POPULATIONS #, WORLDOMETER_NAME
 import datetime
 import json
 from json import JSONEncoder
 
 
+from cov_functions import run_model, test_probs
+from plotting import Bar_chart_generator, MultiFigureGenerator, \
+    longname, month_len, extract_info, test_bar_plot
+
+from dan import layout_dan, COUNTRY_LIST, colours
+from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
+
+from dan_constants import POPULATIONS #, WORLDOMETER_NAME
+
+
 
 try:
-    min_date = get_data('uk')['Cases']['dates'][0]
-    max_date = get_data('uk')['Cases']['dates'][-1]
+    gd = get_data('uk')
+    min_date = gd['Cases']['dates'][0]
+    max_date = gd['Cases']['dates'][-1]
 except:
     print("Cannnot get dates from Worldometer")
     min_date = '2020-2-15'
-    max_date = '2020-5-17'
+    max_date = '2020-10-05'
 
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
@@ -54,6 +57,8 @@ initial_country = COUNTRY_LIST_NICK.index('uk')
 
 backgroundColor = None # 'white' # '#f4f6f7'
 disclaimerColor = '#e9ecef'
+
+
 
 def begin_date(date,country='uk'):
 
@@ -194,6 +199,8 @@ df = df.rename(columns={"Hosp": "Hospitalised", "Crit": "Requiring Critical Care
 def generate_table(dataframe, max_rows=10):
     return dbc.Table.from_dataframe(df, striped=True, bordered = True, hover=True)
 
+
+
 annotz = [dict(x  = 0.5,
                     y  = 0.6,
                     text="Press the 'Plot' button below!",
@@ -217,6 +224,8 @@ scatter = go.Scatter(
                     )
 
 dummy_figure = go.Figure(data=[scatter], layout= {'template': 'simple_white', 'annotations': annotz})
+
+
 
 
 bar_height = '100'
@@ -254,11 +263,11 @@ initial_lr = preset_dict_low['LC']
 
 
 
-cache = Cache(app.server, config={
-    # try 'filesystem' if you don't want to setup redis
-    'CACHE_TYPE': 'redis',
-    'CACHE_REDIS_URL': 'redis://h:paa75aa4b983ba337eb43b831e6833be6b6887e56023aa417e392dd2bf337e8b8@ec2-18-213-184-148.compute-1.amazonaws.com:31119'
-})
+# cache = Cache(app.server, config={
+#     # try 'filesystem' if you don't want to setup redis
+#     'CACHE_TYPE': 'redis',
+#     'CACHE_REDIS_URL': 'redis://h:paa75aa4b983ba337eb43b831e6833be6b6887e56023aa417e392dd2bf337e8b8@ec2-18-213-184-148.compute-1.amazonaws.com:31119'
+# })
 
 
 
@@ -546,32 +555,6 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
 
 
-# card_model  = dbc.Card(
-#     [
-#         html.A([
-#             dbc.CardImg(src="https://res.cloudinary.com/hefjzc2gb/image/upload/c_fill,h_465,w_1100/v1588428400/model_fvg9af.png", top=True),
-#             ],
-#             href = '/model',
-#             style = {'cursor': 'pointer'}
-#         ),
-#         dbc.CardBody(
-#             [
-#                 html.H4("Model Explanation",style={'textAlign': 'center'},  className="card-title"),
-#                 html.Div(
-#                     "Find out more about the mathematical model used to make these predictions about control of coronavirus.",
-#                     className="card-text",
-#                     style={'textAlign': 'justify'}
-#                 ),
-#         dbc.Row([
-#                 dbc.Button("Learn more", href = '/model',color="primary"),
-#         ],
-#         justify='center'),
-#             ]
-#         ),
-#     ],
-#     # style={"width": "18rem"},
-# )
-
 
 card_inter  = dbc.Card(
     [
@@ -596,7 +579,6 @@ card_inter  = dbc.Card(
         ]
         ),
     ],
-    # style={"width": "18rem"},
 )
 
 
