@@ -193,8 +193,30 @@ df = df.rename(columns={"Hosp": "Hospitalised", "Crit": "Requiring Critical Care
 def generate_table(dataframe, max_rows=10):
     return dbc.Table.from_dataframe(df, striped=True, bordered = True, hover=True)
 
+annotz = [dict(x  = 0.5,
+                    y  = 0.6,
+                    text="Press the 'Plot' button below!",
+                    showarrow=False,
+                    font=dict(
+                        size=24,
+                        color='black'
+                    ),
+                    xref = 'paper',
+                    yref = 'paper',
+        )]
 
-dummy_figure = {'data': [], 'layout': {'template': 'simple_white'}}
+scatter = go.Scatter(
+                    x = [0,1],
+                    y = [0,1],
+                    mode = 'lines',
+                    showlegend=False,
+                    line = {'width': 0},
+                    # legendgroup = listings[key]['host'],
+                    # opacity=1,
+                    )
+
+dummy_figure = go.Figure(data=[scatter], layout= {'template': 'simple_white', 'annotations': annotz})
+
 
 bar_height = '100'
 
@@ -1767,7 +1789,7 @@ dpc_content = html.Div([
 
         dbc.Card(
             html.Div([
-            dcc.Graph(id='line-plot-2'), # ,style={'height': '100px', 'width': '100%'}),
+            dcc.Graph(figure=dummy_figure,id='line-plot-2'), # ,style={'height': '100px', 'width': '100%'}),
             ],
             style={'margin': '10px'}
             ),
@@ -1970,13 +1992,16 @@ dbc.Row([
 
         html.Div(Control_text),
 
-        dbc.Button('Plot',
-                        color='primary',
-                        className='mb-3',
-                        id="plot-button",
-                        size='lg',
-                        style = {'cursor': 'pointer'}),
-
+        dbc.Row([
+            dbc.Button('Plot',
+                            color='primary',
+                            className='mb-3',
+                            id="plot-button",
+                            size='lg',
+                            style = {'cursor': 'pointer'}),
+        
+        ],
+        justify='center'),
                                                                 
         dbc.Tabs(
             active_tab='tab_main',
@@ -2058,12 +2083,12 @@ color='light'
 
 layout_inter = html.Div([
                     # store results
-                    dcc.Store(id='sol-calculated-cache'),
+                    # dcc.Store(id='sol-calculated-cache'),
                     dcc.Store(id='sol-calculated-do-nothing-cache'),
                     dcc.Store(id='prev-deaths-cache'),
                     dcc.Store(id='store-initial-conds-cache'),
                     dcc.Store(id='store-get-data-worked-cache'),
-                    dcc.Store(id='store-upper-lower-cache'),
+                    # dcc.Store(id='store-upper-lower-cache'),
 
                     # replace with Cache soon!
 
@@ -2293,22 +2318,6 @@ app.index_string = """<!DOCTYPE html>
 
 
 
-# @app.callback(Output('main-tabs', 'value'),
-#             [Input('url', 'pathname')])
-# def display_page(pathname):
-#     if pathname == '/inter':
-#         return 'interactive'
-#     elif pathname == '/data':
-#         return 'data'
-#     elif pathname == '/model':
-#         return 'model'
-#     elif pathname == '/intro':
-#         return 'intro'
-#     else:
-#         return 'intro'
-
-
-
 
 
 @app.callback(Output('saved-url', 'data'),
@@ -2318,7 +2327,7 @@ app.index_string = """<!DOCTYPE html>
             )
 def change_pathname(pathname,saved_pathname):
 
-    # print('change pathname')
+    print('change pathname', pathname, saved_pathname)
 
     if pathname==saved_pathname:
         raise PreventUpdate
@@ -2327,31 +2336,14 @@ def change_pathname(pathname,saved_pathname):
 
 
 
-# @app.callback(#Output('page-content', 'style'),
-#     [Output('layout-intro-div','style'),
-#     Output('layout-inter-div','style'),
-#     Output('layout-model-div','style'),
-#     Output('layout-dan-div','style')],
-#             [Input('saved-url', 'data')])
-# def display_page(pathname):
-#     print('display page')
-#     style_on = {'display': 'block'}
-#     style_off = {'display': 'none'}
-#     if pathname == '/inter':
-#         return style_off,style_on,style_off,style_off
-#     elif pathname == '/data':
-#         return style_off,style_off,style_off,style_on
-#     elif pathname == '/model':
-#         return style_off,style_off,style_on,style_off
-#     else:
-#         return style_on,style_off,style_off,style_off
-
 
 @app.callback([Output('page-content', 'children'),
             Output('loading-page','children')],
             [Input('saved-url', 'data')])
 def display_page(pathname):
-    # print('display page')
+    
+    print('display page')
+
     if pathname == '/data':
         return [layout_dan, None]
     elif pathname == '/intro':
@@ -2368,14 +2360,6 @@ def toggle(n, is_open):
         return not is_open
     return is_open
 
-
-# for p in ["custom"]: # , "hospital"]:
-#     app.callback(
-#         Output(f"collapse-{p}", "is_open"),
-#         [Input(f"collapse-button-{p}", "n_clicks")
-#         ],
-#         [State(f"collapse-{p}", "is_open")],
-#     )(toggle)
 
 
 ########################################################################################################################
@@ -2405,21 +2389,14 @@ for p in [ "control", "months-control", "vaccination",  "cc-care" , "inf-rate", 
     Output('strat-hr-infection','children'),
     Output('strat-lr-infection','children'),
 
-    # Output('groups-to-plot-radio','style'),
-    # Output('groups-checklist-to-plot','style'),
-
-    # Output('plot-with-do-nothing','options'),
 
     ],
     [
     Input('number-strats-radio', 'value'),
     Input('preset', 'value'),
-    # Input('plot-with-do-nothing', 'value')
     ])
 def invisible_or_not(num,preset):
 
-    # do_nothing_dis = False
-    # do_n_val = 1
 
 
 
@@ -2427,27 +2404,20 @@ def invisible_or_not(num,preset):
         strat_H = [html.H6('Strategy One: High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
         strat_L = [html.H6('Strategy One: Low Risk Infection Rate (%)',style={'fontSize': '100%'}),]
         says_strat_2 = None
-        # do_nothing_dis = True
-        # do_n_val = 0
 
     else:
         strat_H = [html.H6('High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
         strat_L = [html.H6('Low Risk Infection Rate (%)',style={'fontSize': '100%'}),]
-        # if preset=='N':
-        #     do_nothing_dis = True
-        #     do_n_val = 0
 
         says_strat_2 = {'display': 'none'}
 
     if preset!='C':
         says_strat_2 = {'display': 'none'}
 
-    # options=[{'label': 'Compare', 'value': do_n_val, 'disabled': do_nothing_dis}]
     
 
     
-    return [says_strat_2, strat_H, strat_L] # , options]
-    # groups_radio,groups_checklist,
+    return [says_strat_2, strat_H, strat_L]
 
 ########################################################################################################################
 
@@ -2505,38 +2475,7 @@ def preset_sliders(preset,number_strs):
 
 
 
-@app.callback(
-    [Output('sol-calculated-cache', 'data'),
-    Output('loading-sol-1','children'),
-    Output('store-initial-conds-cache', 'data'),
-    Output('store-get-data-worked-cache', 'data'),
-    Output('worked-div', 'children'),
-    Output('store-upper-lower-cache', 'data'),
-    ],
-    [
-    Input('preset', 'value'),
-    Input('month-slider', 'value'),
-    Input('low-risk-slider', 'value'),
-    Input('high-risk-slider', 'value'),
-    Input('low-risk-slider-2', 'value'),
-    Input('high-risk-slider-2', 'value'),
-    Input('number-strats-radio', 'value'),
-    Input('vaccine-slider', 'value'),
-    Input('ICU-slider', 'value'),
-    Input('model-start-date', 'date'),
-    Input('model-country-choice', 'value'),
-    Input('cycle-off', 'value'),
-    Input('cycle-on', 'value'),
-    Input('hr-ld', 'value'),
-    ],
-    [State('store-initial-conds-cache','data'),
-    State('store-get-data-worked-cache','data'),
-    ])
 def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,date,country_num,t_off,t_on,hr_ld,init_stored,worked):
-    # @cache.memoize()
-
-    # print('find sol')
-    print(dash.callback_context.triggered)
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -2546,14 +2485,9 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     if vaccine==9:
         vaccine = None
 
-    triggered = dash.callback_context.triggered[0]['prop_id']
-
-    if init_stored is None or triggered in ['model-country-choice.value','model-start-date.date']:
+    if init_stored is None or date!=init_stored[5] or country!=init_stored[6]:
         I0, R0, H0, C0, D0, worked, _ = begin_date(date,country)
-        # print(prev_deaths)
-        initial_conds = [I0, R0, H0, C0, D0]
-        # print('calculating new')
-        # print(initial_conds)
+        initial_conds = [I0, R0, H0, C0, D0, date, country]
     else:
         initial_conds = init_stored
         I0 = init_stored[0]
@@ -2561,6 +2495,8 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         H0 = init_stored[2]
         C0 = init_stored[3]
         D0 = init_stored[4]
+        date=init_stored[5]
+        country=init_stored[6]
 
     if worked is None:
         worked = False
@@ -2649,7 +2585,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
 
         sols_upper_lower.append(upp_low)
 
-    return [sols, None, initial_conds, worked, worked_div, sols_upper_lower]
+    return sols, initial_conds, worked, worked_div, sols_upper_lower
 
 
 
@@ -2663,7 +2599,9 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     ])
 def find_sol_do_noth(ICU_grow,date,country_num):
     # @cache.memoize()  # in seconds
-    # print(dash.callback_context.triggered,'do nothing')
+    
+    print(dash.callback_context.triggered,'do nothing')
+
     try:
         country = COUNTRY_LIST_NICK[country_num]
     except:
@@ -2676,7 +2614,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                                     t_control=None,
                                     ICU_grow=ICU_grow)
     
-    return [sol_do_nothing, prev_deaths]
+    return sol_do_nothing, prev_deaths
 
 
 
@@ -2691,14 +2629,16 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 ###################################################################################################################################################################################
 
 
-@app.callback([ 
+@app.callback([
+                Output('loading-sol-1','children'),
+                Output('store-initial-conds-cache', 'data'),
+                Output('store-get-data-worked-cache', 'data'),
+                Output('worked-div', 'children'),
+                # find sol
 
                 Output('DPC-content', 'style'),
                 Output('bc-content', 'style'),
                 Output('strategy-outcome-content', 'style'),
-                
-
-                # Output('results-title', 'children'),
                 
 
                 Output('strategy-outcome-content', 'children'),
@@ -2722,73 +2662,80 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 
                 
 
-                ],
-                [
-                # Input('interactive-tabs', 'active_tab'),
-                Input('plot-button', 'n_clicks'),
-
-                Input('saved-url', 'data'),
-
-
-                # Input('main-tabs', 'value'),
-
-                
-                Input('sol-calculated-cache', 'data'),
-
-                Input('dropdown', 'value'),
-                Input('model-country-choice', 'value'),
-
-
-                Input('model-start-date','date'),
-                Input('prev-deaths-cache','data'),
-
-                ],
+               ],
                [
+                Input('plot-button', 'n_clicks'),
+               ],
+               [
+                State('saved-url', 'data'),
+
+                State('sol-calculated-do-nothing-cache', 'data'),
+
+                State('dropdown', 'value'),
+                State('model-country-choice', 'value'),
+                State('model-start-date','date'),
+                State('prev-deaths-cache','data'),
+
                 State('cycle-off', 'value'),
                 State('cycle-on', 'value'),
-                State('sol-calculated-do-nothing-cache', 'data'),
+                
                 State('preset', 'value'),
                 State('month-slider', 'value'),
+                
+                State('low-risk-slider', 'value'),
+                State('high-risk-slider', 'value'),
+                State('low-risk-slider-2', 'value'),
+                State('high-risk-slider-2', 'value'),
 
+                State('hr-ld', 'value'),
+
+                State('store-initial-conds-cache','data'),
+                State('store-get-data-worked-cache','data'),
 
                 State('number-strats-radio', 'value'),
                 State('vaccine-slider', 'value'),
                 State('ICU-slider','value'),
 
-                State('store-upper-lower-cache', 'data'),
                 ])
-def render_interactive_content(plot_button,pathname,sols,
-                                # groups,groups2,
-                                # cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,
-                                results_type,country_num,date,prev_deaths,
-                                t_off,t_on,sol_do_nothing,preset,month,num_strat,vaccine_time,ICU_grow,upper_lower_sol):
+def render_interactive_content(plot_button,
+                                pathname,
 
-    print('render ',pathname)
-    if sols is None:
-        # print('prevent')
-        # raise PreventUpdate
-        return [
-        {'display': 'block'},
-        {'display' : 'none'},
-        {'display' : 'none'},
+                                sol_do_nothing,
 
-        # 'Calculating...',
+                                results_type,
+                                country_num,
+                                date,
+                                prev_deaths,
 
-        [''],
+                                t_off,
+                                t_on,
+                                
+                                preset,
+                                month,
 
-        dummy_figure,
-        dummy_figure,
-        dummy_figure,
-        dummy_figure,
-        dummy_figure,
+                                lr_in,
+                                hr_in,
+                                lr2_in,
+                                hr2_in,
 
-        dummy_figure,
-        # dummy_figure,
-        # dummy_figure,
-        # dummy_figure,
+                                hr_ld,
 
-        None
-        ]
+                                init_stored,
+                                worked,
+
+                                num_strat,
+                                vaccine_time,
+                                ICU_grow):
+
+    print(f'render {pathname}')
+
+    sols, initial_conds, worked, worked_div, upper_lower_sol = find_sol(preset,
+                    month,lr_in,hr_in,lr2_in,hr2_in,
+                    num_strat,vaccine_time,ICU_grow,date,country_num,
+                    t_off,t_on,hr_ld,init_stored,worked)
+
+
+
 
     if pathname in ['/data','/intro','/home','/']:
         raise PreventUpdate
@@ -2822,7 +2769,6 @@ def render_interactive_content(plot_button,pathname,sols,
 ########################################################################################################################
 
 
-    # results_title =  f'Result: {presets_dict[preset]}'
     strategy_outcome_text = ['']
 
 
@@ -2834,24 +2780,17 @@ def render_interactive_content(plot_button,pathname,sols,
         bar5 = dummy_figure
 
     if results_type!='DPC_dd': # tab2 'interactive' # pathname!='inter' or 
-        # fig1 = dummy_figure
         fig_out = dummy_figure
-        # fig3 = dummy_figure
-        # fig4 = dummy_figure
 
 
 
 
 
-
-    # if True: # pathname=='/inter': # tab2
-   
 
     if preset!='C':
         num_strat = 'one'
         
 
-    # if True: # sols is not None:
     sols.append(sol_do_nothing)
 
     # bar plot data
@@ -3014,6 +2953,13 @@ def render_interactive_content(plot_button,pathname,sols,
 ########################################################################################################################
 
     return [
+    None,
+    initial_conds,
+    worked,
+    worked_div,
+
+
+
     DPC_style,
     BC_style,
     SO_style,
@@ -3058,9 +3004,9 @@ def render_interactive_content(plot_button,pathname,sols,
                Output('align-daily-deaths-check', 'options'),
                Output('align-daily-deaths-input', 'value'),
                Output('display_percentage_text_daily_deaths', 'style')],
-              [ Input('normalise-check', 'value')])
+              [Input('normalise-check', 'value')])
 def update_align_options(normalise_by_pop):
-    # print('dan 1')
+    print('dan 1')
 
     if normalise_by_pop:
         options_cases = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
@@ -3096,7 +3042,6 @@ def update_align_options(normalise_by_pop):
                Output('hidden-stored-data', 'children'),
                Output("loading-icon", "children")],
               [
-            #    Input('main-tabs', 'value'),
                Input('button-plot', 'n_clicks'),
                Input('start-date', 'date'),
                Input('end-date', 'date'),
@@ -3112,14 +3057,18 @@ def update_align_options(normalise_by_pop):
                Input('align-daily-cases-input', 'value'),
                Input('align-daily-deaths-check', 'value'),
                Input('align-daily-deaths-input', 'value')],
-              [State('hidden-stored-data', 'children')] +
+              [State('page-url', 'pathname'),
+                State('hidden-stored-data', 'children')] +
               [State(c_name, 'value') for c_name in COUNTRY_LIST])
 def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_pop,
                  align_cases_check, align_cases_input, align_deaths_check, align_deaths_input, align_active_cases_check,
                  align_active_cases_input, align_daily_cases_check, align_daily_cases_input,
-                 align_daily_deaths_check, align_daily_deaths_input, saved_json_data, *args):
+                 align_daily_deaths_check, align_daily_deaths_input, pathname, saved_json_data, *args):
 
-    # print('dan 2',dash.callback_context.triggered)
+    print('dan 2',dash.callback_context.triggered)
+
+    if pathname in ['/inter','/intro','/home','/']:
+        raise PreventUpdate
 
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
