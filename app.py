@@ -3535,7 +3535,7 @@ def calculate_test_probs(plot_button,prior,sens,spec):
     # have covid given positive test
     positive = true_pos/(true_pos+false_pos)
 
-    title = f"Probability have covid given positive test: {round(positive,4)},<br>Probability have covid given negative test: {round(negative,4)}."
+    title = f"Probability have covid given positive test (=True Pos/[sum of red]): {round(positive,4)},<br>Probability have covid given negative test (=False Neg/[sum of blue]): {round(negative,4)}."
 
     fig = test_bar_plot(outputs, title)
 
