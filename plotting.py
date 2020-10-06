@@ -759,7 +759,9 @@ def CategoryFunction(CategoryList,Indices,Name,lines_to_plot_line,population_plo
 
 
 
-def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,preset=None,startdate=None, previous_deaths=None):
+def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
+        vaccine_time=None,ICU_grow=None,comp_dn=False,country = 'uk',month_cycle=None,
+        preset=None,startdate=None, previous_deaths=None):
     
     # cats_to_plot = ['S','I','R','C','H','D']
     try:

@@ -199,7 +199,7 @@ def solve_it(y0,
 
         vaccinate_rate = 0
         if vaccine_time is not None:
-            if t>=365*(vaccine_time/12):
+            if t>=365*(vaccine_time/12) - 1: # -1 for rounding error
                 vaccinate_rate = params.vaccinate_rate
         
         betaLfact, betaHfact = determine_betas(t, t_control, beta_L_factor, beta_H_factor, let_HR_out)

@@ -1969,6 +1969,14 @@ dbc.Row([
     dbc.Col([
 
         html.Div(Control_text),
+
+        dbc.Button('Plot',
+                        color='primary',
+                        className='mb-3',
+                        id="plot-button",
+                        size='lg',
+                        style = {'cursor': 'pointer'}),
+
                                                                 
         dbc.Tabs(
             active_tab='tab_main',
@@ -2361,13 +2369,13 @@ def toggle(n, is_open):
     return is_open
 
 
-for p in ["custom"]: # , "hospital"]:
-    app.callback(
-        Output(f"collapse-{p}", "is_open"),
-        [Input(f"collapse-button-{p}", "n_clicks")
-        ],
-        [State(f"collapse-{p}", "is_open")],
-    )(toggle)
+# for p in ["custom"]: # , "hospital"]:
+#     app.callback(
+#         Output(f"collapse-{p}", "is_open"),
+#         [Input(f"collapse-button-{p}", "n_clicks")
+#         ],
+#         [State(f"collapse-{p}", "is_open")],
+#     )(toggle)
 
 
 ########################################################################################################################
@@ -2717,6 +2725,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 ],
                 [
                 # Input('interactive-tabs', 'active_tab'),
+                Input('plot-button', 'n_clicks'),
 
                 Input('saved-url', 'data'),
 
@@ -2726,15 +2735,6 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 
                 Input('sol-calculated-cache', 'data'),
 
-                # or any of the plot categories
-                # Input('groups-checklist-to-plot', 'value'),
-                # Input('groups-to-plot-radio','value'),                                      
-                # Input('categories-to-plot-checklist', 'value'),
-                # Input('categories-to-plot-stacked', 'value'),
-                # Input('plot-with-do-nothing','value'),
-                # Input('plot-ICU-cap','value'),
-
-                
                 Input('dropdown', 'value'),
                 Input('model-country-choice', 'value'),
 
@@ -2757,7 +2757,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 
                 State('store-upper-lower-cache', 'data'),
                 ])
-def render_interactive_content(pathname,sols,
+def render_interactive_content(plot_button,pathname,sols,
                                 # groups,groups2,
                                 # cats_to_plot_line,cats_plot_stacked,plot_with_do_nothing,plot_ICU_cap,
                                 results_type,country_num,date,prev_deaths,
