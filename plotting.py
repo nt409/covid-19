@@ -1066,7 +1066,39 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
 
 
+def test_bar_plot(outputs, title):
 
+    traces = []
+
+    names = [
+        'True positive',
+        'False positive',
+        'True negative',
+        'False negative',
+            ]
+    colors = ['red']*2 + ['blue']*2
+
+    line = go.Bar(
+            x=names,
+            y=outputs,
+            marker_color = colors,
+            showlegend=False
+        )
+    traces.append(line)
+
+    layout = go.Layout(
+                template="simple_white",
+                
+                title=title,
+                xaxis=dict(
+                        title='Test outcome',
+                        ),
+                yaxis={'title': 'Probability'},
+        )
+
+    # fig = go.Figure(data=traces, layout=layout)
+    
+    return {'data': traces, 'layout': layout}
 
 
 

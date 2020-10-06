@@ -12,8 +12,9 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.validators.scatter.marker import SymbolValidator
 import copy
-from cov_functions import run_model
-from plotting import Bar_chart_generator, MultiFigureGenerator, longname, month_len, extract_info
+from cov_functions import run_model, test_probs
+from plotting import Bar_chart_generator, MultiFigureGenerator, \
+    longname, month_len, extract_info, test_bar_plot
 
 # import flask
 from flask import Flask
@@ -626,6 +627,33 @@ card_intro  = dbc.Card(
     ]
     )
 
+
+
+card_int_tests  = dbc.Card(
+    [
+        html.A([
+            dbc.CardImg(src="https://res.cloudinary.com/hefjzc2gb/image/upload/c_fill,g_face,h_465,w_1100,x_595,y_51/v1602007670/tests_wkwc2u.png", top=True),
+            ],
+            href = '/tests',
+            style = {'cursor': 'pointer'}
+        ),
+        dbc.CardBody(
+            [
+                html.H4("Interpreting tests", style={'textAlign': 'center'},  className="card-title"),
+                html.Div(
+                    "Use conditional probability to consider how likely different tests are to give correct results.",
+                    className="card-text",
+                    style={'textAlign': 'justify', 'marginTop': '10px', 'marginBottom': '10px'}
+                ),
+            dbc.Row([
+                dbc.Button("Learn more", href = '/tests', color="primary"),
+            ],
+            justify='center'),
+            ],
+            ),
+    ]
+    )
+
 card_data  = dbc.Card(
     [
         html.A([
@@ -676,7 +704,15 @@ layout_enter = html.Div(
                 md = 3,
                 style = {'marginRight': '20px', 'marginLeft': '20px', 'marginTop': '20px', 'marginBottom': '20px', 'textAlign': 'center'}
                 ),
-  
+
+                dbc.Col([
+                card_int_tests,
+                ],
+                width=5,
+                md = 3,
+                style = {'marginRight': '20px', 'marginLeft': '20px', 'marginTop': '20px', 'marginBottom': '20px', 'textAlign': 'center'}
+                ),
+
                 dbc.Col([
                 card_data,
                 ],
@@ -2184,10 +2220,108 @@ layout_inter = html.Div([
 
 ##############################################################################################
 
+test_content = html.Div([
+
+        dbc.Card(
+            html.Div([
+            dcc.Graph(figure=dummy_figure,id='tests-plot'),
+            ],
+            style={'margin': '10px'}
+            ),
+        color='light'
+        ),
 
 
+    ])
+
+test_controls = html.Div([
+
+        dbc.Card([
+            dbc.FormGroup([
+                dbc.Row([ # R2205
+                    dbc.Col([ # C2206
+                
+
+                dbc.Row([ # R2210
+                    dbc.Button('Plot',
+                                    color='primary',
+                                    className='mb-3',
+                                    id="plot-button-tests",
+                                    size='lg',
+                                    style = {'cursor': 'pointer'}),
+                        ],
+                justify='center'), # R2210
+
+                html.Hr(),
+
+                dbc.Row(html.H5("Prior"), justify='center'),
+                dbc.Row(html.P("Probability of having covid based on their characteristics", style={'fontSize': '12px'}),justify='center'),
+
+                dbc.Row([
+                dbc.Input(id="prior", placeholder="Enter a number between 0 and 1", type="number", 
+                    style={'textAlign':'center'}, min=0, max=1, step=10**(-4),
+                    value=0.60
+                    ),
+                ]),
+
+                dbc.Row(html.H5("Sensitivity"), style={'marginTop': '40px'},justify='center'),
+                dbc.Row(html.P("Probability test correctly identifies positive", style={'fontSize': '12px'}),justify='center'),
+
+                dbc.Row([
+                dbc.Input(id="sens", placeholder="Enter a number between 0 and 1", type="number", 
+                    style={'textAlign':'center'}, min=0, max=1, step=10**(-4),
+                    value=0.7
+                    ),
+                ]),
+
+                dbc.Row(html.H5("Specificity"), style={'marginTop': '40px'},justify='center'),
+                dbc.Row(html.P("Probability test correctly identifies negative", style={'fontSize': '12px'}),justify='center'),
+
+                dbc.Row([
+                dbc.Input(id="spec", placeholder="Enter a number between 0 and 1", type="number",
+                    style={'textAlign':'center'}, min=0, max=1, step=10**(-4),
+                    value=0.95
+                    ),
+                ]),
+             
+                # ],
+                # justify='center'), # R2208
+
+                    ],
+                    width=6,
+                    align="center",
+                    style={'margin': '10px'},
+                    ), # C2206
+                ],
+                justify='center'), # R2205
+            ])
+        ],
+        color='light'
+        ),
 
 
+    ])
+
+
+layout_tests = html.Div([
+                                        dbc.Row([ # R2191
+                                            dbc.Col([
+                                                    html.Div(test_content,id='test-content', style={'margin': '10px'}),                                                                                        
+
+                                                    html.Div(test_controls,id='test-controls', style={'margin': '10px'}),
+
+                                            ],
+                                            width=True,
+                                            ),
+
+                                        ],
+                                        justify='center',
+                                        style={'margin': '15px'}
+                                        ),  # R2191
+
+    ],
+    style={'fontSize': '11', 'marginBottom': '200px'},
+    )
 
 
 
@@ -2208,9 +2342,10 @@ page_layout = html.Div([
         dbc.NavbarSimple(
             children=[
                 dbc.NavItem(dbc.NavLink("Background", href="/intro")),
-                dbc.NavItem(dbc.NavLink("Interactive Model", href="/inter")),
-                # dbc.NavItem(dbc.NavLink("Model Explanation", href="/model")),
-                dbc.NavItem(dbc.NavLink("Real-Time Global Data Feed", href="/data")),
+                dbc.NavItem(dbc.NavLink("Interactive model", href="/inter")),
+                dbc.NavItem(dbc.NavLink("Interpreting tests", href="/tests")),
+                dbc.NavItem(dbc.NavLink("Real-time data", href="/data")),
+
             ],
             brand="Modelling COVID-19 Control",
             brand_href="/",
@@ -2350,6 +2485,8 @@ def display_page(pathname):
         return [layout_intro, None]
     elif pathname == '/inter':
         return [layout_inter, None]
+    elif pathname == '/tests':
+        return [layout_tests, None]
     else:
         return [layout_enter, None]
 
@@ -2737,7 +2874,7 @@ def render_interactive_content(plot_button,
 
 
 
-    if pathname in ['/data','/intro','/home','/']:
+    if pathname in ['/data','/intro','/home','/tests','/']:
         raise PreventUpdate
 
 
@@ -3067,7 +3204,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
 
     print('dan 2',dash.callback_context.triggered)
 
-    if pathname in ['/inter','/intro','/home','/']:
+    if pathname in ['/inter','/intro','/home','/tests','/']:
         raise PreventUpdate
 
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
@@ -3375,7 +3512,34 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
 
 ##################################################################################################################################
 
+@app.callback(
+                Output('tests-plot', 'figure'),
+            [
+                Input('plot-button-tests', 'n_clicks'),
+            ],
+            [
+                State('prior', 'value'),
+                State('sens', 'value'),
+                State('spec', 'value'),
+            ],
+            )
+def calculate_test_probs(plot_button,prior,sens,spec):
 
+    true_pos, false_pos, true_neg, false_neg = test_probs(prior,sens,spec)
+    
+    outputs = [true_pos, false_pos, true_neg, false_neg]
+
+    # have covid given negative test
+    negative = false_neg/(false_neg+true_neg)
+
+    # have covid given positive test
+    positive = true_pos/(true_pos+false_pos)
+
+    title = f"Probability have covid given positive test: {round(positive,4)},<br>Probability have covid given negative test: {round(negative,4)}."
+
+    fig = test_bar_plot(outputs, title)
+
+    return fig
 
 
 

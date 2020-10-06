@@ -261,3 +261,16 @@ def run_model(I0,R0,H0,C0,D0,
 
 # y = run_model(0.01,0,0,0,0)
 # print(y)
+
+
+
+
+def test_probs(have_it,sens,spec):
+    
+    true_pos = have_it*sens
+    false_neg = have_it*(1-sens)
+
+    false_pos = (1-have_it)*(1-spec)
+    true_neg = (1-have_it)*spec
+    
+    return true_pos, false_pos, true_neg, false_neg
