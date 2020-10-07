@@ -2226,7 +2226,10 @@ test_controls = html.Div([
                     dbc.Col([ # C2206
                 
 
+                dbc.Spinner(html.Div(id="loading-tests"),color='primary'),
+                
                 dbc.Row([ # R2210
+
                     dbc.Button('Plot',
                                     color='primary',
                                     className='mb-3',
@@ -3529,7 +3532,8 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
 
 @app.callback([
                 Output('tests-plot', 'figure'),
-                Output('tests-plot-1', 'figure')
+                Output('tests-plot-1', 'figure'),
+                Output('loading-tests', 'children')
             ],
             [
                 Input('plot-button-tests', 'n_clicks'),
@@ -3559,7 +3563,7 @@ def calculate_test_probs(plot_button,prior,sens,spec):
     fig2 = test_bar_plot2(outputs, title2)
 
 
-    return [fig, fig2]
+    return [fig, fig2, None]
 
 
 
