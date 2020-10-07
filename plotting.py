@@ -1092,8 +1092,9 @@ def test_bar_plot(outputs, title):
                 title=title,
                 xaxis=dict(
                         title='Test outcome',
+                        fixedrange= True, 
                         ),
-                yaxis={'title': 'Proportion of tests returned'},
+                yaxis={'title': 'Proportion of tests returned', 'fixedrange': True},
         )
 
     # fig = go.Figure(data=traces, layout=layout)
@@ -1143,11 +1144,11 @@ def test_bar_plot2(outputs, title):
 
     fig.update_layout(layout)
     
-    fig.update_xaxes(title_text='Test outcome', row=1, col=1)
-    fig.update_xaxes(title_text='Test outcome', row=1, col=2)
+    fig.update_xaxes(title_text='Test outcome', fixedrange= True, row=1, col=1)
+    fig.update_xaxes(title_text='Test outcome', fixedrange= True, row=1, col=2)
 
-    fig.update_yaxes(title_text='Proportion of positive tests', row=1, col=1)
-    fig.update_yaxes(title_text='Proportion of negative tests', row=1, col=2)
+    fig.update_yaxes(title_text='Proportion of positive tests', fixedrange= True, row=1, col=1)
+    fig.update_yaxes(title_text='Proportion of negative tests', fixedrange= True, row=1, col=2)
     
     return fig #  {'data': traces, 'layout': layout}
 

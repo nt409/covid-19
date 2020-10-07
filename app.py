@@ -223,7 +223,7 @@ scatter = go.Scatter(
                     # opacity=1,
                     )
 
-dummy_figure = go.Figure(data=[scatter], layout= {'template': 'simple_white', 'annotations': annotz})
+dummy_figure = go.Figure(data=[scatter], layout= {'template': 'simple_white', 'annotations': annotz, 'xaxis': {'fixedrange': True}, 'yaxis': {'fixedrange': True}})
 
 
 
@@ -2224,7 +2224,10 @@ test_controls = html.Div([
             dbc.FormGroup([
                 dbc.Row([ # R2205
                     dbc.Col([ # C2206
-                
+
+                html.P(id="tests-text",style={'marginTop': '15px'}),
+                html.P(id="tests-text-1"),
+                html.P(id="tests-text-2",style={'marginBottom': '15px'}),
 
                 dbc.Spinner(html.Div(id="loading-tests"),color='primary'),
 
@@ -3536,6 +3539,9 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
 @app.callback([
                 Output('tests-plot', 'figure'),
                 Output('tests-plot-1', 'figure'),
+                Output('tests-text', 'children'),
+                Output('tests-text-1', 'children'),
+                Output('tests-text-2', 'children'),
                 Output('loading-tests', 'children')
             ],
             [
@@ -3559,14 +3565,26 @@ def calculate_test_probs(plot_button,prior,sens,spec):
     # have covid given positive test
     positive = true_pos/(true_pos+false_pos)
 
-    title1 = f"Proportion of test results positive: <b>{round(true_pos+false_pos,2)}</b>,<br>Proportion of test results negative: <b>{round(true_neg+false_neg,4)}</b>."
-    title2 = f"Probability have covid given positive test (=True Pos/[sum of red]): <b>{round(positive,4)}</b>,<br>Probability have covid given negative test (=False Neg/[sum of blue]): <b>{round(negative,4)}</b>."
+    title1 = f"Proportion of test results positive: <b>{round(true_pos+false_pos,3)}</b>,<br>Proportion of test results negative: <b>{round(true_neg+false_neg,3)}</b>."
+    
+    text = (f"If {prior} of the population that get tested are actually infected, " +
+              f"then with a test sensitivity of {sens} and specificity of {spec}, for " +
+              f"a large testing population we would expect {round(100*false_pos,4)}% to be false positives and {round(100*false_neg,4)}% to be false negatives.") 
 
-    fig = test_bar_plot(outputs, title1)
-    fig2 = test_bar_plot2(outputs, title2)
+    text2 = (f"So {round(100*false_pos,4)}% of people tested get told they have covid when they don't, and " + 
+              f"{round(100*false_neg,4)}% get told they don't have covid when they do.")
+
+    text3 = (f"Under these circumstances, if you receive a positive test, you have a {round(100*positive,2)}% chance of having covid. " + 
+                f"If you receive a negative test, you have a {round(100*negative,2)}% chance of having covid.")
+
+    title2 = (f"Probability have covid given positive test: <b>{round(positive,3)}</b> (=True Pos/[sum of red])," +
+                f"<br>Probability have covid given negative test: <b>{round(negative,3)}</b> (=False Neg/[sum of blue]).")
+
+    fig = test_bar_plot2(outputs, title2)
+    fig2 = test_bar_plot(outputs, title1)
 
 
-    return [fig, fig2, None]
+    return [fig, fig2, text, text2, text3, None]
 
 
 
