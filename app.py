@@ -24,7 +24,7 @@ from json import JSONEncoder
 
 from cov_functions import run_model, test_probs
 from plotting import Bar_chart_generator, MultiFigureGenerator, \
-    longname, month_len, extract_info, test_bar_plot
+    longname, month_len, extract_info, test_bar_plot, test_bar_plot2
 
 from dan import layout_dan, COUNTRY_LIST, colours
 from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
@@ -2207,6 +2207,8 @@ test_content = html.Div([
         dbc.Card(
             html.Div([
             dcc.Graph(figure=dummy_figure,id='tests-plot'),
+            html.Hr(),
+            dcc.Graph(figure=dummy_figure,id='tests-plot-1'),
             ],
             style={'margin': '10px'}
             ),
@@ -2232,45 +2234,76 @@ test_controls = html.Div([
                                     size='lg',
                                     style = {'cursor': 'pointer'}),
                         ],
+
                 justify='center'), # R2210
-
+                
                 html.Hr(),
+                
+                dbc.Row([ # R2235
 
-                dbc.Row(html.H5("Prior"), justify='center'),
-                dbc.Row(html.P("Probability of having covid based on their characteristics", style={'fontSize': '12px'}),justify='center'),
+                    dbc.Col([ # C2241
+                        dbc.Row(html.H5("Prior"), justify='center'),
+                        dbc.Row(html.P("Probability of having covid based on their characteristics", style={'fontSize': '12px'}),justify='center'),
 
-                dbc.Row([
-                dbc.Input(id="prior", placeholder="Enter a number between 0 and 1", type="number", 
-                    style={'textAlign':'center'}, min=0, max=1, step=10**(-4),
-                    value=0.60
-                    ),
-                ]),
+                        dbc.Row([
+                        dbc.Input(id="prior", placeholder="Enter a number between 0 and 1", type="number", 
+                            style={'textAlign':'center'}, min=0, max=1, step=10**(-4),
+                            value=0.60
+                            ),
+                        ]),
+                    ],
+                    width=5,
+                    lg=3,
+                    align="center",
+                    style={'margin': '10px'},
+                    ), # C2241
 
-                dbc.Row(html.H5("Sensitivity"), style={'marginTop': '40px'},justify='center'),
-                dbc.Row(html.P("Probability test correctly identifies positive", style={'fontSize': '12px'}),justify='center'),
 
-                dbc.Row([
-                dbc.Input(id="sens", placeholder="Enter a number between 0 and 1", type="number", 
-                    style={'textAlign':'center'}, min=0, max=1, step=10**(-4),
-                    value=0.7
-                    ),
-                ]),
 
-                dbc.Row(html.H5("Specificity"), style={'marginTop': '40px'},justify='center'),
-                dbc.Row(html.P("Probability test correctly identifies negative", style={'fontSize': '12px'}),justify='center'),
+                    dbc.Col([ # C2251
+                        dbc.Row(html.H5("Sensitivity"), justify='center'),
+                        dbc.Row(html.P("Probability test correctly identifies positive", style={'fontSize': '12px'}),justify='center'),
 
-                dbc.Row([
-                dbc.Input(id="spec", placeholder="Enter a number between 0 and 1", type="number",
-                    style={'textAlign':'center'}, min=0, max=1, step=10**(-4),
-                    value=0.95
-                    ),
-                ]),
-             
-                # ],
-                # justify='center'), # R2208
+                        dbc.Row([
+                        dbc.Input(id="sens", placeholder="Enter a number between 0 and 1", type="number", 
+                            style={'textAlign':'center'}, min=0, max=1, step=10**(-4),
+                            value=0.7
+                            ),
+                        ]),
+                    ],
+                    width=5,
+                    lg=3,
+                    align="center",
+                    style={'margin': '10px'},
+                    ), # C2251
+
+
+
+
+                    dbc.Col([ # C2261
+                        dbc.Row(html.H5("Specificity"), justify='center'),
+                        dbc.Row(html.P("Probability test correctly identifies negative", style={'fontSize': '12px'}),justify='center'),
+
+                        dbc.Row([
+                        dbc.Input(id="spec", placeholder="Enter a number between 0 and 1", type="number",
+                            style={'textAlign':'center'}, min=0, max=1, step=10**(-4),
+                            value=0.95
+                            ),
+                        ]),
+                    ],
+                    width=5,
+                    lg=3,
+                    align="center",
+                    style={'margin': '10px'},
+                    ), # C2261
+                
+
+
+                ],
+                justify='center'), # R2235
 
                     ],
-                    width=6,
+                    width=10,
                     align="center",
                     style={'margin': '10px'},
                     ), # C2206
@@ -3494,8 +3527,10 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
 
 ##################################################################################################################################
 
-@app.callback(
+@app.callback([
                 Output('tests-plot', 'figure'),
+                Output('tests-plot-1', 'figure')
+            ],
             [
                 Input('plot-button-tests', 'n_clicks'),
             ],
@@ -3517,11 +3552,14 @@ def calculate_test_probs(plot_button,prior,sens,spec):
     # have covid given positive test
     positive = true_pos/(true_pos+false_pos)
 
-    title = f"Probability have covid given positive test (=True Pos/[sum of red]): {round(positive,4)},<br>Probability have covid given negative test (=False Neg/[sum of blue]): {round(negative,4)}."
+    title1 = f"Proportion of test results positive: <b>{round(true_pos+false_pos,2)}</b>,<br>Proportion of test results negative: <b>{round(true_neg+false_neg,4)}</b>."
+    title2 = f"Probability have covid given positive test (=True Pos/[sum of red]): <b>{round(positive,4)}</b>,<br>Probability have covid given negative test (=False Neg/[sum of blue]): <b>{round(negative,4)}</b>."
 
-    fig = test_bar_plot(outputs, title)
+    fig = test_bar_plot(outputs, title1)
+    fig2 = test_bar_plot2(outputs, title2)
 
-    return fig
+
+    return [fig, fig2]
 
 
 

@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 from plotly.validators.scatter.marker import SymbolValidator
+from plotly.subplots import make_subplots
 from parameters_cov import params, df2
 import pandas as pd
 import numpy as np
@@ -1088,17 +1089,67 @@ def test_bar_plot(outputs, title):
 
     layout = go.Layout(
                 template="simple_white",
-                
                 title=title,
                 xaxis=dict(
                         title='Test outcome',
                         ),
-                yaxis={'title': 'Probability'},
+                yaxis={'title': 'Proportion of tests returned'},
         )
 
     # fig = go.Figure(data=traces, layout=layout)
     
     return {'data': traces, 'layout': layout}
+
+
+
+def test_bar_plot2(outputs, title):
+
+    positive = [ outputs[i]/(sum(outputs[:2])) for i in [0,1]]
+    negative = [ outputs[i]/(sum(outputs[2:])) for i in [2,3]]
+    
+    fig = make_subplots(rows=1, cols=2)
+
+    names = [
+        'True positive',
+        'False positive',
+        'True negative',
+        'False negative',
+            ]
+    
+    colors = ['red']*2 + ['blue']*2
+
+    line = go.Bar(
+            x=names[:2],
+            y=positive,
+            marker_color = colors[:2],
+            showlegend=False
+        )
+    
+    fig.add_trace(line, row=1, col=1)
+
+    line = go.Bar(
+            x=names[2:],
+            y=negative,
+            marker_color = colors[2:],
+            showlegend=False
+        )
+    
+    fig.add_trace(line, row=1, col=2)
+
+    layout = go.Layout(
+                template="simple_white",
+                title=title,
+        )
+
+    fig.update_layout(layout)
+    
+    fig.update_xaxes(title_text='Test outcome', row=1, col=1)
+    fig.update_xaxes(title_text='Test outcome', row=1, col=2)
+
+    fig.update_yaxes(title_text='Proportion of positive tests', row=1, col=1)
+    fig.update_yaxes(title_text='Proportion of negative tests', row=1, col=2)
+    
+    return fig #  {'data': traces, 'layout': layout}
 
 
 
