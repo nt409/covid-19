@@ -2227,7 +2227,7 @@ test_controls = html.Div([
                 
 
                 dbc.Spinner(html.Div(id="loading-tests"),color='primary'),
-                
+
                 dbc.Row([ # R2210
 
                     dbc.Button('Plot',
@@ -2480,7 +2480,7 @@ app.index_string = """<!DOCTYPE html>
             )
 def change_pathname(pathname,saved_pathname):
 
-    print('change pathname', pathname, saved_pathname)
+    # print('change pathname', pathname, saved_pathname)
 
     if pathname==saved_pathname:
         raise PreventUpdate
@@ -2495,7 +2495,7 @@ def change_pathname(pathname,saved_pathname):
             [Input('saved-url', 'data')])
 def display_page(pathname):
     
-    print('display page')
+    # print('display page')
 
     if pathname == '/data':
         return [layout_dan, None]
@@ -2595,7 +2595,9 @@ def invisible_or_not(num,preset):
             ],
             [State('number-strats-radio','value')])
 def preset_sliders(preset,number_strs):
+
     # print('preset sliders')
+
     lockdown_cycles_dis = True
     options_lockdown_cycles = [
                                 {'label': 'Low Risk Only', 'value': 0, 'disabled': True},
@@ -2755,7 +2757,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
 def find_sol_do_noth(ICU_grow,date,country_num):
     # @cache.memoize()  # in seconds
     
-    print(dash.callback_context.triggered,'do nothing')
+    # print(dash.callback_context.triggered,'do nothing')
 
     try:
         country = COUNTRY_LIST_NICK[country_num]
@@ -2882,7 +2884,7 @@ def render_interactive_content(plot_button,
                                 vaccine_time,
                                 ICU_grow):
 
-    print(f'render {pathname}')
+    # print(f'render {pathname}')
 
     sols, initial_conds, worked, worked_div, upper_lower_sol = find_sol(preset,
                     month,lr_in,hr_in,lr2_in,hr2_in,
@@ -3161,7 +3163,8 @@ def render_interactive_content(plot_button,
                Output('display_percentage_text_daily_deaths', 'style')],
               [Input('normalise-check', 'value')])
 def update_align_options(normalise_by_pop):
-    print('dan 1')
+
+    # print('dan 1')
 
     if normalise_by_pop:
         options_cases = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
@@ -3220,7 +3223,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                  align_active_cases_input, align_daily_cases_check, align_daily_cases_input,
                  align_daily_deaths_check, align_daily_deaths_input, pathname, saved_json_data, *args):
 
-    print('dan 2',dash.callback_context.triggered)
+    # print('dan 2',dash.callback_context.triggered)
 
     if pathname in ['/inter','/intro','/home','/tests','/']:
         raise PreventUpdate
