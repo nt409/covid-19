@@ -31,7 +31,19 @@ from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
 
 from dan_constants import POPULATIONS #, WORLDOMETER_NAME
 
+FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
 
+# app = dash.Dash(external_stylesheets=)
+
+# app.layout = dbc.Button([html.I(className="far fa-calendar-check"),
+#                         html.I(className="fas fa-chart-area"),
+#                         html.I(className="fas fa-clock"),
+#                         html.I(className="far fa-hospital"),
+#                         # html.I(className="fas fa-head-side-mask")," ",
+#                         # html.I(className="far fa-globe-americas")," ",
+#                         # html.I(className="far fa-globe")," ",
+#                         # html.I(className="far fa-globe-africa")," ",
+#                         "Click here"])
 
 try:
     gd = get_data('uk')
@@ -166,7 +178,7 @@ def begin_date(date,country='uk'):
 
 # external_stylesheets = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
 tab_label_color = 'black' # "#00AEF9"
-external_stylesheets = dbc.themes.LITERA
+external_stylesheets = [dbc.themes.LITERA, FA]
 # Cerulean
 # COSMO
 # JOURNAL
@@ -178,7 +190,7 @@ external_stylesheets = dbc.themes.LITERA
 
 # spacelab
 
-app = dash.Dash(__name__, external_stylesheets=[external_stylesheets])
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 server = app.server
 
@@ -250,8 +262,8 @@ presets_dict_dropdown = {'N': 'Do Nothing',
                 'LC': 'Lockdown Cycles (switching lockdown on and off)',
                 'C': 'Custom'}
 
-ld = 4
-sd = 7
+ld = 5
+sd = 8
 noth = 10
 
 preset_dict_high = {'Q': ld, 'MSD': sd, 'LC': ld, 'HL': ld,  'H': ld,  'N':noth}
@@ -1210,9 +1222,17 @@ control_choices_main = html.Div([
     dbc.Row([ # R1662
 
     dbc.Col([ #C1666
+    
+    # html.I(className="far fa-calendar-check"),
+    # 
+    # html.I(className="fas fa-clock"),
+    # html.I(className="far fa-hospital"),
 
-
-    html.H6('Country', style={'fontSize': '80%', 'marginTop': '10px', 'marginBottom': '10px','textAlign': 'center'}),
+    html.H2(style={'marginTop': '20px'},className="fas fa-globe-europe"),
+    html.H6([
+        ' Country'
+        ],
+        style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
                                             
     html.Div([
     dcc.Dropdown(
@@ -1227,8 +1247,10 @@ control_choices_main = html.Div([
                                             
 
 
+    html.H2(className="far fa-hospital",style={'marginTop': '20px'}),
+
     html.H6([
-    'Control Type ',
+    ' Control Type ',
     dbc.Button(' ? ',
         color='primary',
         size='sm',
@@ -1236,7 +1258,7 @@ control_choices_main = html.Div([
         style={'cursor': 'pointer','marginBottom': '8px'}
         ),
     ],
-    style={'fontSize': '80%', 'marginTop': '10px', 'marginBottom': '10px','textAlign': 'center'}),
+    style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
 
 
     dbc.Popover(
@@ -1279,15 +1301,17 @@ control_choices_main = html.Div([
 
 
 
+    html.H2(style={'marginTop': '20px'},className="fas fa-calendar-check"),
+
     html.H6([
-    'Months of Control ',
+    ' Months of Control ',
     dbc.Button(' ? ',
     color='primary',
     size='sm',
     id='popover-months-control-target',
     style= {'cursor': 'pointer','marginBottom': '8px'}),
     ],
-    style={'fontSize': '80%', 'marginTop': '10px', 'marginBottom': '10px','textAlign': 'center'}),
+    style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
 
 
     
@@ -1331,6 +1355,7 @@ control_choices_main = html.Div([
 
     ],
     width=True,
+    style={'textAlign': 'center'},
     ),### C1666
 
     ],
@@ -1350,8 +1375,10 @@ control_choices_other =  html.Div([
     dbc.Row([ # R1871
         dbc.Col([ # C1872
 
-html.H6('Model Start Date',
-    style={'fontSize': '80%', 'textAlign': 'center', 'marginTop': '20px', 'marginBottom': '10px'}
+html.H2(style={'marginTop': '20px'},className="fas fa-calendar-check"),
+html.H6([
+    ' Model Start Date'],
+    style={'fontSize': '80%', 'textAlign': 'center', 'marginBottom': '10px'}
     ),
 
 dbc.Row([ # R1943
@@ -1369,15 +1396,16 @@ style={'textAlign': 'center', 'fontSize': '70%'}
 
 
                                         
+html.H2(style={'marginTop': '20px'},className="fas fa-syringe"),
 html.H6([
-'Vaccination starts ',
+' Vaccination starts ',
 dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-vaccination-target',
-style= {'cursor': 'pointer','marginBottom': '8px'}),
+style= {'cursor': 'pointer'}),
 ],
-style={'fontSize': '80%', 'marginTop': '20px', 'marginBottom': '10px', 'textAlign': 'center'}),
+style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 
 html.Div([
@@ -1416,14 +1444,16 @@ placement='left',
 
 
 
-html.H6(['Critical Care Capacity Increase ',
+html.H2(style={'marginTop': '20px'},className="fas fa-user-md"),
+html.H6([
+' Critical Care Capacity Increase ',
 dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-cc-care-target',
 style= {'cursor': 'pointer','marginBottom': '8px'}),
 ],
-style={'fontSize': '80%', 'marginTop': '20px', 'marginBottom': '10px', 'textAlign': 'center'}),
+style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 dcc.Slider(
 id='ICU-slider',
@@ -1455,10 +1485,11 @@ placement='top',
 
 
 
+html.H2(style={'marginTop': '20px'},className="fas fa-chart-area"),
 html.H6([
-'Results Type ',
+' Results Type ',
 ],
-style={'fontSize': '80%', 'marginTop': '20px', 'marginBottom': '10px', 'textAlign': 'center'}),
+style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 # style={'fontSize': '150%', 'marginTop': '30px', 'marginBottom': '30px','textAlign': 'center'}),
 
@@ -1484,6 +1515,7 @@ style={'cursor': 'pointer', 'textAlign': 'center', 'marginBottom': '30px'}),
 
 ],
 width=True,
+style =  {'textAlign': 'center'}
 ), # C1872
 
 ],
@@ -1537,7 +1569,8 @@ labelStyle = {'fontSize': '70%'}
 
 
 html.H6(
-['Infection Rate ',
+[
+'Infection Rate ',
 dbc.Button(' ? ',
 color='primary',
 size='sm',
@@ -1569,8 +1602,9 @@ placement='top',
 
 
 
-html.Div(id='strat-lr-infection',style = {'textAlign': 'center','fontSize': '80%'}),
 
+html.H2(style={'marginTop': '10px'},className="fas fa-skull-crossbones"),
+html.Div(id='strat-lr-infection',style = {'textAlign': 'center','fontSize': '80%'}),
 
 dcc.Slider(
 id='low-risk-slider',
@@ -1581,8 +1615,9 @@ marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fa
 value=initial_lr,
 ),
 
-
+html.H2(style={'marginTop': '20px'},className="fas fa-skull-crossbones"),
 html.Div(id='strat-hr-infection',style = {'textAlign': 'center','fontSize': '80%'}),
+
 dcc.Slider(
 id='high-risk-slider',
 min=0,
@@ -1597,7 +1632,9 @@ value=initial_hr,
 
 
 dbc.Col([ # 3C2258
-html.H6('Strategy Two: Low Risk Infection Rate (%)',style={'fontSize': '80%','textAlign': 'center'}),
+
+html.H6([
+    ' Strategy Two: Low Risk Infection Rate (%)'],style={'fontSize': '80%','textAlign': 'center'}),
 
 dcc.Slider(
 id='low-risk-slider-2',
@@ -1608,7 +1645,8 @@ marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fa
 value=5,
 ),
 
-html.H6('Strategy Two: High Risk Infection Rate (%)', style = {'fontSize': '80%','textAlign': 'center'}),
+html.H6([
+        ' Strategy Two: High Risk Infection Rate (%)'], style = {'fontSize': '80%','textAlign': 'center'}),
 
 dcc.Slider(
 id='high-risk-slider-2',
@@ -1632,6 +1670,7 @@ id='strat-2-id'),
 
 ],
 width=True,
+style={'textAlign': 'center'},
 ), # 3C1872
 
 ],
@@ -1710,14 +1749,16 @@ labelStyle = {'fontSize': '70%'}
 
 
                                                         
-html.H6(['Cycle: Time On ',
+html.H2(style={'marginTop': '20px'},className="fas fa-clock"),
+html.H6([
+    ' Cycle: Time On ',
 dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-cycles-on-target',
 style= {'cursor': 'pointer','marginBottom': '8px'}),
 ],
-style={'fontSize': '80%','marginTop': '20px', 'marginBottom': '10px', 'textAlign': 'center'}),
+style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 dcc.Slider(
 id='cycle-on',
@@ -1725,7 +1766,7 @@ min = 1,
 max = 8,
 step = 1,
 marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
-value=8,
+value=2,
 ),
 
 dbc.Popover(
@@ -1749,14 +1790,16 @@ placement='top',
 ),
 
 
-html.H6(['Cycle: Time Off ',
+html.H2(style={'marginTop': '20px'},className="fas fa-clock"),
+html.H6([
+    ' Cycle: Time Off ',
 dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-cycles-off-target',
 style= {'cursor': 'pointer','marginBottom': '8px'}),
 ],
-style={'fontSize': '80%','marginTop': '20px', 'marginBottom': '10px', 'textAlign': 'center'}),
+style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 dcc.Slider(
 id='cycle-off',
@@ -1764,7 +1807,7 @@ min = 1,
 max = 8,
 step = 1,
 marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
-value=1,
+value=4,
 ),
 
 dbc.Popover(
@@ -1791,6 +1834,7 @@ placement='top',
 
 ],
 width=True,
+style={'textAlign': 'center'},
 ), # 2C1872
 
 ],
@@ -2011,7 +2055,7 @@ dbc.Row([
         html.Div(Control_text),
 
         dbc.Row([
-            dbc.Button('Plot',
+            dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
                             color='primary',
                             className='mb-3',
                             id="plot-button",
@@ -2035,9 +2079,13 @@ dbc.Row([
                         tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
                         label_style={"color": tab_label_color, 'fontSize':'120%'}, 
                         # tab_id='tab_main',
-                        children=[control_choices_lockdown,
-                        html.Hr(),
-                        control_choices_custom]
+                        children=[control_choices_custom]
+                        ),
+            dbc.Tab(label='Lockdown cycle options',
+                        tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
+                        label_style={"color": tab_label_color, 'fontSize':'120%'}, 
+                        # tab_id='tab_main',
+                        children=[control_choices_lockdown],
                         ),
             dbc.Tab(label='Other',
                         tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
@@ -2048,7 +2096,8 @@ dbc.Row([
             ]) # end of tabs
 
         ],
-        width=True,
+        width=12,
+        lg=8,
         style={'margin': '10px'}
         )
 ],
@@ -2175,7 +2224,7 @@ layout_inter = html.Div([
 
                                         ],
                                         justify='center',
-                                        style={'margin': '15px'}
+                                        style={'margin': '30px'}
                                         ),  # R2599
 
 
@@ -2559,13 +2608,19 @@ def invisible_or_not(num,preset):
 
 
     if num=='two':
-        strat_H = [html.H6('Strategy One: High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
-        strat_L = [html.H6('Strategy One: Low Risk Infection Rate (%)',style={'fontSize': '100%'}),]
+        strat_H = [html.H6([
+            ' Strategy One: High Risk Infection Rate (%)'],style={'fontSize': '100%'}),]
+        strat_L = [html.H6([
+            ' Strategy One: Low Risk Infection Rate (%)'],style={'fontSize': '100%'}),]
         says_strat_2 = None
 
     else:
-        strat_H = [html.H6('High Risk Infection Rate (%)',style={'fontSize': '100%'}),]
-        strat_L = [html.H6('Low Risk Infection Rate (%)',style={'fontSize': '100%'}),]
+
+        strat_H = [html.H6([
+            ' High Risk Infection Rate (%)'],style={'fontSize': '100%'}),]
+
+        strat_L = [html.H6([
+            ' Low Risk Infection Rate (%)'],style={'fontSize': '100%'}),]
 
         says_strat_2 = {'display': 'none'}
 
