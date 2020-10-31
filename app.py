@@ -22,14 +22,14 @@ import json
 from json import JSONEncoder
 
 
-from cov_functions import run_model, test_probs
+from cov_functions import run_model, test_probs, begin_date
 from plotting import Bar_chart_generator, MultiFigureGenerator, \
     longname, month_len, extract_info, test_bar_plot, test_bar_plot2
 
 from dan import layout_dan, COUNTRY_LIST, colours
-from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
+from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER
 
-from dan_constants import POPULATIONS #, WORLDOMETER_NAME
+from dan_constants import POPULATIONS
 
 FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
 
@@ -45,17 +45,21 @@ FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
 #                         # html.I(className="far fa-globe-africa")," ",
 #                         "Click here"])
 
-try:
-    gd = get_data('uk')
-    min_date = gd['Cases']['dates'][0]
-    max_date = gd['Cases']['dates'][-1]
-except:
-    print("Cannnot get dates from Worldometer")
-    min_date = '2020-2-15'
-    max_date = '2020-10-05'
-
+min_date = '2020-2-15' # first day of data
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
-max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
+
+max_date = datetime.datetime.today() - datetime.timedelta(days=1)
+max_date = str(max_date).split(' ')[0]
+
+# try:
+#     gd = get_data('uk')
+#     min_date2 = gd['Cases']['dates'][0]
+#     max_date2 = gd['Cases']['dates'][-1]
+#     print(max_date2)
+# except:
+#     print("Cannot get dates from Worldometer")
+
+
 
 
 COUNTRY_LIST_NICK = COUNTRY_LIST
@@ -71,106 +75,6 @@ backgroundColor = None # 'white' # '#f4f6f7'
 disclaimerColor = '#e9ecef'
 
 
-
-def begin_date(date,country='uk'):
-
-    date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
-    pre_defined = False
-
-    try:
-        country_data = get_data(country)
-    except:
-        print("Cannnot get country data from:",country)
-        pre_defined = True
-
-    if country_data is None:
-        print("Country data none")
-        pre_defined = True
-
-    try:
-        population_country = POPULATIONS[country]
-    except:
-        population_country = 100*10**6
-        print("Cannot get country population")
-        pre_defined = True
-
-    
-    if not pre_defined:
-        worked = True
-
-        dates = np.asarray(country_data['Cases']['dates'])
-        # currently_inf_data = np.asarray(country_data['Currently Infected']['data']) # wolrdometer no longer has currently infected
-        deaths_data        = np.asarray(country_data['Deaths']['data'])
-        cases        = np.asarray(country_data['Cases']['data'])
-
-        # print(deaths_data)
-        
-
-        date_objects = []
-        for dt in dates:
-            date_objects.append(datetime.datetime.strptime(dt, '%Y-%m-%d').date())
-
-        try:
-            index = date_objects.index(date)
-        except Exception as e: # defaults to today if error
-            index = -1
-            worked = False
-            print('Date error; ',e)
-        
-        if index>=26:
-            pass # all good
-        else:
-            index=-1
-            worked = False
-            print("dates didn't go far enough back")      
-        
-        try:
-            I0    = np.float(cases[index]) - np.float(cases[index - 10]) # all cases in the last 10 days
-
-            # 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before.
-            # Anyone from previous 8 days could be in hosp 10-18 days
-            # Anyone from previous 8 days could be in crit 18-26 days
-            I_hosp_delay = np.float(cases[index - 10]) - np.float(cases[index - 18])  #sum( [np.float(currently_inf_data[index - i]) for i in range(10,19) ]  ) - 7*np.float(currently_inf_data[index - 18]) # counted too many times
-            I_crit_delay = np.float(cases[index - 18]) - np.float(cases[index - 26])  #sum( [np.float(currently_inf_data[index - i]) for i in range(18,27) ]  ) - 7*np.float(currently_inf_data[index - 26]) # counted too many times
-            # print(I0,I_hosp_delay,I_crit_delay)
-        except:
-            worked = False
-            I0           = 0.01 # np.float(currently_inf_data[index])
-            I_hosp_delay = 0.01 # np.float(currently_inf_data[index-10])
-            I_crit_delay = 0.01 # np.float(currently_inf_data[index-18])
-            print("dates didn't go far enough back, I_hosp_delay")      
-        
-        D0    = np.float(deaths_data[index])
-
-        prev_deaths = deaths_data[:index]
-        # of resolved cases, fatality rate is 0.9%
-        p = 0.009
-        R0 = D0*(1-p)/p
-
-        R0 = R0/population_country
-        D0 = D0/population_country
-
-        factor_infections_underreported = 2*2 # only small fraction of cases reported (and usually only symptomatic) symptomatic is 50%
-
-        I0           = factor_infections_underreported*I0/population_country
-        I_hosp_delay = factor_infections_underreported*I_hosp_delay/population_country
-        I_crit_delay = factor_infections_underreported*I_crit_delay/population_country
-
-
-
-        #  H rate for symptomatic is 4.4% so 
-        hosp_proportion = 2*0.044
-        #  30% of H cases critical
-        crit_proportion = 0.3 # 0.3
-
-        H0 = I_hosp_delay*hosp_proportion
-        C0 = I_crit_delay*hosp_proportion*crit_proportion
-        # print(H0,C0)
-
-        I0 = I0 - H0 - C0 # since those in hosp/crit will be counted in current numbers
-        return I0, R0, H0, C0, D0, worked, prev_deaths
-    else:
-        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False, prev_deaths # if data collection fails, use UK on 8th April as default
 
 
 
@@ -1291,7 +1195,7 @@ control_choices_main = html.Div([
         id = 'preset',
         options=[{'label': presets_dict_dropdown[key],
         'value': key} for key in presets_dict_dropdown],
-        value= 'LC',
+        value= 'Q',
         clearable = False,
         searchable=False,
         style={'white-space':'nowrap'}
@@ -1323,7 +1227,7 @@ control_choices_main = html.Div([
                 step=1,
                 # pushable=0,
                 marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
-                value=[0,17],
+                value=[0,1],
     ),
     ],
     style={'fontSize': '70%'},
@@ -1384,10 +1288,10 @@ html.H6([
 dbc.Row([ # R1943
 dcc.DatePickerSingle(
 id='model-start-date',
-min_date_allowed = min_date + datetime.timedelta(days=26), # datetime.date(2020, 2, 25),
-max_date_allowed = max_date, #datetime.date.today() - datetime.timedelta(days=1),
-initial_visible_month =  max_date, # datetime.date.today() - datetime.timedelta(days=1),
-date = max_date, # datetime.date.today() - datetime.timedelta(days=1),
+min_date_allowed = min_date + datetime.timedelta(days=26),
+max_date_allowed = max_date,
+initial_visible_month =  max_date,
+date = max_date,
 display_format='D-MMM-YYYY',
 style={'textAlign': 'center', 'fontSize': '70%'}
 ),
@@ -1411,11 +1315,11 @@ style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 html.Div([
 dcc.Slider(
 id='vaccine-slider',
-min   = 9,
-max   = 18,
+min   = 0,
+max   = 9,
 step  = 3,
-marks = {i: 'Never' if i==9 else 'Month {}'.format(i) if i==12 else str(i) for i in range(9,19,3)},
-value = 12,
+marks = {i: 'Never' if i==0 else f'Month {str(i)}' if i==3 else str(i) for i in range(0,10,3)},
+value = 3,
 ),
 ],
 ),
@@ -1428,7 +1332,7 @@ dbc.PopoverHeader('Vaccination'),
 dbc.PopoverBody(dcc.Markdown(
 '''
 
-We assume a vaccine will not be available for 12 months.
+We assume a vaccine will not be available for 6 months.
 
 See how the introduction of a vaccine can drastically reduce the death toll if a sufficiently small proportion of the population have been infected.
 
@@ -2697,7 +2601,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     except:
         country = 'uk'
 
-    if vaccine==9:
+    if vaccine==0:
         vaccine = None
 
     if init_stored is None or date!=init_stored[5] or country!=init_stored[6]:
@@ -3153,7 +3057,7 @@ def render_interactive_content(plot_button,
             time_on = t_on*7/month_len
             time_off = t_off*7/month_len
 
-            month_cycle = [time_start,time_on]
+            month_cycle = [time_start,time_start+time_on]
             mm = month_cycle[1]
             while mm + time_off+time_on < time_end:
                 month_cycle.append(mm+time_off)
@@ -3646,14 +3550,4 @@ def calculate_test_probs(plot_button,prior,sens,spec):
 ########################################################################################################################
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
-
-
-
-
-
-
-
-
-
-
+    app.run_server(debug=False)

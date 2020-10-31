@@ -547,6 +547,7 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
         ))
     
     if month_cycle is not None:
+        print(month_cycle)
         for i in range(0,len(month_cycle),2):
             shapez.append(dict(
                     # filled Blue Control Rectangle

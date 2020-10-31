@@ -4,6 +4,10 @@ import numpy as np
 from scipy.integrate import ode
 from scipy.stats import norm, gamma
 import pandas as pd
+import datetime
+from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
+from dan_constants import POPULATIONS
+
 ##
 # -----------------------------------------------------------------------------------
 ##
@@ -153,7 +157,7 @@ def solve_it(y0,
     y_list = []
     tVecFinal = []
     
-    T_stop = 365*2
+    T_stop = 365*0.75
     if vaccine_time is None:
         vaccine_timing = [0]
     else:
@@ -274,3 +278,110 @@ def test_probs(have_it,sens,spec):
     true_neg = (1-have_it)*spec
     
     return true_pos, false_pos, true_neg, false_neg
+
+
+
+
+
+
+
+
+
+
+def begin_date(date,country='uk'):
+
+    date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
+    pre_defined = False
+
+    try:
+        country_data = get_data(country)
+    except:
+        print("Cannnot get country data from:",country)
+        pre_defined = True
+
+    if country_data is None:
+        print("Country data none")
+        pre_defined = True
+
+    try:
+        population_country = POPULATIONS[country]
+    except:
+        population_country = 100*10**6
+        print("Cannot get country population")
+        pre_defined = True
+
+    
+    if not pre_defined:
+        worked = True
+
+        dates = np.asarray(country_data['Cases']['dates'])
+        deaths_data = np.asarray(country_data['Deaths']['data'])
+        cases       = np.asarray(country_data['Cases']['data'])
+
+        
+
+        date_objects = []
+        for dt in dates:
+            date_objects.append(datetime.datetime.strptime(dt, '%Y-%m-%d').date())
+
+        try:
+            index = date_objects.index(date)
+        except Exception as e: # defaults to today if error
+            index = -1
+            worked = False
+            print('Date error; ',e)
+        
+        if index>=26:
+            pass # all good
+        else:
+            index=-1
+            worked = False
+            print("dates didn't go far enough back")      
+        
+        try:
+            I0    = np.float(cases[index]) - np.float(cases[index - 10]) # all cases in the last 10 days
+
+            # 5 days from symptoms to get hospitalised... symptoms 5 days ago, infected 5 days before.
+            # Anyone from previous 8 days could be in hosp 10-18 days
+            # Anyone from previous 8 days could be in crit 18-26 days
+            I_hosp_delay = np.float(cases[index - 10]) - np.float(cases[index - 18])  #sum( [np.float(currently_inf_data[index - i]) for i in range(10,19) ]  ) - 7*np.float(currently_inf_data[index - 18]) # counted too many times
+            I_crit_delay = np.float(cases[index - 18]) - np.float(cases[index - 26])  #sum( [np.float(currently_inf_data[index - i]) for i in range(18,27) ]  ) - 7*np.float(currently_inf_data[index - 26]) # counted too many times
+            # print(I0,I_hosp_delay,I_crit_delay)
+        except:
+            worked = False
+            I0           = 0.01 # np.float(currently_inf_data[index])
+            I_hosp_delay = 0.01 # np.float(currently_inf_data[index-10])
+            I_crit_delay = 0.01 # np.float(currently_inf_data[index-18])
+            print("dates didn't go far enough back, I_hosp_delay")      
+        
+        D0    = np.float(deaths_data[index])
+
+        prev_deaths = deaths_data[:index]
+        # of resolved cases, fatality rate is 0.9%
+        p = 0.009
+        R0 = D0*(1-p)/p
+
+        R0 = R0/population_country
+        D0 = D0/population_country
+
+        factor_infections_underreported = 1.5*2 # only small fraction of cases reported (and usually only symptomatic) symptomatic is 50%
+
+        I0           = factor_infections_underreported*I0/population_country
+        I_hosp_delay = factor_infections_underreported*I_hosp_delay/population_country
+        I_crit_delay = factor_infections_underreported*I_crit_delay/population_country
+
+
+
+        #  H rate for symptomatic is 4.4% so 
+        hosp_proportion = 2*0.044
+        #  30% of H cases critical
+        crit_proportion = 0.3 # 0.3
+
+        H0 = I_hosp_delay*hosp_proportion
+        C0 = I_crit_delay*hosp_proportion*crit_proportion
+        # print(H0,C0)
+
+        I0 = I0 - H0 - C0 # since those in hosp/crit will be counted in current numbers
+        return I0, R0, H0, C0, D0, worked, prev_deaths
+    else:
+        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False, prev_deaths # if data collection fails, use UK on 8th April as default

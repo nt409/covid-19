@@ -65,15 +65,15 @@ crit_recovery  =  death_rate*0.5
 number_compartments = 6
 
 fact_v = np.concatenate([[0.02,0.1],np.linspace(0.20,1,9)])
-max_months_controlling = 18
+max_months_controlling = 9
 
 
 UK_population = 60 * 10**(6)
 import_rate = 1/(30*UK_population) # 1 per month
 
 ICU_growth = 1
-# now? approx 20000? in UK
-ICU_capacity = 20000/UK_population 
+# now? approx 25000? in UK
+ICU_capacity = 25000/UK_population 
 
 vaccinate_percent = 0.9 # vaccinate this many
 vaccinate_rate = 0.55/(365*2/3) #10000/UK_population # per day
