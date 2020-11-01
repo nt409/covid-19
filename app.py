@@ -34,23 +34,23 @@ from dan_constants import POPULATIONS
 FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
 
 
-# min_date = '2020-2-15' # first day of data
-# min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
-
-# max_date = datetime.datetime.today() - datetime.timedelta(days=1)
-# max_date = str(max_date).split(' ')[0]
-
-try:
-    gd = get_data('uk')
-    min_date = gd['Cases']['dates'][0]
-    max_date = gd['Cases']['dates'][-1]
-except:
-    print("Cannot get dates from Worldometer")
-
-
-
+min_date = '2020-2-15' # first day of data
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
-max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
+
+max_date = datetime.datetime.today() - datetime.timedelta(days=2)
+max_date = str(max_date).split(' ')[0]
+
+# try:
+#     gd = get_data('uk')
+#     min_date = gd['Cases']['dates'][0]
+#     max_date = gd['Cases']['dates'][-1]
+#     min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
+#     max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
+# except:
+#     print("Cannot get dates from Worldometer")
+
+
+
 
 
 COUNTRY_LIST_NICK = COUNTRY_LIST
@@ -2303,7 +2303,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         vaccine = None
 
     if init_stored is None or date!=init_stored[5] or country!=init_stored[6]:
-        I0, R0, H0, C0, D0, worked, _ = begin_date(date,country)
+        I0, R0, H0, C0, D0, worked, min_date, max_date, _ = begin_date(date,country)
         initial_conds = [I0, R0, H0, C0, D0, date, country]
     else:
         initial_conds = init_stored
@@ -2402,7 +2402,13 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
 
         sols_upper_lower.append(upp_low)
 
-    return sols, initial_conds, worked, worked_div, sols_upper_lower
+    return [sols,
+        initial_conds,
+        worked,
+        worked_div, 
+        sols_upper_lower,
+        min_date,
+        max_date]
 
 
 
@@ -2424,7 +2430,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
     except:
         country = 'uk'
 
-    I0, R0, H0, C0, D0, _, prev_deaths = begin_date(date,country)
+    I0, R0, H0, C0, D0, _, _, _, prev_deaths = begin_date(date,country)
 
     sol_do_nothing = run_model(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
                                     beta_L_factor=1,beta_H_factor=1,
@@ -2476,6 +2482,9 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 
                 
                 Output('loading-line-output-1','children'),
+
+                Output('model-start-date','min_date_allowed'),
+                Output('model-start-date','max_date_allowed'),
                 
                 
 
@@ -2546,7 +2555,7 @@ def render_interactive_content(plot_button,
 
     # print(f'render {pathname}')
 
-    sols, initial_conds, worked, worked_div, upper_lower_sol = find_sol(preset,
+    sols, initial_conds, worked, worked_div, upper_lower_sol, min_date, max_date = find_sol(preset,
                     month,lr_in,hr_in,lr2_in,hr2_in,
                     num_strat,vaccine_time,ICU_grow,date,country_num,
                     t_off,t_on,hr_ld,init_stored,worked)
@@ -2791,7 +2800,10 @@ def render_interactive_content(plot_button,
 
     fig_out,
 
-    None
+    None,
+
+    min_date + datetime.timedelta(days=26),
+    max_date
     ]
 
 ########################################################################################################################
@@ -3248,4 +3260,4 @@ def calculate_test_probs(plot_button,prior,sens,spec):
 ########################################################################################################################
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)

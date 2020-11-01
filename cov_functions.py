@@ -302,11 +302,22 @@ def begin_date(date,country='uk'):
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
     pre_defined = False
 
+
+
     try:
         country_data = get_data(country)
+        min_date = country_data['Cases']['dates'][0]
+        max_date = country_data['Cases']['dates'][-1]
+        min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
+        max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
     except:
         print("Cannnot get country data from:",country)
         pre_defined = True
+        min_date = '2020-2-15' # first day of data
+        min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
+
+        max_date = datetime.datetime.today() - datetime.timedelta(days=2)
+        max_date = str(max_date).split(' ')[0]
 
     if country_data is None:
         print("Country data none")
@@ -391,9 +402,9 @@ def begin_date(date,country='uk'):
         # print(H0,C0)
 
         I0 = I0 - H0 - C0 # since those in hosp/crit will be counted in current numbers
-        return I0, R0, H0, C0, D0, worked, prev_deaths
+        return I0, R0, H0, C0, D0, worked, min_date, max_date, prev_deaths
     else:
-        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False, prev_deaths # if data collection fails, use UK on 8th April as default
+        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False, min_date, max_date, prev_deaths # if data collection fails, use UK on 8th April as default
 
 
 
