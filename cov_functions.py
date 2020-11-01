@@ -1,10 +1,19 @@
-from parameters_cov import params
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output, State
+import dash_bootstrap_components as dbc
+
 from math import exp, ceil, log, floor, sqrt
 import numpy as np
 from scipy.integrate import ode
 from scipy.stats import norm, gamma
 import pandas as pd
 import datetime
+
+from config import presets_dict
+
+from parameters_cov import params
 from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
 from dan_constants import POPULATIONS
 
@@ -385,3 +394,278 @@ def begin_date(date,country='uk'):
         return I0, R0, H0, C0, D0, worked, prev_deaths
     else:
         return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False, prev_deaths # if data collection fails, use UK on 8th April as default
+
+
+
+
+
+
+def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU):
+    return html.Div([
+
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Card(
+                        [
+                            dbc.CardHeader(
+                                        ['Reduction in deaths:']
+                                ),
+                            dbc.CardBody([html.H1(str(round(death_stat_1st,1))+'%',  className='card-title',style={'fontSize': '150%'})]),
+                            dbc.CardFooter('compared to doing nothing'),
+
+                        ],color=color_1st_death, inverse=True
+                    )
+                    ],width=4,style={'textAlign': 'center'}),
+    
+
+                    dbc.Col([
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(
+                                        ['ICU requirement:']
+                                ),
+                            dbc.CardBody([html.H1(str(round(dat3_1st,1)) + 'x',className='card-title',style={'fontSize': '150%'})],),
+                            dbc.CardFooter('multiple of capacity'),
+
+                        ],color=color_1st_ICU, inverse=True
+                    )
+                    ],width=4,style={'textAlign': 'center'}),
+
+
+                    dbc.Col([
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(
+                                # html.Span(
+                                        ['Herd immunity:']
+
+                                ),
+                            dbc.CardBody([html.H1(str(round(herd_stat_1st,1))+'%',className='card-title',style={'fontSize': '150%'})]),
+                            dbc.CardFooter('of safe threshold'),
+
+                        ],color=color_1st_herd, inverse=True
+                    )
+                    ],width=4,style={'textAlign': 'center'}),
+                    
+        ],
+        no_gutters=True),
+    
+    # ],
+    # width=True)
+
+    ],style={'marginTop': '20px', 'marginBottom': '20px','fontSize':'75%'})
+
+
+
+
+
+def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_stat_2nd,herd_stat_2nd,dat3_2nd,preset,number_strategies,which_strat): # hosp
+    
+    death_stat_1st = 100*death_stat_1st
+    herd_stat_1st = 100*herd_stat_1st
+
+    death_stat_2nd = 100*death_stat_2nd
+    herd_stat_2nd = 100*herd_stat_2nd
+
+
+    on_or_off = {'display': 'block','textAlign': 'center'}
+    if number_strategies=='one':
+        num_st = ''
+        if which_strat==2:
+            on_or_off = {'display': 'none'}
+    else:
+        num_st = 'One '
+    strat_name = presets_dict[preset]
+
+    if which_strat==1:
+        Outcome_title = strat_name + ' Strategy ' + num_st
+    else:
+        Outcome_title = strat_name + ' Strategy Two'
+    
+
+
+
+    death_thresh1 = 66
+    death_thresh2 = 33
+
+    herd_thresh1 = 66
+    herd_thresh2 = 33
+
+    ICU_thresh1 = 5
+    ICU_thresh2 = 10
+
+
+    red_col    = 'danger' # 'red' #  '#FF4136'
+    orange_col = 'warning' # 'red' #  '#FF851B'
+    green_col  = 'success' # 'red' #  '#2ECC40'
+    color_1st_death = green_col
+    if death_stat_1st<death_thresh1:
+        color_1st_death = orange_col
+    if death_stat_1st<death_thresh2:
+        color_1st_death = red_col
+
+    color_1st_herd = green_col
+    if herd_stat_1st<herd_thresh1:
+        color_1st_herd = orange_col
+    if herd_stat_1st<herd_thresh2:
+        color_1st_herd = red_col
+
+    color_1st_ICU = green_col
+    if dat3_1st>ICU_thresh1:
+        color_1st_ICU = orange_col
+    if dat3_1st>ICU_thresh2:
+        color_1st_ICU = red_col
+
+    
+    color_2nd_death = green_col
+    if death_stat_2nd<death_thresh1:
+        color_2nd_death = orange_col
+    if death_stat_2nd<death_thresh2:
+        color_2nd_death = red_col
+
+    color_2nd_herd = green_col
+    if herd_stat_2nd<herd_thresh1:
+        color_2nd_herd = orange_col
+    if herd_stat_2nd<herd_thresh2:
+        color_2nd_herd = red_col
+
+    color_2nd_ICU = green_col
+    if dat3_2nd>ICU_thresh1:
+        color_2nd_ICU = orange_col
+    if dat3_2nd>ICU_thresh2:
+        color_2nd_ICU = red_col
+
+
+
+
+    if on_or_off['display']=='none':
+        return None
+    else:
+        return html.Div([
+
+
+                
+                    dbc.Row([
+                        html.H3(Outcome_title,style={'fontSize':'250%'},className='display-4'),
+                    ],
+                    justify='center'
+                    ),
+                    html.Hr(),
+
+
+                    dbc.Row([
+                        html.I('Compared to doing nothing. Traffic light colours indicate relative success or failure.'),
+                    ],
+                    justify='center', style={'marginTop': '20px'}
+                    ),
+
+            
+            # dbc
+            dbc.Row([
+
+            
+                dbc.Col([
+
+
+                                html.H3('After 1 year:',style={'fontSize': '150%', 'marginTop': '30px', 'marginBottom': '30px'}),
+
+                                dbc.Row([
+                                    dbc.Col([
+                                        dbc.Button('Reduction in deaths 🛈',
+                                                    color='primary',
+                                                    className='mb-3',
+                                                    id="popover-red-deaths-target",
+                                                    size='sm',
+                                                    style = {'cursor': 'pointer'}),
+                                                    dbc.Popover(
+                                                        [
+                                                        dbc.PopoverHeader('Reduction in deaths'),
+                                                        dbc.PopoverBody(html.Div(
+                                                        'This box shows the reduction in deaths due to the control strategy choice.'
+                                                        ),),
+                                                        ],
+                                                        id = "popover-red-deaths",
+                                                        is_open=False,
+                                                        target="popover-red-deaths-target",
+                                                        placement='top',
+                                                    ),
+                                    ],width=4,style={'textAlign': 'center'}),
+
+                                    dbc.Col([
+
+                                                    dbc.Button('ICU requirement 🛈',
+                                                    color='primary',
+                                                    className='mb-3',
+                                                    size='sm',
+                                                    id='popover-ICU-target',
+                                                    style={'cursor': 'pointer'}
+                                                    ),
+
+                                                    
+                                                    dbc.Popover(
+                                                        [
+                                                        dbc.PopoverHeader('ICU requirement'),
+                                                        dbc.PopoverBody(html.Div(
+                                                        'COVID-19 can cause a large number of serious illnesses very quickly. This box shows the extent to which the NHS capacity would be overwhelmed by the strategy choice (if nothing was done to increase capacity).'
+                                                        ),),
+                                                        ],
+                                                        id = "popover-ICU",
+                                                        is_open=False,
+                                                        target="popover-ICU-target",
+                                                        placement='top',
+                                                    ),
+                                    ],width=4,style={'textAlign': 'center'}),
+                                    
+                                    dbc.Col([
+
+                                                    dbc.Button('Herd immunity 🛈',
+                                                    color='primary',
+                                                    className='mb-3',
+                                                    size='sm',
+                                                    id='popover-herd-target',
+                                                    style={'cursor': 'pointer'}
+                                                    ),               
+                                                                        
+                                                    dbc.Popover(
+                                                        [
+                                                        dbc.PopoverHeader('Herd immunity'),
+                                                        dbc.PopoverBody(dcc.Markdown(
+                                                        '''
+
+                                                        This box shows how close to the safety threshold for herd immunity we got. If we reached (or exceeded) the threshold it will say 100%.
+                                                        
+                                                        However, this is the least important goal since an uncontrolled pandemic will reach safe levels of immunity very quickly, but cause lots of serious illness in doing so.
+                                                        ''',
+                                                        style={'font-family': 'sans-serif'}
+                                                        ),),
+                                                        ],
+                                                        id = "popover-herd",
+                                                        is_open=False,
+                                                        target="popover-herd-target",
+                                                        placement='top',
+                                                    ),
+                                ],width=4,style={'textAlign': 'center'}),
+
+                                ],no_gutters=True),
+                    
+                                cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU),
+
+                                html.H3('After 2 years:',style={'fontSize': '150%', 'marginTop': '30px', 'marginBottom': '30px'}),
+
+                                cards_fn(death_stat_2nd,dat3_2nd,herd_stat_2nd,color_2nd_death,color_2nd_herd,color_2nd_ICU),
+
+
+                ],
+                width=12,
+                ),
+
+
+            ],
+            align='center',
+            ),
+
+            ],style=on_or_off)
+
+
+
+

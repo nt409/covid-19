@@ -1,10 +1,9 @@
 import plotly.graph_objects as go
-from plotly.validators.scatter.marker import SymbolValidator
 from plotly.subplots import make_subplots
-from parameters_cov import params, df2
+from parameters_cov import params
 import pandas as pd
 import numpy as np
-from math import floor, ceil
+from math import ceil
 import datetime
 from dan_constants import POPULATIONS
 
@@ -545,6 +544,7 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
                 xref = 'x',
                 yref = 'paper',
         ))
+
     
     if month_cycle is not None:
         print(month_cycle)
@@ -582,6 +582,7 @@ def lineplot(sols,population_plot,startdate,num_strat,comp_dn):
     cats_to_plot = ['S','I','R','H','C','D']
     lines_to_plot = []
     group_use = ['BR']
+
     ss = -1
     for sol in sols:
         dataframe = solnIntoDataframe(sol,startdate)
@@ -607,6 +608,7 @@ def lineplot(sols,population_plot,startdate,num_strat,comp_dn):
                             'line': {'color': str(colors[name]), 'dash': line_style_use }, 'legendgroup': name,
                             'name': longname[name] + name_string}
                     lines_to_plot.append(line)
+
     return lines_to_plot, xx
 
 
@@ -1055,6 +1057,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                         yaxis2 = yAxisPopLinear
                             )
 
+    
     linesUse = lines_to_plot_line + lines_to_plot_stack + lines_to_plot_uncert + moreLines + controlLines + lines_PrevDeaths
 
     return {'data': linesUse, 'layout': layout}
@@ -1098,7 +1101,6 @@ def test_bar_plot(outputs, title):
                 yaxis={'title': 'Proportion of tests returned', 'fixedrange': True},
         )
 
-    # fig = go.Figure(data=traces, layout=layout)
     
     return {'data': traces, 'layout': layout}
 
@@ -1151,7 +1153,7 @@ def test_bar_plot2(outputs, title):
     fig.update_yaxes(title_text='Proportion of positive tests', fixedrange= True, row=1, col=1)
     fig.update_yaxes(title_text='Proportion of negative tests', fixedrange= True, row=1, col=2)
     
-    return fig #  {'data': traces, 'layout': layout}
+    return fig
 
 
 

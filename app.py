@@ -7,64 +7,53 @@ from dash.exceptions import PreventUpdate
 from gevent.pywsgi import WSGIServer
 import pandas as pd
 from math import floor, ceil, exp
-from parameters_cov import params, df2
+from parameters_cov import params, age_risk_df_out
 import numpy as np
 import plotly.graph_objects as go
-from plotly.validators.scatter.marker import SymbolValidator
 import copy
-
-
 from flask import Flask
 from flask_caching import Cache
-import os
 import datetime
 import json
 from json import JSONEncoder
 
+from config import preset_dict_high, preset_dict_low, \
+    presets_dict_dropdown, initial_hr, initial_lr, \
+    initial_strat
 
-from cov_functions import run_model, test_probs, begin_date
+from cov_functions import run_model, test_probs, begin_date, \
+    outcome_fn
+
 from plotting import Bar_chart_generator, MultiFigureGenerator, \
     longname, month_len, extract_info, test_bar_plot, test_bar_plot2
 
 from dan import layout_dan, COUNTRY_LIST, colours
 from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER
-
 from dan_constants import POPULATIONS
 
 FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
 
-# app = dash.Dash(external_stylesheets=)
 
-# app.layout = dbc.Button([html.I(className="far fa-calendar-check"),
-#                         html.I(className="fas fa-chart-area"),
-#                         html.I(className="fas fa-clock"),
-#                         html.I(className="far fa-hospital"),
-#                         # html.I(className="fas fa-head-side-mask")," ",
-#                         # html.I(className="far fa-globe-americas")," ",
-#                         # html.I(className="far fa-globe")," ",
-#                         # html.I(className="far fa-globe-africa")," ",
-#                         "Click here"])
+# min_date = '2020-2-15' # first day of data
+# min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 
-min_date = '2020-2-15' # first day of data
+# max_date = datetime.datetime.today() - datetime.timedelta(days=1)
+# max_date = str(max_date).split(' ')[0]
+
+try:
+    gd = get_data('uk')
+    min_date = gd['Cases']['dates'][0]
+    max_date = gd['Cases']['dates'][-1]
+except:
+    print("Cannot get dates from Worldometer")
+
+
+
 min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
-
-max_date = datetime.datetime.today() - datetime.timedelta(days=1)
-max_date = str(max_date).split(' ')[0]
-
-# try:
-#     gd = get_data('uk')
-#     min_date2 = gd['Cases']['dates'][0]
-#     max_date2 = gd['Cases']['dates'][-1]
-#     print(max_date2)
-# except:
-#     print("Cannot get dates from Worldometer")
-
-
+max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
 
 COUNTRY_LIST_NICK = COUNTRY_LIST
-
-
 COUNTRY_LIST_NICK = sorted(COUNTRY_LIST_NICK)
 COUNTRY_LIST_NICK.remove('world')
 
@@ -99,21 +88,13 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 app.config.suppress_callback_exceptions = True
-# app.config['suppress_callback_exceptions'] = True
 
 ########################################################################################################################
 # setup
 
-df = copy.deepcopy(df2)
-df = df.loc[:,'Age':'Pop']
-df2 = df.loc[:,['Pop','Hosp','Crit']].astype(str) + '%'
-df = pd.concat([df.loc[:,'Age'],df2],axis=1)
-df = df.rename(columns={"Hosp": "Hospitalised", "Crit": "Requiring Critical Care", "Pop": "Population"})
 
 
 
-def generate_table(dataframe, max_rows=10):
-    return dbc.Table.from_dataframe(df, striped=True, bordered = True, hover=True)
 
 
 
@@ -145,37 +126,11 @@ dummy_figure = go.Figure(data=[scatter], layout= {'template': 'simple_white', 'a
 
 
 bar_height = '100'
-
 bar_width  =  '100'
 
 bar_non_crit_style = {'height': bar_height, 'width': bar_width, 'display': 'block' }
 
-presets_dict = {'N': 'Do Nothing',
-                'MSD': 'Social Distancing',
-                'H': 'Lockdown High Risk, No Social Distancing For Low Risk',
-                'HL': 'Lockdown High Risk, Social Distancing For Low Risk',
-                'Q': 'Lockdown All',
-                'LC': 'Lockdown Cycles',
-                'C': 'Custom'}
 
-presets_dict_dropdown = {'N': 'Do Nothing',
-                'MSD': 'Social Distancing',
-                'H': 'High Risk: Lockdown, Low Risk: No Social Distancing',
-                'HL': 'High Risk: Lockdown, Low Risk: Social Distancing',
-                'Q': 'Lockdown All',
-                'LC': 'Lockdown Cycles (switching lockdown on and off)',
-                'C': 'Custom'}
-
-ld = 5
-sd = 8
-noth = 10
-
-preset_dict_high = {'Q': ld, 'MSD': sd, 'LC': ld, 'HL': ld,  'H': ld,  'N':noth}
-preset_dict_low  = {'Q': ld, 'MSD': sd, 'LC': ld, 'HL': sd, 'H': noth, 'N':noth}
-
-
-initial_hr = preset_dict_high['LC']
-initial_lr = preset_dict_low['LC']
 
 
 
@@ -200,270 +155,6 @@ initial_lr = preset_dict_low['LC']
 ########################################################################################################################
 
 
-def cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU):
-    return html.Div([
-
-                dbc.Row([
-                    dbc.Col([
-                        dbc.Card(
-                        [
-                            dbc.CardHeader(
-                                        ['Reduction in deaths:']
-                                ),
-                            dbc.CardBody([html.H1(str(round(death_stat_1st,1))+'%',  className='card-title',style={'fontSize': '150%'})]),
-                            dbc.CardFooter('compared to doing nothing'),
-
-                        ],color=color_1st_death, inverse=True
-                    )
-                    ],width=4,style={'textAlign': 'center'}),
-    
-
-                    dbc.Col([
-                    dbc.Card(
-                        [
-                            dbc.CardHeader(
-                                        ['ICU requirement:']
-                                ),
-                            dbc.CardBody([html.H1(str(round(dat3_1st,1)) + 'x',className='card-title',style={'fontSize': '150%'})],),
-                            dbc.CardFooter('multiple of capacity'),
-
-                        ],color=color_1st_ICU, inverse=True
-                    )
-                    ],width=4,style={'textAlign': 'center'}),
-
-
-                    dbc.Col([
-                    dbc.Card(
-                        [
-                            dbc.CardHeader(
-                                # html.Span(
-                                        ['Herd immunity:']
-
-                                ),
-                            dbc.CardBody([html.H1(str(round(herd_stat_1st,1))+'%',className='card-title',style={'fontSize': '150%'})]),
-                            dbc.CardFooter('of safe threshold'),
-
-                        ],color=color_1st_herd, inverse=True
-                    )
-                    ],width=4,style={'textAlign': 'center'}),
-                    
-        ],
-        no_gutters=True),
-    
-    # ],
-    # width=True)
-
-    ],style={'marginTop': '20px', 'marginBottom': '20px','fontSize':'75%'})
-
-
-
-
-def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_stat_2nd,herd_stat_2nd,dat3_2nd,preset,number_strategies,which_strat): # hosp
-    
-    death_stat_1st = 100*death_stat_1st
-    herd_stat_1st = 100*herd_stat_1st
-
-    death_stat_2nd = 100*death_stat_2nd
-    herd_stat_2nd = 100*herd_stat_2nd
-
-
-    on_or_off = {'display': 'block','textAlign': 'center'}
-    if number_strategies=='one':
-        num_st = ''
-        if which_strat==2:
-            on_or_off = {'display': 'none'}
-    else:
-        num_st = 'One '
-    strat_name = presets_dict[preset]
-
-    if which_strat==1:
-        Outcome_title = strat_name + ' Strategy ' + num_st
-    else:
-        Outcome_title = strat_name + ' Strategy Two'
-    
-
-
-
-    death_thresh1 = 66
-    death_thresh2 = 33
-
-    herd_thresh1 = 66
-    herd_thresh2 = 33
-
-    ICU_thresh1 = 5
-    ICU_thresh2 = 10
-
-
-    red_col    = 'danger' # 'red' #  '#FF4136'
-    orange_col = 'warning' # 'red' #  '#FF851B'
-    green_col  = 'success' # 'red' #  '#2ECC40'
-    color_1st_death = green_col
-    if death_stat_1st<death_thresh1:
-        color_1st_death = orange_col
-    if death_stat_1st<death_thresh2:
-        color_1st_death = red_col
-
-    color_1st_herd = green_col
-    if herd_stat_1st<herd_thresh1:
-        color_1st_herd = orange_col
-    if herd_stat_1st<herd_thresh2:
-        color_1st_herd = red_col
-
-    color_1st_ICU = green_col
-    if dat3_1st>ICU_thresh1:
-        color_1st_ICU = orange_col
-    if dat3_1st>ICU_thresh2:
-        color_1st_ICU = red_col
-
-    
-    color_2nd_death = green_col
-    if death_stat_2nd<death_thresh1:
-        color_2nd_death = orange_col
-    if death_stat_2nd<death_thresh2:
-        color_2nd_death = red_col
-
-    color_2nd_herd = green_col
-    if herd_stat_2nd<herd_thresh1:
-        color_2nd_herd = orange_col
-    if herd_stat_2nd<herd_thresh2:
-        color_2nd_herd = red_col
-
-    color_2nd_ICU = green_col
-    if dat3_2nd>ICU_thresh1:
-        color_2nd_ICU = orange_col
-    if dat3_2nd>ICU_thresh2:
-        color_2nd_ICU = red_col
-
-
-
-
-    if on_or_off['display']=='none':
-        return None
-    else:
-        return html.Div([
-
-
-                
-                    dbc.Row([
-                        html.H3(Outcome_title,style={'fontSize':'250%'},className='display-4'),
-                    ],
-                    justify='center'
-                    ),
-                    html.Hr(),
-
-
-                    dbc.Row([
-                        html.I('Compared to doing nothing. Traffic light colours indicate relative success or failure.'),
-                    ],
-                    justify='center', style={'marginTop': '20px'}
-                    ),
-
-            
-            # dbc
-            dbc.Row([
-
-            
-                dbc.Col([
-
-
-                                html.H3('After 1 year:',style={'fontSize': '150%', 'marginTop': '30px', 'marginBottom': '30px'}),
-
-                                dbc.Row([
-                                    dbc.Col([
-                                        dbc.Button('Reduction in deaths 🛈',
-                                                    color='primary',
-                                                    className='mb-3',
-                                                    id="popover-red-deaths-target",
-                                                    size='sm',
-                                                    style = {'cursor': 'pointer'}),
-                                                    dbc.Popover(
-                                                        [
-                                                        dbc.PopoverHeader('Reduction in deaths'),
-                                                        dbc.PopoverBody(html.Div(
-                                                        'This box shows the reduction in deaths due to the control strategy choice.'
-                                                        ),),
-                                                        ],
-                                                        id = "popover-red-deaths",
-                                                        is_open=False,
-                                                        target="popover-red-deaths-target",
-                                                        placement='top',
-                                                    ),
-                                    ],width=4,style={'textAlign': 'center'}),
-
-                                    dbc.Col([
-
-                                                    dbc.Button('ICU requirement 🛈',
-                                                    color='primary',
-                                                    className='mb-3',
-                                                    size='sm',
-                                                    id='popover-ICU-target',
-                                                    style={'cursor': 'pointer'}
-                                                    ),
-
-                                                    
-                                                    dbc.Popover(
-                                                        [
-                                                        dbc.PopoverHeader('ICU requirement'),
-                                                        dbc.PopoverBody(html.Div(
-                                                        'COVID-19 can cause a large number of serious illnesses very quickly. This box shows the extent to which the NHS capacity would be overwhelmed by the strategy choice (if nothing was done to increase capacity).'
-                                                        ),),
-                                                        ],
-                                                        id = "popover-ICU",
-                                                        is_open=False,
-                                                        target="popover-ICU-target",
-                                                        placement='top',
-                                                    ),
-                                    ],width=4,style={'textAlign': 'center'}),
-                                    
-                                    dbc.Col([
-
-                                                    dbc.Button('Herd immunity 🛈',
-                                                    color='primary',
-                                                    className='mb-3',
-                                                    size='sm',
-                                                    id='popover-herd-target',
-                                                    style={'cursor': 'pointer'}
-                                                    ),               
-                                                                        
-                                                    dbc.Popover(
-                                                        [
-                                                        dbc.PopoverHeader('Herd immunity'),
-                                                        dbc.PopoverBody(dcc.Markdown(
-                                                        '''
-
-                                                        This box shows how close to the safety threshold for herd immunity we got. If we reached (or exceeded) the threshold it will say 100%.
-                                                        
-                                                        However, this is the least important goal since an uncontrolled pandemic will reach safe levels of immunity very quickly, but cause lots of serious illness in doing so.
-                                                        ''',
-                                                        style={'font-family': 'sans-serif'}
-                                                        ),),
-                                                        ],
-                                                        id = "popover-herd",
-                                                        is_open=False,
-                                                        target="popover-herd-target",
-                                                        placement='top',
-                                                    ),
-                                ],width=4,style={'textAlign': 'center'}),
-
-                                ],no_gutters=True),
-                    
-                                cards_fn(death_stat_1st,dat3_1st,herd_stat_1st,color_1st_death,color_1st_herd,color_1st_ICU),
-
-                                html.H3('After 2 years:',style={'fontSize': '150%', 'marginTop': '30px', 'marginBottom': '30px'}),
-
-                                cards_fn(death_stat_2nd,dat3_2nd,herd_stat_2nd,color_2nd_death,color_2nd_herd,color_2nd_ICU),
-
-
-                ],
-                width=12,
-                ),
-
-
-            ],
-            align='center',
-            ),
-
-            ],style=on_or_off)
 
 
 
@@ -774,7 +465,7 @@ layout_model = html.Div([
                                                                                                                                                                     
                                                                                                                                                                     ),
 
-                                                                                                                                                                    generate_table(df),
+                                                                                                                                                                    dbc.Table.from_dataframe(age_risk_df_out, striped=True, bordered = True, hover=True)
 
 
 
@@ -1159,7 +850,7 @@ control_choices_main = html.Div([
         color='primary',
         size='sm',
         id='popover-control-target',
-        style={'cursor': 'pointer','marginBottom': '8px'}
+        style={'cursor': 'pointer','marginBottom': '2px'}
         ),
     ],
     style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
@@ -1195,7 +886,7 @@ control_choices_main = html.Div([
         id = 'preset',
         options=[{'label': presets_dict_dropdown[key],
         'value': key} for key in presets_dict_dropdown],
-        value= 'Q',
+        value= initial_strat,
         clearable = False,
         searchable=False,
         style={'white-space':'nowrap'}
@@ -1213,7 +904,8 @@ control_choices_main = html.Div([
     color='primary',
     size='sm',
     id='popover-months-control-target',
-    style= {'cursor': 'pointer','marginBottom': '8px'}),
+    style= {'cursor': 'pointer','marginBottom': '2px'}
+    ),
     ],
     style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
 
@@ -1355,7 +1047,7 @@ dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-cc-care-target',
-style= {'cursor': 'pointer','marginBottom': '8px'}),
+style= {'cursor': 'pointer','marginBottom': '2px'}),
 ],
 style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
@@ -1447,10 +1139,6 @@ control_choices_custom =  html.Div([
 html.H4("Custom Options ",
 style={'marginBottom': '10px', 'textAlign': 'center', 'marginTop': '20px','fontSize': '120%'}),
 
-html.Div(html.I("To adjust the following, make sure 'Control Type' is set to 'Custom'."),
-     style = {'fontSize': '85%', 'marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
-
-
 
 
 
@@ -1479,7 +1167,7 @@ dbc.Button(' ? ',
 color='primary',
 size='sm',
 id = 'popover-inf-rate-target',
-style= {'cursor': 'pointer','marginBottom': '8px'}),
+style= {'cursor': 'pointer','marginBottom': '2px'}),
 ],
 style={'fontSize': '80%','marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
 
@@ -1601,8 +1289,6 @@ control_choices_lockdown =  html.Div([
 
 html.H4("Lockdown Cycle Options ",style={'marginBottom': '10px', 'textAlign': 'center' ,'marginTop': '20px','fontSize': '120%'}),
 
-html.Div(html.I("To adjust the following, make sure 'Control Type' is set to 'Lockdown Cycles'."),
-            style = {'fontSize': '85%', 'marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 
 
@@ -1611,7 +1297,7 @@ dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-groups-allowed-target',
-style= {'cursor': 'pointer','marginBottom': '8px'}),
+style= {'cursor': 'pointer','marginBottom': '2px'}),
 ],
 style={'fontSize': '80%','marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
 
@@ -1660,7 +1346,7 @@ dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-cycles-on-target',
-style= {'cursor': 'pointer','marginBottom': '8px'}),
+style= {'cursor': 'pointer','marginBottom': '2px'}),
 ],
 style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
@@ -1701,7 +1387,7 @@ dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-cycles-off-target',
-style= {'cursor': 'pointer','marginBottom': '8px'}),
+style= {'cursor': 'pointer','marginBottom': '2px'}),
 ],
 style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
@@ -1980,15 +1666,15 @@ dbc.Row([
                         children=control_choices_main
                         ),
             dbc.Tab(label='Custom options',
-                        tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
+                        tab_style = {'display': 'none'},
                         label_style={"color": tab_label_color, 'fontSize':'120%'}, 
-                        # tab_id='tab_main',
+                        id='tab-custom',
                         children=[control_choices_custom]
                         ),
             dbc.Tab(label='Lockdown cycle options',
-                        tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
+                        tab_style = {'display': 'none'},
                         label_style={"color": tab_label_color, 'fontSize':'120%'}, 
-                        # tab_id='tab_main',
+                        id='tab-ld-cycle',
                         children=[control_choices_lockdown],
                         ),
             dbc.Tab(label='Other',
@@ -2186,7 +1872,7 @@ test_controls = html.Div([
 
                 dbc.Row([ # R2210
 
-                    dbc.Button('Plot',
+                    dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
                                     color='primary',
                                     className='mb-3',
                                     id="plot-button-tests",
@@ -2429,8 +2115,7 @@ app.index_string = """<!DOCTYPE html>
 
 
 
-@app.callback(Output('saved-url', 'data'),
-            
+@app.callback(Output('saved-url', 'data'),            
             [Input('page-url', 'pathname')],
             [State('saved-url', 'data')],
             )
@@ -2450,8 +2135,6 @@ def change_pathname(pathname,saved_pathname):
             Output('loading-page','children')],
             [Input('saved-url', 'data')])
 def display_page(pathname):
-    
-    # print('display page')
 
     if pathname == '/data':
         return [layout_dan, None]
@@ -2497,9 +2180,12 @@ for p in [ "control", "months-control", "vaccination",  "cc-care" , "inf-rate", 
     
     Output('strat-2-id', 'style'),
 
+
     Output('strat-hr-infection','children'),
     Output('strat-lr-infection','children'),
 
+    Output('tab-custom', 'tab_style'),
+    Output('tab-ld-cycle', 'tab_style'),
 
     ],
     [
@@ -2530,11 +2216,17 @@ def invisible_or_not(num,preset):
 
     if preset!='C':
         says_strat_2 = {'display': 'none'}
+    
+    custom_tab_style = {'display': 'none'}
+    ld_cycle_tab_style = {'display': 'none'}
+    if preset=='C':
+        custom_tab_style = {'textAlign': 'center', 'cursor': 'pointer'}
+    
+    if preset=='LC':
+        ld_cycle_tab_style = {'textAlign': 'center', 'cursor': 'pointer'}
 
     
-
-    
-    return [says_strat_2, strat_H, strat_L]
+    return [says_strat_2, strat_H, strat_L, custom_tab_style, ld_cycle_tab_style]
 
 ########################################################################################################################
 
@@ -3028,7 +2720,7 @@ def render_interactive_content(plot_button,
 
         date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d')
 
-        startdate = copy.deepcopy(date)
+        startdate = copy.copy(date)
 
 
 
@@ -3274,7 +2966,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
             ]
         }
 
-        layout_daily_plot = copy.deepcopy(layout_normal)
+        layout_daily_plot = copy.copy(layout_normal)
         layout_daily_plot['updatemenus'].append(
             dict(
                 buttons=list([
@@ -3429,9 +3121,9 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                                 marker={'color': colours[i]},
                                 yaxis='y1',
                                 legendgroup='group1'))
-                layout_out = copy.deepcopy(layout_daily_plot)
+                layout_out = copy.copy(layout_daily_plot)
             else:
-                layout_out = copy.deepcopy(layout_normal)
+                layout_out = copy.copy(layout_normal)
 
         out.append({'data': figs, 'layout': layout_out})
 

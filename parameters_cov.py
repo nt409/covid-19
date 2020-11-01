@@ -7,7 +7,7 @@ from math import ceil
 # age stats
 # https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest
 
-df2 = pd.DataFrame({'Age': ['0-9','10-19','20-29','30-39','40-49','50-59','60-69','70-79','80+'],
+age_risk_df = pd.DataFrame({'Age': ['0-9','10-19','20-29','30-39','40-49','50-59','60-69','70-79','80+'],
    'Hosp': [0.1,0.3,1.2,3.2,4.9,10.2,16.6,24.3,27.3],
    'Crit': [5,5,5,5,6.3,12.2,27.4,43.2,70.9],
    'Pop':  [11.8,9.5,16.2,13.3,14.6,12.1,10.8,7.1,4.6]
@@ -15,15 +15,15 @@ df2 = pd.DataFrame({'Age': ['0-9','10-19','20-29','30-39','40-49','50-59','60-69
 
 divider = -2
 
-hr_frac = sum(df2.Pop[divider:])/100
+hr_frac = sum(age_risk_df.Pop[divider:])/100
 
-df2 = df2.assign(pop_low_prop=lambda x: x.Pop/(100*(1-hr_frac)),
+age_risk_df = age_risk_df.assign(pop_low_prop=lambda x: x.Pop/(100*(1-hr_frac)),
     pop_high_prop=lambda x: x.Pop/(100*(hr_frac)))
 
-df2.loc[  (df2.shape[0]-1+divider): ,'pop_low_prop' ] = 0
-df2.loc[ :(df2.shape[0]-1+divider)  ,'pop_high_prop'] = 0
+age_risk_df.loc[  (age_risk_df.shape[0]-1+divider): ,'pop_low_prop' ] = 0
+age_risk_df.loc[ :(age_risk_df.shape[0]-1+divider)  ,'pop_high_prop'] = 0
 
-df2 = df2.assign(   weighted_hosp_low=lambda x: (x.Hosp/100)*x.pop_low_prop,
+age_risk_df = age_risk_df.assign(   weighted_hosp_low=lambda x: (x.Hosp/100)*x.pop_low_prop,
                     weighted_hosp_high=lambda x:(x.Hosp/100)*x.pop_high_prop,
                     weighted_crit_low=lambda x: (x.Crit/100)*x.pop_low_prop,
                     weighted_crit_high=lambda x:(x.Crit/100)*x.pop_high_prop)
@@ -32,10 +32,10 @@ df2 = df2.assign(   weighted_hosp_low=lambda x: (x.Hosp/100)*x.pop_low_prop,
 
 frac_symptomatic = 0.55 # so e.g. 40% that weren't detected were bc no symptoms and the rest (5%) didn't identify vs e.g. flu
 
-frac_hosp_L = sum(df2.weighted_hosp_low)*frac_symptomatic
-frac_hosp_H = sum(df2.weighted_hosp_high)*frac_symptomatic
-frac_crit_L = sum(df2.weighted_crit_low)
-frac_crit_H = sum(df2.weighted_crit_high)
+frac_hosp_L = sum(age_risk_df.weighted_hosp_low)*frac_symptomatic
+frac_hosp_H = sum(age_risk_df.weighted_hosp_high)*frac_symptomatic
+frac_crit_L = sum(age_risk_df.weighted_crit_low)
+frac_crit_H = sum(age_risk_df.weighted_crit_high)
 
 #------------------------------------------------------------
 # disease params
@@ -73,7 +73,7 @@ import_rate = 1/(30*UK_population) # 1 per month
 
 ICU_growth = 1
 # now? approx 25000? in UK
-ICU_capacity = 25000/UK_population 
+ICU_capacity = 25000/UK_population
 
 vaccinate_percent = 0.9 # vaccinate this many
 vaccinate_rate = 0.55/(365*2/3) #10000/UK_population # per day
@@ -149,3 +149,11 @@ params = Parameters()
 # print(params.frac_hosp_L)
 # print(params.frac_crit_H)
 # print(params.frac_crit_L)
+
+
+df = age_risk_df
+df = df.loc[:,'Age':'Pop']
+age_risk_df = df.loc[:,['Pop','Hosp','Crit']].astype(str) + '%'
+df = pd.concat([df.loc[:,'Age'],age_risk_df],axis=1)
+age_risk_df_out = df.rename(columns={"Hosp": "Hospitalised", "Crit": "Requiring Critical Care", "Pop": "Population"})
+
