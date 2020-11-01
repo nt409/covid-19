@@ -1,21 +1,19 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 
-from math import exp, ceil, log, floor, sqrt
+from math import ceil
 import numpy as np
 from scipy.integrate import ode
-from scipy.stats import norm, gamma
-import pandas as pd
+from scipy.stats import gamma
 import datetime
 
 from config import presets_dict
 
 from parameters_cov import params
-from dan_get_data import get_data, COUNTRY_LIST_WORLDOMETER # , USE_API
-from dan_constants import POPULATIONS
+from data_scraper import get_data
+from data_constants import POPULATIONS
 
 ##
 # -----------------------------------------------------------------------------------

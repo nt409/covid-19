@@ -1,160 +1,50 @@
 import dash
-from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
-import plotly.graph_objs as go
-import numpy as np
-from matplotlib import colors as mcolors
+
 import datetime
-import json
-import copy
 
-from dan_get_data import get_data
-from dan_constants import POPULATIONS
+from data_constants import COUNTRY_LIST
 
-colours = ['#1f77b4','#ff7f0e', '#2ca02c','#9467bd', '#8c564b', '#e377c2', '#d62728', '#7f7f7f', '#bcbd22', '#17becf',
-           'blue', 'purple', 'pink', 'cyan', '#FF1493', 'navy', '#aaffc3', '#228B22', '#aa6e28', '#FFA07A',
-           ] + list(mcolors.CSS4_COLORS.keys())
 
-COUNTRY_LIST = ['world',
-                'uk',
-                'us',
-                'italy',
-                'spain',
-                'germany',
-                'iran',
-                'france',
-                'australia',
-                'albania',
-                'algeria',
-                'andorra',
-                'argentina',
-                'armenia',
-                'austria',
-                'bahrain',
-                'belgium',
-                'bosnia and herzegovina',
-                'brazil',
-                'brunei',
-                'bulgaria',
-                'burkina faso',
-                'canada',
-                'chile',
-                'china',
-                'colombia',
-                'costa rica',
-                'croatia',
-                'cyprus',
-                'czechia',
-                'denmark',
-                'dominican republic',
-                'ecuador',
-                'egypt',
-                'estonia',
-                'finland',
-                'greece',
-                'hong kong',
-                'hungary',
-                'iceland',
-                'india',
-                'indonesia',
-                'iraq',
-                'ireland',
-                'israel',
-                'japan',
-                'jordan',
-                'kuwait',
-                'latvia',
-                'lebanon',
-                'lithuania',
-                'luxembourg',
-                'malaysia',
-                'mexico',
-                'moldova',
-                'morocco',
-                'netherlands',
-                'new zealand',
-                'north macedonia',
-                'norway',
-                'pakistan',
-                'palestine',
-                'panama',
-                'peru',
-                'philippines',
-                'poland',
-                'portugal',
-                'qatar',
-                'romania',
-                'russia',
-                'san marino',
-                'saudi arabia',
-                'serbia',
-                'singapore',
-                'slovakia',
-                'slovenia',
-                'south africa',
-                'south korea',
-                'sri lanka',
-                'sweden',
-                'switzerland',
-                'taiwan',
-                'thailand',
-                'tunisia',
-                'turkey',
-                'united arab emirates',
-                'ukraine',
-                'uruguay',
-                ]
 
-app = dash.Dash(external_stylesheets=[dbc.themes.FLATLY])
-server = app.server
+
+
+
+
+
 
 colors = {
     'background': 'white', # '#f4f6f7',
     'text': '#111111'
 }
 
-layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font-family': 'sans-serif'
+
+
+
+
+
+
+layout_data = html.Div(style={'backgroundColor': colors['background']}, # , 'font-family': 'sans-serif'
                       id='output-layout', children=[
-    # html.H4(
-    #     children='COVID-19 Cases and Deaths',
-    #     className='display-4',
-    #     style={
-    #         'textAlign': 'center',
-    #         'fontSize': '6vh',
-    #         'margin-top': '2vh'
-    #     }
-    # ),
 
-    # html.Hr(),
 
-    html.Div(style={'height': '3vh'}),
-
-    # dcc.Markdown(
-    #     '''
-        
-    #     *This section enables you to compare different countries' reported cases and deaths in real-time, and predict future numbers assuming exponential growth.*
-    #     *Soon this will be integrated with the full predictive model allowing you to make control predictions for different countries.*
-    #     ''',
-    #     style={'textAlign': 'center'}
-    # ),
-
-    # html.Hr(),
+    html.Div(style={'height': '20px'}),
 
     html.Div([
-        html.Div([
-            html.Button(
-                children='Plot',
-                id='button-plot',
-                type='submit',
-                style={"margin": "15px", 'background-color': '#008CBA', 'color': 'white', 'width': '80%',
-                       'height': '30px', 'font-size': '20px', 'border': 'None', 'border-radius': '10px'}
-            ),
+        dbc.Row([
+            html.Div([
+            dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
+                            color='primary',
+                            className='mb-3',
+                            id="button-plot",
+                            size='lg',
+                            style = {'cursor': 'pointer', 'marginTop': '10px'}),
+            ]),
             html.I("Select countries of interest, then click the Plot button above.",
                    style={'textAlign': 'center', 'color': colors['text'],
                           "margin-left": "5px", "margin-right": "15px"}),
-            html.Div(style={'margin-top': '10px'}),
             html.Div([
                 dbc.Checklist(
                     id=c_name,
@@ -164,7 +54,9 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
                     style={"margin-left": "15px", 'textAlign': 'left'},
                     inputStyle={"margin-right": "5px"})
                 for i, c_name in enumerate(COUNTRY_LIST)]),
-        ], style={'width': '17%', 'display': 'inline-block', 'vertical-align': 'top',
+        ], 
+        justify='center',
+        style={'width': '17%', 'display': 'inline-block', 'vertical-align': 'top',
                   'background-color': 'lightgrey', 'horizontal-align': 'left', 'textAlign': 'center'}),
         html.Div(style={'width': '5%', 'display': 'inline-block'}),
         html.Div([
@@ -387,6 +279,3 @@ layout_dan = html.Div(style={'backgroundColor': colors['background']}, # , 'font
 ])
 
 
-if __name__ == '__main__':
-    app.layout = layout_dan
-    app.run_server(debug=True)

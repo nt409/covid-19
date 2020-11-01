@@ -1,3 +1,55 @@
+import plotly.graph_objects as go
+
+
+
+
+
+
+# appearance
+backgd_color = None
+disclaimerColor = '#e9ecef'
+tab_label_color = 'black'
+
+
+# figure appearance
+bar_height = '100'
+bar_width  =  '100'
+bar_non_crit_style = {'height': bar_height, 'width': bar_width, 'display': 'block' }
+
+
+
+annotz = [dict(x  = 0.5,
+                    y  = 0.6,
+                    text="Press the<br>'Plot' button!",
+                    showarrow=False,
+                    font=dict(
+                        size=20,
+                        color='black'
+                    ),
+                    xref = 'paper',
+                    yref = 'paper',
+        )]
+
+scatter = go.Scatter(
+                    x = [0,1],
+                    y = [0,1],
+                    mode = 'lines',
+                    showlegend=False,
+                    line = {'width': 0},
+                    # legendgroup = listings[key]['host'],
+                    # opacity=1,
+                    )
+
+dummy_figure = go.Figure(data=[scatter], layout= {'template': 'simple_white', 'annotations': annotz, 'xaxis': {'fixedrange': True}, 'yaxis': {'fixedrange': True}})
+
+
+
+
+
+
+
+#
+
 presets_dict = {'N': 'Do Nothing',
                 'MSD': 'Social Distancing',
                 'H': 'Lockdown High Risk, No Social Distancing For Low Risk',

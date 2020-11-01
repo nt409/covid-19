@@ -5,7 +5,8 @@ import pandas as pd
 import numpy as np
 from math import ceil
 import datetime
-from dan_constants import POPULATIONS
+
+from data_constants import POPULATIONS
 
 month_len = 365/12
 

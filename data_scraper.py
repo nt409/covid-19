@@ -1,7 +1,7 @@
 from urllib.request import urlopen, Request
 from collections import Counter
 
-from dan_constants import COUNTRY_NAME_TO_CODE, MONTHS_DICT, WORLDOMETER_NAME
+from data_constants import COUNTRY_NAME_TO_CODE, MONTHS_DICT, WORLDOMETER_NAME
 
 try:
     import COVID19Py
