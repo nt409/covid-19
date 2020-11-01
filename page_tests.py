@@ -32,19 +32,21 @@ test_controls = html.Div([
                 html.P(id="tests-text-1"),
                 html.P(id="tests-text-2",style={'marginBottom': '15px'}),
 
+
+
                 dbc.Spinner(html.Div(id="loading-tests"),color='primary'),
-
+                
                 dbc.Row([ # R2210
-
                     dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
                                     color='primary',
                                     className='mb-3',
                                     id="plot-button-tests",
                                     size='lg',
                                     style = {'cursor': 'pointer'}),
-                        ],
-
+                        
+                ],
                 justify='center'), # R2210
+                
                 
                 html.Hr(),
                 
