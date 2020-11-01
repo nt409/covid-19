@@ -900,7 +900,7 @@ control_choices_main = html.Div([
                 step=1,
                 # pushable=0,
                 marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
-                value=[0,1],
+                value=[0,2],
     ),
     ],
     style={'fontSize': '70%'},
@@ -1356,7 +1356,7 @@ min = 1,
 max = 8,
 step = 1,
 marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
-value=2,
+value=3,
 ),
 
 dbc.Popover(
@@ -1397,7 +1397,7 @@ min = 1,
 max = 8,
 step = 1,
 marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
-value=4,
+value=3,
 ),
 
 dbc.Popover(
@@ -1441,6 +1441,7 @@ dpc_content = html.Div([
 
         dbc.Card(
             html.Div([
+            html.H4(id='graph-title', style={'fontSize': '120%'}),
             dcc.Graph(figure=dummy_figure,id='line-plot-2'), # ,style={'height': '100px', 'width': '100%'}),
             ],
             style={'margin': '10px'}
@@ -1792,6 +1793,8 @@ layout_inter = html.Div([
                                                     html.Div(textCard,
                                                     style={'marginBottom': '10px'}
                                                     ),
+
+
 
                                                     dbc.Row([
                                                         dbc.Col([
@@ -2304,7 +2307,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
 
     if init_stored is None or date!=init_stored[5] or country!=init_stored[6]:
         I0, R0, H0, C0, D0, worked, min_date, max_date, _ = begin_date(date,country)
-        initial_conds = [I0, R0, H0, C0, D0, date, country]
+        initial_conds = [I0, R0, H0, C0, D0, date, country, min_date, max_date]
     else:
         initial_conds = init_stored
         I0 = init_stored[0]
@@ -2314,6 +2317,8 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         D0 = init_stored[4]
         date=init_stored[5]
         country=init_stored[6]
+        min_date = init_stored[7]
+        max_date = init_stored[8]
 
     if worked is None:
         worked = False
@@ -2485,6 +2490,8 @@ def find_sol_do_noth(ICU_grow,date,country_num):
 
                 Output('model-start-date','min_date_allowed'),
                 Output('model-start-date','max_date_allowed'),
+
+                Output('graph-title', 'children')
                 
                 
 
@@ -2559,6 +2566,15 @@ def render_interactive_content(plot_button,
                     month,lr_in,hr_in,lr2_in,hr2_in,
                     num_strat,vaccine_time,ICU_grow,date,country_num,
                     t_off,t_on,hr_ld,init_stored,worked)
+    
+    min_date = str(min_date).split(' ')[0]
+    max_date = str(max_date).split(' ')[0]
+    
+    min_date = min_date.split('T')[0]
+    max_date = max_date.split('T')[0]
+    
+    min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
+    max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
 
 
 
@@ -2574,7 +2590,20 @@ def render_interactive_content(plot_button,
     except:
         country = 'uk'
 
-    
+    country_name = country.title() if country not in ['us', 'uk'] else 'the '+country.upper()
+
+    strategy_name = presets_dict_dropdown[preset]
+
+    try:
+        m_diff = month[1] - month[0]
+        if m_diff!=1:
+            months_string = f' for {str(m_diff)} months'
+        else:
+            months_string = f' for {str(m_diff)} month'
+    except:
+        months_string = ''
+
+    graph_title = f'What might happen if strategy "{strategy_name}" was used{months_string} in {country_name}?'
 
     
     DPC_style = {'display' : 'none'}
@@ -2803,7 +2832,9 @@ def render_interactive_content(plot_button,
     None,
 
     min_date + datetime.timedelta(days=26),
-    max_date
+    max_date,
+
+    graph_title
     ]
 
 ########################################################################################################################

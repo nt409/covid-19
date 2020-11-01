@@ -2,7 +2,7 @@ presets_dict = {'N': 'Do Nothing',
                 'MSD': 'Social Distancing',
                 'H': 'Lockdown High Risk, No Social Distancing For Low Risk',
                 'HL': 'Lockdown High Risk, Social Distancing For Low Risk',
-                'Q': 'Lockdown All',
+                'Q': 'Lockdown',
                 'LC': 'Lockdown Cycles',
                 'C': 'Custom'}
 
@@ -10,7 +10,7 @@ presets_dict_dropdown = {'N': 'Do Nothing',
                 'MSD': 'Social Distancing',
                 'H': 'High Risk: Lockdown, Low Risk: No Social Distancing',
                 'HL': 'High Risk: Lockdown, Low Risk: Social Distancing',
-                'Q': 'Lockdown All',
+                'Q': 'Lockdown',
                 'LC': 'Lockdown Cycles (switching lockdown on and off)',
                 'C': 'Custom'}
 
