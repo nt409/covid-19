@@ -69,7 +69,7 @@ max_months_controlling = 9
 
 
 UK_population = 60 * 10**(6)
-import_rate = 1/(30*UK_population) # 1 per month
+import_rate = 10/(30*UK_population) # 10 per month
 
 ICU_growth = 1
 # now? approx 25000? in UK

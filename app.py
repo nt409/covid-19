@@ -100,10 +100,10 @@ app.config.suppress_callback_exceptions = True
 
 annotz = [dict(x  = 0.5,
                     y  = 0.6,
-                    text="Press the 'Plot' button below!",
+                    text="Press the<br>'Plot' button!",
                     showarrow=False,
                     font=dict(
-                        size=24,
+                        size=20,
                         color='black'
                     ),
                     xref = 'paper',
@@ -784,7 +784,6 @@ style= {'marginLeft': '50px', 'marginRight': '50px', 'marginBottom': '50px', 'ma
 
 ],
 width=12
-# xl=10
 ),
 
 ],
@@ -808,7 +807,7 @@ justify='center')
 
 ############################################################################################################################################################################################################################
 Control_text = html.Div(
-    html.I('Use the options to choose a COVID-19 control strategy. The model will predict the outcome of the chosen strategy each time you change any of these options.'),
+    html.I('Change the options and press plot.'),
 style = {'fontSize': '85%', 'marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 
@@ -822,24 +821,6 @@ control_choices_main = html.Div([
     # 
     # html.I(className="fas fa-clock"),
     # html.I(className="far fa-hospital"),
-
-    html.H2(style={'marginTop': '20px'},className="fas fa-globe-europe"),
-    html.H6([
-        ' Country'
-        ],
-        style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
-                                            
-    html.Div([
-    dcc.Dropdown(
-        id = 'model-country-choice',
-        options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST_NICK)],
-        value= initial_country,
-        clearable = False,
-        searchable=False,
-        style={'white-space':'nowrap'}
-    ),],
-    style={'cursor': 'pointer', 'fontSize': '70%', 'marginTop': '10px', 'marginBottom': '10px','textAlign': 'center'}),
-                                            
 
 
     html.H2(className="far fa-hospital",style={'marginTop': '20px'}),
@@ -956,7 +937,7 @@ control_choices_main = html.Div([
 
     ],
     justify='center',
-    style =  {'margin': '5px'}
+    style =  {'margin': '2px'}
     ), # R1662
 
     ],
@@ -970,6 +951,25 @@ control_choices_main = html.Div([
 control_choices_other =  html.Div([
     dbc.Row([ # R1871
         dbc.Col([ # C1872
+
+html.H2(style={'marginTop': '20px'},className="fas fa-globe-europe"),
+html.H6([
+    ' Country'
+    ],
+    style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
+                                        
+html.Div([
+dcc.Dropdown(
+    id = 'model-country-choice',
+    options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST_NICK)],
+    value= initial_country,
+    clearable = False,
+    searchable=False,
+    style={'white-space':'nowrap'}
+),],
+style={'cursor': 'pointer', 'fontSize': '70%', 'marginTop': '10px', 'marginBottom': '10px','textAlign': 'center'}),
+                                            
+
 
 html.H2(style={'marginTop': '20px'},className="fas fa-calendar-check"),
 html.H6([
@@ -1116,7 +1116,7 @@ style =  {'textAlign': 'center'}
 
 ],
 justify='center',
-style =  {'margin': '5px'}
+style =  {'margin': '2px'}
 ), # R1871
 
 ])
@@ -1267,7 +1267,7 @@ style={'textAlign': 'center'},
 
 ],
 justify='center',
-style =  {'margin': '5px'}
+style =  {'margin': '2px'}
 ), # 3R1871
 
 ])
@@ -1429,7 +1429,7 @@ style={'textAlign': 'center'},
 
 ],
 justify='center',
-style =  {'margin': '5px'}
+style =  {'margin': '2px'}
 ), # 2R1871
 
 ])
@@ -1645,12 +1645,16 @@ dbc.Row([
         html.Div(Control_text),
 
         dbc.Row([
+            dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
+            
             dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
                             color='primary',
                             className='mb-3',
                             id="plot-button",
                             size='lg',
                             style = {'cursor': 'pointer'}),
+            
+            dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary'),
         
         ],
         justify='center'),
@@ -1687,8 +1691,7 @@ dbc.Row([
 
         ],
         width=12,
-        lg=8,
-        style={'margin': '10px'}
+        style={'margin': '5px'}
         )
 ],
 justify='center'
@@ -1787,25 +1790,28 @@ layout_inter = html.Div([
                                         dbc.Row([ # R2599
                                             dbc.Col([
                                                     html.Div(textCard,
-                                                    style={'marginBottom': '15px'}
+                                                    style={'marginBottom': '10px'}
                                                     ),
 
+                                                    dbc.Row([
+                                                        dbc.Col([
+                                                        html.Div(controls,
+                                                        style={'marginTop': '10px'}
+                                                        )
+                                                        ],
+                                                        width=12,
+                                                        lg=3
+                                                        ),
 
-                                                    dbc.Row([  # R2583
-
-                                                            dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
-                                                            dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary'),
-                                                            
-                                                            ],
-                                                            justify='center',
-                                                            style = {'marginTop': '20px', 'marginBottom': '20px'}
-                                                    ),  # R2583
-
-                                                    html.Div(dpc_content,id='DPC-content'),                                                                                        
-                                                    html.Div(barChart_content,id='bc-content',style={'display': 'none'}),
-                                                    html.Div(id = 'strategy-outcome-content',style={'display': 'none'}),
-                                                    html.Div(controls,
-                                                    style={'marginTop': '15px'}
+                                                        dbc.Col([
+                                                            html.Div(dpc_content,id='DPC-content',style={'marginTop': '10px'}),  
+                                                            html.Div(barChart_content,id='bc-content',style={'display': 'none', 'marginTop': '10px'}),
+                                                            html.Div(id='strategy-outcome-content',style={'display': 'none', 'marginTop': '10px'}),
+                                                        ],
+                                                        width=12,
+                                                        lg=9
+                                                        )
+                                                    ],
                                                     )
                                             ],
                                             width=True,
@@ -1814,7 +1820,7 @@ layout_inter = html.Div([
 
                                         ],
                                         justify='center',
-                                        style={'margin': '30px'}
+                                        style={'margin': '20px'}
                                         ),  # R2599
 
 
@@ -1825,7 +1831,7 @@ layout_inter = html.Div([
 
 
     ],
-    style={'fontSize': '11', 'marginBottom': '200px'},
+    style={'fontSize': '11', 'marginBottom': '40px'},
     )
 
 
@@ -2567,13 +2573,13 @@ def render_interactive_content(plot_button,
     SO_style  = {'display' : 'none'}
 
     if results_type == 'BC_dd':
-        BC_style = {'display': 'block'}
+        BC_style = {'display': 'block', 'marginTop': '10px'}
 
     elif results_type == 'SO_dd':
-        SO_style = {'display': 'block'}
+        SO_style = {'display': 'block', 'marginTop': '10px'}
 
     else: # 'DPC
-        DPC_style = {'display': 'block'}
+        DPC_style = {'display': 'block', 'marginTop': '10px'}
         results_type = 'DPC_dd' # in case wasn't
 
 
@@ -3242,4 +3248,4 @@ def calculate_test_probs(plot_button,prior,sens,spec):
 ########################################################################################################################
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)

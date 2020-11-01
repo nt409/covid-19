@@ -719,6 +719,7 @@ def prevDeaths(previous_deaths,startdate,population_plot):
             y = y_deaths,
             mode='lines',
             opacity=0.85,
+            showlegend=False,
             legendgroup='deaths',
             line=dict(
             color= 'purple',
