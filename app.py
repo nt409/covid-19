@@ -2603,7 +2603,7 @@ def render_interactive_content(plot_button,
     except:
         months_string = ''
 
-    graph_title = f'What might happen if strategy "{strategy_name}" was used{months_string} in {country_name}?'
+    graph_title = f'What might happen if strategy "{strategy_name}" were used{months_string} in {country_name}?'
 
     
     DPC_style = {'display' : 'none'}
@@ -3291,4 +3291,6 @@ def calculate_test_probs(plot_button,prior,sens,spec):
 ########################################################################################################################
 
 if __name__ == '__main__':
+    # app.run_server(debug=True)
     app.run_server(debug=False)
+

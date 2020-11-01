@@ -30,7 +30,9 @@ age_risk_df = age_risk_df.assign(   weighted_hosp_low=lambda x: (x.Hosp/100)*x.p
 
 ######
 
-frac_symptomatic = 0.55 # so e.g. 40% that weren't detected were bc no symptoms and the rest (5%) didn't identify vs e.g. flu
+frac_symptomatic = 0.40 
+# so e.g. 35% that weren't detected were bc no symptoms 
+# and the rest (5%) didn't identify vs e.g. flu
 
 frac_hosp_L = sum(age_risk_df.weighted_hosp_low)*frac_symptomatic
 frac_hosp_H = sum(age_risk_df.weighted_hosp_high)*frac_symptomatic

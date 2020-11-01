@@ -482,8 +482,8 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
         control_font_size = font_size*(22/24) # '10em'
         ICU_font_size = font_size*(22/24) # '10em'
 
-        yval_pink = 0.3
-        yval_blue = 0.82
+        yval_pink = 0.4
+        yval_blue = 0.6
 
 
         for c_min, c_max in zip(c_low, c_high):
@@ -507,22 +507,23 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
                 annotz.append(dict(
                         x  = startdate+datetime.timedelta(days=0.5*(c_min+c_max)), # /month_len
                         y  = yval_pink,
-                        text="<b>ICU<br>" + "<b> Capacity<br>" + "<b> Exceeded",
+                        text="​🚑",
                         # hoverinfo='ICU Capacity Exceeded',
                         showarrow=False,
                         textangle= 0,
                         font=dict(
-                            size= ICU_font_size,
+                            size= 20,
+                            # size= ICU_font_size,
                             color="purple"
                         ),
-                        opacity=0.6,
+                        opacity=0.5,
                         xref = 'x',
                         yref = 'paper',
                 ))
 
     else:
         control_font_size = font_size*(30/24) #'11em'
-        yval_blue = 0.4
+        yval_blue = 0.6
 
 
 
@@ -531,16 +532,17 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
         annotz.append(dict(
                 x  = startdate+datetime.timedelta(days=month_len*max(0.5*(month[0]+month[1]), 0.5)),
                 y  = yval_blue,
-                text="<b>Control<br>" + "<b> In <br>" + "<b> Place",
+                text="​😷​",
                 # hoverinfo='Control In Place',
-                textangle=0,
+                # textangle=0,
                 font=dict(
-                    size= control_font_size,
+                    # size= control_font_size,
+                    size= 20,
                     color="blue"
                 ),
                 showarrow=False,
                 opacity=0.5,
-                xshift= 0,
+                # xshift= 0,
                 xref = 'x',
                 yref = 'paper',
         ))
@@ -835,11 +837,11 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
             startdate+datetime.timedelta(days=month_len*vaccine_time)],
             y=[yRange[0],100],
             mode='lines',
-            opacity=0.9,
+            opacity=0.2,
             legendgroup='thresholds',
             line=dict(
             color= 'green',
-            dash = 'dash'
+            # dash = 'dash'
             ),
             hovertemplate= 'Vaccination starts<extra></extra>',
             name= 'Vaccination starts'))
@@ -936,7 +938,19 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
 
 
-
+    if vaccine_time is not None:
+        annotz.append(go.layout.Annotation(x=startdate+datetime.timedelta(days=month_len*vaccine_time),
+                        y=1,
+                        text='💉',
+                        showarrow=False,
+                        xref='x',
+                        yref='paper',
+                        xanchor="right",
+                        yanchor="top",
+                        opacity=0.5,
+                        font={"size": 20}
+                        )
+                        )
 
 
     layout = go.Layout(
@@ -996,8 +1010,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                 buttons=list([
                                                     dict(
                                                     args=[
-                                                    {'visible':
-                                                    [True]*len(lines_to_plot_line) + [False]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines)  + [False]*len(lines_PrevDeaths)
+                                                    {'visible': [True]*len(lines_to_plot_line) + [False]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines)  + [False]*len(lines_PrevDeaths)
                                                     },
                                                     {
                                                     "shapes": shapez,
@@ -1009,7 +1022,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                 ),
                                                 dict(
                                                     args=[
-                                                    {"visible":[False]*len(lines_to_plot_line) + [True]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [True]*len(controlLines) + [False]*len(lines_PrevDeaths)},
+                                                    {"visible": [False]*len(lines_to_plot_line) + [True]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [True]*len(controlLines) + [False]*len(lines_PrevDeaths)},
                                                     {
                                                     "shapes":[],
                                                     "yaxis":  yAxisLinDeaths,
@@ -1023,7 +1036,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                 ),
                                                 dict(
                                                     args=[
-                                                    {"visible":[False]*(len(lines_to_plot_line)-1) + [True] + [False]*len(lines_to_plot_stack) + [True]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines) + [True]*len(lines_PrevDeaths)},
+                                                    {"visible": [False]*(len(lines_to_plot_line)-1) + [True] + [False]*len(lines_to_plot_stack) + [True]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines) + [True]*len(lines_PrevDeaths)},
                                                     {
                                                     "shapes": shapez,
                                                     "yaxis":  yAxisLinearDeaths,
@@ -1058,7 +1071,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                         yaxis2 = yAxisPopLinear
                             )
 
-    
+
+
     linesUse = lines_to_plot_line + lines_to_plot_stack + lines_to_plot_uncert + moreLines + controlLines + lines_PrevDeaths
 
     return {'data': linesUse, 'layout': layout}

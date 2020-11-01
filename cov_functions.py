@@ -384,7 +384,8 @@ def begin_date(date,country='uk'):
         R0 = R0/population_country
         D0 = D0/population_country
 
-        factor_infections_underreported = 1.5*2 # only small fraction of cases reported (and usually only symptomatic) symptomatic is 50%
+        factor_infections_underreported = 1.5*2
+        # only small fraction of cases reported (and usually only symptomatic) symptomatic is 50%
 
         I0           = factor_infections_underreported*I0/population_country
         I_hosp_delay = factor_infections_underreported*I_hosp_delay/population_country
@@ -393,7 +394,7 @@ def begin_date(date,country='uk'):
 
 
         #  H rate for symptomatic is 4.4% so 
-        hosp_proportion = 2*0.044
+        hosp_proportion = 0.044
         #  30% of H cases critical
         crit_proportion = 0.3 # 0.3
 
