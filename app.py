@@ -1034,6 +1034,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                 continue
 
     out = []
+    layout_out = []
     for title in ['Cases', 'Deaths', 'Currently Infected', 'Daily New Cases', 'Daily New Deaths']:
         if normalise_by_pop:
             axis_title = f"{title} (% of population)"

@@ -54,7 +54,7 @@ def get_data(country_name):
             data = get_data_from_worldometer(worldometer_cname)
             return data
         except Exception as e:
-            print("Could not retrieve data from Worldometer, trying JHU...", e)
+            print(f"Could not retrieve data from Worldometer, trying JHU...{e}")
 
     if not USE_API:
         return None
@@ -71,7 +71,7 @@ def get_data_from_api(country_name):
 
     confirmed_dict = Counter()
     deaths_dict = Counter()
-    for i, location in enumerate(locations):
+    for location in locations:
         confirmed_dict.update(location['timelines']['confirmed']['timeline'])
         deaths_dict.update(location['timelines']['deaths']['timeline'])
     confirmed_dict = dict(confirmed_dict)
