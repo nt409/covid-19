@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 import dash_html_components as html
 
 from parameters_cov import age_risk_df_out
-from config import tab_label_color, backgd_color
+
 ########################################################################################################################
 layout_model = html.Div([
 
@@ -29,7 +29,7 @@ layout_model = html.Div([
                                                     
 
                                                         ''',
-                                                        style = {'textAlign': 'justify', 'font-family': 'sans-serif'}
+                                                        style = {'textAlign': 'justify'}
 
                                                         ),
 
@@ -49,7 +49,7 @@ layout_model = html.Div([
 
                                                         *For the more mathematically inclined reader, a translation of the above into a mathematical system is described below.*
 
-                                                        ''',style={'textAlign': 'justify', 'font-family': 'sans-serif', 'marginTop' : '20px','marginBottom' : '20px'}),
+                                                        ''',style={'textAlign': 'justify', 'marginTop' : '20px','marginBottom' : '20px'}),
                                                         
                                                         
 
@@ -73,7 +73,7 @@ layout_model = html.Div([
                                                         dcc.Markdown('''
                                                         Of those requiring critical care, we assume that if they get treatment, a fraction *1-d* recover. If they do not receive it they die, taking 2 days. The number able to get treatment must be lower than the number of ICU beds available.
                                                         ''',
-                                                        style={'textAlign': 'justify', 'font-family': 'sans-serif'}),
+                                                        style={'textAlign': 'justify'}),
 
 
 
@@ -89,7 +89,7 @@ layout_model = html.Div([
                                                         The number of people infected, hospitalised and in critical care are calculated from the recorded data. We assume that only half the infections are reported ([**Fraser et al.**](https://science.sciencemag.org/content/early/2020/03/30/science.abb6936)), so we double the recorded number of current infections. The estimates for the initial conditions are then distributed amongst the risk groups. These proportions are calculated using conditional probability, according to risk (so that the initial number of infections is split proportionally by size of the risk categories, whereas the initially proportion of high risk deaths is much higher than low risk deaths).
 
                                                         ''',
-                                                        style={'textAlign': 'justify', 'font-family': 'sans-serif'}),
+                                                        style={'textAlign': 'justify'}),
 
 
 
@@ -111,7 +111,7 @@ layout_model = html.Div([
                                                         dcc.Markdown('''
                                                         Please use the following links: [**Ferguson et al**](https://spiral.imperial.ac.uk/handle/10044/1/77482), [**Anderson et al**](https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30567-5/fulltext) and [**Zhao et al**](https://journals.plos.org/plosntds/article/file?rev=2&id=10.1371/journal.pntd.0006158&type=printable)
                                                         ''',
-                                                        style={'textAlign': 'justify', 'font-family': 'sans-serif'}),
+                                                        style={'textAlign': 'justify'}),
 
 
                                                         html.H4('Age Structure',style={'fontSize': '150%', 'textAlign': 'center'}),
@@ -124,7 +124,7 @@ layout_model = html.Div([
                                                         *The table below shows the age structure data that was used to calculate these weighted averages across the low risk category (under 60) and high risk (over 60) category.*
                                                         
                                                         ''',
-                                                        style={'textAlign': 'justify', 'font-family': 'sans-serif', 'marginTop': '20px','marginBottom': '20px'}
+                                                        style={'textAlign': 'justify', 'marginTop': '20px','marginBottom': '20px'}
                                                         
                                                         ),
 
@@ -166,7 +166,7 @@ layout_intro = html.Div([
         
         
         
-        dbc.Tab(label='Introduction to modelling',  tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_0', children=[
+        dbc.Tab(labelClassName='tab',label='Introduction to modelling',  tab_style = {'textAlign': 'center', 'cursor': 'pointer'}, tab_id='tab_0', children=[
 
             
             html.H3('Introduction to mathematical modelling',className='display-4',
@@ -268,7 +268,7 @@ layout_intro = html.Div([
             
         ]),
 
-        dbc.Tab(label='Definitions', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_defs',
+        dbc.Tab(labelClassName='tab',label='Definitions', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, tab_id='tab_defs',
             children=[
                 
             html.H3('Definitions',className='display-4',
@@ -307,12 +307,12 @@ layout_intro = html.Div([
             
             A further concern arises over whether the virus is likely to mutate. However it is still useful to consider the best way to managing each strain.
             ''',
-            style={'textAlign': 'justify', 'font-family': 'sans-serif'}),
+            style={'textAlign': 'justify'}),
 
             ]
         ),
 
-        dbc.Tab(label='COVID-19 Control Strategies',tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_control', children=[
+        dbc.Tab(labelClassName='tab',label='COVID-19 Control Strategies',tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, tab_id='tab_control', children=[
 
             html.H3('Keys to a successful control strategy',
             className = 'display-4',
@@ -334,7 +334,7 @@ layout_intro = html.Div([
 
             However, controlling COVID-19 is a difficult task, so there is no perfect strategy. We will explore the advantages and disadvantages of each strategy.
             ''',
-            style={'textAlign': 'justify', 'font-family': 'sans-serif'}),
+            style={'textAlign': 'justify'}),
             
             html.Hr(),
 
@@ -359,7 +359,7 @@ layout_intro = html.Div([
 
             COVID-19 spreads so rapidly that it is capable of quickly generating enough seriously ill patients to overwhelm the intensive care unit (ICU) capacity of most healthcase systems in the world. This is why most countries have opted for strategies that slow the infection rate. It is essential that the ICU capacity is vastly increased to ensure it can cope with the number of people that may require it.
             ''',
-            style={'textAlign': 'justify', 'font-family': 'sans-serif'}),
+            style={'textAlign': 'justify'}),
 
 
             html.H4('Protecting the high risk',
@@ -377,13 +377,13 @@ layout_intro = html.Div([
 
 
             ''',
-            style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+            style={'textAlign': 'justify'}
             ),
 
         ]),
 
 
-        dbc.Tab(label='How to use', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_1', children=[
+        dbc.Tab(labelClassName='tab',label='How to use', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, tab_id='tab_1', children=[
                     
 
 
@@ -409,7 +409,7 @@ layout_intro = html.Div([
                     To start predicting the outcome of different strategies, press the button below!
 
                     ''',
-                    style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+                    style={'textAlign': 'justify'}
                     # style={'fontSize':20}
                     ),
                     
@@ -429,7 +429,7 @@ layout_intro = html.Div([
                         #end of tab 1
                     ]),
                     
-        dbc.Tab(label='Model Explanation', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, label_style={"color": tab_label_color, 'fontSize':'120%'}, tab_id='tab_explan', children=[
+        dbc.Tab(labelClassName='tab',label='Model Explanation', tab_style = { 'textAlign': 'center', 'cursor': 'pointer'}, tab_id='tab_explan', children=[
                     layout_model
                     ]),
 
@@ -451,7 +451,7 @@ width=12
 
 ],
 justify = 'center',
-style= {'width': '90%','backgroundColor': backgd_color}
+style= {'width': '90%'}
 ),
     
 ],

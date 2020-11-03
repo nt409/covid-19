@@ -26,43 +26,55 @@ colors = {
 
 
 
-layout_data = html.Div(style={'backgroundColor': colors['background']}, # , 'font-family': 'sans-serif'
+layout_data = html.Div(style={'backgroundColor': colors['background']},
                       id='output-layout', children=[
 
 
     html.Div(style={'height': '20px'}),
 
     html.Div([
-        dbc.Row([
-            html.Div([
-            dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
-                            color='primary',
-                            className='mb-3',
-                            id="button-plot",
-                            size='lg',
-                            style = {'cursor': 'pointer', 'marginTop': '10px'}),
-            ]),
-            html.I("Select countries of interest, then click the Plot button above.",
-                   style={'textAlign': 'center', 'color': colors['text'],
-                          "margin-left": "5px", "margin-right": "15px"}),
-            html.Div([
-                dbc.Checklist(
-                    id=c_name,
-                    options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(),
-                              'value': c_name}],
-                    value=[c_name] if c_name in ('us', 'uk', 'italy') else [],
-                    style={"margin-left": "15px", 'textAlign': 'left'},
-                    inputStyle={"margin-right": "5px"})
-                for i, c_name in enumerate(COUNTRY_LIST)]),
-        ], 
-        justify='center',
-        style={'width': '17%', 'display': 'inline-block', 'vertical-align': 'top',
-                  'background-color': 'lightgrey', 'horizontal-align': 'left', 'textAlign': 'center'}),
+        dbc.Card([
+
+                html.Div([
+                    dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
+                                    color='primary',
+                                    className='mb-3',
+                                    id="button-plot",
+                                    size='lg',
+                                    style = {'cursor': 'pointer', 'marginTop': '10px'}),
+
+                ]),
+
+                html.I("Select countries of interest, then click the Plot button above.",
+                    style={'textAlign': 'center', 'color': colors['text'],
+                            "margin-left": "5px", "margin-right": "5px"}),
+
+                html.Div([
+                    dbc.Checklist(
+                        id=c_name,
+                        options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(),
+                                'value': c_name}],
+                        value=[c_name] if c_name in ('us', 'uk', 'italy') else [],
+                        style={"margin-left": "15px", 'horizontal-align': 'left', 'textAlign': 'left'},
+                        inputStyle={"margin-right": "5px"})
+                    for i, c_name in enumerate(COUNTRY_LIST)]),
+        
+        ],
+        className="inter-card",
+        style={'display': 'inline-block',
+                'vertical-align': 'top',
+                'horizontal-align': 'left', 
+                'width': '17%',
+                'textAlign': 'center'}),
+
+
+
         html.Div(style={'width': '5%', 'display': 'inline-block'}),
+
         html.Div([
             html.Div([
                 html.I("This section enables you to compare different countries' reported cases and deaths in real-time, and predict future numbers assuming exponential growth.")],
-                style={'marginBottom': '3vh','marginTop': '1vh'}
+                style={'marginBottom': '20px','marginTop': '20px'}
             ),
 
             html.Div([
@@ -111,7 +123,7 @@ layout_data = html.Div(style={'backgroundColor': colors['background']}, # , 'fon
 
             html.Hr(),
             html.H3(children='Total Cases', style={'textAlign': 'center', 'color': colors['text'],
-                                                   'margin-top': '30px'}),
+                                                   'marginTop': '30px'}),
 
             html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
                 dbc.Checklist(
@@ -137,7 +149,7 @@ layout_data = html.Div(style={'backgroundColor': colors['background']}, # , 'fon
             ]),
             dcc.Graph(id='infections-plot'),
             html.H3(children='Total Deaths', style={'textAlign': 'center', 'color': colors['text'],
-                                                    'margin-top': '10px'}),
+                                                    'marginTop': '10px'}),
             html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
                 dbc.Checklist(
                     id='align-deaths-check',
@@ -190,7 +202,7 @@ layout_data = html.Div(style={'backgroundColor': colors['background']}, # , 'fon
 
             html.Div(id='daily-cases-container', children=[
                 html.H3(children='Daily New Cases', style={'textAlign': 'center', 'color': colors['text'],
-                                                           'margin-top': '10px'}),
+                                                           'marginTop': '10px'}),
                 html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
                     dcc.Checklist(
                         id='align-daily-cases-check',
@@ -218,7 +230,7 @@ layout_data = html.Div(style={'backgroundColor': colors['background']}, # , 'fon
 
             html.Div(id='daily-deaths-container', children=[
                 html.H3(children='Daily New Deaths', style={'textAlign': 'center', 'color': colors['text'],
-                                                            'margin-top': '10px'}),
+                                                            'marginTop': '10px'}),
                 html.Div(style={'display': 'inline-block', 'textAlign': 'left'}, children=[
                     dcc.Checklist(
                         id='align-daily-deaths-check',
@@ -245,11 +257,11 @@ layout_data = html.Div(style={'backgroundColor': colors['background']}, # , 'fon
             ]),
 
             html.H3(children='New Cases vs Total Cases', style={'textAlign': 'center', 'color': colors['text'],
-                                                    'margin-top': '10px'}),
+                                                    'marginTop': '10px'}),
             dcc.Graph(id='new-vs-total-cases'),
 
             html.H3(children='New Deaths vs Total Deaths', style={'textAlign': 'center', 'color': colors['text'],
-                                                                  'margin-top': '10px'}),
+                                                                  'marginTop': '10px'}),
             dcc.Graph(id='new-vs-total-deaths'),
 
             html.Li(html.I(

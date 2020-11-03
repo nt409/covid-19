@@ -8,8 +8,6 @@ import plotly.graph_objects as go
 # appearance
 backgd_color = None
 disclaimerColor = '#e9ecef'
-tab_label_color = 'black'
-
 
 # figure appearance
 bar_height = '100'

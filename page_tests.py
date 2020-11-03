@@ -15,7 +15,7 @@ test_content = html.Div([
             ],
             style={'margin': '10px'}
             ),
-        color='light'
+        className="inter-card"
         ),
 
 
@@ -122,7 +122,7 @@ test_controls = html.Div([
                 justify='center'), # R2205
             ])
         ],
-        color='light'
+        className="inter-card"
         ),
 
 

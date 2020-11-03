@@ -9,7 +9,7 @@ from math import floor
 from parameters_cov import params
 
 from config import presets_dict_dropdown, initial_hr, \
-    initial_lr, initial_strat, tab_label_color, \
+    initial_lr, initial_strat, \
     dummy_figure, bar_non_crit_style
     
 
@@ -53,7 +53,7 @@ control_choices_main = html.Div([
 
     html.H2(className="far fa-hospital",style={'marginTop': '20px'}),
 
-    html.H6([
+    html.H6(className="control button", children=[
     ' Control Type ',
     dbc.Button(' ? ',
         color='primary',
@@ -61,8 +61,8 @@ control_choices_main = html.Div([
         id='popover-control-target',
         style={'cursor': 'pointer','marginBottom': '2px'}
         ),
-    ],
-    style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
+    ]),
+    # style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}
 
 
     dbc.Popover(
@@ -78,7 +78,7 @@ control_choices_main = html.Div([
     *For further explanation, read the [**Background**](/intro)*.
 
     ''',
-    style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+    style={'textAlign': 'justify'}
 
     ),),
     ],
@@ -107,7 +107,7 @@ control_choices_main = html.Div([
 
     html.H2(style={'marginTop': '20px'},className="fas fa-calendar-check"),
 
-    html.H6([
+    html.H6(className="controls button", children=[
     ' Months of Control ',
     dbc.Button(' ? ',
     color='primary',
@@ -116,7 +116,8 @@ control_choices_main = html.Div([
     style= {'cursor': 'pointer','marginBottom': '2px'}
     ),
     ],
-    style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
+    # style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}
+    ),
 
 
     
@@ -148,7 +149,7 @@ control_choices_main = html.Div([
         When control is not in place the infection rate returns to the baseline level (100%).
         
         ''',
-        style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+        style={'textAlign': 'justify'}
         ),),
         ],
         id = "popover-months-control",
@@ -181,10 +182,8 @@ control_choices_other =  html.Div([
         dbc.Col([ # C1872
 
 html.H2(style={'marginTop': '20px'},className="fas fa-globe-europe"),
-html.H6([
-    ' Country'
-    ],
-    style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}),
+html.H6(className="controls", children=' Country ', # style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}
+    ),
                                         
 html.Div([
 dcc.Dropdown(
@@ -200,9 +199,8 @@ style={'cursor': 'pointer', 'fontSize': '70%', 'marginTop': '10px', 'marginBotto
 
 
 html.H2(style={'marginTop': '20px'},className="fas fa-calendar-check"),
-html.H6([
-    ' Model Start Date'],
-    style={'fontSize': '80%', 'textAlign': 'center', 'marginBottom': '10px'}
+html.H6(className="controls",children=' Model Start Date ',
+    # style={'fontSize': '80%', 'textAlign': 'center', 'marginBottom': '10px'}
     ),
 
 dbc.Row([ # R1943
@@ -221,7 +219,7 @@ style={'textAlign': 'center', 'fontSize': '70%'}
 
                                         
 html.H2(style={'marginTop': '20px'},className="fas fa-syringe"),
-html.H6([
+html.H6(className="controls button", children=[
 ' Vaccination starts ',
 dbc.Button(' ? ',
 color='primary',
@@ -229,7 +227,8 @@ size='sm',
 id='popover-vaccination-target',
 style= {'cursor': 'pointer'}),
 ],
-style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
+# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}
+),
 
 
 html.Div([
@@ -257,7 +256,7 @@ We assume a vaccine will not be available for 6 months.
 See how the introduction of a vaccine can drastically reduce the death toll if a sufficiently small proportion of the population have been infected.
 
 ''',
-style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+style={'textAlign': 'justify'}
 ),),
 ],
 id = "popover-vaccination",
@@ -269,7 +268,7 @@ placement='left',
 
 
 html.H2(style={'marginTop': '20px'},className="fas fa-user-md"),
-html.H6([
+html.H6(className="controls button", children=[
 ' Critical Care Capacity Increase ',
 dbc.Button(' ? ',
 color='primary',
@@ -277,7 +276,8 @@ size='sm',
 id='popover-cc-care-target',
 style= {'cursor': 'pointer','marginBottom': '2px'}),
 ],
-style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
+# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}
+),
 
 dcc.Slider(
 id='ICU-slider',
@@ -297,7 +297,7 @@ dbc.PopoverBody(dcc.Markdown(
 Select '0x' to assume that ICU capacity stays constant, or pick an amount by which capacity is bulked up each year (relative to the amount initially).
 
 ''',
-style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+style={'textAlign': 'justify'}
 ),),
 ],
 id = "popover-cc-care",
@@ -310,10 +310,9 @@ placement='top',
 
 
 html.H2(style={'marginTop': '20px'},className="fas fa-chart-area"),
-html.H6([
-' Results Type ',
-],
-style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
+html.H6(className="controls",children=' Results Type ',
+# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}
+),
 
 # style={'fontSize': '150%', 'marginTop': '30px', 'marginBottom': '30px','textAlign': 'center'}),
 
@@ -370,8 +369,9 @@ style={'marginBottom': '10px', 'textAlign': 'center', 'marginTop': '20px','fontS
 
 
 
-html.H6('Number Of Strategies',
-            style={'fontSize': '80%', 'marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
+html.H6(className="controls", children='Number Of Strategies',
+            # style={'fontSize': '80%', 'marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}
+            ),
 
 dbc.Row([ #R2225
 dbc.RadioItems(
@@ -388,8 +388,7 @@ labelStyle = {'fontSize': '70%'}
 
 
 
-html.H6(
-[
+html.H6(className="controls button", children=[
 'Infection Rate ',
 dbc.Button(' ? ',
 color='primary',
@@ -397,7 +396,8 @@ size='sm',
 id = 'popover-inf-rate-target',
 style= {'cursor': 'pointer','marginBottom': '2px'}),
 ],
-style={'fontSize': '80%','marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
+# style={'fontSize': '80%','marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}
+),
 
 
 dbc.Popover(
@@ -411,7 +411,7 @@ The *infection rate* relates to how quickly the disease is transmitted. **Contro
 Adjust by choosing a preset strategy  or making your own custom choice ('**Control Type**').
 
 ''',
-style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+style={'textAlign': 'justify'}
 ),),
 ],
 id = "popover-inf-rate",
@@ -453,8 +453,8 @@ value=initial_hr,
 
 dbc.Col([ # 3C2258
 
-html.H6([
-    ' Strategy Two: Low Risk Infection Rate (%)'],style={'fontSize': '80%','textAlign': 'center'}),
+html.H6(className="controls",children=' Strategy Two: Low Risk Infection Rate (%) '),
+# style={'fontSize': '80%','textAlign': 'center'}),
 
 dcc.Slider(
 id='low-risk-slider-2',
@@ -465,8 +465,7 @@ marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fa
 value=5,
 ),
 
-html.H6([
-        ' Strategy Two: High Risk Infection Rate (%)'], style = {'fontSize': '80%','textAlign': 'center'}),
+html.H6(className="controls",children=' Strategy Two: High Risk Infection Rate (%) ', style = {'fontSize': '80%','textAlign': 'center'}),
 
 dcc.Slider(
 id='high-risk-slider-2',
@@ -520,14 +519,14 @@ html.H4("Lockdown Cycle Options ",style={'marginBottom': '10px', 'textAlign': 'c
 
 
 
-html.H6(['Groups allowed out of lockdown ',
+html.H6(className="controls button", children=['Groups allowed out of lockdown ',
 dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-groups-allowed-target',
 style= {'cursor': 'pointer','marginBottom': '2px'}),
-],
-style={'fontSize': '80%','marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
+]),
+# style={'fontSize': '80%','marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 
 dbc.Popover(
@@ -541,7 +540,7 @@ In a strategy where lockdowns are 'switched on and off', you may choose to conti
 Choose whether to keep high risk in lockdown or allow all groups to leave lockdown (this is the default setting).
 
 ''',
-style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+style={'textAlign': 'justify'}
 ),),
 ],
 id = "popover-groups-allowed",
@@ -568,15 +567,15 @@ labelStyle = {'fontSize': '70%'}
 
                                                         
 html.H2(style={'marginTop': '20px'},className="fas fa-clock"),
-html.H6([
+html.H6(className="controls button", children=[
     ' Cycle: Time On ',
 dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-cycles-on-target',
 style= {'cursor': 'pointer','marginBottom': '2px'}),
-],
-style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
+]),
+# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 dcc.Slider(
 id='cycle-on',
@@ -598,7 +597,7 @@ Use this slider to adjust the amount of time that the country is in lockdown und
 This allows us to consider a system where the country is in lockdown for 3 weeks say, followed by a week of normality.
 
 ''',
-style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+style={'textAlign': 'justify'}
 ),),
 ],
 id = "popover-cycles-on",
@@ -609,15 +608,15 @@ placement='top',
 
 
 html.H2(style={'marginTop': '20px'},className="fas fa-clock"),
-html.H6([
+html.H6(className="controls button", children=[
     ' Cycle: Time Off ',
 dbc.Button(' ? ',
 color='primary',
 size='sm',
 id='popover-cycles-off-target',
 style= {'cursor': 'pointer','marginBottom': '2px'}),
-],
-style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
+]),
+# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
 
 dcc.Slider(
 id='cycle-off',
@@ -639,7 +638,7 @@ Use this slider to adjust the amount of time that the country is out of lockdown
 This allows us to consider a system where the country is in lockdown for 3 weeks say, followed by a week of normality.
 
 ''',
-style={'textAlign': 'justify', 'font-family': 'sans-serif'}
+style={'textAlign': 'justify'}
 ),),
 ],
 id = "popover-cycles-off",
@@ -674,7 +673,7 @@ dpc_content = html.Div([
             ],
             style={'margin': '10px'}
             ),
-        color='light'
+        className="inter-card"
         ),
 
 
@@ -892,28 +891,23 @@ dbc.Row([
             active_tab='tab_main',
             children = [
                 
-            dbc.Tab(label='Main controls',
-                        tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
-                        label_style={"color": tab_label_color, 'fontSize':'120%'}, 
+            dbc.Tab(labelClassName='tab', label='Main controls',
+                        tab_style = {'textAlign': 'center', 'cursor': 'pointer'},
                         tab_id='tab_main',
                         children=control_choices_main
                         ),
-            dbc.Tab(label='Custom options',
+            dbc.Tab(labelClassName='tab', label='Custom options',
                         tab_style = {'display': 'none'},
-                        label_style={"color": tab_label_color, 'fontSize':'120%'}, 
                         id='tab-custom',
                         children=[control_choices_custom]
                         ),
-            dbc.Tab(label='Lockdown cycle options',
+            dbc.Tab(labelClassName='tab', label='Lockdown cycle options',
                         tab_style = {'display': 'none'},
-                        label_style={"color": tab_label_color, 'fontSize':'120%'}, 
                         id='tab-ld-cycle',
                         children=[control_choices_lockdown],
                         ),
-            dbc.Tab(label='Other',
-                        tab_style = { 'textAlign': 'center', 'cursor': 'pointer'},
-                        label_style={"color": tab_label_color, 'fontSize':'120%'}, 
-                        # tab_id='tab_main',
+            dbc.Tab(labelClassName='tab', label='Other',
+                        tab_style = {'textAlign': 'center', 'cursor': 'pointer'},
                         children=control_choices_other
                         ),
             ]) # end of tabs
@@ -927,7 +921,7 @@ justify='center'
 ),
                                                                 
 ],
-color='light',
+className="inter-card",
 )
 
 
@@ -964,7 +958,7 @@ justify='center'
 ),
 
 ],
-color='light'
+className="inter-card"
 )
 
 

@@ -21,8 +21,7 @@ from parameters_cov import params
 
 
 from config import preset_dict_high, preset_dict_low, \
-    presets_dict_dropdown, dummy_figure, \
-    tab_label_color, backgd_color
+    presets_dict_dropdown, dummy_figure
 
 from cov_functions import run_model, test_probs, begin_date, \
     outcome_fn
@@ -50,8 +49,9 @@ from page_tests import layout_tests
 
 ########################################################################################################################
 FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
-# external_stylesheets = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
+# dash_ss = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
 external_stylesheets = [dbc.themes.LITERA, FA]
+
 # Cerulean
 # COSMO
 # JOURNAL
@@ -151,7 +151,6 @@ app.layout = html.Div([
         
 
         ],
-        style={'fontSize': '11', 'font-family': 'sans-serif'}
         # 
         )
 ##
@@ -1372,6 +1371,6 @@ def calculate_test_probs(plot_button,prior,sens,spec):
 ########################################################################################################################
 
 if __name__ == '__main__':
-    # app.run_server(debug=True)
-    app.run_server(debug=False)
+    app.run_server(debug=True)
+    # app.run_server(debug=False)
 
