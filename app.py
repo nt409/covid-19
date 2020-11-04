@@ -89,24 +89,48 @@ app.config.suppress_callback_exceptions = True
 
 
 app.layout = html.Div([
-    
-        dbc.NavbarSimple(
-            children=[
-                dbc.NavItem(dbc.NavLink("Background", href="/intro")),
-                dbc.NavItem(dbc.NavLink("Interactive model", href="/inter")),
-                dbc.NavItem(dbc.NavLink("Interpreting tests", href="/tests")),
-                dbc.NavItem(dbc.NavLink("Real-time data", href="/data")),
+        
+        html.Header([
+        
+            html.Div([
+                html.A("Modelling COVID-19 Control", href="/", className="navLinkTitle"),
+            ],
+            className="my-title",
+            ),
+
+
+            html.Nav(
+                children=[
+
+                        html.A(id="menu-button",className="fas fa-bars menubar hide-desktop"),
+
+                        html.Div([
+                            dbc.Collapse([
+                                html.Div(html.A("Background", href="/intro", className="navLink menu-dropdown")),
+                                html.Div(html.A("Interactive model", href="/inter", className="navLink menu-dropdown")),
+                                html.Div(html.A("Interpreting tests", href="/tests", className="navLink menu-dropdown")),
+                                html.Div(html.A("Real-time data", href="/data", className="navLink menu-dropdown")),
+                            ],
+                            id="nav-menu",
+                            is_open=False),
+                        ],
+                        className="menu-dropdown"
+                        ),
+                        
+                        html.Div([
+                            html.A("Background", href="/intro", className="navLink"),
+                            html.A("Interactive model", href="/inter", className="navLink"),
+                            html.A("Interpreting tests", href="/tests", className="navLink"),
+                            html.A("Real-time data", href="/data", className="navLink"),
+                        ],
+                        className="other-links show-desktop hide-mobile",
+                        ),
 
             ],
-            brand="Modelling COVID-19 Control",
-            brand_href="/",
-            brand_style = {'fontSize': '120%'},
-            color="primary",
-            # sticky = 'top',
-            expand = 'lg',
-            # className = 'navbar-collapse',
-            style= {'fontSize': '120%'},
-            dark=True,
+            className="main-nav-links"
+            ),
+        
+        ],
         ),
 
 
@@ -114,46 +138,55 @@ app.layout = html.Div([
 
 
         ##
-
-        # # page content
-        dcc.Store(id='saved-url',data='/'),
         dcc.Location(id='page-url', refresh=False),
+        
+        html.Div(style={'height': '2vh', 'display': 'block'}),
 
         dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg'),
+
         html.Div(id='page-content',children=layout_enter),
 
-
-        html.Hr(),
+        html.Div(style={'height': '5vh', 'display': 'block'}),
 
         html.Footer([
-                    "Contact us at: ",
-                     html.A('covid.at.plants@gmail.com',href='')
-                     ],
-        style={'textAlign': 'center', 'fontSize': '90%', 'marginBottom': '20px', 'marginTop': '20px'}),
 
-        html.Footer('This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.',
-                    style={'textAlign': 'center', 'fontSize': '90%', 'color': '#446E9B', 'fontWeight': 'bold'}),
-        html.Footer([
-                    "Authors: ",
-                     html.A('Nick P. Taylor', href='https://twitter.com/TaylorNickP'),", ",
-                     html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'),
-                     " and Dr Cerian Webb. ",
-                     ],
-        style={'textAlign': 'center', 'fontSize': '90%'}),
-        html.Footer([
-                     html.A('Source code', href='https://github.com/nt409/covid-19'), ". ",
-                     "Data is taken from ",
-                     html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'), " if available or otherwise ",
-                     html.A("Johns Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"), "."
+        html.Div([
+            html.Div([
+                        html.Div(["Contact us at: ", html.A('covid.at.plants@gmail.com',href='')],
+                        ),
+                        
+                        html.Div("This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.",
+                        style={'fontWeight': 'bold'}),
+
+                        html.Div(["Authors: ",
+                                html.A('Nick P. Taylor', href='https://twitter.com/TaylorNickP'),", ",
+                                html.A('Daniel Muthukrishna', href='https://twitter.com/DanMuthukrishna'),
+                                " and Dr Cerian Webb. ",
+                                ],
+                        ),
+                        
+                        html.Div([
+                        html.A('Source code', href='https://github.com/nt409/covid-19'),
+                        ". Data is taken from ",
+                        html.A("Worldometer", href='https://www.worldometers.info/coronavirus/'),
+                        " if available or otherwise ",
+                        html.A("Johns Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"),
+                        ".",
+                        ],
+                        ),
+
+                        ])
                     ],
-                    style={'textAlign': 'center', 'fontSize': '90%'}),
-
+        className="foot-container",
+        ),
         
+        ],className="footer-container")
+
+
 
         ],
-        # 
         )
-##
+# end of layout
 
 
 
@@ -165,9 +198,14 @@ app.layout = html.Div([
 ########################################################################################################################
 app.title = 'Modelling COVID-19 Control'
 
+
+# added in viewport tag for media queries
 app.index_string = """<!DOCTYPE html>
 <html>
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-163339118-1"></script>
         <script>
@@ -203,27 +241,26 @@ app.index_string = """<!DOCTYPE html>
 ########################################################################################################################
 # callbacks
 
-@app.callback(Output('saved-url', 'data'),            
-            [Input('page-url', 'pathname')],
-            [State('saved-url', 'data')],
-            )
-def change_pathname(pathname,saved_pathname):
+# app.callback(Output('saved-url', 'data'),            
+#             [Input('page-url', 'pathname')],
+#             [State('saved-url', 'data')],
+#             )
+# def change_pathname(pathname,saved_pathname):
 
-    # print('change pathname', pathname, saved_pathname)
+#     # print('change pathname', pathname, saved_pathname)
 
-    if pathname==saved_pathname:
-        raise PreventUpdate
-    else:
-        return pathname
+#     if pathname==saved_pathname:
+#         raise PreventUpdate
+#     else:
+#         return pathname
 
 
 
 
 @app.callback([Output('page-content', 'children'),
             Output('loading-page','children')],
-            [Input('saved-url', 'data')])
+            [Input('page-url', 'pathname')])
 def display_page(pathname):
-
     if pathname == '/data':
         return [layout_data, None]
     elif pathname == '/intro':
@@ -248,7 +285,7 @@ def toggle(n, is_open):
 # popovers
 
 
-for p in [ "control", "months-control", "vaccination",  "cc-care" , "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd", 'cycles-off', 'cycles-on', 'groups-allowed']: # "res-type" , "pick-strat",
+for p in ["control", "months-control", "vaccination",  "cc-care" , "inf-rate", "inf-tab", "cont-tab", "example","red-deaths","ICU","herd", 'cycles-off', 'cycles-on', 'groups-allowed']: # "res-type" , "pick-strat",
     app.callback(
         Output(f"popover-{p}", "is_open"),
         [Input(f"popover-{p}-target", "n_clicks")
@@ -257,7 +294,11 @@ for p in [ "control", "months-control", "vaccination",  "cc-care" , "inf-rate", 
     )(toggle)
 
 
-
+app.callback(Output(f"nav-menu", "is_open"),
+        [Input(f"menu-button", "n_clicks")
+        ],
+        [State(f"nav-menu", "is_open")],
+    )(toggle)
 
 ##############################################################################################################################
 
@@ -579,7 +620,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 Input('plot-button', 'n_clicks'),
                ],
                [
-                State('saved-url', 'data'),
+                State('page-url', 'data'),
 
                 State('sol-calculated-do-nothing-cache', 'data'),
 

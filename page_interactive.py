@@ -934,17 +934,17 @@ dbc.Row([
         style={'marginBottom': '20px', 'textAlign': 'center' ,'marginTop': '20px','fontSize': '120%'}),
         
 
-    html.Div(
+    html.P(
         'The model predicts how the epidemic will progress, depending on the disease status of members of the population within each country.',
-        style={'fontSize': '85%', 'textAlign': 'center', 'marginTop': '20px', 'marginBottom': '20px'}),
+        style={'textAlign': 'center', 'marginTop': '1em', 'marginBottom': '1em'}),
             
     html.H4(
         "Use the sliders and dropdowns below to change the control strategy.",
-        style={'marginBottom': '20px', 'textAlign': 'center' ,'marginTop': '20px','fontSize': '120%'}),
+        style={'marginBottom': '20px', 'textAlign': 'center','marginTop': '20px','fontSize': '120%'}),
         
-    html.Div(
+    html.P(
         'Compare the effect of different strategies on the predicted number of infections, hospitalisations, and deaths.',
-        style={'fontSize': '85%', 'textAlign': 'center', 'marginTop': '20px', 'marginBottom': '20px'}),
+        style={'textAlign': 'center', 'marginTop': '1em', 'marginBottom': '1em'}),
 
     html.Div(id='worked-div'),
 
