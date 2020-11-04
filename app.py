@@ -1412,6 +1412,6 @@ def calculate_test_probs(plot_button,prior,sens,spec):
 ########################################################################################################################
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
-    # app.run_server(debug=False)
+    # app.run_server(debug=True)
+    app.run_server(debug=False)
 
