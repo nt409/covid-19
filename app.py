@@ -63,7 +63,7 @@ external_stylesheets = [dbc.themes.LITERA, FA]
 
 # spacelab
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets, assets_folder='assets')
 
 server = app.server
 
@@ -190,7 +190,7 @@ app.layout = html.Div([
 
 
 
-
+# print(app.get_asset_url('mask.svg'))
 
 
 
@@ -240,20 +240,6 @@ app.index_string = """<!DOCTYPE html>
 
 ########################################################################################################################
 # callbacks
-
-# app.callback(Output('saved-url', 'data'),            
-#             [Input('page-url', 'pathname')],
-#             [State('saved-url', 'data')],
-#             )
-# def change_pathname(pathname,saved_pathname):
-
-#     # print('change pathname', pathname, saved_pathname)
-
-#     if pathname==saved_pathname:
-#         raise PreventUpdate
-#     else:
-#         return pathname
-
 
 
 
@@ -327,19 +313,15 @@ def invisible_or_not(num,preset):
 
 
     if num=='two':
-        strat_H = [html.H6([
-            ' Strategy One: High Risk Infection Rate (%)'],style={'fontSize': '100%'}),]
-        strat_L = [html.H6([
-            ' Strategy One: Low Risk Infection Rate (%)'],style={'fontSize': '100%'}),]
+        strat_H = [html.H6('Strategy one: high risk infection rate (%)',className="control-title"),]
+        strat_L = [html.H6('Strategy one: low risk infection rate (%)',className="control-title"),]
         says_strat_2 = None
 
     else:
 
-        strat_H = [html.H6([
-            ' High Risk Infection Rate (%)'],style={'fontSize': '100%'}),]
+        strat_H = [html.H6('High risk infection rate (%)',className="control-title"),]
 
-        strat_L = [html.H6([
-            ' Low Risk Infection Rate (%)'],style={'fontSize': '100%'}),]
+        strat_L = [html.H6('Low risk infection rate (%)',className="control-title"),]
 
         says_strat_2 = {'display': 'none'}
 
@@ -383,14 +365,14 @@ def preset_sliders(preset,number_strs):
 
     lockdown_cycles_dis = True
     options_lockdown_cycles = [
-                                {'label': 'Low Risk Only', 'value': 0, 'disabled': True},
-                                {'label': 'Both Groups', 'value': 1, 'disabled': True},
+                                {'label': 'Low risk only', 'value': 0, 'disabled': True},
+                                {'label': 'Both groups', 'value': 1, 'disabled': True},
                             ]
     if preset=='LC':
         lockdown_cycles_dis = False
         options_lockdown_cycles = [
-                                {'label': 'Low Risk Only', 'value': 0},
-                                {'label': 'Both Groups', 'value': 1},
+                                {'label': 'Low risk only', 'value': 0},
+                                {'label': 'Both groups', 'value': 1},
                             ]
 
     if preset == 'C':
@@ -681,7 +663,6 @@ def render_interactive_content(plot_button,
                                 ICU_grow):
 
     # print(f'render {pathname}')
-
     sols, initial_conds, worked, worked_div, upper_lower_sol, min_date, max_date = find_sol(preset,
                     month,lr_in,hr_in,lr2_in,hr2_in,
                     num_strat,vaccine_time,ICU_grow,date,country_num,
@@ -1414,4 +1395,6 @@ def calculate_test_probs(plot_button,prior,sens,spec):
 if __name__ == '__main__':
     # app.run_server(debug=True)
     app.run_server(debug=False)
+    # raise PreventUpdate !!!
+
 

@@ -34,35 +34,28 @@ max_date = str(max_date).split(' ')[0]
 
 
 
-Control_text = html.Div(
-    html.I('Change the options and press plot.'),
-style = {'fontSize': '85%', 'marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
+Control_text = html.Div('Change the options and press plot.',className="control-text-hint"),
 
 
 
-control_choices_main = html.Div([
-    dbc.Row([ # R1662
+control_choices_main = html.Div(children=[
 
-    dbc.Col([ #C1666
+
+    # html.H2(className="far fa-hospital",style={'marginTop': '20px'}),
+
+
+    html.Div(className="control-unit",children=[
     
-    # html.I(className="far fa-calendar-check"),
-    # 
-    # html.I(className="fas fa-clock"),
-    # html.I(className="far fa-hospital"),
+    html.Div(html.Img(src='/assets/images/mask.png',className="img"),className="my-svg"),
+    
+    html.H6(className="control-title", children='Type of control'),
 
 
-    html.H2(className="far fa-hospital",style={'marginTop': '20px'}),
 
-    html.H6(className="control button", children=[
-    ' Control Type ',
-    dbc.Button(' ? ',
-        color='primary',
-        size='sm',
+    dbc.Button('?',
+        className='query-button',
         id='popover-control-target',
-        style={'cursor': 'pointer','marginBottom': '2px'}
         ),
-    ]),
-    # style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}
 
 
     dbc.Popover(
@@ -89,50 +82,43 @@ control_choices_main = html.Div([
     ),
 
         
-
-    html.Div([
     dcc.Dropdown(
+        className="component",
         id = 'preset',
         options=[{'label': presets_dict_dropdown[key],
         'value': key} for key in presets_dict_dropdown],
         value= initial_strat,
         clearable = False,
         searchable=False,
-        style={'white-space':'nowrap'}
-    ),],
-    style={'cursor': 'pointer', 'fontSize': '70%', 'marginTop': '10px', 'marginBottom': '10px','textAlign': 'center'}),
+        style={'display': 'inline-block'}
+    ),
+
+
+    ]),
+
+
+
+      
         
+    html.Div(className="control-unit", children=[
 
+    html.Div(html.Img(src='/assets/images/calendar.png',className="img"),className="my-svg"),
 
+    html.H6(className="control-title", children='When to control?'),
 
-    html.H2(style={'marginTop': '20px'},className="fas fa-calendar-check"),
+    dbc.Button('?',
+        className='query-button',
+        id='popover-months-control-target',
+        ),
 
-    html.H6(className="controls button", children=[
-    ' Months of Control ',
-    dbc.Button(' ? ',
-    color='primary',
-    size='sm',
-    id='popover-months-control-target',
-    style= {'cursor': 'pointer','marginBottom': '2px'}
-    ),
-    ],
-    # style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}
-    ),
-
-
-    
-    html.Div([
     dcc.RangeSlider(
                 id='month-slider',
+                className="component",
                 min=0,
                 max=floor(params.max_months_controlling),
                 step=1,
-                # pushable=0,
-                marks={i: str(i) for i in range(0,floor(params.max_months_controlling)+1,3)},
+                marks={i: str(i) if i!=0 else 'Now' for i in range(0,floor(params.max_months_controlling)+1,3)},
                 value=[0,2],
-    ),
-    ],
-    style={'fontSize': '70%'},
     ),
 
 
@@ -158,89 +144,62 @@ control_choices_main = html.Div([
         placement='right',
     ),
 
+    ]),
 
-    ],
-    width=True,
-    style={'textAlign': 'center'},
-    ),### C1666
 
-    ],
-    justify='center',
-    style =  {'margin': '2px'}
-    ), # R1662
 
-    ],
-    # style={'width': '100px'}
-    )
+
+
+
+    ])
 ########################################################################################################################
 
                                                                                                                                                                     
 
 
-control_choices_other =  html.Div([
-    dbc.Row([ # R1871
-        dbc.Col([ # C1872
+control_choices_other =  html.Div(children=[
 
-html.H2(style={'marginTop': '20px'},className="fas fa-globe-europe"),
-html.H6(className="controls", children=' Country ', # style={'fontSize': '80%', 'marginBottom': '10px','textAlign': 'center'}
-    ),
+
+html.Div(className="control-unit", children=[
+
+html.Div(html.Img(src='/assets/images/globe.png',className="img"),className="my-svg"),
+html.H6(className="control-title", children='Country'),
+
                                         
-html.Div([
 dcc.Dropdown(
     id = 'model-country-choice',
+    className="component",
     options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(), 'value': num} for num, c_name in enumerate(COUNTRY_LIST_NICK)],
     value= initial_country,
     clearable = False,
     searchable=False,
-    style={'white-space':'nowrap'}
-),],
-style={'cursor': 'pointer', 'fontSize': '70%', 'marginTop': '10px', 'marginBottom': '10px','textAlign': 'center'}),
+    style={'display': 'inline-block'}
+),
                                             
-
-
-html.H2(style={'marginTop': '20px'},className="fas fa-calendar-check"),
-html.H6(className="controls",children=' Model Start Date ',
-    # style={'fontSize': '80%', 'textAlign': 'center', 'marginBottom': '10px'}
-    ),
-
-dbc.Row([ # R1943
-dcc.DatePickerSingle(
-id='model-start-date',
-min_date_allowed = min_date + datetime.timedelta(days=26),
-max_date_allowed = max_date,
-initial_visible_month =  max_date,
-date = max_date,
-display_format='D-MMM-YYYY',
-style={'textAlign': 'center', 'fontSize': '70%'}
-),
-],justify='center'), # R1943
+]),
 
 
 
+
+html.Div(className="control-unit", children=[
                                         
-html.H2(style={'marginTop': '20px'},className="fas fa-syringe"),
-html.H6(className="controls button", children=[
-' Vaccination starts ',
-dbc.Button(' ? ',
-color='primary',
-size='sm',
-id='popover-vaccination-target',
-style= {'cursor': 'pointer'}),
-],
-# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}
-),
+html.Div(html.Img(src='/assets/images/needle.png',className="img"),className="my-svg"),
+html.H6(className="control-title", children='Vaccination starts'),
+
+dbc.Button('?',
+        className='query-button',
+        id='popover-vaccination-target',
+        ),
 
 
-html.Div([
 dcc.Slider(
 id='vaccine-slider',
+className="component",
 min   = 0,
 max   = 9,
 step  = 3,
 marks = {i: 'Never' if i==0 else f'Month {str(i)}' if i==3 else str(i) for i in range(0,10,3)},
 value = 3,
-),
-],
 ),
 
 
@@ -251,7 +210,7 @@ dbc.PopoverHeader('Vaccination'),
 dbc.PopoverBody(dcc.Markdown(
 '''
 
-We assume a vaccine will not be available for 6 months.
+We assume a vaccine will not be available for 3 months.
 
 See how the introduction of a vaccine can drastically reduce the death toll if a sufficiently small proportion of the population have been infected.
 
@@ -265,22 +224,24 @@ target="popover-vaccination-target",
 placement='left',
 ),
 
+]),
 
 
-html.H2(style={'marginTop': '20px'},className="fas fa-user-md"),
-html.H6(className="controls button", children=[
-' Critical Care Capacity Increase ',
-dbc.Button(' ? ',
-color='primary',
-size='sm',
-id='popover-cc-care-target',
-style= {'cursor': 'pointer','marginBottom': '2px'}),
-],
-# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}
-),
+
+
+html.Div(className="control-unit", children=[
+
+html.Div(html.Img(src='/assets/images/hosp.png',className="img"),className="my-svg"),
+html.H6(className="control-title", children='Critical care capacity increase'),
+
+dbc.Button('?',
+        className='query-button',
+        id='popover-cc-care-target',
+        ),
 
 dcc.Slider(
 id='ICU-slider',
+className="component",
 min = 0,
 max = 5,
 step = 1,
@@ -306,29 +267,58 @@ target="popover-cc-care-target",
 placement='top',
 ),
 
+]),
 
 
 
-html.H2(style={'marginTop': '20px'},className="fas fa-chart-area"),
-html.H6(className="controls",children=' Results Type ',
-# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}
+
+
+html.Div(className="control-unit", children=[
+
+html.Div(html.Img(src='/assets/images/calendar.png',className="img"),className="my-svg"),
+html.H6(className="control-title", children='Model start date'),
+
+
+
+dcc.DatePickerSingle(
+id='model-start-date',
+className="component",
+min_date_allowed = min_date + datetime.timedelta(days=26),
+max_date_allowed = max_date,
+initial_visible_month =  max_date,
+date = max_date,
+display_format='D-MMM-YYYY',
+style={'display': 'block'}
 ),
 
-# style={'fontSize': '150%', 'marginTop': '30px', 'marginBottom': '30px','textAlign': 'center'}),
+]),
 
-html.Div([
+
+
+
+
+html.Div(className="control-unit", children=[
+
+html.Div(html.Img(src='/assets/images/results.png',className="img"),className="my-svg"),
+
+html.H6(className="control-title", children='Results type'),
+
+# html.Div([
 dcc.Dropdown(
 id = 'dropdown',
-options=[{'label': 'Disease Progress Curves','value': 'DPC_dd'},
-{'label': 'Bar Charts','value': 'BC_dd'},
-{'label': 'Strategy Overview','value': 'SO_dd'},
+className="component",
+options=[{'label': 'Disease progress curves','value': 'DPC_dd'},
+{'label': 'Bar charts','value': 'BC_dd'},
+{'label': 'Strategy overview','value': 'SO_dd'},
 ],
 value= 'DPC_dd',
 clearable = False,
 searchable=False,
-style={'white-space':'nowrap'}
-),],
-style={'cursor': 'pointer', 'textAlign': 'center', 'marginBottom': '30px'}),
+style={'display': 'inline-block'}
+),
+# ],className="component-container"),
+
+]),
 
 
 
@@ -336,15 +326,14 @@ style={'cursor': 'pointer', 'textAlign': 'center', 'marginBottom': '30px'}),
 
 
 
-],
-width=True,
-style =  {'textAlign': 'center'}
-), # C1872
 
-],
-justify='center',
-style =  {'margin': '2px'}
-), # R1871
+
+
+
+
+
+
+
 
 ])
 
@@ -355,79 +344,25 @@ style =  {'margin': '2px'}
                                                                                                                                                                     
 
 
-control_choices_custom =  html.Div([
-    dbc.Row([ # 3R1871
-        dbc.Col([ # 3C1872
+control_choices_custom =  html.Div(children=[
 
 
 
 
 
-html.H4("Custom Options ",
-style={'marginBottom': '10px', 'textAlign': 'center', 'marginTop': '20px','fontSize': '120%'}),
 
 
 
 
-html.H6(className="controls", children='Number Of Strategies',
-            # style={'fontSize': '80%', 'marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}
-            ),
+html.Div(className="control-unit", children=[
 
-dbc.Row([ #R2225
-dbc.RadioItems(
-id = 'number-strats-radio',
-options=[
-{'label': 'One', 'value': 'one'},
-{'label': 'Two', 'value': 'two'},
-],
-value= 'one',
-inline=True,
-labelStyle = {'fontSize': '70%'}
-),
-],justify='center'), #R2225
+html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
 
-
-
-html.H6(className="controls button", children=[
-'Infection Rate ',
-dbc.Button(' ? ',
-color='primary',
-size='sm',
-id = 'popover-inf-rate-target',
-style= {'cursor': 'pointer','marginBottom': '2px'}),
-],
-# style={'fontSize': '80%','marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}
-),
-
-
-dbc.Popover(
-[
-dbc.PopoverHeader('Infection Rate'),
-dbc.PopoverBody(dcc.Markdown(
-'''
-
-The *infection rate* relates to how quickly the disease is transmitted. **Control** measures affect transmission/infection rates (typically lowering them).
-
-Adjust by choosing a preset strategy  or making your own custom choice ('**Control Type**').
-
-''',
-style={'textAlign': 'justify'}
-),),
-],
-id = "popover-inf-rate",
-is_open=False,
-target="popover-inf-rate-target",
-placement='top',
-),
-
-
-
-
-html.H2(style={'marginTop': '10px'},className="fas fa-skull-crossbones"),
-html.Div(id='strat-lr-infection',style = {'textAlign': 'center','fontSize': '80%'}),
+html.H6(id='strat-lr-infection', className="control-title"),
 
 dcc.Slider(
 id='low-risk-slider',
+className="component",
 min=0,
 max=len(params.fact_v)-1,
 step = 1,
@@ -435,11 +370,19 @@ marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fa
 value=initial_lr,
 ),
 
-html.H2(style={'marginTop': '20px'},className="fas fa-skull-crossbones"),
-html.Div(id='strat-hr-infection',style = {'textAlign': 'center','fontSize': '80%'}),
+]),
+
+
+
+html.Div(className="control-unit", children=[
+
+html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
+
+html.H6(id='strat-hr-infection', className="control-title"),
 
 dcc.Slider(
 id='high-risk-slider',
+className="component",
 min=0,
 max=len(params.fact_v)-1,
 step = 1,
@@ -447,17 +390,40 @@ marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fa
 value=initial_hr,
 ),
 
+]),
+
+html.Div(className="control-unit", children=[
+
+html.Div(html.Img(src='/assets/images/strats.png',className="img"),className="my-svg"),
+
+html.H6(className="control-title", children='Number Of Strategies'),
+
+dbc.RadioItems(
+id = 'number-strats-radio',
+className="component radioitem",
+options=[
+{'label': 'One', 'value': 'one'},
+{'label': 'Two', 'value': 'two'},
+],
+value= 'one',
+),
+
+]),
 
 
+html.Div([ # Div2258
 
 
-dbc.Col([ # 3C2258
+html.Div(className="control-unit", children=[
 
-html.H6(className="controls",children=' Strategy Two: Low Risk Infection Rate (%) '),
-# style={'fontSize': '80%','textAlign': 'center'}),
+html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
+
+
+html.H6(className="control-title",children='Strategy two: low risk infection rate (%)'),
 
 dcc.Slider(
 id='low-risk-slider-2',
+className="component",
 min=0,
 max=len(params.fact_v)-1,
 step = 1,
@@ -465,17 +431,31 @@ marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fa
 value=5,
 ),
 
-html.H6(className="controls",children=' Strategy Two: High Risk Infection Rate (%) ', style = {'fontSize': '80%','textAlign': 'center'}),
+]),
+
+
+html.Div(className="control-unit", children=[
+
+html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
+
+
+html.H6(className="control-title",children='Strategy two: high risk infection rate (%)'),
 
 dcc.Slider(
 id='high-risk-slider-2',
+className="component",
 min=0,
 max=len(params.fact_v)-1,
 step = 1,
 marks={i: '{0:,.0f}'.format(100*params.fact_v[i]) for i in range(0,len(params.fact_v),2)}, #str(5) if i == 0 else 
 value=8,
 ),
-],width=True, # 3C2258
+
+]),
+
+
+
+], # Div2258
 id='strat-2-id'),
 
 
@@ -484,18 +464,6 @@ id='strat-2-id'),
 
 
 
-
-
-
-],
-width=True,
-style={'textAlign': 'center'},
-), # 3C1872
-
-],
-justify='center',
-style =  {'margin': '2px'}
-), # 3R1871
 
 ])
 
@@ -509,24 +477,19 @@ style =  {'margin': '2px'}
 
 
 
-control_choices_lockdown =  html.Div([
-    dbc.Row([ # 2R1871
-        dbc.Col([ # 2C1872
+control_choices_lockdown =  html.Div(children=[
 
 
-html.H4("Lockdown Cycle Options ",style={'marginBottom': '10px', 'textAlign': 'center' ,'marginTop': '20px','fontSize': '120%'}),
+html.Div(className="control-unit", children=[
 
+html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
 
+html.H6(className="control-title", children='Groups allowed out of lockdown'),
 
-
-html.H6(className="controls button", children=['Groups allowed out of lockdown ',
-dbc.Button(' ? ',
-color='primary',
-size='sm',
-id='popover-groups-allowed-target',
-style= {'cursor': 'pointer','marginBottom': '2px'}),
-]),
-# style={'fontSize': '80%','marginTop': '10px', 'marginBottom': '10px', 'textAlign': 'center'}),
+dbc.Button('?',
+        className='query-button',
+        id='popover-groups-allowed-target',
+        ),
 
 
 dbc.Popover(
@@ -550,45 +513,47 @@ placement='top',
 ),
 
 
-dbc.Row([ # 2R2088
+
 dbc.RadioItems(
 id = 'hr-ld',
+className="component radioitem",
 options=[
-{'label': 'Low Risk Only', 'value': 0},
-{'label': 'Both Groups', 'value': 1},
+{'label': 'Low risk only', 'value': 0},
+{'label': 'Both groups', 'value': 1},
 ],
 value= 1,
-inline=True,
-labelStyle = {'fontSize': '70%'}
+# inline=True,
 ),
-],justify='center'),  # 2R2088
 
 
-
-                                                        
-html.H2(style={'marginTop': '20px'},className="fas fa-clock"),
-html.H6(className="controls button", children=[
-    ' Cycle: Time On ',
-dbc.Button(' ? ',
-color='primary',
-size='sm',
-id='popover-cycles-on-target',
-style= {'cursor': 'pointer','marginBottom': '2px'}),
 ]),
-# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
+
+
+
+html.Div(className="control-unit", children=[
+                                                        
+# html.H2(className="fas fa-clock my-svg"),
+html.Div(html.Img(src='/assets/images/clock.png',className="img"),className="my-svg"),
+html.H6(className="control-title", children='Cycle: time on'),
+
+dbc.Button('?',
+        className='query-button',
+        id='popover-cycles-on-target',
+        ),
 
 dcc.Slider(
 id='cycle-on',
+className="component",
 min = 1,
 max = 8,
 step = 1,
-marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
+marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9,2)},
 value=3,
 ),
 
 dbc.Popover(
 [
-dbc.PopoverHeader('Lockdown Cycles: Time On'),
+dbc.PopoverHeader('Lockdown cycles: time on'),
 dbc.PopoverBody(dcc.Markdown(
 '''
 
@@ -606,30 +571,34 @@ target="popover-cycles-on-target",
 placement='top',
 ),
 
-
-html.H2(style={'marginTop': '20px'},className="fas fa-clock"),
-html.H6(className="controls button", children=[
-    ' Cycle: Time Off ',
-dbc.Button(' ? ',
-color='primary',
-size='sm',
-id='popover-cycles-off-target',
-style= {'cursor': 'pointer','marginBottom': '2px'}),
 ]),
-# style={'fontSize': '80%', 'marginBottom': '10px', 'textAlign': 'center'}),
+
+
+
+html.Div(className="control-unit", children=[
+
+# html.H2(className="fas fa-clock my-svg"),
+html.Div(html.Img(src='/assets/images/clock.png',className="img"),className="my-svg"),
+html.H6(className="control-title", children='Cycle: time off'),
+
+dbc.Button('?',
+        className='query-button',
+        id='popover-cycles-off-target',
+        ),
 
 dcc.Slider(
 id='cycle-off',
+className="component",
 min = 1,
 max = 8,
 step = 1,
-marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9)},
+marks={i: 'Weeks: ' + str(i) if i==1 else str(i) for i in range(1,9,2)},
 value=3,
 ),
 
 dbc.Popover(
 [
-dbc.PopoverHeader('Lockdown Cycles: Time Off'),
+dbc.PopoverHeader('Lockdown cycles: time off'),
 dbc.PopoverBody(dcc.Markdown(
 '''
 
@@ -647,17 +616,7 @@ target="popover-cycles-off-target",
 placement='top',
 ),
 
-
-
-],
-width=True,
-style={'textAlign': 'center'},
-), # 2C1872
-
-],
-justify='center',
-style =  {'margin': '2px'}
-), # 2R1871
+]),
 
 ])
 
@@ -673,7 +632,7 @@ dpc_content = html.Div([
             ],
             style={'margin': '10px'}
             ),
-        className="inter-card"
+        className="inter-card plotted"
         ),
 
 
@@ -866,18 +825,15 @@ barChart_content =  dbc.Col([
 
 
 controls = dbc.Card([
+        html.Div(className="control-tabs",children=[
         
-dbc.Row([
-    dbc.Col([
-
-        html.Div(Control_text),
 
         dbc.Row([
             dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
             
             dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
                             color='primary',
-                            className='mb-3',
+                            className='mb-3 plot-button',
                             id="plot-button",
                             size='lg',
                             style = {'cursor': 'pointer'}),
@@ -886,6 +842,8 @@ dbc.Row([
         
         ],
         justify='center'),
+        
+        html.Div(Control_text),
                                                                 
         dbc.Tabs(
             active_tab='tab_main',
@@ -910,16 +868,10 @@ dbc.Row([
                         tab_style = {'textAlign': 'center', 'cursor': 'pointer'},
                         children=control_choices_other
                         ),
-            ]) # end of tabs
+            ]), # end of tabs
 
-        ],
-        width=12,
-        style={'margin': '5px'}
-        )
-],
-justify='center'
-),
-                                                                
+]),
+
 ],
 className="inter-card",
 )
@@ -992,61 +944,21 @@ layout_inter = html.Div([
 
 
 
+    html.Div(textCard,
+    style={'marginBottom': '20px'}
+    ),
 
 
 
-
-
-
-                                    
-
-
-                                        dbc.Row([ # R2599
-                                            dbc.Col([
-                                                    html.Div(textCard,
-                                                    style={'marginBottom': '10px'}
-                                                    ),
-
-
-
-                                                    dbc.Row([
-                                                        dbc.Col([
-                                                        html.Div(controls,
-                                                        style={'marginTop': '10px'}
-                                                        )
-                                                        ],
-                                                        width=12,
-                                                        lg=3
-                                                        ),
-
-                                                        dbc.Col([
-                                                            html.Div(dpc_content,id='DPC-content',style={'marginTop': '10px'}),  
-                                                            html.Div(barChart_content,id='bc-content',style={'display': 'none', 'marginTop': '10px'}),
-                                                            html.Div(id='strategy-outcome-content',style={'display': 'none', 'marginTop': '10px'}),
-                                                        ],
-                                                        width=12,
-                                                        lg=9
-                                                        )
-                                                    ],
-                                                    )
-                                            ],
-                                            width=True,
-                                            ),
-
-
-                                        ],
-                                        justify='center',
-                                        style={'margin': '20px'}
-                                        ),  # R2599
-
-
-                                        
-
-#########################################################################################################################################################
-                                                                                                                                                             
-
-
+    html.Div(controls,className="controlcard"),
+    
+    html.Div([
+    html.Div(dpc_content,id='DPC-content',style={'marginTop': '10px'}),  
+    html.Div(barChart_content,id='bc-content',style={'display': 'none', 'marginTop': '10px'}),
+    html.Div(id='strategy-outcome-content',style={'display': 'none', 'marginTop': '10px'}),
     ],
-    style={'fontSize': '11', 'marginBottom': '40px'},
-    )
+    className="plots"),
+
+
+    ],className="interactive-layout")
 
