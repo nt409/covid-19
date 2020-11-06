@@ -12,6 +12,20 @@ body {
 }
 
 
+h3, h4 {
+    font-weight: 540;
+    text-align: left;
+    color: rgb(50, 50, 50);
+}
+
+h3 {
+    font-size: 1.5em;
+}
+
+h4 {
+    font-size: 1.15em;
+}
+
 h6 {
     font-size: 0.85em;
     margin-bottom: 2%;
@@ -19,9 +33,12 @@ h6 {
 }
 
 i, p {
+    font-family: 'Montserrat', sans-serif;
     font-size: 0.85em;
     line-height: 1.4em;
 }
+
+
 
 
 .tab.nav-link {
@@ -39,10 +56,28 @@ i, p {
 
 .plot-button {
     padding: 0.5rem 1rem;
+    width: 142px;
     font-size: 1.3rem;
     border-radius: 2.6em;
     /* padding: 0; */
 }
+
+
+
+
+.inter-title {
+    padding: 0;
+    text-align: left;
+    margin-top: 1rem;
+}
+
+.interactive-text {
+    text-align: justify;
+    margin: 1em 0;
+    line-height: 1.3em;
+    color: rgb(140, 140, 140);
+}
+
 
 
 
@@ -80,7 +115,7 @@ i, p {
 
 
 .controlcard {
-    /* display: block; */
+    float: left;
     width: 100%;
     /* padding: 0; */
 }
@@ -112,8 +147,8 @@ i, p {
  /* plot */
  .figure-container {
     display: block;
-    margin: 10px;
-    padding: 2px;
+    margin-bottom: 20px;
+    padding: 15px;
     width: 100%;
     height: 450px;
     z-index: 1;
@@ -128,8 +163,8 @@ i, p {
 
 
 .fig-title {
-    font-size: 1.2em;
-    margin: 0.6em 0 0.1em 0;
+    margin-top: 0.6em;
+    padding-left: 15px;
 }
 
 
@@ -186,6 +221,9 @@ header {
     float: right;
 }
 
+.spinner {
+    z-index: 1;
+}
 
 
 .fas.fa-bars.menubar{
@@ -241,21 +279,21 @@ header {
 
 
 /* tablet */
-@media only screen and (min-width: 600) {
+/* @media only screen and (min-width: 600px) {
 
-    .figure-container {
-        object-fit: cover;
-        width: 700px;
-        height: 450px;
+    .control-unit {
+        display: flex;
+        justify-self: right;
+        width: 90%;
     }
 
-}
+} */
 
 
 /* big screen */
 @media only screen and (min-width: 1024px) {
 
-    .show-desktop{
+    .show-desktop {
         display: flex;
     }
 
@@ -264,7 +302,7 @@ header {
     }
 
     .controlcard {
-    float: left;
+    justify-content: left;
     width: 330px;
     margin-right: 20px;
     }
@@ -272,11 +310,6 @@ header {
     .plots {
         display: inline;
         width: 100%;
-    }
-
-    .interactive-layout {
-        margin: 20px;
-        padding: 0px 20px 500px 20px;
     }
 
     .component {
@@ -305,4 +338,37 @@ header {
         grid-row: 3;
     
     }
+
+    .interactive-layout {
+        margin: 20px;
+        padding-bottom: 500px;
+    }
+
+}
+
+@media only screen and (min-width: 1300px){
+    
+    .interactive-layout {
+        width: 1200px;
+    }
+    
+    .figure-container {
+        width: 700px;
+        height: 450px;
+    }
+
+    .interactive-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .inter-title {
+        padding-left: 80px;
+    }
+
+    .interactive-text {
+        padding-left: 80px;
+    }
+
+
 }

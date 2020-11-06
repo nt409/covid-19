@@ -142,7 +142,7 @@ app.layout = html.Div([
         
         html.Div(style={'height': '2vh', 'display': 'block'}),
 
-        dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg'),
+        dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg',className="spinner"),
 
         html.Div(id='page-content',children=layout_enter),
 
@@ -255,8 +255,11 @@ def display_page(pathname):
         return [layout_inter, None]
     elif pathname == '/tests':
         return [layout_tests, None]
-    else:
+    elif pathname in ['','/','/enter']:
         return [layout_enter, None]
+    else:
+        return [None, None]
+
 
 ########################################################################################################################
 # collapse
@@ -1394,7 +1397,7 @@ def calculate_test_probs(plot_button,prior,sens,spec):
 
 if __name__ == '__main__':
     # app.run_server(debug=True)
-    app.run_server(debug=False)
+    app.run_server(debug=True)
     # raise PreventUpdate !!!
 
 

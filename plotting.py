@@ -957,6 +957,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
     layout = go.Layout(
                     annotations=annotz,
                     shapes=shapez,
+                    autosize= False,
                     barmode = 'stack',
                     template="simple_white",
                     font = dict(size=font_size),
@@ -969,11 +970,11 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
                                             dict(
                                                 buttons= CategoryList,
-                                            x= 0.99,
-                                            xanchor="left",
+                                            x= 0.07,
+                                            xanchor="center",
                                             # pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                             active=0,
-                                            y=-0.125,
+                                            y=-0.350,
                                             showactive=True,
                                             direction='up',
                                             yanchor="top"
@@ -998,11 +999,11 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     method="relayout"
                                                 )
                                         ]),
-                                        x= 0.99,
-                                        xanchor="left",
+                                        x= 0.93,
+                                        xanchor="center",
                                         # pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
-                                        y=0,
+                                        y=-0.20,
                                         showactive=True,
                                         direction='up',
                                         yanchor="top"
@@ -1050,11 +1051,11 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     method="update"
                                                 )
                                         ]),
-                                        x= 0.99,
-                                        xanchor="left",
+                                        x= 0.93,
+                                        xanchor="center",
                                         # pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
-                                        y=-0.25,
+                                        y=-0.35,
                                         showactive=True,
                                         direction='up',
                                         yanchor="top"

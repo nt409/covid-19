@@ -624,7 +624,9 @@ placement='top',
 #########################################################################################################################################################
 
 dpc_content = dbc.Card([
+            
             html.H4('What might happen if strategy "Lockdown" were used for 2 months in the UK?',id='graph-title', className="fig-title"),
+            
             html.Div([
             dcc.Graph(figure=dummy_figure,id='line-plot-2'),
             ],
@@ -875,25 +877,18 @@ className="inter-card",
 
 
 
-textCard = dbc.Card([
-dbc.Row([
+# textCard = dbc.Card([
+textCard = dbc.Row([
     dbc.Col([
-    html.H4(
-        "Interactive interface; explore potential effects of different control strategies.",
-        style={'marginBottom': '20px', 'textAlign': 'center' ,'marginTop': '20px','fontSize': '120%'}),
-        
+    html.H3("How should we control covid?",className="inter-title"),
 
     html.P(
         'The model predicts how the epidemic will progress, depending on the disease status of members of the population within each country.',
-        style={'textAlign': 'center', 'marginTop': '1em', 'marginBottom': '1em'}),
-            
-    html.H4(
-        "Use the sliders and dropdowns below to change the control strategy.",
-        style={'marginBottom': '20px', 'textAlign': 'center','marginTop': '20px','fontSize': '120%'}),
-        
+        className="interactive-text"),
+
     html.P(
         'Compare the effect of different strategies on the predicted number of infections, hospitalisations, and deaths.',
-        style={'textAlign': 'center', 'marginTop': '1em', 'marginBottom': '1em'}),
+        className="interactive-text"),
 
     html.Div(id='worked-div'),
 
@@ -906,9 +901,9 @@ dbc.Row([
 justify='center'
 ),
 
-],
-className="inter-card"
-)
+# ],
+# className="inter-card"
+# )
 
 
 
@@ -930,7 +925,7 @@ className="inter-card"
 
 
 
-layout_inter = html.Div([
+layout_inter = html.Div([html.Div([
                     # store results
                     dcc.Store(id='sol-calculated-do-nothing-cache'),
                     dcc.Store(id='prev-deaths-cache'),
@@ -958,4 +953,5 @@ layout_inter = html.Div([
 
 
     ],className="interactive-layout")
+    ],className="interactive-container")
 

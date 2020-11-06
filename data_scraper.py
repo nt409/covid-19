@@ -3,13 +3,19 @@ from collections import Counter
 
 from data_constants import COUNTRY_NAME_TO_CODE, MONTHS_DICT, WORLDOMETER_NAME
 
-try:
-    import COVID19Py
-    covid19 = COVID19Py.COVID19()
-    USE_API = True
-except Exception as e:
-    print("Failed to use COVID19 Python API", e)
-    USE_API = False
+def get_USE_API():
+    try:
+        import COVID19Py
+        covid19 = COVID19Py.COVID19()
+        USE_API = True
+        return USE_API, covid19
+
+    except Exception as e:
+        print("Failed to use COVID19 Python API", e)
+        USE_API = False
+        return USE_API, None
+
+
 
 COUNTRY_LIST_WORLDOMETER = ['world', 'afghanistan', 'albania', 'algeria', 'andorra', 'angola', 'anguilla',
                             'antigua-and-barbuda', 'argentina', 'armenia', 'aruba', 'australia', 'austria',
@@ -55,7 +61,8 @@ def get_data(country_name):
             return data
         except Exception as e:
             print(f"Could not retrieve data from Worldometer, trying JHU...{e}")
-
+    
+    USE_API = get_USE_API()[0]
     if not USE_API:
         return None
     data = get_data_from_api(country_name)
@@ -67,6 +74,9 @@ def get_data(country_name):
 
 def get_data_from_api(country_name):
     country_code = COUNTRY_NAME_TO_CODE[country_name]
+    
+    covid19 = get_USE_API()[1]
+    
     locations = covid19.getLocationByCountryCode(country_code, timelines=True)
 
     confirmed_dict = Counter()
