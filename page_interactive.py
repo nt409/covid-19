@@ -117,7 +117,7 @@ control_choices_main = html.Div(children=[
                 min=0,
                 max=floor(params.max_months_controlling),
                 step=1,
-                marks={i: str(i) if i!=0 else 'Now' for i in range(0,floor(params.max_months_controlling)+1,3)},
+                marks={i: f'{str(i)} months' if i==9 else str(i) if i!=0 else 'Now' for i in range(0,floor(params.max_months_controlling)+1,3)},
                 value=[0,2],
     ),
 
@@ -623,20 +623,16 @@ placement='top',
 
 #########################################################################################################################################################
 
-dpc_content = html.Div([
-
-        dbc.Card(
+dpc_content = dbc.Card([
+            html.H4('What might happen if strategy "Lockdown" were used for 2 months in the UK?',id='graph-title', className="fig-title"),
             html.Div([
-            html.H4(id='graph-title', style={'fontSize': '120%'}),
-            dcc.Graph(figure=dummy_figure,id='line-plot-2'), # ,style={'height': '100px', 'width': '100%'}),
+            dcc.Graph(figure=dummy_figure,id='line-plot-2'),
             ],
-            style={'margin': '10px'}
+            className='figure-container'
             ),
+        ],
         className="inter-card plotted"
-        ),
-
-
-    ])
+        )
 
 
 
@@ -825,15 +821,15 @@ barChart_content =  dbc.Col([
 
 
 controls = dbc.Card([
-        html.Div(className="control-tabs",children=[
-        
 
-        dbc.Row([
+    html.Div([
+
+        dbc.Row(className="plot-button-container", children = [
             dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
             
             dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
                             color='primary',
-                            className='mb-3 plot-button',
+                            className='plot-button',
                             id="plot-button",
                             size='lg',
                             style = {'cursor': 'pointer'}),
@@ -843,7 +839,7 @@ controls = dbc.Card([
         ],
         justify='center'),
         
-        html.Div(Control_text),
+        html.Div(Control_text,className="cont-text"),
                                                                 
         dbc.Tabs(
             active_tab='tab_main',
@@ -868,9 +864,10 @@ controls = dbc.Card([
                         tab_style = {'textAlign': 'center', 'cursor': 'pointer'},
                         children=control_choices_other
                         ),
-            ]), # end of tabs
+            ],className="control-tabs"), # end of tabs
 
-]),
+    ],
+    className='grid-container')
 
 ],
 className="inter-card",

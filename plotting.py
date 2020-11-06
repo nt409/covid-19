@@ -595,7 +595,7 @@ def lineplot(sols,population_plot,startdate,num_strat,comp_dn):
         else:
             for name in cats_to_plot:
                 for group in group_use:
-                    if name in ['H','C']:
+                    if name in ['H','D']:
                         vis = True
                     else:
                         vis = False
@@ -959,8 +959,9 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                     shapes=shapez,
                     barmode = 'stack',
                     template="simple_white",
-                    font = dict(size= font_size),
-                    margin=dict(t=5, b=5, l=10, r=10,pad=15),
+                    font = dict(size=font_size),
+                    margin=dict(t=0, b=0, l=0, r=0,
+                                pad=0),
                     yaxis= yAxisLinear,
                     hovermode='x',
                     xaxis= xAx2Year,
@@ -968,11 +969,11 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
                                             dict(
                                                 buttons= CategoryList,
-                                            x= 0.01,
-                                            xanchor="right",
-                                            pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                            x= 0.99,
+                                            xanchor="left",
+                                            # pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                             active=0,
-                                            y=-0.13,
+                                            y=-0.125,
                                             showactive=True,
                                             direction='up',
                                             yanchor="top"
@@ -997,11 +998,11 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     method="relayout"
                                                 )
                                         ]),
-                                        x= 0.5,
-                                        xanchor="center",
-                                        pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                        x= 0.99,
+                                        xanchor="left",
+                                        # pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
-                                        y=-0.13,
+                                        y=0,
                                         showactive=True,
                                         direction='up',
                                         yanchor="top"
@@ -1051,9 +1052,9 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                         ]),
                                         x= 0.99,
                                         xanchor="left",
-                                        pad={"r": 5, "t": 30, "b": 10, "l": 5},
+                                        # pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
-                                        y=-0.13,
+                                        y=-0.25,
                                         showactive=True,
                                         direction='up',
                                         yanchor="top"
