@@ -147,7 +147,7 @@ app.layout = html.Div([
         
         html.Div(style={'height': '2vh', 'display': 'block'}),
 
-        dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg',className="spinner"),
+        dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg'),
 
         html.Div(id='page-content',children=layout_enter),
 
