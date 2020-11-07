@@ -1,6 +1,3 @@
-from matplotlib import colors as mcolors
-
-
 MONTHS_DICT = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
                'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
 
@@ -609,4 +606,4 @@ initial_country = COUNTRY_LIST_NICK.index('uk')
 
 COLOURS = ['#1f77b4','#ff7f0e', '#2ca02c','#9467bd', '#8c564b', '#e377c2', '#d62728', '#7f7f7f', '#bcbd22', '#17becf',
            'blue', 'purple', 'pink', 'cyan', '#FF1493', 'navy', '#aaffc3', '#228B22', '#aa6e28', '#FFA07A',
-           ] + list(mcolors.CSS4_COLORS.keys())
+           ]*2 # + list(mcolors.CSS4_COLORS.keys())

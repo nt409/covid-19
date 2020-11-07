@@ -28,17 +28,15 @@ annotz = [dict(x  = 0.5,
                     yref = 'paper',
         )]
 
-scatter = go.Scatter(
+scatter = dict(
                     x = [0,1],
                     y = [0,1],
                     mode = 'lines',
                     showlegend=False,
                     line = {'width': 0},
-                    # legendgroup = listings[key]['host'],
-                    # opacity=1,
                     )
-
-dummy_figure = go.Figure(data=[scatter], layout= {'template': 'simple_white', 'annotations': annotz, 'xaxis': {'fixedrange': True}, 'yaxis': {'fixedrange': True}})
+                    
+dummy_figure = dict(data=[scatter], layout= {'template': 'simple_white', 'annotations': annotz, 'xaxis': {'fixedrange': True}, 'yaxis': {'fixedrange': True}})
 
 
 

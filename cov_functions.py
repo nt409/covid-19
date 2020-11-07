@@ -6,7 +6,6 @@ import dash_bootstrap_components as dbc
 from math import ceil
 import numpy as np
 from scipy.integrate import ode
-from scipy.stats import gamma
 import datetime
 
 from config import presets_dict
@@ -270,8 +269,6 @@ def run_model(I0,R0,H0,C0,D0,
 
 #--------------------------------------------------------------------
 
-# y = run_model(0.01,0,0,0,0)
-# print(y)
 
 
 

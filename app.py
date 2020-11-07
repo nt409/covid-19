@@ -5,17 +5,22 @@ from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 
 from dash.exceptions import PreventUpdate
-from gevent.pywsgi import WSGIServer
+# from gevent.pywsgi import WSGIServer
+
 import pandas as pd
-from math import floor, ceil, exp
+from math import ceil, exp
 import numpy as np
 import plotly.graph_objects as go
 import copy
-from flask import Flask
-from flask_caching import Cache
+# from flask import Flask
+# from flask_caching import Cache
 import datetime
 import json
-from json import JSONEncoder
+
+
+# import time
+# start_time = time.time()
+# print(f"{time.time()-start_time} seconds")
 
 from parameters_cov import params
 
@@ -27,18 +32,18 @@ from cov_functions import run_model, test_probs, begin_date, \
     outcome_fn
 
 from plotting import Bar_chart_generator, MultiFigureGenerator, \
-    longname, month_len, extract_info, test_bar_plot, test_bar_plot2
+    month_len, extract_info, test_bar_plot, test_bar_plot2
 
-from data_scraper import get_data, COUNTRY_LIST_WORLDOMETER
+from data_scraper import get_data
 from data_constants import POPULATIONS, COUNTRY_LIST, \
     COUNTRY_LIST_NICK, COLOURS
+
 
 from page_landing import layout_enter
 from page_intro import layout_intro
 from page_interactive import layout_inter
 from page_data import layout_data
 from page_tests import layout_tests
-
 
 
 
@@ -309,22 +314,25 @@ app.callback(Output(f"nav-menu", "is_open"),
     [
     Input('number-strats-radio', 'value'),
     Input('preset', 'value'),
-    ])
-def invisible_or_not(num,preset):
+    ],
+    [State('page-url', 'pathname')]
+    )
+def invisible_or_not(num,preset,pathname):
 
-
+    if not pathname in ['inter','/inter']:
+        raise PreventUpdate
 
 
     if num=='two':
-        strat_H = [html.H6('Strategy one: high risk infection rate (%)',className="control-title"),]
-        strat_L = [html.H6('Strategy one: low risk infection rate (%)',className="control-title"),]
+        strat_H = 'Strategy one: high risk infection rate (%)'
+        strat_L = 'Strategy one: low risk infection rate (%)'
         says_strat_2 = None
 
     else:
 
-        strat_H = [html.H6('High risk infection rate (%)',className="control-title"),]
+        strat_H = 'High risk infection rate (%)'
 
-        strat_L = [html.H6('Low risk infection rate (%)',className="control-title"),]
+        strat_L = 'Low risk infection rate (%)'
 
         says_strat_2 = {'display': 'none'}
 
@@ -361,10 +369,13 @@ def invisible_or_not(num,preset):
             [
             Input('preset', 'value'),
             ],
-            [State('number-strats-radio','value')])
-def preset_sliders(preset,number_strs):
+            [State('number-strats-radio','value'),
+            State('page-url', 'pathname')])
+def preset_sliders(preset,number_strs,pathname):
 
     # print('preset sliders')
+    if not pathname in ['inter','/inter']:
+        raise PreventUpdate
 
     lockdown_cycles_dis = True
     options_lockdown_cycles = [
@@ -521,18 +532,8 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         max_date]
 
 
-
-@app.callback(
-    [Output('sol-calculated-do-nothing-cache', 'data'),
-    Output('prev-deaths-cache', 'data')],
-    [
-    Input('ICU-slider', 'value'),
-    Input('model-start-date', 'date'),
-    Input('model-country-choice', 'value'),
-    ])
 def find_sol_do_noth(ICU_grow,date,country_num):
     # @cache.memoize()  # in seconds
-    
     # print(dash.callback_context.triggered,'do nothing')
 
     try:
@@ -605,7 +606,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
                 Input('plot-button', 'n_clicks'),
                ],
                [
-                State('page-url', 'data'),
+                State('page-url', 'pathname'),
 
                 State('sol-calculated-do-nothing-cache', 'data'),
 
@@ -664,7 +665,13 @@ def render_interactive_content(plot_button,
                                 num_strat,
                                 vaccine_time,
                                 ICU_grow):
+    
 
+    if not pathname in ['inter','/inter']:
+        raise PreventUpdate
+
+    # could cache these
+    sol_do_nothing, prev_deaths = find_sol_do_noth(ICU_grow,date,country_num)
     # print(f'render {pathname}')
     sols, initial_conds, worked, worked_div, upper_lower_sol, min_date, max_date = find_sol(preset,
                     month,lr_in,hr_in,lr2_in,hr2_in,
@@ -683,8 +690,7 @@ def render_interactive_content(plot_button,
 
 
 
-    if pathname in ['/data','/intro','/home','/tests','/']:
-        raise PreventUpdate
+
 
 
 
@@ -1031,8 +1037,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                  align_daily_deaths_check, align_daily_deaths_input, pathname, saved_json_data, *args):
 
     # print('dan 2',dash.callback_context.triggered)
-
-    if pathname in ['/inter','/intro','/home','/tests','/']:
+    if not pathname in ['/data','data']:
         raise PreventUpdate
 
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
@@ -1356,9 +1361,13 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                 State('prior', 'value'),
                 State('sens', 'value'),
                 State('spec', 'value'),
+                State('page-url', 'pathname'),
             ],
             )
-def calculate_test_probs(plot_button,prior,sens,spec):
+def calculate_test_probs(plot_button,prior,sens,spec,pathname):
+    
+    if not pathname in ['/tests','tests']:
+        raise PreventUpdate
 
     true_pos, false_pos, true_neg, false_neg = test_probs(prior,sens,spec)
     
@@ -1394,10 +1403,8 @@ def calculate_test_probs(plot_button,prior,sens,spec):
 
 
 ########################################################################################################################
-
 if __name__ == '__main__':
+    app.run_server(debug=False)
     # app.run_server(debug=True)
-    app.run_server(debug=True)
-    # raise PreventUpdate !!!
 
 

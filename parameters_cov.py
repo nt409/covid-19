@@ -1,8 +1,5 @@
-from math import log, exp
 import numpy as np
 import pandas as pd
-from scipy.stats import gamma, norm
-from math import ceil
 #------------------------------------------------------------
 # age stats
 # https://www.ethnicity-facts-figures.service.gov.uk/uk-population-by-ethnicity/demographics/age-groups/latest

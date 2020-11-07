@@ -1,4 +1,3 @@
-import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -9,10 +8,9 @@ from math import floor
 from parameters_cov import params
 
 from config import presets_dict_dropdown, initial_hr, \
-    initial_lr, initial_strat, \
-    dummy_figure, bar_non_crit_style
+    dummy_figure, initial_lr, initial_strat, \
+    bar_non_crit_style
     
-
 from data_constants import COUNTRY_LIST_NICK, initial_country
 
 min_date = '2020-2-15' # first day of data
@@ -34,7 +32,6 @@ max_date = str(max_date).split(' ')[0]
 
 
 
-Control_text = html.Div('Change the options and press plot.',className="control-text-hint"),
 
 
 
@@ -279,17 +276,19 @@ html.Div(html.Img(src='/assets/images/calendar.png',className="img"),className="
 html.H6(className="control-title", children='Model start date'),
 
 
+html.Div([
+    dcc.DatePickerSingle(
+    id='model-start-date',
+    className="component",
+    min_date_allowed = min_date + datetime.timedelta(days=26),
+    max_date_allowed = max_date,
+    initial_visible_month =  max_date,
+    date = max_date,
+    display_format='D-MMM-YYYY',
+    style={'display': 'block'}
+    ),
+],className="date-container")
 
-dcc.DatePickerSingle(
-id='model-start-date',
-className="component",
-min_date_allowed = min_date + datetime.timedelta(days=26),
-max_date_allowed = max_date,
-initial_visible_month =  max_date,
-date = max_date,
-display_format='D-MMM-YYYY',
-style={'display': 'block'}
-),
 
 ]),
 
@@ -303,7 +302,6 @@ html.Div(html.Img(src='/assets/images/results.png',className="img"),className="m
 
 html.H6(className="control-title", children='Results type'),
 
-# html.Div([
 dcc.Dropdown(
 id = 'dropdown',
 className="component",
@@ -316,7 +314,6 @@ clearable = False,
 searchable=False,
 style={'display': 'inline-block'}
 ),
-# ],className="component-container"),
 
 ]),
 
@@ -625,10 +622,11 @@ placement='top',
 
 dpc_content = dbc.Card([
             
-            html.H4('What might happen if strategy "Lockdown" were used for 2 months in the UK?',id='graph-title', className="fig-title"),
+            html.H4('What might happen if strategy "Lockdown" were used for 2 months in the UK?', id='graph-title', className="fig-title"),
             
             html.Div([
             dcc.Graph(figure=dummy_figure,id='line-plot-2'),
+            
             ],
             className='figure-container'
             ),
@@ -826,22 +824,27 @@ controls = dbc.Card([
 
     html.Div([
 
-        dbc.Row(className="plot-button-container", children = [
-            dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
-            
+        html.Div([
+
             dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
                             color='primary',
                             className='plot-button',
                             id="plot-button",
                             size='lg',
                             style = {'cursor': 'pointer'}),
+
+            html.Div(dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
+                    id="item1"),
             
-            dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary'),
-        
-        ],
-        justify='center'),
-        
-        html.Div(Control_text,className="cont-text"),
+            html.Div(dbc.Spinner(html.Div(id="loading-line-output-1"),color='primary'),
+                    id="item2"),
+
+
+        ],className="spinner-container"),
+            
+
+            
+        html.Div('Change the options and press plot.', className="cont-text"),
                                                                 
         dbc.Tabs(
             active_tab='tab_main',
@@ -868,11 +871,11 @@ controls = dbc.Card([
                         ),
             ],className="control-tabs"), # end of tabs
 
-    ],
-    className='grid-container')
 
+    ],
+    className='grid-container'),
 ],
-className="inter-card",
+className="inter-card controls",
 )
 
 
@@ -883,7 +886,7 @@ textCard = dbc.Row([
     html.H3("How should we control covid?",className="inter-title"),
 
     html.P(
-        'The model predicts how the epidemic will progress, depending on the disease status of members of the population within each country.',
+        'The model predicts how the epidemic will progress, depending on the disease status of members of the population within each country. The starting point for the model updates daily.',
         className="interactive-text"),
 
     html.P(
@@ -949,7 +952,7 @@ layout_inter = html.Div([html.Div([
     html.Div(barChart_content,id='bc-content',style={'display': 'none', 'marginTop': '10px'}),
     html.Div(id='strategy-outcome-content',style={'display': 'none', 'marginTop': '10px'}),
     ],
-    className="plots"),
+    className="plotscard"),
 
 
     ],className="interactive-layout")
