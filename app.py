@@ -1096,10 +1096,20 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
             xaxis_title = ''
 
         layout_normal = {
-            'yaxis': {'title': axis_title, 'type': 'linear', 'showgrid': True},
-            'xaxis': {'title': xaxis_title, 'showgrid': True},
+            'yaxis': {'title': axis_title, 'type': 'linear', 'showgrid': True, 'fixedrange': True},
+            'xaxis': {'title': xaxis_title, 'showgrid': True, 'fixedrange': True},
             'showlegend': True,
-            'margin': {'l': 70, 'b': 100, 't': 0, 'r': 0},
+            'legend': dict(
+                x = 0.5,
+                font=dict(size=11),
+                y = 1.03,
+                xanchor= 'center',
+                yanchor= 'bottom'
+            ),
+            'height': '450px',
+            # 'margin': {'l': '15px', 'b': '20px', 't': '100px', 'r': '0px', 'pad': '0px'},
+            'margin': {'l': '0px', 'b': '0px', 't': '0px', 'r': '0px', 'pad': '0px'},
+
             'updatemenus': [
                 dict(
                     buttons=list([
@@ -1114,12 +1124,12 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                             method="relayout"
                         )
                     ]),
-                    direction="down",
+                    direction="up",
                     pad={"r": 10, "t": 10, "b": 10},
                     showactive=True,
-                    x=0,
-                    xanchor="left",
-                    y=1.2,
+                    x=0.1,
+                    xanchor="center",
+                    y=-0.1,
                     yanchor="top"
                 ),
             ]
@@ -1140,12 +1150,12 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                         method="update"
                     )
                 ]),
-                direction="down",
+                direction="up",
                 pad={"r": 10, "t": 10, "b": 10},
                 showactive=True,
-                x=0.2,
-                xanchor="left",
-                y=1.2,
+                x=0.9,
+                xanchor="center",
+                y=-0.1,
                 yanchor="top"
                 ),
             )
@@ -1331,10 +1341,21 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
             yaxis_title = f'New {title} per week'  # {l} days)'
             xaxis_title = f'Total {title}'
         layout_new_vs_total = {
-            'yaxis': {'title': yaxis_title, 'type': 'log', 'showgrid': True},
-            'xaxis': {'title': xaxis_title, 'type': 'log', 'showgrid': True},
+            'yaxis': {'title': yaxis_title, 'type': 'log', 'showgrid': True, 'automargin': True, 'fixedrange': True},
+            'xaxis': {'title': xaxis_title, 'type': 'log', 'showgrid': True, 'automargin': True, 'fixedrange': True},
             'showlegend': True,
-            'margin': {'l': 70, 'b': 100, 't': 50, 'r': 0},
+            'height': '450px',
+            'legend': dict(
+                        x = 0.5,
+                        font=dict(size=11),
+                        y = 1.03,
+                        xanchor= 'center',
+                        yanchor= 'bottom'
+                    ),
+            # 'margin': {'l': '15px', 'b': '20px', 't': '100px', 'r': '0px', 'pad': '0px'},
+            'margin': {'l': '0px', 'b': '0px', 't': '0px', 'r': '0px', 'pad': '0px'},
+
+
         }
         out.append({'data': fig_new_vs_total, 'layout': layout_new_vs_total})
 
@@ -1404,7 +1425,7 @@ def calculate_test_probs(plot_button,prior,sens,spec,pathname):
 
 ########################################################################################################################
 if __name__ == '__main__':
-    app.run_server(debug=False)
-    # app.run_server(debug=True)
+    # app.run_server(debug=False)
+    app.run_server(debug=True)
 
 

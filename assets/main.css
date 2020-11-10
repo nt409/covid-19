@@ -132,9 +132,7 @@ i, p {
 
 
 
-.clickit{
-    
-}
+
 
 .plotscard {
     display: block;
@@ -384,6 +382,36 @@ header {
         padding: 0 15px;
     }
 
+
+
+
+    .data-page-container{
+        display: grid;
+        grid-template-columns: 300px auto;
+        grid-template-areas: "countries graphs";
+
+        justify-content: space-between;
+    }
+
+    .data-country-picker {
+        display: inline-block;
+        width: 200px;
+        overflow-y: hidden;
+        height: auto;
+        margin: 10px 10px auto auto;
+        grid-area: countries;
+    }
+
+    .data-graphs {
+        display: inline-block;
+        margin: 0 auto 0 20px;
+        grid-area: graphs;
+        width: 80%;
+        justify-content: left;
+    }
+    
+    
+
 }
 
 
@@ -406,6 +434,22 @@ header {
 
     .interactive-text {
         padding-left: 80px;
+    }
+
+    .data-page-container{
+        grid-template-columns: 400px auto;
+    }
+
+    .data-country-picker {
+        width: 250px;
+    }
+
+    .data-graphs {
+        display: inline-block;
+        margin: 0 auto 0 20px;
+        grid-area: graphs;
+        width: 60%;
+        justify-content: left;
     }
 
 

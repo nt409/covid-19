@@ -1,0 +1,94 @@
+.data-graphs {
+    width: 95%;
+    text-align: center;
+    margin: 10px;
+    font-size: 0.9em;
+}
+
+.data-country-picker {
+    width: 100%;
+    text-align: left;
+    overflow-y: scroll;
+    height: 300px;
+    margin: 2px;
+    font-size: 0.9em;
+}
+
+
+.inter-card.country-picker {
+    padding: 10px;
+}
+
+.data-text {
+    text-align: justify;
+    padding-top: 2em;
+    color: rgb(80, 80, 80);
+}
+
+.align-countries {
+    display: grid;
+
+    grid-template-rows: auto;
+    grid-template-columns: repeat(3, auto);
+
+    align-content: space-between;
+    text-align: justify;
+    font-size: 0.75em;
+    margin: 5px;
+    color: rgb(80, 80, 80);
+}
+
+.align-container {
+    grid-column: 2;
+    align-self: end;
+    padding: 0 5px 1em 0;
+}
+
+.checkpoint-container {
+    grid-column: 1;
+}
+
+.percent-container {
+    grid-column: 3;
+    align-self: end;
+}
+
+.checklist-top {
+    padding: 0;
+    margin: 1px;
+}
+
+.data-fig {
+    margin-bottom: 50px;
+}
+
+.date-and-text {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px;
+    color: rgb(80, 80, 80);
+}
+
+.this-section {
+    text-align: justify;
+    margin: 0em 5px 1.5em;
+}
+
+.custom-control-label {
+    padding: 0;
+}
+
+.select-text {
+    text-align: justify;
+    margin: 0.5em 0;
+    color: rgb(100, 100, 100);
+}
+
+.plot-button.data {
+    margin-top: 1em;
+}
+
+.plot-title {
+    margin: 1em;
+    text-align: center;
+}
