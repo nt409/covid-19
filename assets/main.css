@@ -243,6 +243,37 @@ i, p {
     text-align: center;
 }
 
+.footer-links {
+    display: grid;
+}
+
+.footer-links {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: auto auto;
+    padding: 5px;
+}
+
+#footer-intro {
+    grid-row: 1;
+    grid-column: 1;
+}
+
+#footer-inter {
+    grid-row: 1;
+    grid-column: 2;
+}
+
+#footer-tests {
+    grid-row: 2;
+    grid-column: 1;
+}
+
+#footer-data {
+    grid-row: 2;
+    grid-column: 2;
+}
+
 
 
 
@@ -259,6 +290,7 @@ i, p {
 
     .header {
         justify-content: space-around;
+        /* padding: 10px; */
     }
     
     .other-links.hide-mobile {
@@ -287,6 +319,33 @@ i, p {
         width: 750px;
     }
 
+
+    .footer-links {
+        grid-template-rows: auto;
+        grid-template-columns: repeat(4, auto);
+        padding: 10px;
+        font-size: 1.1em;
+    }
+    
+    #footer-intro {
+        grid-row: 1;
+        grid-column: 1;
+    }
+    
+    #footer-inter {
+        grid-row: 1;
+        grid-column: 2;
+    }
+    
+    #footer-tests {
+        grid-row: 1;
+        grid-column: 3;
+    }
+    
+    #footer-data {
+        grid-row: 1;
+        grid-column: 4;
+    }
 
     .controlcard {
     justify-content: left;
@@ -444,6 +503,11 @@ i, p {
         align-self: start;
     }
 
+    .main-logo {
+        width: 200px;
+        height: 200px;
+    }
+
 
 }
 
@@ -453,6 +517,7 @@ i, p {
 @media only screen and (min-width: 1300px){
     
     .my-title {
+        /* padding: 0.1em auto 0.1em 150px; */
         margin: 0.1em auto 0.1em 150px;
     }
     

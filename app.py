@@ -104,36 +104,37 @@ app.layout = html.Div([
             className="my-title",
             ),
 
+            html.Div(html.A(className="fas fa-bars menubar hide-desktop"),id="menu-button"),
 
-            html.Nav(
-                children=[
 
-                        html.A(id="menu-button",className="fas fa-bars menubar hide-desktop"),
-
-                        html.Div([
-                            dbc.Collapse([
-                                html.Div(html.A("Background", href="/intro", className="navLink menu-dropdown")),
-                                html.Div(html.A("Interactive model", href="/inter", className="navLink menu-dropdown")),
-                                html.Div(html.A("Interpreting tests", href="/tests", className="navLink menu-dropdown")),
-                                html.Div(html.A("Real-time data", href="/data", className="navLink menu-dropdown")),
+            html.Div([
+                html.Nav(
+                    children=[
+                            html.Div([
+                                dbc.Collapse([
+                                    html.Div(html.A("Background", href="/intro", className="navLink menu-dropdown")),
+                                    html.Div(html.A("Interactive model", href="/inter", className="navLink menu-dropdown")),
+                                    html.Div(html.A("Interpreting tests", href="/tests", className="navLink menu-dropdown")),
+                                    html.Div(html.A("Real-time data", href="/data", className="navLink menu-dropdown")),
+                                ],
+                                id="nav-menu",
+                                is_open=False),
                             ],
-                            id="nav-menu",
-                            is_open=False),
-                        ],
-                        className="menu-dropdown"
-                        ),
-                        
-                        html.Div([
-                            html.A("Background", href="/intro", className="navLink"),
-                            html.A("Interactive model", href="/inter", className="navLink"),
-                            html.A("Interpreting tests", href="/tests", className="navLink"),
-                            html.A("Real-time data", href="/data", className="navLink"),
-                        ],
-                        className="other-links show-desktop hide-mobile",
-                        ),
-
+                            className="menu-dropdown",
+                            id="mobile-navs"
+                            ),
+                            
+                            html.Div([
+                                html.A("Background", href="/intro", className="navLink"),
+                                html.A("Interactive model", href="/inter", className="navLink"),
+                                html.A("Interpreting tests", href="/tests", className="navLink"),
+                                html.A("Real-time data", href="/data", className="navLink"),
+                            ],
+                            className="other-links show-desktop hide-mobile",
+                            ),
+                ]),
             ],
-            className="main-nav-links"
+            id="main-nav-links"
             ),
         
         ],
@@ -149,6 +150,15 @@ app.layout = html.Div([
         html.Div(id='page-content',children=layout_enter),
 
         html.Footer([
+
+        html.Div([
+                html.A("Background", href="/intro", className="footer-navlink", id="footer-intro"),
+                html.A("Interactive model", href="/inter", className="footer-navlink", id="footer-inter"),
+                html.A("Interpreting tests", href="/tests", className="footer-navlink", id="footer-tests"),
+                html.A("Real-time data", href="/data", className="footer-navlink", id="footer-data"),
+                ],
+                className="footer-links",
+                ),
 
         html.Div([
                         html.Div(["Contact us at: ", html.A('covid.at.plants@gmail.com',href='')]),
