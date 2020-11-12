@@ -879,8 +879,7 @@ className="inter-card controls",
 
 
 # textCard = dbc.Card([
-textCard = dbc.Row([
-    dbc.Col([
+textCard = html.Div([
     html.H3("How should we control covid?",className="inter-title"),
 
     html.P(
@@ -893,14 +892,7 @@ textCard = dbc.Row([
 
     html.Div(id='worked-div'),
 
-    ],
-    width=True,
-    style={'margin': '10px'}
-    )
-
-],
-justify='center'
-),
+],className="inter-text"),
 
 # ],
 # className="inter-card"
@@ -926,7 +918,7 @@ justify='center'
 
 
 
-layout_inter = html.Div([html.Div([
+layout_inter = html.Div(html.Div([
                     # store results
                     dcc.Store(id='sol-calculated-do-nothing-cache'),
                     dcc.Store(id='prev-deaths-cache'),
@@ -954,5 +946,5 @@ layout_inter = html.Div([html.Div([
 
 
     ],className="interactive-layout")
-    ],className="interactive-container")
+    ,className="interactive-container")
 

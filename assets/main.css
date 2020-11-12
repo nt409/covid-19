@@ -78,7 +78,6 @@ i, p {
 
 
 .inter-title {
-    padding: 0;
     text-align: left;
     margin-top: 1rem;
 }
@@ -292,7 +291,9 @@ i, p {
         justify-content: space-around;
         /* padding: 10px; */
     }
+
     
+
     .other-links.hide-mobile {
         margin: 0.1em 15px auto auto;
     }
@@ -382,7 +383,7 @@ i, p {
     }
 
     .interactive-layout {
-        margin: 20px;
+        margin: 30px;
         padding-bottom: 400px;
     }
 
@@ -391,32 +392,39 @@ i, p {
         padding: 0 10px;
     }
 
+    #intro-tabs.nav.nav-tabs{
+        flex-direction: row;
+    }
 
-
+    h3.intro-heading {
+        font-size: 1.9em;
+    }
 
     .data-page-container{
         display: grid;
         grid-template-columns: 300px auto;
         grid-template-areas: "countries graphs";
-
+        padding: 30px;
         justify-content: space-between;
     }
 
     .data-country-picker {
         display: inline-block;
-        width: 200px;
+        width: auto;
         overflow-y: hidden;
         height: auto;
-        margin: 10px 10px auto auto;
+        margin: 10px auto auto 0;
+        padding-right: 10px;
         grid-area: countries;
     }
 
     .data-graphs {
         display: inline-block;
-        margin: 0 auto 0 20px;
+        margin: 0 auto 0 auto;
         grid-area: graphs;
-        width: 80%;
-        justify-content: left;
+        padding: 0 20px;
+        /* width: 80%; */
+        /* justify-content: left; */
     }
     
     .date-and-text.checklist {
@@ -433,7 +441,11 @@ i, p {
         padding: 0 20px;
     }
 
+    .intro-container {
+        padding: 10px 30px 100px 30px;
+    }
 
+    
 
     #main-intro-cont {
         grid-area: intro;
@@ -508,6 +520,12 @@ i, p {
         height: 200px;
     }
 
+    
+    .video {
+        width: 700px;
+        height: auto;
+        margin: 20px 0;
+    }
 
 }
 
@@ -526,7 +544,7 @@ i, p {
     }
 
     .interactive-layout {
-        width: 1200px;
+        margin: 30px 160px;
     }
     
     .interactive-container {
@@ -534,16 +552,10 @@ i, p {
         justify-content: center;
     }
 
-    .inter-title {
-        padding-left: 80px;
-    }
 
-    .interactive-text {
-        padding-left: 80px;
-    }
-
-    .data-page-container{
-        grid-template-columns: 400px auto;
+    .data-page-container {
+        /* grid-template-columns: 400px auto; */
+        padding: 50px 160px;
     }
 
     .data-country-picker {
@@ -552,10 +564,10 @@ i, p {
 
     .data-graphs {
         display: inline-block;
-        margin: 0 auto 0 20px;
+        margin: 0 auto 0 auto;
         grid-area: graphs;
-        width: 60%;
-        justify-content: left;
+        /* width: 60%; */
+        /* justify-content: left; */
     }
 
     #main-items-container {
@@ -569,5 +581,8 @@ i, p {
         /* display: grid; */
         grid-template-rows: 130px 70px 95px 50px;
     }
-
+    
+    .intro-container {
+        padding: 10px 160px 100px 160px;
+    }
 }
