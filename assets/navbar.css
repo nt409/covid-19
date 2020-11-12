@@ -1,0 +1,85 @@
+/* NAVBAR/header */ 
+/* #4582EC */
+header {
+    background-color: #f8f8f8;
+    display: flex;
+    width: 100%;
+    /* justify-content: space-between; */
+    padding: 10px;
+    /* margin-bottom: 2em; */
+    vertical-align: center;
+}
+
+/* navlinks */
+.navLinkTitle {
+    color: black;
+    font-size: 1.3em;
+    font-weight: 100;
+}
+
+.navLink {
+    color: rgb(80, 80, 80);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.navLinkTitle:hover,.navLink:hover {
+    color: black;
+    text-decoration: none;
+}
+
+.my-title {
+    text-align: left;
+    margin: 0.1em auto 0.1em 0;
+}
+
+#menu-button {
+    margin: 0.35em 0 0 auto;
+}
+
+
+
+.other-links.hide-mobile {
+    /* text-align: left; */
+    float: right;
+    font-size: 1.1em;
+    text-decoration: none;
+}
+
+/* .other-links.hide-desktop {
+    float: right;
+} */
+
+
+
+
+.fas.fa-bars.menubar{
+    color: rgb(50, 50, 50);
+    width: 35px;
+    margin-right: 4vw;
+    margin-top: 0.5em;
+}
+
+.fas.fa-bars.menubar:hover {
+    color: black;
+    cursor: pointer;
+}
+
+.navLink.menu-dropdown {
+    
+    display: block;
+    text-align: left;
+
+    background-color: #ebebeb;
+
+    padding: 0 1em;
+    margin: auto;
+    width: 300px;
+}
+
+.menu-dropdown {
+    display: block;
+    margin: auto;
+}
+
+

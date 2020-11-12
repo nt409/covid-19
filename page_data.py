@@ -74,7 +74,6 @@ layout_data = html.Div(className="data-page-container",
                     initial_visible_month=datetime.date.today() - datetime.timedelta(days=7),
                     date=datetime.date.today() - datetime.timedelta(days=7),
                     display_format='D-MMM-YYYY',
-                    # style={'textAlign': 'center'}
                 ),
             ],className="date-and-text checklist"),
 
@@ -87,7 +86,6 @@ layout_data = html.Div(className="data-page-container",
                     initial_visible_month=datetime.date.today(),
                     date=datetime.date.today(),
                     display_format='D-MMM-YYYY',
-                    # style={'textAlign': 'center'}
                 ),
             ],className="date-and-text checklist"),
             

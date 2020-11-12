@@ -146,23 +146,15 @@ app.layout = html.Div([
         ##
         dcc.Location(id='page-url', refresh=False),
         
-        # html.Div(style={'height': '2vh', 'display': 'block'}),
-
-        # dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg'),
-
         html.Div(id='page-content',children=layout_enter),
-
-        html.Div(style={'height': '5vh', 'display': 'block'}),
 
         html.Footer([
 
         html.Div([
-            html.Div([
-                        html.Div(["Contact us at: ", html.A('covid.at.plants@gmail.com',href='')],
-                        ),
+                        html.Div(["Contact us at: ", html.A('covid.at.plants@gmail.com',href='')]),
                         
                         html.Div("This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.",
-                        style={'fontWeight': 'bold'}),
+                        className="disclaimer"),
 
                         html.Div(["Authors: ",
                                 html.A('Nick P. Taylor', href='https://twitter.com/TaylorNickP'),", ",
@@ -178,10 +170,9 @@ app.layout = html.Div([
                         " if available or otherwise ",
                         html.A("Johns Hopkins University (JHU) CSSE", href="https://github.com/ExpDev07/coronavirus-tracker-api"),
                         ".",
-                        ],
+                        ],className="source-code"
                         ),
 
-                        ])
                     ],
         className="foot-container",
         ),
@@ -1426,6 +1417,6 @@ def calculate_test_probs(plot_button,prior,sens,spec,pathname):
 ########################################################################################################################
 if __name__ == '__main__':
     # app.run_server(debug=False)
-    app.run_server(debug=False)
+    app.run_server(debug=True)
 
 

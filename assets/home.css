@@ -27,7 +27,7 @@ h2.home-page-desc {
 
 h2.home-sub-title {
     font-weight: 500;
-    font-size: 1.4em;
+    font-size: 1.3em;
     color: black;
     text-align: center;
     /* padding: 0 10px; */
@@ -35,6 +35,7 @@ h2.home-sub-title {
 
 p.home-sub-text {
     color: #707070;
+    text-align: justify;
 }
 
 .main-img {
@@ -63,15 +64,22 @@ p.home-sub-text {
 .main-container {
     background-color: #ebebeb;
     padding: 1em 10px;
+    margin: 1em 0;
+    border-radius: 5px;
 }
 
-.main-container.light {
+/* .main-container.light {
     background-color: #f8f8f8;
     /* background-color: white; */
-    padding: 1em 10px;
+    /* padding: 1em 10px; */
+/* } */
+
+#gray-cont {
+    background-color: #f8f8f8;
+    /* background: linear-gradient(0deg, #dadada, #f8f8f8); */
+    width: 100%;
+    padding: 1em 10px 100px 10px;
 }
-
-
 
 
 
@@ -88,8 +96,4 @@ p.home-sub-text {
     height: 2.5rem;
     font-size: 0.9rem;
     border-radius: 2.6em;
-}
-
-.main-page {
-    margin-bottom: 50px;
 }

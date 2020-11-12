@@ -38,8 +38,6 @@ max_date = str(max_date).split(' ')[0]
 control_choices_main = html.Div(children=[
 
 
-    # html.H2(className="far fa-hospital",style={'marginTop': '20px'}),
-
 
     html.Div(className="control-unit",children=[
     
