@@ -76,7 +76,7 @@ layout_data = html.Div(className="data-page-container",
                     display_format='D-MMM-YYYY',
                     # style={'textAlign': 'center'}
                 ),
-            ],className="date-and-text"),
+            ],className="date-and-text checklist"),
 
             html.Div([
                 html.Div("Predict until: "),
@@ -89,7 +89,7 @@ layout_data = html.Div(className="data-page-container",
                     display_format='D-MMM-YYYY',
                     # style={'textAlign': 'center'}
                 ),
-            ],className="date-and-text"),
+            ],className="date-and-text checklist"),
             
             
             html.Div([

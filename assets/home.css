@@ -1,0 +1,95 @@
+h1.home-title {
+    font-size: 2.8em;
+    text-align: center;
+    color: black;
+    font-weight: 200;
+}
+
+
+h2.home-page-desc {
+    font-weight: 100;
+    font-size: 1.2em;
+    text-align: center;
+    color: #707070;
+}
+
+.main-logo {
+    width: 200px;
+    height: 200px;
+}
+
+.title-container {
+    padding: 125px 10px 160px 10px; 
+    margin: 0;
+    /* background-color: hotpink; */
+}
+
+
+h2.home-sub-title {
+    font-weight: 500;
+    font-size: 1.4em;
+    color: black;
+    text-align: center;
+    /* padding: 0 10px; */
+}
+
+p.home-sub-text {
+    color: #707070;
+}
+
+.main-img {
+    width: 90px;
+    height: 90px;
+}
+
+.landing-logo {
+    margin: 1em auto 0.2em;
+}
+
+
+
+.main-img.test{
+    padding: 4px;
+}
+
+.landing-logo.data{
+    margin: 1em auto 0;
+}
+
+
+
+
+
+.main-container {
+    background-color: #ebebeb;
+    padding: 1em 10px;
+}
+
+.main-container.light {
+    background-color: #f8f8f8;
+    /* background-color: white; */
+    padding: 1em 10px;
+}
+
+
+
+
+
+
+
+.page-button {
+    color: white;
+    margin-bottom: 2em;
+    align-self: center;
+
+    padding: 0.5rem 1rem;
+    justify-content: center;
+    width: 160px;
+    height: 2.5rem;
+    font-size: 0.9rem;
+    border-radius: 2.6em;
+}
+
+.main-page {
+    margin-bottom: 50px;
+}

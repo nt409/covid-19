@@ -25,6 +25,11 @@
     color: rgb(80, 80, 80);
 }
 
+.date-and-text.checklist {
+    max-width: 400px;
+    justify-self: left;
+}
+
 .align-countries {
     display: grid;
 
@@ -33,7 +38,8 @@
 
     align-content: space-between;
     text-align: justify;
-    font-size: 0.75em;
+
+    font-size: 0.8em;
     margin: 5px;
     color: rgb(80, 80, 80);
 }

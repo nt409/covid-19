@@ -15,7 +15,8 @@ body {
 h3, h4 {
     font-weight: 540;
     text-align: left;
-    color: rgb(50, 50, 50);
+    /* color: rgb(50, 50, 50); */
+    color: black;
 }
 
 h3 {
@@ -118,7 +119,7 @@ i, p {
 
 .inter-card {
     border-radius: 15px;
-    background-color: rgb(230, 230, 230);
+    background-color:#f8f8f8;
 }
 
 
@@ -158,7 +159,7 @@ i, p {
  .figure-container {
     display: block;
     margin-bottom: 20px;
-    padding: 15px;
+    padding: 10px;
     width: 100%;
     height: 450px;
     z-index: 1;
@@ -172,7 +173,7 @@ i, p {
 
 .fig-title {
     margin-top: 0.6em;
-    padding-left: 15px;
+    padding-left: 10px;
 }
 
 
@@ -182,38 +183,52 @@ i, p {
 
 
 
-/* NAVBAR/header */
+/* NAVBAR/header */ 
+/* #4582EC */
 header {
-    background-color: #4582EC;
+    /* background-color: white; */
+    background-color: #f8f8f8;
+
+    /* background: linear-gradient(0deg, #f8f8f8 0%, #e0e0e0 100%); */
     display: flex;
     width: 100%;
-    justify-content: space-around;
-    padding: 0.6em 0 0.6em 0;
+    /* justify-content: space-between; */
+    padding: 10px;
+    /* margin-bottom: 2em; */
     vertical-align: center;
 }
 
 /* navlinks */
 .navLinkTitle {
-    color: white;
+    /* color: white; */
+    color: black;
     font-size: 1.3em;
+    font-weight: 100;
+    /* margin: 0 0 0 auto; */
 }
 
 .navLink {
-    color: rgb(230, 230, 230);
+    /* color: rgb(80, 80, 80); */
+    color: rgb(80, 80, 80);
     margin-left: 10px;
     margin-right: 10px;
 }
 
 .navLinkTitle:hover,.navLink:hover {
-    color: white;
+    color: black;
     text-decoration: none;
 }
 
 .my-title {
     float: left;
     text-align: left;
-    margin: 0.1em 2vw 0.1em 2vw;
+    margin: 0.1em auto 0.1em 0;
 }
+
+#menu-button {
+    margin: 0.35em 0 0 0;
+}
+
 
 
 .other-links.hide-mobile {
@@ -250,29 +265,29 @@ header {
 
 
 .fas.fa-bars.menubar{
-    color: rgb(230, 230, 230);
+    color: rgb(50, 50, 50);
     width: 35px;
     margin-right: 4vw;
     margin-top: 0.5em;
 }
 
 .fas.fa-bars.menubar:hover {
-    color: white;
+    color: black;
     cursor: pointer;
 }
 
 .navLink.menu-dropdown {
     display: block;
     text-align: left;
-    background-color: #1c63dd;
+    background-color: #ebebeb;
     padding: 0 1em;
     min-width: 180px;
 }
 
 .menu-dropdown {
-    float: left;
+    /* float: left; */
     display: block;
-    margin: 0 1vw;
+    margin: 0 0 0 auto;
 }
 
 
@@ -379,7 +394,7 @@ header {
     }
 
     .figure-container {
-        padding: 0 15px;
+        padding: 0 10px;
     }
 
 
@@ -410,7 +425,84 @@ header {
         justify-content: left;
     }
     
+    .date-and-text.checklist {
+        width: 400px;
+        justify-self: left;
+        /* padding-right: 30%; */
+    }
     
+
+    #main-items-container {
+        display: grid;
+        grid-template-areas: 'intro inter tests data';
+        grid-template-columns: repeat(4, auto);
+        padding: 0 20px;
+    }
+
+
+
+    #main-intro-cont {
+        grid-area: intro;
+    }
+
+    #main-inter-cont {
+        grid-area: inter;
+    }
+
+    #main-tests-cont {
+        grid-area: tests;
+    }
+
+    #main-data-cont {
+        grid-area: data;
+        
+    }
+
+    .main-container {
+        display: grid;
+        grid-template-rows: 130px 70px 100px 50px;
+    }
+
+    #gray-cont {
+        background-color: #f8f8f8;
+        background: linear-gradient(90deg, #f8f8f8 50%, #ebebeb 50%);
+        width: 100%;
+    }
+
+
+
+
+    .landing-logo {
+        grid-row: 1;
+        align-self: end;
+        padding-bottom: 20px;
+    }
+
+    .landing-logo.data{
+        padding-bottom: 22px;
+    }
+
+    .home-sub-title {
+        grid-row: 2;
+        align-self: start;
+        margin: 0;
+        padding: 10px;
+    }
+    
+    .home-sub-text {
+        grid-row: 3;
+        text-align: justify;
+        align-self: start;
+        margin: 0;
+        padding: 5px 10px 15px 10px;
+    }
+
+    .page-button {
+        grid-row: 4;
+        justify-self: center;
+        align-self: start;
+    }
+
 
 }
 
@@ -452,6 +544,11 @@ header {
         justify-content: left;
     }
 
-
+    #main-items-container {
+        /* display: grid; */
+        /* grid-template-areas: 'intro inter tests data'; */
+        /* grid-template-columns: repeat(4, auto); */
+        padding: 0 150px;
+    }
 
 }

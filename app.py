@@ -12,7 +12,8 @@ from math import ceil, exp
 import numpy as np
 import plotly.graph_objects as go
 import copy
-# from flask import Flask
+from flask import Flask
+# from fal
 # from flask_caching import Cache
 import datetime
 import json
@@ -45,7 +46,7 @@ from page_interactive import layout_inter
 from page_data import layout_data
 from page_tests import layout_tests
 
-
+# layout_enter = render_template('layout_enter.html', title='/')
 
 
 
@@ -98,7 +99,7 @@ app.layout = html.Div([
         html.Header([
         
             html.Div([
-                html.A("Modelling COVID-19 Control", href="/", className="navLinkTitle"),
+                html.A("LowHighCovid", href="/", className="navLinkTitle"),
             ],
             className="my-title",
             ),
@@ -145,9 +146,9 @@ app.layout = html.Div([
         ##
         dcc.Location(id='page-url', refresh=False),
         
-        html.Div(style={'height': '2vh', 'display': 'block'}),
+        # html.Div(style={'height': '2vh', 'display': 'block'}),
 
-        dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg'),
+        # dbc.Spinner(html.Div(id="loading-page"),color='primary',size='lg'),
 
         html.Div(id='page-content',children=layout_enter),
 
@@ -201,7 +202,7 @@ app.layout = html.Div([
 
 
 ########################################################################################################################
-app.title = 'Modelling COVID-19 Control'
+# app.title = 'LowHighCovid'
 
 
 # added in viewport tag for media queries
@@ -222,7 +223,7 @@ app.index_string = """<!DOCTYPE html>
         </script>
 
         {%metas%}
-        <title>{%title%}</title>
+        <title>LowHighCovid</title>
         {%favicon%}
         {%css%}
     </head>
@@ -248,22 +249,21 @@ app.index_string = """<!DOCTYPE html>
 
 
 
-@app.callback([Output('page-content', 'children'),
-            Output('loading-page','children')],
+@app.callback(Output('page-content', 'children'),
             [Input('page-url', 'pathname')])
 def display_page(pathname):
     if pathname == '/data':
-        return [layout_data, None]
+        return layout_data
     elif pathname == '/intro':
-        return [layout_intro, None]
+        return layout_intro
     elif pathname == '/inter':
-        return [layout_inter, None]
+        return layout_inter
     elif pathname == '/tests':
-        return [layout_tests, None]
+        return layout_tests
     elif pathname in ['','/','/enter']:
-        return [layout_enter, None]
+        return layout_enter
     else:
-        return [None, None]
+        return None
 
 
 ########################################################################################################################
@@ -1426,6 +1426,6 @@ def calculate_test_probs(plot_button,prior,sens,spec,pathname):
 ########################################################################################################################
 if __name__ == '__main__':
     # app.run_server(debug=False)
-    app.run_server(debug=True)
+    app.run_server(debug=False)
 
 
