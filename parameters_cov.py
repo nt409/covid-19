@@ -75,8 +75,10 @@ ICU_growth = 1
 ICU_capacity = 25000/UK_population
 
 vaccinate_percent = 0.9 # vaccinate this many
-vaccinate_rate = 0.55/(365*2/3) #10000/UK_population # per day
+vaccinate_rate = 0.75/(365*2/3)
+# 0.55/(365*2/3)
 # https://journals.plos.org/plosntds/article/file?rev=2&id=10.1371/journal.pntd.0006158&type=printable
+# or 10000/UK_population # per day
 
 
 class Parameters:

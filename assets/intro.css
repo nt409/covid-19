@@ -5,8 +5,9 @@ h3.intro-heading {
 }
 
 .intro-container {
-    /* margin: 10px; */
-    padding: 10px 10px 100px 10px;
+    margin-top: 30px;
+    margin-bottom: 90px;
+    padding: 10px;
 }
 
 .markdown {
@@ -30,7 +31,6 @@ a.tab.nav-link {
     font-size: 1em;
     color: rgb(80,80,80);
     background-color: #ebebeb;
-
 }
 
 a.tab.nav-link.active {

@@ -43,7 +43,7 @@ control_choices_main = html.Div(children=[
     
     html.Div(html.Img(src='/assets/images/mask.png',className="img"),className="my-svg"),
     
-    html.H6(className="control-title", children='Type of control'),
+    html.H6(className="control-title", children='Which restrictions?'),
 
 
 
@@ -191,10 +191,10 @@ dcc.Slider(
 id='vaccine-slider',
 className="component",
 min   = 0,
-max   = 9,
-step  = 3,
-marks = {i: 'Never' if i==0 else f'Month {str(i)}' if i==3 else str(i) for i in range(0,10,3)},
-value = 3,
+max   = 6,
+step  = 2,
+marks = {i: 'Never' if i==0 else f'Month {str(i)}' if i==2 else str(i) for i in range(0,7,2)},
+value = 2,
 ),
 
 
@@ -878,7 +878,6 @@ className="inter-card controls",
 
 
 
-# textCard = dbc.Card([
 textCard = html.Div([
     html.H3("How should we control covid?",className="inter-title"),
 
@@ -893,11 +892,6 @@ textCard = html.Div([
     html.Div(id='worked-div'),
 
 ],className="inter-text"),
-
-# ],
-# className="inter-card"
-# )
-
 
 
 
@@ -929,9 +923,7 @@ layout_inter = html.Div(html.Div([
 
 
 
-    html.Div(textCard,
-    style={'marginBottom': '20px'}
-    ),
+    html.Div(textCard),
 
 
 

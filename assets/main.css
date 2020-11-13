@@ -15,7 +15,6 @@ body {
 h3, h4 {
     font-weight: 540;
     text-align: left;
-    /* color: rgb(50, 50, 50); */
     color: black;
 }
 
@@ -89,6 +88,9 @@ i, p {
     color: rgb(140, 140, 140);
 }
 
+.inter-text {
+    margin-bottom: 20px;
+}
 
 
 .grid-container {
@@ -143,7 +145,6 @@ i, p {
     display: block;
     margin: 2px;
 }
-
 
 
 
@@ -213,20 +214,16 @@ i, p {
 .foot-container {
     width: 100%;
     background-color: rgb(180, 180, 180);
-    /* color: #fff; */
     color: rgb(80, 80, 80);
     padding: 0.6em 0 0.6em;
     
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
-
-    /* text-align: justify; */
 }
 
 .disclaimer {
     font-weight: bold;
     background-color: rgb(130, 130, 130);
-    /* background-color: #ebebeb */
     margin: 2px 5px;
     border-radius: 3px;
     padding: 2px 5px;
@@ -289,10 +286,7 @@ i, p {
 
     .header {
         justify-content: space-around;
-        /* padding: 10px; */
     }
-
-    
 
     .other-links.hide-mobile {
         margin: 0.1em 15px auto auto;
@@ -383,8 +377,7 @@ i, p {
     }
 
     .interactive-layout {
-        margin: 30px;
-        padding-bottom: 400px;
+        padding: 30px 30px 30px 400px;
     }
 
 
@@ -423,14 +416,11 @@ i, p {
         margin: 0 auto 0 auto;
         grid-area: graphs;
         padding: 0 20px;
-        /* width: 80%; */
-        /* justify-content: left; */
     }
     
     .date-and-text.checklist {
         width: 400px;
         justify-self: left;
-        /* padding-right: 30%; */
     }
     
 
@@ -474,8 +464,6 @@ i, p {
 
     #gray-cont {
         background-color: #f8f8f8;
-        /* background: linear-gradient(90deg, #f8f8f8 50%, #ebebeb 50%); */
-        /* width: 100%; */
         padding: 3em 10px 7em 10px;
     }
 
@@ -535,7 +523,6 @@ i, p {
 @media only screen and (min-width: 1300px){
     
     .my-title {
-        /* padding: 0.1em auto 0.1em 150px; */
         margin: 0.1em auto 0.1em 150px;
     }
     
@@ -544,17 +531,11 @@ i, p {
     }
 
     .interactive-layout {
-        margin: 30px 160px;
+        padding: 30px 160px 400px 160px;
     }
     
-    .interactive-container {
-        display: flex;
-        justify-content: center;
-    }
-
 
     .data-page-container {
-        /* grid-template-columns: 400px auto; */
         padding: 50px 160px;
     }
 
@@ -566,19 +547,13 @@ i, p {
         display: inline-block;
         margin: 0 auto 0 auto;
         grid-area: graphs;
-        /* width: 60%; */
-        /* justify-content: left; */
     }
 
     #main-items-container {
-        /* display: grid; */
-        /* grid-template-areas: 'intro inter tests data'; */
-        /* grid-template-columns: repeat(4, auto); */
         padding: 0 150px;
     }
     
     .main-container {
-        /* display: grid; */
         grid-template-rows: 130px 70px 95px 50px;
     }
     

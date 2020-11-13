@@ -157,12 +157,6 @@
     padding: 0.065rem 1rem;
 }
 
-/* #model-start-date.SingleDatePickerInput {
-    padding: 0.065rem 5rem;
-    width: 100%;
-} */
-
-
 .DateInput_input {
     grid-row: 2;
     grid-column: 2;
@@ -202,11 +196,6 @@
 .rc-slider {
     margin-top: 10px;
 }
-    /* position: absolute; */
-    /* left: 10px; */
-    /* bottom: 20px; */
-    /* width: 80%; */
-/* } */
 
 .rc-slider-rail {
     background-color: rgb(210, 210, 210);

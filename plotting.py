@@ -431,12 +431,8 @@ def yaxis_function(Yrange,population_plot,country_name):
     LinText = [human_format(0.01*ll) for ll in linTicks]
 
     log_bottom = -8
-    # log_range = [log_bottom,np.log10(Yrange[1])]
     log_range = [log_bottom,np.log10(100)]
 
-
-    # pop_vec_log_intermediate = np.linspace(log_range[0],ceil(np.log10(pop_vec_lin[-1])), 1+ ceil(np.log10(pop_vec_lin[-1])-log_range[0]) )
-    # pop_vec_log_intermediate = np.linspace(log_range[0], log_range[1], 1+ ceil(log_range[1]-log_range[0]))
 
 
     pop_log_vec = [10**(i) for i in range(log_range[0], int(log_range[1]+1),2)] # will always give 6 values
@@ -444,13 +440,17 @@ def yaxis_function(Yrange,population_plot,country_name):
 
     LogText = [human_format(0.01*ll) for ll in logTicks]
 
-    yAxisLinear    = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'linear', 'range': Yrange, 'automargin': True}
-    yAxisPopLinear = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'linear', 'range': Yrange, 'overlaying': 'y1', 'ticktext': LinText, 'tickvals': pop_vec_lin,'automargin': True,'side':'right'}
-    yAxisLog       = {'title': 'Percentage of Total Population',    'fixedrange': True, 'type': 'log', 'range': log_range,'automargin': True}
-    yAxisPopLog    = {'title': 'Population (' + country_name + ')', 'fixedrange': True, 'type': 'log', 'range': log_range, 'overlaying': 'y1', 'ticktext': LogText, 'tickvals': pop_log_vec,'automargin': True,'side':'right'}
+    yAxisLinear    = {'title': 'Percentage of Total Population', 'fixedrange': True, 'type': 'linear', 'range': Yrange, 'overlaying': 'y1', 'automargin': True, 'side':'right'}
+    yAxisPopLinear = {'title': f'Population ({country_name})', 'fixedrange': True, 'type': 'linear', 'range': Yrange, 'ticktext': LinText, 'tickvals': pop_vec_lin,'automargin': True, 'side':'left'}
+    yAxisLog       = {'title': 'Percentage of Total Population', 'fixedrange': True, 'type': 'log', 'range': log_range, 'overlaying': 'y1', 'automargin': True,'side':'right'}
+    yAxisPopLog    = {'title': f'Population ({country_name})', 'fixedrange': True, 'type': 'log', 'range': log_range, 'ticktext': LogText, 'tickvals': pop_log_vec,'automargin': True, 'side':'left'}
 
     
     return yAxisLinear, yAxisPopLinear, yAxisLog, yAxisPopLog
+
+
+
+
 
 
 def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,Yrange):
@@ -755,8 +755,8 @@ def CategoryFunction(CategoryList,Indices,Name,lines_to_plot_line,population_plo
         },
         {
         "xaxis": xAxis,
-        "yaxis": yAxisLinTemp,
-        "yaxis2": yAxisPopLinTemp,
+        "yaxis2": yAxisLinTemp,
+        "yaxis": yAxisPopLinTemp,
         }],
         label  = Name,
         method = "update"
@@ -963,7 +963,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                     font = dict(size=font_size),
                     margin=dict(t=0, b=0, l=0, r=0,
                                 pad=0),
-                    yaxis= yAxisLinear,
+                    yaxis  = yAxisPopLinear,
+                    yaxis2 = yAxisLinear,
                     hovermode='x',
                     xaxis= xAx2Year,
                         updatemenus = [
@@ -985,15 +986,15 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                             dict(
                                                 buttons=list([
                                                     dict(
-                                                    args=[{"yaxis": yAxisLinear,
-                                                    "yaxis2": yAxisPopLinear,
+                                                    args=[{"yaxis2": yAxisLinear,
+                                                    "yaxis": yAxisPopLinear,
                                                     }],
                                                     label="Axis: Linear",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args=[{"yaxis": yAxisLog,   
-                                                    "yaxis2":       yAxisPopLog,
+                                                    args=[{"yaxis2": yAxisLog,   
+                                                    "yaxis":       yAxisPopLog,
                                                     }],
                                                     label="Axis: Logarithmic",
                                                     method="relayout"
@@ -1028,8 +1029,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     {"visible": [False]*len(lines_to_plot_line) + [True]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [True]*len(controlLines) + [False]*len(lines_PrevDeaths)},
                                                     {
                                                     "shapes":[],
-                                                    "yaxis":  yAxisLinDeaths,
-                                                    "yaxis2": yAxisPopLinDeaths,
+                                                    "yaxis2":  yAxisLinDeaths,
+                                                    "yaxis": yAxisPopLinDeaths,
                                                     "barmode":'stack',
                                                     "xaxis": xAx2Year
                                                     },
@@ -1042,8 +1043,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     {"visible": [False]*(len(lines_to_plot_line)-1) + [True] + [False]*len(lines_to_plot_stack) + [True]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines) + [True]*len(lines_PrevDeaths)},
                                                     {
                                                     "shapes": shapez,
-                                                    "yaxis":  yAxisLinearDeaths,
-                                                    "yaxis2": yAxisPopLinearDeaths,
+                                                    "yaxis2":  yAxisLinearDeaths,
+                                                    "yaxis": yAxisPopLinearDeaths,
                                                     "xaxis": xAx2FromFeb
                                                     },
                                                     ],
@@ -1071,7 +1072,6 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     ),
                                         legend_orientation  = 'h',
                                         legend_title        = '<b> Key </b>',
-                                        yaxis2 = yAxisPopLinear
                             )
 
 
