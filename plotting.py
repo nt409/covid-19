@@ -100,7 +100,6 @@ def time_exceeded_function(yy,tt,ICU_grow):
     if len(c_low)>len(c_high):
         c_high.append(tt[-1]+1)
 
-    # print(c_low,c_high)
     return c_low, c_high, ICU
 
 
@@ -440,13 +439,24 @@ def yaxis_function(Yrange,population_plot,country_name):
 
     LogText = [human_format(0.01*ll) for ll in logTicks]
 
-    yAxisLinear    = {'title': 'Percentage of Total Population', 'fixedrange': True, 'type': 'linear', 'range': Yrange, 'overlaying': 'y1', 'automargin': True, 'side':'right'}
-    yAxisPopLinear = {'title': f'Population ({country_name})', 'fixedrange': True, 'type': 'linear', 'range': Yrange, 'ticktext': LinText, 'tickvals': pop_vec_lin,'automargin': True, 'side':'left'}
-    yAxisLog       = {'title': 'Percentage of Total Population', 'fixedrange': True, 'type': 'log', 'range': log_range, 'overlaying': 'y1', 'automargin': True,'side':'right'}
-    yAxisPopLog    = {'title': f'Population ({country_name})', 'fixedrange': True, 'type': 'log', 'range': log_range, 'ticktext': LogText, 'tickvals': pop_log_vec,'automargin': True, 'side':'left'}
 
+    yAxisPopLinear = {'title': f'Population ({country_name})', 
+    'fixedrange': True,
+    'type': 'linear', 
+    'range': Yrange,
+    'ticktext': LinText,
+    'tickvals': pop_vec_lin,
+    'automargin': True}
+
+    yAxisPopLog    = {'title': f'Population ({country_name})',
+    'fixedrange': True,
+    'type': 'log',
+    'range': log_range,
+    'ticktext': LogText,
+    'tickvals': pop_log_vec,
+    'automargin': True}
     
-    return yAxisLinear, yAxisPopLinear, yAxisLog, yAxisPopLog
+    return yAxisPopLinear, yAxisPopLog
 
 
 
@@ -478,10 +488,7 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
                 opacity= blue_opacity
             ))
             
-    if ICU: #  and 'C' in cats_to_plot:
-        # if which_plots=='two':
-        control_font_size = font_size*(22/24) # '10em'
-        ICU_font_size = font_size*(22/24) # '10em'
+    if ICU:
 
         yval_pink = 0.4
         yval_blue = 0.6
@@ -509,12 +516,10 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
                         x  = startdate+datetime.timedelta(days=0.5*(c_min+c_max)), # /month_len
                         y  = yval_pink,
                         text="​🚑",
-                        # hoverinfo='ICU Capacity Exceeded',
                         showarrow=False,
                         textangle= 0,
                         font=dict(
                             size= 20,
-                            # size= ICU_font_size,
                             color="purple"
                         ),
                         opacity=0.5,
@@ -523,7 +528,6 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
                 ))
 
     else:
-        control_font_size = font_size*(30/24) #'11em'
         yval_blue = 0.6
 
 
@@ -534,23 +538,19 @@ def annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size
                 x  = startdate+datetime.timedelta(days=month_len*max(0.5*(month[0]+month[1]), 0.5)),
                 y  = yval_blue,
                 text="​😷​",
-                # hoverinfo='Control In Place',
-                # textangle=0,
                 font=dict(
-                    # size= control_font_size,
                     size= 20,
                     color="blue"
                 ),
                 showarrow=False,
                 opacity=0.5,
-                # xshift= 0,
                 xref = 'x',
                 yref = 'paper',
         ))
 
     
     if month_cycle is not None:
-        print(month_cycle)
+
         for i in range(0,len(month_cycle),2):
             shapez.append(dict(
                     # filled Blue Control Rectangle
@@ -630,30 +630,31 @@ def stackPlot(sols,population_plot,startdate):
 
     group_use = ['HR','LR']
 
-    # name= cats_to_plot[0]
-    # cats_to_plot = ['S','I','R','H','C','D']
     cats_to_plot = ['D']
 
     for name in cats_to_plot:
         for group in group_use:
-
             
             name_string = ':' + group_strings[group]
 
             xx = [startdate + datetime.timedelta(days=i) for i in sol['t']]
-            # print(xx[0])
+
             yyy_p = np.asarray(dataframe[f'{longname[name]}: {group}'])
             
-            xx = [xx[i] for i in range(1,len(xx),2)]
-            yyy_p = [yyy_p[i] for i in range(1,len(yyy_p),2)]
+            # points_per_bar = 2
+            # xx = [xx[i] for i in range(1,len(xx),points_per_bar)]
+            # yyy_p = [yyy_p[i] for i in range(1,len(yyy_p),points_per_bar)]
 
-
-            line =  {'x': xx, 'y': yyy_p,
-                    'hovertemplate': '%{y:.2f}%, %{text}',
-                    'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
-                    'type': 'bar',
-                    'legendgroup': name ,
-                    'name': longname[name] + name_string}
+            line =  dict(
+                    x=xx,
+                    y=yyy_p,
+                    hovertemplate='%{y:.2f}%, %{text}',
+                    text=[human_format(i*population_plot/100,dp=1) for i in yyy_p],
+                    # type='bar',
+                    legendgroup=name,
+                    name=longname[name] + name_string,
+                    # 'width': [1]*len(yyy_p),
+                    )
                     
             if group=='LR':
                 line['marker'] = dict(color='LightSkyBlue')
@@ -664,7 +665,7 @@ def stackPlot(sols,population_plot,startdate):
             
             lines_to_plot.append(line)
 
-    return lines_to_plot, xx
+    return lines_to_plot
 
 
 
@@ -676,7 +677,7 @@ def uncertPlot(upper_lower_sol,population_plot,startdate):
     lines_to_plot = []
     ii = -1
     name = 'D'
-    # group_use = ['BR']
+
 
     for sol in upper_lower_sol:
         ii += 1
@@ -698,7 +699,6 @@ def uncertPlot(upper_lower_sol,population_plot,startdate):
                 'text': [human_format(i*population_plot/100,dp=1) for i in yyy_p],
                 'line': {'width': 0, 'color': str(colors[name])},
                 'fillcolor': 'rgba(128,0,128,0.4)',
-                # 'legendgroup': name,
                 'visible': False,
                 'showlegend': False,
                 'fill': fill,
@@ -746,7 +746,7 @@ def CategoryFunction(CategoryList,Indices,Name,lines_to_plot_line,population_plo
             LineMaxTemp = max(max(1.1*line['y']),0.01,LineMaxTemp) # makes sure above 0
             LineRangeTemp = [0,min(LineMaxTemp,100)]
     
-    yAxisLinTemp, yAxisPopLinTemp, *_ = yaxis_function(LineRangeTemp,population_plot,country_name)
+    yAxisPopLinTemp, _ = yaxis_function(LineRangeTemp,population_plot,country_name)
     
     CategoryDict = dict(
         args=[{
@@ -755,7 +755,6 @@ def CategoryFunction(CategoryList,Indices,Name,lines_to_plot_line,population_plo
         },
         {
         "xaxis": xAxis,
-        "yaxis2": yAxisLinTemp,
         "yaxis": yAxisPopLinTemp,
         }],
         label  = Name,
@@ -787,7 +786,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
    
    
     lines_to_plot_line, xx = lineplot(sols,population_plot,startdate,num_strat,comp_dn)
-    lines_to_plot_stack, _ = stackPlot(sols,population_plot,startdate)
+    lines_to_plot_stack = stackPlot(sols,population_plot,startdate)
     lines_to_plot_uncert = uncertPlot(upper_lower_sol,population_plot,startdate)
     lines_PrevDeaths, x0 = prevDeaths(previous_deaths,startdate,population_plot)
     
@@ -842,23 +841,22 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
             legendgroup='thresholds',
             line=dict(
             color= 'green',
-            # dash = 'dash'
             ),
             hovertemplate= 'Vaccination starts<extra></extra>',
             name= 'Vaccination starts'))
 
     
     
-    moreLines.append(
-    dict(
-        type='scatter',
-        x = [xx[0],xx[-1]],
-        y = [0, population_plot],
-        yaxis="y2",
-        opacity=0,
-        hoverinfo = 'skip',
-        showlegend=False
-    ))
+    # moreLines.append(
+    # dict(
+    #     type='scatter',
+    #     x = [xx[0],xx[-1]],
+    #     y = [0, population_plot],
+    #     # yaxis="y2",
+    #     opacity=0,
+    #     showlegend=False,
+    #     hoverinfo='skip',
+    # ))
 
     controlLines = []
     if month[0]!=month[1] and preset != 'N':
@@ -898,8 +896,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
 
 
-    yAxisLinear, yAxisPopLinear, yAxisLog, yAxisPopLog = yaxis_function(yRange,population_plot,country_name)
-    yAxisLinearDeaths, yAxisPopLinearDeaths, *_ = yaxis_function(yMaxDeathRange,population_plot,country_name)
+    yAxisPopLinear, yAxisPopLog = yaxis_function(yRange,population_plot,country_name)
+    yAxisPopLinearDeaths, _ = yaxis_function(yMaxDeathRange,population_plot,country_name)
 
     annotz, shapez = annotations_shapes_function(month_cycle,month,preset,startdate,ICU,font_size,c_low,c_high,yRange)
 
@@ -932,7 +930,8 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
         if line['name']=='Deaths (total)':
             LineMax = max(max(1.1*line['y']),0.01) # makes sure above 0
             LineRange = [0,min(LineMax,100)]
-            yAxisLinDeaths, yAxisPopLinDeaths, *_ = yaxis_function(LineRange,population_plot,country_name)
+            yAxisPopLinStack, _ = yaxis_function(LineRange,population_plot,country_name)
+
 
 
 
@@ -964,7 +963,6 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                     margin=dict(t=0, b=0, l=0, r=0,
                                 pad=0),
                     yaxis  = yAxisPopLinear,
-                    yaxis2 = yAxisLinear,
                     hovermode='x',
                     xaxis= xAx2Year,
                         updatemenus = [
@@ -973,7 +971,6 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                 buttons= CategoryList,
                                             x= 0.07,
                                             xanchor="center",
-                                            # pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                             active=0,
                                             y=-0.350,
                                             showactive=True,
@@ -986,23 +983,20 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                             dict(
                                                 buttons=list([
                                                     dict(
-                                                    args=[{"yaxis2": yAxisLinear,
+                                                    args=[{
                                                     "yaxis": yAxisPopLinear,
                                                     }],
                                                     label="Axis: Linear",
                                                     method="relayout"
                                                 ),
                                                 dict(
-                                                    args=[{"yaxis2": yAxisLog,   
-                                                    "yaxis":       yAxisPopLog,
-                                                    }],
+                                                    args=[{"yaxis": yAxisPopLog}],
                                                     label="Axis: Logarithmic",
                                                     method="relayout"
                                                 )
                                         ]),
                                         x= 0.93,
                                         xanchor="center",
-                                        # pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
                                         y=-0.20,
                                         showactive=True,
@@ -1017,7 +1011,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     {'visible': [True]*len(lines_to_plot_line) + [False]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines)  + [False]*len(lines_PrevDeaths)
                                                     },
                                                     {
-                                                    "shapes": shapez,
+                                                    # "shapes": shapez,
                                                     "xaxis": xAx2Year
                                                     },
                                                     ],
@@ -1028,22 +1022,20 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                                     args=[
                                                     {"visible": [False]*len(lines_to_plot_line) + [True]*len(lines_to_plot_stack) + [False]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [True]*len(controlLines) + [False]*len(lines_PrevDeaths)},
                                                     {
-                                                    "shapes":[],
-                                                    "yaxis2":  yAxisLinDeaths,
-                                                    "yaxis": yAxisPopLinDeaths,
-                                                    "barmode":'stack',
-                                                    "xaxis": xAx2Year
+                                                    # "shapes":[],
+                                                    "yaxis": yAxisPopLinStack,
+                                                    "xaxis": xAx2Year,
+                                                    # "barmode":'stack',
                                                     },
                                                     ],
-                                                    label="Plot: Stacked Bar",
+                                                    label="Plot: Stacked",
                                                     method="update"
                                                 ),
                                                 dict(
                                                     args=[
                                                     {"visible": [False]*(len(lines_to_plot_line)-1) + [True] + [False]*len(lines_to_plot_stack) + [True]*len(lines_to_plot_uncert)  + [True]*len(moreLines)  + [False]*len(controlLines) + [True]*len(lines_PrevDeaths)},
                                                     {
-                                                    "shapes": shapez,
-                                                    "yaxis2":  yAxisLinearDeaths,
+                                                    # "shapes": shapez,
                                                     "yaxis": yAxisPopLinearDeaths,
                                                     "xaxis": xAx2FromFeb
                                                     },
@@ -1054,7 +1046,6 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
                                         ]),
                                         x= 0.93,
                                         xanchor="center",
-                                        # pad={"r": 5, "t": 30, "b": 10, "l": 5},
                                         active=0,
                                         y=-0.35,
                                         showactive=True,

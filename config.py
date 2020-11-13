@@ -10,9 +10,9 @@ backgd_color = None
 disclaimerColor = '#e9ecef'
 
 # figure appearance
-bar_height = '100'
-bar_width  =  '100'
-bar_non_crit_style = {'height': bar_height, 'width': bar_width, 'display': 'block' }
+# bar_height = '100'
+# bar_width  =  '100%'
+bar_non_crit_style = {'display': 'block' }
 
 
 

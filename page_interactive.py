@@ -803,13 +803,7 @@ barChart_content =  dbc.Col([
                     width=12,
                     ),
 
-
-
-                
-                
-
-
-
+            
 ],width=True),
 
 
@@ -931,8 +925,10 @@ layout_inter = html.Div(html.Div([
     
     html.Div([
     html.Div(dpc_content,id='DPC-content',style={'marginTop': '10px'}),  
-    html.Div(barChart_content,id='bc-content',style={'display': 'none', 'marginTop': '10px'}),
-    html.Div(id='strategy-outcome-content',style={'display': 'none', 'marginTop': '10px'}),
+    html.Div([
+        html.Div(barChart_content,id='bc-content',style={'display': 'none', 'marginTop': '10px'}),
+        html.Div(id='strategy-outcome-content',style={'display': 'none', 'marginTop': '10px'}),
+    ],className='other-results'),
     ],
     className="plotscard"),
 

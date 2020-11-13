@@ -270,7 +270,10 @@ i, p {
     grid-column: 2;
 }
 
-
+.other-results {
+    display: block;
+    width: 100%;
+}
 
 
 /* big screen */
@@ -416,6 +419,11 @@ i, p {
         margin: 0 auto 0 auto;
         grid-area: graphs;
         padding: 0 20px;
+    }
+
+    .other-results {
+        display: flex;
+        width: 50%;
     }
     
     .date-and-text.checklist {

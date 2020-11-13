@@ -668,7 +668,7 @@ def render_interactive_content(plot_button,
                                 ICU_grow):
     
 
-    if not pathname in ['inter','/inter']:
+    if not pathname in ['inter','/inter'] or plot_button is None:
         raise PreventUpdate
 
     # could cache these
@@ -1426,7 +1426,7 @@ def calculate_test_probs(plot_button,prior,sens,spec,pathname):
 
 ########################################################################################################################
 if __name__ == '__main__':
-    # app.run_server(debug=False)
-    app.run_server(debug=True)
+    app.run_server(debug=False)
+    # app.run_server(debug=True)
 
 
