@@ -204,3 +204,13 @@
 .rc-slider-mark-text-active {
     color: rgb(20,20,20);
 }
+
+#inter-tabs.nav.nav-tabs{
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+#inter-tabs.nav.nav-tabs.nav-item.nav-link {
+    display: flex;
+}

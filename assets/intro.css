@@ -41,10 +41,10 @@ a.tab.nav-link.active {
 
 li.nav-item {
     cursor: pointer;
-
 }
 
 #intro-tabs.nav.nav-tabs{
+    text-align: left;
     display: flex;
     flex-direction: column;
 }

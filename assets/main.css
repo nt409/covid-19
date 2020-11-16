@@ -1,4 +1,4 @@
-@import url('https//fonts.googleapis.com/css?family=Montserrat:400,600');
+@import url('https//fonts.googleapis.com/css?family=Montserrat:400,600&display=swap');
 
 body {
     margin: 0;
@@ -63,7 +63,7 @@ i, p {
 
 
 .plot-button {
-    align-self: center;
+    cursor: pointer;
 
     padding: 0.5rem 1rem;
     justify-content: center;
@@ -72,7 +72,12 @@ i, p {
     height: 3.3rem;
     font-size: 1.3rem;
     border-radius: 2.6em;
-    margin-bottom: 1rem;
+
+    display: grid;
+    margin: 0 auto 1rem;
+
+    grid-template-columns: auto auto;
+    grid-template-rows: auto;
 }
 
 
@@ -276,6 +281,35 @@ i, p {
 }
 
 
+
+.plot-button-logo {
+    grid-row: 1;
+    grid-column: 1;
+    width: 20px;
+    margin: 0 0.2em 0.1em auto;
+}
+
+.plot-button-text {
+    grid-row: 1;
+    grid-column: 2;
+    margin: auto 0.2em auto auto;
+}
+
+
+
+
+#main-nav-links {
+    text-align: left;
+    
+    align-self: start;
+    
+    grid-row: 2;
+    grid-column-start: 1;
+    grid-column-end: 3;    
+}
+
+
+
 /* big screen */
 @media only screen and (min-width: 1024px) {
 
@@ -287,12 +321,16 @@ i, p {
         display: none;
     }
 
-    .header {
-        justify-content: space-around;
+    #main-nav-links {
+        grid-row: 1;
+        grid-column: 2;
+        grid-column-start: 2;
+        
+        align-self: start;
     }
 
-    .other-links.hide-mobile {
-        margin: 0.1em 15px auto auto;
+    .header {
+        justify-content: space-around;
     }
 
     .my-title {
@@ -304,7 +342,7 @@ i, p {
     }
 
     .plot-button {
-        margin-top: 1rem;
+        margin: 1rem auto;
     }
 
     .footer-container {
@@ -380,7 +418,7 @@ i, p {
     }
 
     .interactive-layout {
-        padding: 30px 30px 30px 400px;
+        padding: 30px 30px 400px 30px ;
     }
 
 
@@ -389,6 +427,10 @@ i, p {
     }
 
     #intro-tabs.nav.nav-tabs{
+        flex-direction: row;
+    }
+
+    #inter-tabs.nav.nav-tabs{
         flex-direction: row;
     }
 

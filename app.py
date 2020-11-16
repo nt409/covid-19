@@ -1,11 +1,13 @@
-import dash
+import time
+from dash import Dash
 import dash_core_components as dcc
 import dash_html_components as html
+
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-
 from dash.exceptions import PreventUpdate
-# from gevent.pywsgi import WSGIServer
+
+from gevent.pywsgi import WSGIServer
 
 import pandas as pd
 from math import ceil, exp
@@ -13,15 +15,9 @@ import numpy as np
 import plotly.graph_objects as go
 import copy
 from flask import Flask
-# from fal
 # from flask_caching import Cache
 import datetime
 import json
-
-
-# import time
-# start_time = time.time()
-# print(f"{time.time()-start_time} seconds")
 
 from parameters_cov import params
 
@@ -45,18 +41,24 @@ from page_intro import layout_intro
 from page_interactive import layout_inter
 from page_data import layout_data
 from page_tests import layout_tests
+# start_time = time.time()
+# print(f"7 {time.time()-start_time} seconds")
+
+
 
 # layout_enter = render_template('layout_enter.html', title='/')
 
-
+# activate venv
+# Environments\CovidWebsite\Scripts\activate
 
 
 
 
 ########################################################################################################################
-FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
+# FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
 # dash_ss = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
-external_stylesheets = [dbc.themes.LITERA, FA]
+# , FA]
+external_stylesheets = [dbc.themes.LITERA] 
 
 # Cerulean
 # COSMO
@@ -68,8 +70,11 @@ external_stylesheets = [dbc.themes.LITERA, FA]
 # UNITED
 
 # spacelab
+# external_stylesheets=external_stylesheets,
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets, assets_folder='assets')
+app = Dash(__name__, 
+        external_stylesheets=external_stylesheets,
+        assets_folder='assets')
 
 server = app.server
 
@@ -104,7 +109,9 @@ app.layout = html.Div([
             className="my-title",
             ),
 
-            html.Div(html.A(className="fas fa-bars menubar hide-desktop"),id="menu-button"),
+            html.Div(
+                html.Img(src='/assets/images/menu.svg',id="hamburger"),
+                id="menu-button",className="hide-desktop"),
 
 
             html.Div([
@@ -120,7 +127,7 @@ app.layout = html.Div([
                                 id="nav-menu",
                                 is_open=False),
                             ],
-                            className="menu-dropdown",
+                            className="menu-dropdown hide-desktop",
                             id="mobile-navs"
                             ),
                             
@@ -197,8 +204,6 @@ app.layout = html.Div([
 
 
 
-# print(app.get_asset_url('mask.svg'))
-
 
 
 
@@ -227,6 +232,12 @@ app.index_string = """<!DOCTYPE html>
         <title>LowHighCovid</title>
         {%favicon%}
         {%css%}
+        <link rel="stylesheet" href="assets/data.css">
+        <link rel="stylesheet" href="assets/home.css">
+        <link rel="stylesheet" href="assets/inter.css">
+        <link rel="stylesheet" href="assets/intro.css">
+        <link rel="stylesheet" href="assets/navbar.css">
+        <link rel="stylesheet" href="assets/main.css">
     </head>
     <body>
         {%app_entry%}
@@ -343,10 +354,10 @@ def invisible_or_not(num,preset,pathname):
     custom_tab_style = {'display': 'none'}
     ld_cycle_tab_style = {'display': 'none'}
     if preset=='C':
-        custom_tab_style = {'textAlign': 'center', 'cursor': 'pointer'}
+        custom_tab_style = {'display': 'block'}
     
     if preset=='LC':
-        ld_cycle_tab_style = {'textAlign': 'center', 'cursor': 'pointer'}
+        ld_cycle_tab_style = {'display': 'block'}
 
     
     return [says_strat_2, strat_H, strat_L, custom_tab_style, ld_cycle_tab_style]

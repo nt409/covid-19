@@ -56,10 +56,16 @@ layout_data = html.Div(className="data-page-container",
 
                     
             html.Div([
-                dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
-                                color='primary',
-                                className='plot-button data',
-                                id="button-plot"),
+                dbc.Button([
+                    # html.I(className="fas fa-chart-area"),
+                    html.Div([
+                        html.Img(src='/assets/images/plot.svg')
+                    ],className="plot-button-logo"),
+                    html.Div('Plot',className='plot-button-text')
+                    ],
+                    color='primary',
+                    className='plot-button data',
+                    id="button-plot"),
             ]),
 
             html.Div("This section enables you to compare different countries' reported cases and deaths in real-time, and predict future numbers assuming exponential growth.", 

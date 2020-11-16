@@ -8,8 +8,8 @@ import numpy as np
 from scipy.integrate import ode
 import datetime
 
-from config import presets_dict
 
+from config import presets_dict
 from parameters_cov import params
 from data_scraper import get_data
 from data_constants import POPULATIONS

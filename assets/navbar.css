@@ -31,48 +31,13 @@ header {
     text-decoration: none;
 }
 
-.other-links.hide-mobile {
-    float: right;
-    font-size: 1.1em;
-    text-decoration: none;
-}
-
-.fas.fa-bars.menubar{
-    color: rgb(50, 50, 50);
-    width: 35px;
-}
-
-.fas.fa-bars.menubar:hover {
-    color: black;
-    cursor: pointer;
-}
-
-#mobile-navs {
-    background-color: #ebebeb;
-}
-
-
-
-#nav-menu {
-    padding: 0 5px;
-}
 
 .navLink.menu-dropdown {
-    font-size: 1.1em;
-    padding: 5px 0;
+    padding: 5px;
 }
 
 
 
-
-
-
-#main-nav-links {
-    grid-area: dropdown;
-    grid-row: 2;
-    grid-column-start: 1;
-    grid-column-end: 3;
-}
 
 
 .my-title {
@@ -87,16 +52,25 @@ header {
 #menu-button {
     grid-row: 1;
     grid-column: 2;
-
-    margin: 7px 0 0 auto;
     float: right;
 }
 
-#main-nav-links {
-    grid-row: 1;
-    grid-column: 2;
+#hamburger {
+    width: 25px;
+    margin: 0 5px 0 0;
+    cursor: pointer;
+}
 
-    width: 100%;
-    text-align: left;
-    margin: 0 auto;
+
+.other-links.show-desktop.hide-mobile {
+    margin: 0.1em 15px auto auto;
+    float: right;
+    font-size: 1.1em;
+    text-decoration: none;
+}
+
+
+#mobile-navs {
+    background-color: #ebebeb;
+    font-size: 1.1em;    
 }

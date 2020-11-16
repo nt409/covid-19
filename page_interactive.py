@@ -41,7 +41,7 @@ control_choices_main = html.Div(children=[
 
     html.Div(className="control-unit",children=[
     
-    html.Div(html.Img(src='/assets/images/mask.png',className="img"),className="my-svg"),
+    html.Div(html.Img(src='/assets/images/mask.svg',className="img"),className="my-svg"),
     
     html.H6(className="control-title", children='Which restrictions?'),
 
@@ -97,7 +97,7 @@ control_choices_main = html.Div(children=[
         
     html.Div(className="control-unit", children=[
 
-    html.Div(html.Img(src='/assets/images/calendar.png',className="img"),className="my-svg"),
+    html.Div(html.Img(src='/assets/images/calendar.svg',className="img"),className="my-svg"),
 
     html.H6(className="control-title", children='When to control?'),
 
@@ -157,7 +157,7 @@ control_choices_other =  html.Div(children=[
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/globe.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/globe.svg',className="img"),className="my-svg"),
 html.H6(className="control-title", children='Country'),
 
                                         
@@ -178,7 +178,7 @@ dcc.Dropdown(
 
 html.Div(className="control-unit", children=[
                                         
-html.Div(html.Img(src='/assets/images/needle.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/needle.svg',className="img"),className="my-svg"),
 html.H6(className="control-title", children='Vaccination starts'),
 
 dbc.Button('?',
@@ -226,7 +226,7 @@ placement='left',
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/hosp.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/hosp.svg',className="img"),className="my-svg"),
 html.H6(className="control-title", children='Critical care capacity increase'),
 
 dbc.Button('?',
@@ -270,7 +270,7 @@ placement='top',
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/calendar.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/calendar.svg',className="img"),className="my-svg"),
 html.H6(className="control-title", children='Model start date'),
 
 
@@ -296,7 +296,7 @@ html.Div([
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/results.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/main_inter.svg',className="img"),className="my-svg"),
 
 html.H6(className="control-title", children='Results type'),
 
@@ -351,7 +351,7 @@ control_choices_custom =  html.Div(children=[
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/elderly.svg',className="img"),className="my-svg"),
 
 html.H6(id='strat-lr-infection', className="control-title"),
 
@@ -371,7 +371,7 @@ value=initial_lr,
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/elderly.svg',className="img"),className="my-svg"),
 
 html.H6(id='strat-hr-infection', className="control-title"),
 
@@ -389,7 +389,7 @@ value=initial_hr,
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/strats.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/strats.svg',className="img"),className="my-svg"),
 
 html.H6(className="control-title", children='Number Of Strategies'),
 
@@ -411,7 +411,7 @@ html.Div([ # Div2258
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/elderly.svg',className="img"),className="my-svg"),
 
 
 html.H6(className="control-title",children='Strategy two: low risk infection rate (%)'),
@@ -431,7 +431,7 @@ value=5,
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/elderly.svg',className="img"),className="my-svg"),
 
 
 html.H6(className="control-title",children='Strategy two: high risk infection rate (%)'),
@@ -477,7 +477,7 @@ control_choices_lockdown =  html.Div(children=[
 
 html.Div(className="control-unit", children=[
 
-html.Div(html.Img(src='/assets/images/elderly.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/elderly.svg',className="img"),className="my-svg"),
 
 html.H6(className="control-title", children='Groups allowed out of lockdown'),
 
@@ -528,7 +528,7 @@ value= 1,
 html.Div(className="control-unit", children=[
                                                         
 # html.H2(className="fas fa-clock my-svg"),
-html.Div(html.Img(src='/assets/images/clock.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/clock.svg',className="img"),className="my-svg"),
 html.H6(className="control-title", children='Cycle: time on'),
 
 dbc.Button('?',
@@ -573,7 +573,7 @@ placement='top',
 html.Div(className="control-unit", children=[
 
 # html.H2(className="fas fa-clock my-svg"),
-html.Div(html.Img(src='/assets/images/clock.png',className="img"),className="my-svg"),
+html.Div(html.Img(src='/assets/images/clock.svg',className="img"),className="my-svg"),
 html.H6(className="control-title", children='Cycle: time off'),
 
 dbc.Button('?',
@@ -817,13 +817,18 @@ controls = dbc.Card([
     html.Div([
 
         html.Div([
-
-            dbc.Button([html.I(className="fas fa-chart-area"),' Plot'],
-                            color='primary',
-                            className='plot-button',
-                            id="plot-button",
-                            size='lg',
-                            style = {'cursor': 'pointer'}),
+            
+            dbc.Button([
+                    # html.I(className="fas fa-chart-area"),
+                    html.Div([
+                        html.Img(src='/assets/images/plot.svg')
+                    ],className="plot-button-logo"),
+                    html.Div('Plot',className='plot-button-text')
+                    ],
+                    color='primary',
+                    className='plot-button',
+                    id="plot-button",
+                    size='lg'),
 
             html.Div(dbc.Spinner(html.Div(id="loading-sol-1"),color='primary'),
                     id="item1"),
@@ -839,11 +844,11 @@ controls = dbc.Card([
         html.Div('Change the options and press plot.', className="cont-text"),
                                                                 
         dbc.Tabs(
+            id="inter-tabs",
             active_tab='tab_main',
             children = [
                 
             dbc.Tab(labelClassName='tab', label='Main controls',
-                        tab_style = {'textAlign': 'center', 'cursor': 'pointer'},
                         tab_id='tab_main',
                         children=control_choices_main
                         ),
@@ -858,7 +863,6 @@ controls = dbc.Card([
                         children=[control_choices_lockdown],
                         ),
             dbc.Tab(labelClassName='tab', label='Other',
-                        tab_style = {'textAlign': 'center', 'cursor': 'pointer'},
                         children=control_choices_other
                         ),
             ],className="control-tabs"), # end of tabs
