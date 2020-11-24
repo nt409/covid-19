@@ -230,7 +230,7 @@ app.index_string = """<!DOCTYPE html>
 
         {%metas%}
         <title>LowHighCovid</title>
-        {%favicon%}
+        <link rel="icon" href="assets/favicon.ico">
         {%css%}
         <link rel="stylesheet" href="assets/data.css">
         <link rel="stylesheet" href="assets/home.css">
