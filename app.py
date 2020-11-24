@@ -154,7 +154,7 @@ app.layout = html.Div([
         ##
         dcc.Location(id='page-url', refresh=False),
         
-        html.Div(id='page-content',children=layout_enter),
+        html.Div(id='page-content',children=html.Div('Loading...',style={'height': '100vh'})),
 
         html.Footer([
 
@@ -272,10 +272,10 @@ def display_page(pathname):
         return layout_inter
     elif pathname == '/tests':
         return layout_tests
-    elif pathname in ['','/','/enter']:
+    elif pathname == '/':
         return layout_enter
     else:
-        return None
+        return html.Div('404: Page not found',style={'height': '100vh'})
 
 
 ########################################################################################################################
