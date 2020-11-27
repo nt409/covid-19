@@ -120,9 +120,9 @@ app.layout = html.Div([
                             html.Div([
                                 dbc.Collapse([
                                     html.Div(html.A("Background", href="/intro", className="navLink menu-dropdown")),
-                                    html.Div(html.A("Interactive model", href="/inter", className="navLink menu-dropdown")),
-                                    html.Div(html.A("Interpreting tests", href="/tests", className="navLink menu-dropdown")),
                                     html.Div(html.A("Real-time data", href="/data", className="navLink menu-dropdown")),
+                                    html.Div(html.A("Interpreting tests", href="/tests", className="navLink menu-dropdown")),
+                                    html.Div(html.A("Interactive model", href="/inter", className="navLink menu-dropdown")),
                                 ],
                                 id="nav-menu",
                                 is_open=False),
@@ -133,9 +133,9 @@ app.layout = html.Div([
                             
                             html.Div([
                                 html.A("Background", href="/intro", className="navLink"),
-                                html.A("Interactive model", href="/inter", className="navLink"),
-                                html.A("Interpreting tests", href="/tests", className="navLink"),
                                 html.A("Real-time data", href="/data", className="navLink"),
+                                html.A("Interpreting tests", href="/tests", className="navLink"),
+                                html.A("Interactive model", href="/inter", className="navLink"),
                             ],
                             className="other-links show-desktop hide-mobile",
                             ),
@@ -160,9 +160,9 @@ app.layout = html.Div([
 
         html.Div([
                 html.A("Background", href="/intro", className="footer-navlink", id="footer-intro"),
-                html.A("Interactive model", href="/inter", className="footer-navlink", id="footer-inter"),
-                html.A("Interpreting tests", href="/tests", className="footer-navlink", id="footer-tests"),
                 html.A("Real-time data", href="/data", className="footer-navlink", id="footer-data"),
+                html.A("Interpreting tests", href="/tests", className="footer-navlink", id="footer-tests"),
+                html.A("Interactive model", href="/inter", className="footer-navlink", id="footer-inter"),
                 ],
                 className="footer-links",
                 ),
@@ -1108,8 +1108,8 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
             xaxis_title = ''
 
         layout_normal = {
-            'yaxis': {'title': axis_title, 'type': 'linear', 'showgrid': True, 'fixedrange': True},
-            'xaxis': {'title': xaxis_title, 'showgrid': True, 'fixedrange': True},
+            'yaxis': {'title': axis_title, 'type': 'linear', 'showgrid': True}, # , 'fixedrange': True
+            'xaxis': {'title': xaxis_title, 'showgrid': True}, # , 'fixedrange': True
             'showlegend': True,
             'legend': dict(
                 x = 0.5,
@@ -1353,8 +1353,8 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
             yaxis_title = f'New {title} per week'  # {l} days)'
             xaxis_title = f'Total {title}'
         layout_new_vs_total = {
-            'yaxis': {'title': yaxis_title, 'type': 'log', 'showgrid': True, 'automargin': True, 'fixedrange': True},
-            'xaxis': {'title': xaxis_title, 'type': 'log', 'showgrid': True, 'automargin': True, 'fixedrange': True},
+            'yaxis': {'title': yaxis_title, 'type': 'log', 'showgrid': True, 'automargin': True}, # , 'fixedrange': True
+            'xaxis': {'title': xaxis_title, 'type': 'log', 'showgrid': True, 'automargin': True}, # , 'fixedrange': True
             'showlegend': True,
             'height': '450px',
             'legend': dict(

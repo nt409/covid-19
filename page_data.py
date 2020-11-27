@@ -39,7 +39,7 @@ layout_data = html.Div(className="data-page-container",
                         id=c_name,
                         options=[{'label': c_name.title() if c_name not in ['us', 'uk'] else c_name.upper(),
                                 'value': c_name}],
-                        value=[c_name] if c_name in ('us', 'uk', 'italy') else [],
+                        value=[c_name] if c_name in ('uk', 'sweden', 'germany') else [],
                         )
                     for i, c_name in enumerate(COUNTRY_LIST)]),
         

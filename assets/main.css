@@ -71,7 +71,7 @@ i, p {
 
     width: 142px;
     height: 3.3rem;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     border-radius: 2.6em;
 
     display: grid;
@@ -477,7 +477,7 @@ i, p {
 
     #main-items-container {
         display: grid;
-        grid-template-areas: 'intro inter tests data';
+        grid-template-areas: 'intro data tests inter';
         grid-template-columns: repeat(4, auto);
         padding: 0 20px;
     }
@@ -577,8 +577,12 @@ i, p {
         margin: 0.1em auto 0.1em 150px;
     }
     
-    .other-links.hide-mobile {
+    /* .other-links.show-desktop.hide-mobile {
         margin: 0.1em 145px auto auto;
+    } */
+
+    #main-nav-links {
+        margin: 0.1em 125px auto auto;
     }
 
     .interactive-layout {
