@@ -330,6 +330,15 @@ i, p {
 /* big screen */
 @media only screen and (min-width: 1024px) {
 
+    .data-page-title {
+        margin: 1em 0 0em;
+    }
+
+    #data-title-container h1{
+        margin: 0;
+    }
+    
+
     .layout-tests {
         padding: 10px 30px;
     }
@@ -470,7 +479,9 @@ i, p {
     .data-page-container{
         display: grid;
         grid-template-columns: 300px auto;
-        grid-template-areas: "countries graphs";
+        grid-template-areas: 
+        "title title"
+        "countries graphs";
         padding: 30px;
         justify-content: space-between;
     }

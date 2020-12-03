@@ -1,7 +1,16 @@
+
+
 .data-page-title {
-    display: block;
+    /* display: block; */
+    grid-area: title;
     margin: 0.5em 0;
 }
+
+/* .data-page-container {
+    display: block;
+    margin: 0;
+    padding: 0;
+} */
 
 
 .data-graphs {

@@ -27,8 +27,13 @@ colors = {
 
 layout_data = html.Div(className="data-page-container",
                       id='output-layout', children=[
+    html.Div(
+        html.H1('Coronavirus cases and deaths by country')
+    ,className="data-page-title", id="data-title-container"),
 
-    html.H1('Coronavirus cases and deaths by country',className='data-page-title'),
+
+
+    # html.Div([
     
     html.Div([
         dbc.Card([
@@ -308,6 +313,9 @@ layout_data = html.Div(className="data-page-container",
                     ),
             ], className='data-text')
         ], className="data-graphs"),
+
+
+        # ],className="data-page-container2"),
 
         
         
