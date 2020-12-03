@@ -877,7 +877,8 @@ className="inter-card controls",
 
 
 textCard = html.Div([
-    html.H3("How should we control covid?",className="inter-title"),
+    
+    html.H1("How should we control covid?",className="inter-title"),
 
     html.P(
         'The model predicts how the epidemic will progress, depending on the disease status of members of the population within each country. The starting point for the model updates daily.',

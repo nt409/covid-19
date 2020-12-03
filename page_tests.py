@@ -129,22 +129,15 @@ test_controls = html.Div([
 
 
 layout_tests = html.Div([
-                                        dbc.Row([ # R2191
-                                            dbc.Col([
-                                                    html.Div(test_content,id='test-content', style={'margin': '10px'}),                                                                                        
 
-                                                    html.Div(test_controls,id='test-controls', style={'margin': '10px'}),
 
-                                            ],
-                                            width=True,
-                                            ),
+    html.H1("How accurate is a covid test?",className="inter-title"),
 
-                                        ],
-                                        justify='center',
-                                        style={'margin': '15px'}
-                                        ),  # R2191
+    html.Div(test_content,id='test-content'),  
+
+    html.Div(test_controls,id='test-controls'),
 
     ],
-    style={'fontSize': '11', 'marginBottom': '200px'},
+    className="layout-tests"
     )
 

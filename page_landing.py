@@ -6,8 +6,10 @@ layout_enter = html.Div([
     
     html.Div([
         html.Div(html.Img(src='/assets/images/mainlogo.svg',className="main-logo"),className="main-logo-container"),
+        
         html.H1('LowHighCovid',className="home-title"),
-        html.H2('Covid modelling and real-time data HQ',className="home-page-desc"),
+        html.H1('Covid data and modelling HQ',className="home-page-desc"),
+
     ],className="title-container"),
 
     html.Div([
@@ -23,23 +25,23 @@ layout_enter = html.Div([
 
         html.Div([
             html.Div(html.Img(src='/assets/images/main_data.svg',className="main-img"),className="landing-logo data"),
-            html.H2('Explore real-time data',className="home-sub-title"),
+            html.H2('Explore coronavirus data',className="home-sub-title"),
             html.P('Real-time data on coronavirus cases and deaths from hundreds of countries around the world.',className="home-sub-text"),
-            dbc.Button('View global data', color='primary', href='/data', className='page-button'),
+            dbc.Button('View global data', color='primary', href='/covid-data', className='page-button'),
         ],className="main-container light",id='main-data-cont'),
 
         html.Div([
             html.Div(html.Img(src='/assets/images/main_test.svg',className="main-img test"),className="landing-logo"),
             html.H2('How good can a test be?',className="home-sub-title"),
             html.P('We use conditional probability to show you how likely different tests really are to give correct results.',className="home-sub-text"),
-            dbc.Button('Learn more',color='primary', href='/tests', className='page-button'),
+            dbc.Button('Learn more',color='primary', href='/covid-tests', className='page-button'),
         ],className="main-container",id='main-tests-cont'),
 
         html.Div([
             html.Div(html.Img(src='/assets/images/main_inter.svg',className="main-img"),className="landing-logo"),
             html.H2('Which restrictions, and when?',className="home-sub-title"),
             html.P('See how different control measures implemented today could impact on infections, hospitalisations and deaths.',className="home-sub-text"),
-            dbc.Button('Start predicting',color='primary', href='/inter',className='page-button'),
+            dbc.Button('Start predicting',color='primary', href='/interactive-model',className='page-button'),
                                 
         ],className="main-container light",id='main-inter-cont'),
 

@@ -343,7 +343,7 @@ layout_intro = html.Div([
                     
 
                     dbc.Row([
-                    dbc.Button('Start Calculating', href='/inter', size='lg', color='primary',
+                    dbc.Button('Start Calculating', href='/interactive-model', size='lg', color='primary',
                     style={'marginTop': '10px', 'textAlign': 'center', 'fontSize': '100%'}
                     ),
                     ],

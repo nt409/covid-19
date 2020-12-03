@@ -1,3 +1,9 @@
+.data-page-title {
+    display: block;
+    margin: 0.5em 0;
+}
+
+
 .data-graphs {
     /* width: 95%; */
     text-align: center;

@@ -12,11 +12,18 @@ body {
     color: black;
 }
 
+#page-content {
+    padding: 0 5px;
+}
 
-h3, h4 {
+h1, h3, h4 {
     font-weight: 540;
     text-align: left;
     color: black;
+}
+
+h1 {
+    font-size: 2em;
 }
 
 h3 {
@@ -139,7 +146,13 @@ i, p {
 
 
 
+#test-controls {
+    margin: 10px 0;
+}
 
+#test-content {
+    margin: 10px 0;
+}
 
 
 .plotscard {
@@ -149,10 +162,13 @@ i, p {
 
 .interactive-layout {
     display: block;
-    margin: 2px;
+    /* margin: 2px; */
 }
 
-
+.layout-tests {
+    /* margin: 2px; */
+    padding: 0;
+}
 
 
 .hide-mobile{
@@ -313,6 +329,18 @@ i, p {
 
 /* big screen */
 @media only screen and (min-width: 1024px) {
+
+    .layout-tests {
+        padding: 10px 30px;
+    }
+
+    #page-content {
+        padding: 0;
+    }
+
+    h1 {
+        font-size: 2.5em;
+    }
 
     .show-desktop {
         display: flex;
@@ -587,6 +615,10 @@ i, p {
 
     .interactive-layout {
         padding: 30px 160px 400px 160px;
+    }
+
+    .layout-tests {
+        padding: 20px 160px;
     }
     
 

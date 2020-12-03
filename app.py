@@ -120,9 +120,9 @@ app.layout = html.Div([
                             html.Div([
                                 dbc.Collapse([
                                     html.Div(html.A("Background", href="/intro", className="navLink menu-dropdown")),
-                                    html.Div(html.A("Real-time data", href="/data", className="navLink menu-dropdown")),
-                                    html.Div(html.A("Interpreting tests", href="/tests", className="navLink menu-dropdown")),
-                                    html.Div(html.A("Interactive model", href="/inter", className="navLink menu-dropdown")),
+                                    html.Div(html.A("Real-time data", href="/covid-data", className="navLink menu-dropdown")),
+                                    html.Div(html.A("Interpreting tests", href="/covid-tests", className="navLink menu-dropdown")),
+                                    html.Div(html.A("Interactive model", href="/interactive-model", className="navLink menu-dropdown")),
                                 ],
                                 id="nav-menu",
                                 is_open=False),
@@ -133,9 +133,9 @@ app.layout = html.Div([
                             
                             html.Div([
                                 html.A("Background", href="/intro", className="navLink"),
-                                html.A("Real-time data", href="/data", className="navLink"),
-                                html.A("Interpreting tests", href="/tests", className="navLink"),
-                                html.A("Interactive model", href="/inter", className="navLink"),
+                                html.A("Real-time data", href="/covid-data", className="navLink"),
+                                html.A("Interpreting tests", href="/covid-tests", className="navLink"),
+                                html.A("Interactive model", href="/interactive-model", className="navLink"),
                             ],
                             className="other-links show-desktop hide-mobile",
                             ),
@@ -160,9 +160,9 @@ app.layout = html.Div([
 
         html.Div([
                 html.A("Background", href="/intro", className="footer-navlink", id="footer-intro"),
-                html.A("Real-time data", href="/data", className="footer-navlink", id="footer-data"),
-                html.A("Interpreting tests", href="/tests", className="footer-navlink", id="footer-tests"),
-                html.A("Interactive model", href="/inter", className="footer-navlink", id="footer-inter"),
+                html.A("Real-time data", href="/covid-data", className="footer-navlink", id="footer-data"),
+                html.A("Interpreting tests", href="/covid-tests", className="footer-navlink", id="footer-tests"),
+                html.A("Interactive model", href="/interactive-model", className="footer-navlink", id="footer-inter"),
                 ],
                 className="footer-links",
                 ),
@@ -218,6 +218,8 @@ app.index_string = """<!DOCTYPE html>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="description" 
+        content="LowHighCovid is your coronavirus data and modelling HQ. Track real-time cases and deaths in hundreds of countries, or predict the effect of Covid control measures.">
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-163339118-1"></script>
         <script>
@@ -229,7 +231,7 @@ app.index_string = """<!DOCTYPE html>
         </script>
 
         {%metas%}
-        <title>LowHighCovid</title>
+        <title>Covid data and modelling HQ - LowHighCovid</title>
         <link rel="icon" href="assets/favicon.ico">
         {%css%}
         <link rel="stylesheet" href="assets/data.css">
@@ -264,13 +266,13 @@ app.index_string = """<!DOCTYPE html>
 @app.callback(Output('page-content', 'children'),
             [Input('page-url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/data':
+    if pathname == '/covid-data':
         return layout_data
     elif pathname == '/intro':
         return layout_intro
-    elif pathname == '/inter':
+    elif pathname == '/interactive-model':
         return layout_inter
-    elif pathname == '/tests':
+    elif pathname == '/covid-tests':
         return layout_tests
     elif pathname == '/':
         return layout_enter
@@ -331,7 +333,7 @@ app.callback(Output(f"nav-menu", "is_open"),
     )
 def invisible_or_not(num,preset,pathname):
 
-    if not pathname in ['inter','/inter']:
+    if not pathname in ['interactive-model','/interactive-model']:
         raise PreventUpdate
 
 
@@ -386,7 +388,7 @@ def invisible_or_not(num,preset,pathname):
 def preset_sliders(preset,number_strs,pathname):
 
     # print('preset sliders')
-    if not pathname in ['inter','/inter']:
+    if not pathname in ['interactive-model','/interactive-model']:
         raise PreventUpdate
 
     lockdown_cycles_dis = True
@@ -679,7 +681,7 @@ def render_interactive_content(plot_button,
                                 ICU_grow):
     
 
-    if not pathname in ['inter','/inter'] or plot_button is None:
+    if not pathname in ['interactive-model','/interactive-model'] or plot_button is None:
         raise PreventUpdate
 
     # could cache these
@@ -1049,7 +1051,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                  align_daily_deaths_check, align_daily_deaths_input, pathname, saved_json_data, *args):
 
     # print('dan 2',dash.callback_context.triggered)
-    if not pathname in ['/data','data']:
+    if not pathname in ['/covid-data','covid-data']:
         raise PreventUpdate
 
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
@@ -1399,7 +1401,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
             )
 def calculate_test_probs(plot_button,prior,sens,spec,pathname):
     
-    if not pathname in ['/tests','tests']:
+    if not pathname in ['/covid-tests','covid-tests']:
         raise PreventUpdate
 
     true_pos, false_pos, true_neg, false_neg = test_probs(prior,sens,spec)
@@ -1439,5 +1441,3 @@ def calculate_test_probs(plot_button,prior,sens,spec,pathname):
 if __name__ == '__main__':
     app.run_server(debug=False)
     # app.run_server(debug=True)
-
-
