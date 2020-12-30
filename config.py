@@ -62,8 +62,8 @@ presets_dict_dropdown = {'N': 'Do nothing',
                 'LC': 'Lockdown cycles (switching lockdown on and off)',
                 'C': 'Custom'}
 
-ld = 3
-sd = 4
+ld = 4
+sd = 6
 noth = 10
 
 preset_dict_high = {'Q': ld, 'MSD': sd, 'LC': ld, 'HL': ld,  'H': ld,  'N':noth}

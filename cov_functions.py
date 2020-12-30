@@ -20,7 +20,7 @@ from data_constants import POPULATIONS
 def ode_system(t, y,
                     beta_L_factor, beta_H_factor,
                     vaccinate_rate, ICU_grow,
-                    date):
+                    days_since_peak):
 
     # print(t)
 
@@ -62,7 +62,7 @@ def ode_system(t, y,
                         + params.noICU*(params.crit_death + params.crit_recovery)*max(C_H-ICU_capacOld,0) # all without crit care die
                     )
     
-    beta = params.beta + cos((t-1)*2* pi /365)
+    beta = params.beta*(1 + 0.2*cos((t+days_since_peak)*2* pi /365) )
 
     dydt = [-S_L*beta*( (beta_L_factor**2)*I_L  +  (beta_H_factor*beta_L_factor)*I_H ) - vaccine_effect_L, # dS
             +S_L*beta*( (beta_L_factor**2)*I_L  +  (beta_H_factor*beta_L_factor)*I_H ) - params.mu_L*I_L - params.gamma_L*I_L + (1-params.hr_frac)*params.import_rate, # dI
@@ -218,14 +218,26 @@ def solve_it(y0,
         betaLfact, betaHfact = determine_betas(t, t_control, beta_L_factor, beta_H_factor, let_HR_out)
         
         ICU_grow = np.float(ICU_grow)
+        
+        
+        split_date = date.split('-')
+        
+        year = int(split_date[0])
+        month = int(split_date[1])
+        day = int(split_date[2])
 
-        date
+        start_date = datetime.date(year, month, day)
+        peak_date = datetime.date(2021, 1, 1)
+
+        days_since_peak = start_date-peak_date
+        
+        days_since_peak = float(days_since_peak.days)
 
         odeSolver.set_f_params(betaLfact,
                                     betaHfact,
                                     vaccinate_rate,
                                     ICU_grow,
-                                    date)
+                                    days_since_peak)
         
         ##
         for ind, tt in enumerate(tim[1:]):
