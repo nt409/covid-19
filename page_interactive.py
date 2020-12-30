@@ -892,6 +892,19 @@ textCard = html.Div([
         'The vaccination will happen is assumed to happen at a rate of 1 million per week, with 70% efficacy. In reality all vaccinated people are less likely to die from covid, even if they can still transmit the virus.',
         className="interactive-text"),
 
+    
+    html.P([
+        # html.P(
+        'Vaccination data available ',
+        # className="interactive-text"
+        # ),
+        
+        html.A('here.', href='https://github.com/owid/covid-19-data/blob/master/public/data/vaccinations/vaccinations.csv',
+        ),
+        ],
+        className="interactive-text"
+        ),
+    
     html.Div(id='worked-div'),
 
 ],className="inter-text"),
