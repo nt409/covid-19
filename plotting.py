@@ -829,7 +829,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
             hovertemplate= 'ICU Capacity<extra></extra>',
             name= 'ICU Capacity'))
 
-    if vaccine_time is not None:
+    if vaccine_time is not None and vaccine_time>0:
         moreLines.append(
         dict(
         type='scatter',
@@ -938,7 +938,7 @@ def MultiFigureGenerator(upper_lower_sol,sols,month,num_strat,ICU_to_plot=False,
 
 
 
-    if vaccine_time is not None:
+    if vaccine_time is not None and vaccine_time>0:
         annotz.append(go.layout.Annotation(x=startdate+datetime.timedelta(days=month_len*vaccine_time),
                         y=1,
                         text='💉',

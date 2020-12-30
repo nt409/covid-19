@@ -40,7 +40,7 @@ frac_crit_H = sum(age_risk_df.weighted_crit_high)
 # disease params
 N    = 1
 recov_rate = 1/7
-R_0        = 2.4
+R_0        = 4
 beta = R_0*recov_rate/N # R_0 mu/N
 
 hosp_rate = 1/8
@@ -75,7 +75,10 @@ ICU_growth = 1
 ICU_capacity = 25000/UK_population
 
 vaccinate_percent = 0.9 # vaccinate this many
-vaccinate_rate = 0.75/(365*2/3)
+
+# million per 7 days with 70% efficacy
+vaccinate_rate = 0.7* ((10**6) / UK_population) / 7
+
 # 0.55/(365*2/3)
 # https://journals.plos.org/plosntds/article/file?rev=2&id=10.1371/journal.pntd.0006158&type=printable
 # or 10000/UK_population # per day

@@ -113,7 +113,7 @@ control_choices_main = html.Div(children=[
                 max=floor(params.max_months_controlling),
                 step=1,
                 marks={i: f'{str(i)} months' if i==9 else str(i) if i!=0 else 'Now' for i in range(0,floor(params.max_months_controlling)+1,3)},
-                value=[0,2],
+                value=[0,3],
     ),
 
 
@@ -193,8 +193,8 @@ className="component",
 min   = 0,
 max   = 6,
 step  = 2,
-marks = {i: 'Never' if i==0 else f'Month {str(i)}' if i==2 else str(i) for i in range(0,7,2)},
-value = 2,
+marks = {i: 'Now' if i==0 else f'Month {str(i)}' if i==2 else str(i) for i in range(0,7,2)},
+value = 0,
 ),
 
 
@@ -886,6 +886,10 @@ textCard = html.Div([
 
     html.P(
         'Compare the effect of different strategies on the predicted number of infections, hospitalisations, and deaths.',
+        className="interactive-text"),
+
+    html.P(
+        'The vaccination will happen is assumed to happen at a rate of 1 million per week, with 70% efficacy. In reality all vaccinated people are less likely to die from covid, even if they can still transmit the virus.',
         className="interactive-text"),
 
     html.Div(id='worked-div'),

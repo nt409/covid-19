@@ -432,8 +432,8 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     except:
         country = 'uk'
 
-    if vaccine==0:
-        vaccine = None
+    # if vaccine==0:
+        # vaccine = None
 
     if init_stored is None or date!=init_stored[5] or country!=init_stored[6]:
         I0, R0, H0, C0, D0, worked, min_date, max_date, _ = begin_date(date,country)
@@ -484,7 +484,6 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
             month.append(mm+time_off+time_on)
             mm = mm + time_off + time_on
     
-    
 
     months_controlled = [month_len*i for i in month]
 
@@ -496,6 +495,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
     sols.append(run_model(beta_L_factor=lr,beta_H_factor=hr,
                             t_control=months_controlled,
                             vaccine_time=vaccine,
+                            date=date,
                             I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
                             ICU_grow=ICU_grow,let_HR_out=let_HR_out))
     if num_strat=='two':
@@ -504,6 +504,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         sols.append(run_model(beta_L_factor=lr2,beta_H_factor=hr2,
                                 t_control=months_controlled,
                                 vaccine_time=vaccine,
+                                date=date,
                                 I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
                                 ICU_grow=ICU_grow,let_HR_out=let_HR_out))
     
@@ -532,6 +533,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         upp_low = run_model(beta_L_factor=lr_new,beta_H_factor=hr_new,
                                 t_control=months_controlled,
                                 vaccine_time=vaccine,
+                                date=date,
                                 I0=I0_new,R0=R0_new,H0=H0_new,C0=C0_new,D0=D0_new,
                                 ICU_grow=ICU_grow,let_HR_out=let_HR_out)
 
@@ -560,6 +562,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
     sol_do_nothing = run_model(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
                                     beta_L_factor=1,beta_H_factor=1,
                                     t_control=None,
+                                    date=date,
                                     ICU_grow=ICU_grow)
     
     return sol_do_nothing, prev_deaths
@@ -893,8 +896,8 @@ def render_interactive_content(plot_button,
 
 
 
-        if vaccine_time==9:
-            vaccine_time = None
+        # if vaccine_time==9:
+            # vaccine_time = None
 
         if False: # plot_with_do_nothing==[1] and num_strat=='one' and preset!='N':
             sols_to_plot = sols
@@ -1439,5 +1442,5 @@ def calculate_test_probs(plot_button,prior,sens,spec,pathname):
 
 ########################################################################################################################
 if __name__ == '__main__':
-    app.run_server(debug=False)
-    # app.run_server(debug=True)
+    # app.run_server(debug=False)
+    app.run_server(debug=True)

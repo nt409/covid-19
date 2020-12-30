@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 
-from math import ceil
+from math import ceil, cos, pi
 import numpy as np
 from scipy.integrate import ode
 import datetime
@@ -19,7 +19,8 @@ from data_constants import POPULATIONS
 ##
 def ode_system(t, y,
                     beta_L_factor, beta_H_factor,
-                    vaccinate_rate, ICU_grow):
+                    vaccinate_rate, ICU_grow,
+                    date):
 
     # print(t)
 
@@ -61,15 +62,17 @@ def ode_system(t, y,
                         + params.noICU*(params.crit_death + params.crit_recovery)*max(C_H-ICU_capacOld,0) # all without crit care die
                     )
     
-    dydt = [-S_L*( params.beta*(beta_L_factor**2)*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**1))*I_H ) - vaccine_effect_L, # dS
-            +S_L*( params.beta*(beta_L_factor**2)*I_L  +  (params.beta*((beta_H_factor*beta_L_factor)**1))*I_H ) - params.mu_L*I_L - params.gamma_L*I_L + (1-params.hr_frac)*params.import_rate, # dI
+    beta = params.beta + cos((t-1)*2* pi /365)
+
+    dydt = [-S_L*beta*( (beta_L_factor**2)*I_L  +  (beta_H_factor*beta_L_factor)*I_H ) - vaccine_effect_L, # dS
+            +S_L*beta*( (beta_L_factor**2)*I_L  +  (beta_H_factor*beta_L_factor)*I_H ) - params.mu_L*I_L - params.gamma_L*I_L + (1-params.hr_frac)*params.import_rate, # dI
             I_L*params.mu_L    + H_L*params.recover_L + C_L_to_R_L + vaccine_effect_L  - (1-params.hr_frac)*params.import_rate,  # dR
             I_L*params.gamma_L - H_L*params.recover_L - H_L*params.crit_L,         # dH
             H_L*params.crit_L  - (C_L_to_R_L + C_L_to_D_L),                          # dC
             + C_L_to_D_L,                                                      # dD
 
-            -S_H*( (params.beta*((beta_H_factor*beta_L_factor)**1))*I_L + params.beta*(beta_H_factor**2)*I_H) - vaccine_effect_H , # dS
-            +S_H*( (params.beta*((beta_H_factor*beta_L_factor)**1))*I_L + params.beta*(beta_H_factor**2)*I_H) - params.mu_H*I_H - params.gamma_H*I_H + params.hr_frac*params.import_rate, # dI
+            -S_H*beta*( (beta_H_factor*beta_L_factor)*I_L + (beta_H_factor**2)*I_H) - vaccine_effect_H , # dS
+            +S_H*beta*( (beta_H_factor*beta_L_factor)*I_L + (beta_H_factor**2)*I_H) - params.mu_H*I_H - params.gamma_H*I_H + params.hr_frac*params.import_rate, # dI
             I_H*params.mu_H    + H_H*params.recover_H  + C_H_to_R_H + vaccine_effect_H -  params.hr_frac*params.import_rate,           # dR
             I_H*params.gamma_H - H_H*params.recover_H - H_H*params.crit_H,         # dH
             H_H*params.crit_H  - (C_H_to_R_H + C_H_to_D_H),                          # dC
@@ -156,19 +159,19 @@ def determine_betas(t, t_control, beta_L_factor, beta_H_factor, let_HR_out):
 def solve_it(y0,
                 beta_L_factor, beta_H_factor,
                 t_control, vaccine_time,
-                ICU_grow, let_HR_out):
+                ICU_grow, let_HR_out, date):
     
     # remove vaccine, beta stuff, let HR out
 
     y_list = []
     tVecFinal = []
     
-    T_stop = 365*0.75
+    T_stop = 365*0.75 + 0.02
     if vaccine_time is None:
         vaccine_timing = [0]
     else:
         # - 0.01 so different to control month
-        vaccine_timing = [365*(vaccine_time/12)-0.01]
+        vaccine_timing = [365*(vaccine_time/12)+0.01]
     
     if t_control is not None:
         KeyTimesList = [0,T_stop] + t_control + vaccine_timing
@@ -216,10 +219,13 @@ def solve_it(y0,
         
         ICU_grow = np.float(ICU_grow)
 
+        date
+
         odeSolver.set_f_params(betaLfact,
                                     betaHfact,
                                     vaccinate_rate,
-                                    ICU_grow)
+                                    ICU_grow,
+                                    date)
         
         ##
         for ind, tt in enumerate(tim[1:]):
@@ -250,6 +256,7 @@ def run_model(I0,R0,H0,C0,D0,
                 beta_H_factor=1,
                 t_control=None,
                 vaccine_time=None,
+                date=None,
                 ICU_grow=0,
                 let_HR_out=True):
 
@@ -257,7 +264,7 @@ def run_model(I0,R0,H0,C0,D0,
 
     y0 = set_initial_condition(I0,R0,H0,C0,D0)
 
-    otherArgs = beta_L_factor, beta_H_factor, t_control, vaccine_time, ICU_grow, let_HR_out
+    otherArgs = beta_L_factor, beta_H_factor, t_control, vaccine_time, ICU_grow, let_HR_out, date
 
     y_out, tVec = solve_it(y0, *otherArgs)
 
