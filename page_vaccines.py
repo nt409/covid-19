@@ -69,10 +69,6 @@ layout_vaccine = html.Div(className="data-page-container",
             
             html.Div(dcc.Graph(id='vaccine-plot'),className='data-fig'),
         
-        html.Hr(),
-
-        # html.Div(id='hidden-stored-data', style={'display': 'none'}),
-        
 
 ])
 ])
