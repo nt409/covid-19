@@ -899,7 +899,7 @@ textCard = html.Div([
         # className="interactive-text"
         # ),
         
-        html.A('here.', href='https://github.com/owid/covid-19-data/blob/master/public/data/vaccinations/vaccinations.csv',
+        html.A('here.', href='/vaccine-data',
         ),
         ],
         className="interactive-text"

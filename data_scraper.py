@@ -101,10 +101,21 @@ def convert_dates(dates):
     """
     Convert array of dates in format "MMM DD" to "YYYY-M-DD"
     """
+    year = 2020
+    last_month = 0
+
     for i, date in enumerate(dates):
         month, day = date.split()
-        dates[i] = f"2020-{MONTHS_DICT[month]}-{day}"
+        
+        this_month = MONTHS_DICT[month]
+        if last_month==12 and this_month==1:
+            # if going from Dec into Jan, change year
+            year+=1
 
+        dates[i] = f"{year}-{MONTHS_DICT[month]}-{day}"
+
+        last_month = this_month
+    
     return dates
 
 

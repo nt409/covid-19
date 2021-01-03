@@ -1,15 +1,59 @@
 /* @import url('https//fonts.googleapis.com/css?family=Montserrat:400,600&display=swap'); */
 
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
     font-family: sans-serif;
     /* 'Montserrat',  */
     background-color: #fff;
     text-align: center;
     color: black;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.greyed-link {
+    color: rgb(146, 146, 146);
+}
+
+.grey-hover:hover {
+    background-color: #ccc;
+}
+
+.grey-col {
+    color: rgb(80, 80, 80);
+}
+
+.white-backgd {
+    background-color: white;
+}
+
+.pad-sides {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.pad-ten {
+    padding: 10px;
+}
+
+#modelling-menu-mb {
+    padding-bottom: 10px;
+}
+
+#data-menu-mb {
+    padding-bottom: 10px;
+}
+
+
+
+.small-brdr {
+    border-radius: 3px;
+}
+
+.backgd-grey {
+    background-color: #ddd;
+    /* border-radius: 3px; */
 }
 
 #page-content {
@@ -46,6 +90,34 @@ i, p {
     line-height: 1.4em;
 }
 
+header {
+    background-color: #f8f8f8;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+
+
+    width: 100%;
+    
+    padding-left: 10px;
+    padding-right: 10px;
+    align-content: center;
+    justify-content: space-between;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -55,7 +127,7 @@ i, p {
 }
 
 .cont-text {
-    color: rgb(180, 180, 180);
+    color: rgb(140, 140, 140);
     font-size: 0.75em;
     font-style: italic;
     margin: 10px;
@@ -98,7 +170,7 @@ i, p {
     text-align: justify;
     margin: 1em 0;
     line-height: 1.3em;
-    color: rgb(140, 140, 140);
+    color: rgb(120, 120, 120);
 }
 
 
@@ -331,6 +403,13 @@ i, p {
 /* big screen */
 @media only screen and (min-width: 1024px) {
 
+    header {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+    
+
+
     .data-page-title {
         margin: 1em 0 0em;
     }
@@ -368,12 +447,10 @@ i, p {
         align-self: start;
     }
 
-    .header {
-        justify-content: space-around;
-    }
-
-    .my-title {
-        margin: 0.1em auto 0.1em 20px;
+    #mobile-navs a {
+        /* margin-left: 50px; */
+        /* margin-right: 50px; */
+        border-radius: 3px;
     }
 
     .control-unit {
@@ -423,9 +500,9 @@ i, p {
     }
 
     .controlcard {
-    justify-content: left;
-    width: 330px;
-    margin-right: 20px;
+        justify-content: left;
+        width: 330px;
+        margin-right: 20px;
     }
 
     .plotscard {
@@ -517,9 +594,14 @@ i, p {
 
     #main-items-container {
         display: grid;
-        grid-template-areas: 'intro data tests inter';
-        grid-template-columns: repeat(4, auto);
-        padding: 0 20px;
+        grid-template-areas:
+        "data vacc"
+        "intro tests inter";
+        grid-template-columns: repeat(3, auto);
+        grid-gap: 50px 20px;
+
+        /* grid-template-rows: repeat(2, auto); */
+        /* padding: 0px 20px; */
     }
 
     .intro-container {
@@ -530,27 +612,57 @@ i, p {
 
     #main-intro-cont {
         grid-area: intro;
+        grid-column-start: 1;
+        grid-column-end: 3;
+        
+        grid-row: 2;
+        /* grid-row-end: 4; */
         margin: 0px 5px;
     }
 
     #main-inter-cont {
         grid-area: inter;
+        grid-column-start: 5;
+        grid-column-end: 7;
+
+        grid-row: 2;
+
         margin: 0px 5px;
     }
 
     #main-tests-cont {
         grid-area: tests;
         margin: 0px 5px;
+        grid-row: 2;
+
+        grid-column-start: 3;
+        grid-column-end: 5;
     }
 
     #main-data-cont {
         grid-area: data;
+        
+        grid-row: 1;
+
         margin: 0px 5px;
+        grid-column-start: 2;
+        grid-column-end: 4;
+    }
+
+    #main-vacc-data-cont {
+        grid-area: vacc;
+        
+        grid-row: 1;
+
+        margin: 0px 5px;
+        grid-column-start: 4;
+        grid-column-end: 6;
     }
 
     .main-container {
         display: grid;
         grid-template-rows: 130px 70px 105px 50px;
+        /* padding: 20px; */
     }
 
     #gray-cont {
@@ -613,16 +725,9 @@ i, p {
 
 @media only screen and (min-width: 1300px){
     
-    .my-title {
-        margin: 0.1em auto 0.1em 150px;
-    }
-    
-    /* .other-links.show-desktop.hide-mobile {
-        margin: 0.1em 145px auto auto;
-    } */
-
-    #main-nav-links {
-        margin: 0.1em 125px auto auto;
+    header {
+        padding-left: 160px;
+        padding-right: 160px;
     }
 
     .interactive-layout {

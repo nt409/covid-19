@@ -123,7 +123,7 @@ layout_data = html.Div(className="data-page-container",
             ],className='date-and-text'),
             
             
-            dcc.Loading(id="loading-icon", children=[html.Div(id="loading-output-1")], type="default"),
+            dcc.Loading(id="loading-icon", children=[], type="default"), # html.Div(id="loading-output-1")
 
             html.Hr(),
 

@@ -29,18 +29,21 @@ from cov_functions import run_model, test_probs, begin_date, \
     outcome_fn
 
 from plotting import Bar_chart_generator, MultiFigureGenerator, \
-    month_len, extract_info, test_bar_plot, test_bar_plot2
+    month_len, extract_info, test_bar_plot, test_bar_plot2, \
+    vaccine_plot
 
 from data_scraper import get_data
 from data_constants import POPULATIONS, COUNTRY_LIST, \
     COUNTRY_LIST_NICK, COLOURS
-
+from vaccine_scraper import VACCINE_COUNTRY_LIST, get_vaccine_data
 
 from page_landing import layout_enter
 from page_intro import layout_intro
 from page_interactive import layout_inter
 from page_data import layout_data
 from page_tests import layout_tests
+from page_vaccines import layout_vaccine
+
 # start_time = time.time()
 # print(f"7 {time.time()-start_time} seconds")
 
@@ -51,14 +54,15 @@ from page_tests import layout_tests
 # activate venv
 # Environments\CovidWebsite\Scripts\activate
 
+vaccine_df = get_vaccine_data()
 
 
 
 ########################################################################################################################
-# FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
+FA = "https://use.fontawesome.com/releases/v5.12.1/css/all.css"
 # dash_ss = 'https://codepen.io/chriddyp/pen/bWLwgP.css'
 # , FA]
-external_stylesheets = [dbc.themes.LITERA] 
+external_stylesheets = [dbc.themes.LITERA, FA] 
 
 # Cerulean
 # COSMO
@@ -119,23 +123,79 @@ app.layout = html.Div([
                     children=[
                             html.Div([
                                 dbc.Collapse([
-                                    html.Div(html.A("Background", href="/intro", className="navLink menu-dropdown")),
-                                    html.Div(html.A("Real-time data", href="/covid-data", className="navLink menu-dropdown")),
-                                    html.Div(html.A("Interpreting tests", href="/covid-tests", className="navLink menu-dropdown")),
-                                    html.Div(html.A("Interactive model", href="/interactive-model", className="navLink menu-dropdown")),
+                                    
+                                    html.Div([html.A("Data", className="navLink nv-lk-mb pad-five grey-text"), #  greyed-link"
+                                        html.I( className="fa fa-caret-down grey-col")
+                                    ],
+                                    id="down-arrow-mb",
+                                    className="full-width pad-ten down-arrow-cls"), # backgd-grey
+
+                                    dbc.Collapse([
+                                        html.Div(html.A("Cases and deaths", href="/covid-data", className="navLink nv-lk-mb pad-five"), className="white-backgd pad-sides"),
+                                        html.Div(html.A("Vaccinations", href="/vaccine-data", className="navLink nv-lk-mb pad-five"), className="white-backgd pad-sides"),
+                                    ],
+                                    id="data-menu-mb",
+                                    is_open=False),
+
+
+
+                                    html.Div([html.A("Modelling", className="navLink nv-lk-mb pad-five grey-text"), #  greyed-link"
+                                        html.I( className="fa fa-caret-down grey-col")
+                                    ],
+                                    id="down-arrow-model-mb",
+                                    className="full-width pad-ten down-arrow-cls"), # backgd-grey
+                                    
+                                    dbc.Collapse([
+                                        html.Div(html.A("Background", href="/intro", className="navLink nv-lk-mb pad-five"), className="white-backgd pad-sides"),
+                                        html.Div(html.A("Interpreting tests", href="/covid-tests", className="navLink nv-lk-mb pad-five"), className="white-backgd pad-sides"),
+                                        html.Div(html.A("Interactive model", href="/interactive-model", className="navLink nv-lk-mb pad-five"), className="white-backgd pad-sides"),
+                                        ],
+                                    id="modelling-menu-mb",
+                                    is_open=False),
+
                                 ],
                                 id="nav-menu",
                                 is_open=False),
                             ],
-                            className="menu-dropdown hide-desktop",
+                            className="pad-five hide-desktop",
                             id="mobile-navs"
                             ),
                             
                             html.Div([
-                                html.A("Background", href="/intro", className="navLink"),
-                                html.A("Real-time data", href="/covid-data", className="navLink"),
-                                html.A("Interpreting tests", href="/covid-tests", className="navLink"),
-                                html.A("Interactive model", href="/interactive-model", className="navLink"),
+                                
+                                html.Div([
+                                html.Div([html.A("Data", className="navLink pad-five"),
+                                        html.I(className="fa fa-caret-down grey-col")
+                                    ],
+                                id="down-arrow-data-dt",
+                                className="down-arrow-cls arrow-cont"),
+
+                                dbc.Collapse([
+                                    html.Div(html.A("Cases and deaths", href="/covid-data", className="navLink nv-lk-dt pad-five"), className="full-width grey-hover pad-ten"),
+                                    html.Div(html.A("Vaccinations", href="/vaccine-data", className="navLink nv-lk-dt pad-five"), className="full-width grey-hover pad-ten"),
+                                    ],
+                                id="data-menu-dt",
+                                className="navbar-dropdown-desktop",
+                                is_open=False),
+                                ]),
+
+                                html.Div([
+                                html.Div([html.A("Modelling", className="navLink pad-five"),
+                                        html.I(className="fa fa-caret-down grey-col")
+                                    ],
+                                id="down-arrow-model-dt",
+                                className="down-arrow-cls arrow-cont"),
+                                    
+                                dbc.Collapse([
+                                    html.Div(html.A("Background", href="/intro", className="navLink nv-lk-dt pad-five"), className="full-width grey-hover pad-ten"),
+                                    html.Div(html.A("Interpreting tests", href="/covid-tests", className="navLink nv-lk-dt pad-five"), className="full-width grey-hover pad-ten"),
+                                    html.Div(html.A("Interactive model", href="/interactive-model", className="navLink nv-lk-dt pad-five"), className="full-width grey-hover pad-ten"),
+                                    ],
+                                id="modelling-menu-dt",
+                                className="navbar-dropdown-desktop",
+                                is_open=False),
+                                ]),
+
                             ],
                             className="other-links show-desktop hide-mobile",
                             ),
@@ -170,7 +230,7 @@ app.layout = html.Div([
         html.Div([
                         html.Div(["Contact us at: ", html.A('covid.at.plants@gmail.com',href='')]),
                         
-                        html.Div("This page is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.",
+                        html.Div("The modelling section is intended for illustrative/educational purposes only, and not for accurate prediction of the pandemic.",
                         className="disclaimer"),
 
                         html.Div(["Authors: ",
@@ -234,12 +294,7 @@ app.index_string = """<!DOCTYPE html>
         <title>Covid data and modelling HQ - LowHighCovid</title>
         <link rel="icon" href="assets/favicon.ico">
         {%css%}
-        <link rel="stylesheet" href="assets/data.css">
-        <link rel="stylesheet" href="assets/home.css">
-        <link rel="stylesheet" href="assets/inter.css">
-        <link rel="stylesheet" href="assets/intro.css">
-        <link rel="stylesheet" href="assets/navbar.css">
-        <link rel="stylesheet" href="assets/main.css">
+        
     </head>
     <body>
         {%app_entry%}
@@ -252,7 +307,12 @@ app.index_string = """<!DOCTYPE html>
 </html>"""
 
 
-
+# <link rel="stylesheet" href="assets/data.css">
+#         <link rel="stylesheet" href="assets/home.css">
+#         <link rel="stylesheet" href="assets/inter.css">
+#         <link rel="stylesheet" href="assets/intro.css">
+#         <link rel="stylesheet" href="assets/navbar.css">
+#         <link rel="stylesheet" href="assets/main.css">
 
 
 
@@ -274,6 +334,8 @@ def display_page(pathname):
         return layout_inter
     elif pathname == '/covid-tests':
         return layout_tests
+    elif pathname == '/vaccine-data':
+        return layout_vaccine
     elif pathname == '/':
         return layout_enter
     else:
@@ -301,11 +363,21 @@ for p in ["control", "months-control", "vaccination",  "cc-care" , "inf-rate", "
         [State(f"popover-{p}", "is_open")],
     )(toggle)
 
+for id_name, activator in zip(["modelling-menu-mb",
+            "data-menu-mb",
+            "modelling-menu-dt",
+            "data-menu-dt",
+            "nav-menu"],
+            ["down-arrow-model-mb",
+            "down-arrow-mb",
+            "down-arrow-model-dt",
+            "down-arrow-data-dt",
+            "menu-button"]):
 
-app.callback(Output(f"nav-menu", "is_open"),
-        [Input(f"menu-button", "n_clicks")
+    app.callback(Output(id_name, "is_open"),
+        [Input(activator, "n_clicks")
         ],
-        [State(f"nav-menu", "is_open")],
+        [State(id_name, "is_open")],
     )(toggle)
 
 ##############################################################################################################################
@@ -1260,14 +1332,14 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
             b, logA = np.polyfit(xdata[model_date_mask], np.log(ydata[model_date_mask]), 1)
             lin_yfit = np.exp(logA) * np.exp(b * model_xdata)
 
-            if show_exponential:
-                if np.log(2) / b > 1000 or np.log(2) / b < 0:
-                    double_time = 'no growth'
-                else:
-                    double_time = fr'{np.log(2) / b:.1f} days to double'
-                label = fr'{c.upper():<10s}: 2^(t/{np.log(2)/b:.1f}) ({double_time})'
-            else:
-                label = fr'{c.upper():<10s}'
+            # if show_exponential:
+            #     if np.log(2) / b > 1000 or np.log(2) / b < 0:
+            #         double_time = 'no growth'
+            #     else:
+            #         double_time = fr'{np.log(2) / b:.1f} days to double'
+            #     label = fr'{c.upper():<10s}: 2^(t/{np.log(2)/b:.1f}) ({double_time})'
+            # else:
+            label = fr'{c.upper():<10s}'
 
             figs.append(go.Scatter(x=date_objects if not align_countries else xdata,
                                 y=ydata,
@@ -1438,9 +1510,26 @@ def calculate_test_probs(plot_button,prior,sens,spec,pathname):
 
     return [fig, fig2, text, text2, text3, None]
 
+##################################################################################################################################
 
+@app.callback([
+                Output('vaccine-plot', 'figure'),
+                Output('loading-icon-vd', 'children')
+            ],
+            [
+                Input('button-plot-vd', 'n_clicks'),
+            ],
+            [State(f"{c_name}-v-data", 'value') for c_name in VACCINE_COUNTRY_LIST]
+            )
+def vaccine_callback(plot_button,*c_names):
+    country_names = []
+    for country in c_names:
+        country_names.extend(country)
+
+    fig = vaccine_plot(vaccine_df, country_names)
+    return [fig, None]
 
 ########################################################################################################################
 if __name__ == '__main__':
-    app.run_server(debug=False)
-    # app.run_server(debug=True)
+    # app.run_server(debug=False)
+    app.run_server(debug=True)

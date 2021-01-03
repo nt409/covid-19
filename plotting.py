@@ -1168,3 +1168,40 @@ def test_bar_plot2(outputs, title):
 
 
 
+def vaccine_plot(df, c_names):
+    # print(df,c_names)
+
+    traces = []
+
+    for country in c_names:
+        this_country = df[df['location']==country]
+        df_plot = this_country[this_country['total_vaccinations']!=""]
+        # print(df_plot)
+
+        xx = df_plot['date']
+        yy = df_plot['total_vaccinations']
+
+
+        line = go.Scatter(
+                x=xx,
+                y=yy,
+                name=country,
+                mode='lines+markers'
+                # marker_color = colors,
+            )
+
+        traces.append(line)
+
+    layout = go.Layout(
+                template="plotly_white",
+                title=", ".join(c_names),
+                xaxis=dict(
+                        title='Date',
+                        fixedrange= True,
+                        ),
+                yaxis=dict(title= 'Doses',
+                    fixedrange= True),
+        )
+
+    
+    return {'data': traces, 'layout': layout}
