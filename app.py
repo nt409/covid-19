@@ -219,8 +219,9 @@ app.layout = html.Div([
         html.Footer([
 
         html.Div([
-                html.A("Background", href="/intro", className="footer-navlink", id="footer-intro"),
-                html.A("Real-time data", href="/covid-data", className="footer-navlink", id="footer-data"),
+                html.A("Case/death data", href="/covid-data", className="footer-navlink", id="footer-data"),
+                html.A("Vaccination data", href="/vaccine-data", className="footer-navlink", id="footer-vaccine-data"),
+                html.A("Modelling background", href="/intro", className="footer-navlink", id="footer-intro"),
                 html.A("Interpreting tests", href="/covid-tests", className="footer-navlink", id="footer-tests"),
                 html.A("Interactive model", href="/interactive-model", className="footer-navlink", id="footer-inter"),
                 ],
@@ -1531,5 +1532,5 @@ def vaccine_callback(plot_button,*c_names):
 
 ########################################################################################################################
 if __name__ == '__main__':
-    # app.run_server(debug=False)
-    app.run_server(debug=True)
+    app.run_server(debug=False)
+    # app.run_server(debug=True)
