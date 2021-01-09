@@ -280,7 +280,7 @@ app.index_string = """<!DOCTYPE html>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <meta name="description" 
-        content="LowHighCovid is your coronavirus data and modelling HQ. Track real-time cases and deaths in hundreds of countries, or predict the effect of Covid control measures.">
+        content="LowHighCovid - coronavirus data HQ. Track cases, deaths and vaccine data in hundreds of countries, or predict the progression of the global pandemic.">
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-163339118-1"></script>
         <script>
