@@ -1072,7 +1072,7 @@ def update_align_options(normalise_by_pop):
     if normalise_by_pop:
         options_cases = [{'label': "Align countries by the date when the percentage of confirmed cases was ",
                     'value': 'align'}]
-        options_deaths = [{'label': "Align countries by the date when the number of confirmed deaths was ",
+        options_deaths = [{'label': "Align countries by the date when the percentage of confirmed deaths was ",
                     'value': 'align'}]
         hidden_text = {'display': 'inline-block'}
         return [options_cases, 0.0015, hidden_text,
@@ -1517,15 +1517,16 @@ def calculate_test_probs(plot_button,prior,sens,spec,pathname):
             ],
             [
                 Input('button-plot-vd', 'n_clicks'),
+                Input('vd-normalise-check', 'value'),
             ],
             [State(f"{c_name}-v-data", 'value') for c_name in VACCINE_COUNTRY_LIST]
             )
-def vaccine_callback(plot_button,*c_names):
+def vaccine_callback(plot_button, normalise_by_pop, *c_names):
     country_names = []
     for country in c_names:
         country_names.extend(country)
 
-    fig = vaccine_plot(vaccine_df, country_names)
+    fig = vaccine_plot(vaccine_df, country_names, normalise_by_pop)
     return [fig, None]
 
 ########################################################################################################################

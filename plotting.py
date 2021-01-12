@@ -1170,8 +1170,12 @@ def test_bar_plot2(outputs, title):
 
 
 
-def vaccine_plot(df, c_names):
+def vaccine_plot(df, c_names, normalise_by_pop):
     # print(df,c_names)
+    if normalise_by_pop:
+        yaxis_title = f"Doses (% of population)"
+    else:
+        yaxis_title = "Doses"
 
     traces = []
 
@@ -1181,8 +1185,9 @@ def vaccine_plot(df, c_names):
         # print(df_plot)
 
         xx = df_plot['date']
-        yy = df_plot['total_vaccinations']
-
+        yy = df_plot['total_vaccinations'].astype(int)
+        if normalise_by_pop:
+            yy = yy/POPULATIONS[country.lower()] * 100
 
         line = go.Scatter(
                 x=xx,
@@ -1201,7 +1206,7 @@ def vaccine_plot(df, c_names):
                 xaxis=dict(
                         fixedrange= True,
                         ),
-                yaxis=dict(title= 'Doses',
+                yaxis=dict(title=yaxis_title,
                     fixedrange= True),
                 legend= dict(
                     x = 0.5,

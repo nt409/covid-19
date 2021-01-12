@@ -66,7 +66,16 @@ layout_vaccine = html.Div(className="data-page-container",
 
             html.H3(children='Total vaccinations', className="plot-title"),
 
-            
+            html.Div(
+                dcc.Checklist(
+                id='vd-normalise-check',
+                options=[{'label': "Plot as percentage of population?", 'value': 'normalise'}],
+                value=[],
+                style={'textAlign': 'center', "margin-bottom": "20px"},
+                inputStyle={"margin-right": "5px"}
+                ),
+            ),
+
             html.Div(dcc.Graph(id='vaccine-plot',
                 config = {'modeBarButtonsToRemove': [
                     'pan2d',

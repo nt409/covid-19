@@ -267,6 +267,12 @@ COUNTRY_NAME_TO_CODE = {v: k for k, v in COUNTRY_CODE_TO_NAME.items()}
 
 # Population copied from https://www.worldometers.info/world-population/population-by-country/ on 26-Mar-2020
 POPULATIONS = {
+    'united kingdom': 67886011,
+    'united states': 331002651,
+    'england': 56286961,
+    'wales': 3152879,
+    'scotland': 5463300,
+    'northern ireland': 1893667,
     'world': 7713468100,
     'afghanistan': 38928346,
     'albania': 2877797,
