@@ -71,8 +71,8 @@ layout_vaccine = html.Div(className="data-page-container",
                 id='vd-normalise-check',
                 options=[{'label': "Plot as percentage of population?", 'value': 'normalise'}],
                 value=[],
-                style={'textAlign': 'center', "margin-bottom": "20px"},
-                inputStyle={"margin-right": "5px"}
+                style={'textAlign': 'center', "marginBottom": "20px"},
+                inputStyle={"marginRight": "5px"}
                 ),
             ),
 

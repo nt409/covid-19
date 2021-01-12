@@ -1531,5 +1531,5 @@ def vaccine_callback(plot_button, normalise_by_pop, *c_names):
 
 ########################################################################################################################
 if __name__ == '__main__':
-    # app.run_server(debug=False)
-    app.run_server(debug=True)
+    app.run_server(debug=False)
+    # app.run_server(debug=True)
