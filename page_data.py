@@ -156,7 +156,21 @@ layout_data = html.Div(className="data-page-container",
                 ]),
             ]),
             
-            html.Div(dcc.Graph(id='infections-plot'),className='data-fig'),
+            html.Div(dcc.Graph(id='infections-plot',
+            config = {'modeBarButtonsToRemove': [
+                'pan2d',
+                'toImage',
+                'select2d',
+                'toggleSpikelines',
+                'hoverCompareCartesian',
+                'hoverClosestCartesian',
+                'zoom2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'lasso2d',
+
+            ]}
+            ),className='data-fig'),
 
 
             html.H3(children='Total Deaths', className="plot-title"),
@@ -187,7 +201,21 @@ layout_data = html.Div(className="data-page-container",
                     ]),
                 ]),
             ]),
-            html.Div(dcc.Graph(id='deaths-plot'),className='data-fig'),
+            html.Div(dcc.Graph(id='deaths-plot',
+            config = {'modeBarButtonsToRemove': [
+                'pan2d',
+                'toImage',
+                'select2d',
+                'toggleSpikelines',
+                'hoverCompareCartesian',
+                'hoverClosestCartesian',
+                'zoom2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'lasso2d',
+
+            ]}
+            ),className='data-fig'),
 
             html.Div(id='active-cases-container', children=[
 
@@ -219,7 +247,21 @@ layout_data = html.Div(className="data-page-container",
                         html.P("% of population")
                     ]),
                 ]),
-                html.Div(dcc.Graph(id='active-plot'),className='data-fig'),
+                html.Div(dcc.Graph(id='active-plot',
+            config = {'modeBarButtonsToRemove': [
+                'pan2d',
+                'toImage',
+                'select2d',
+                'toggleSpikelines',
+                'hoverCompareCartesian',
+                'hoverClosestCartesian',
+                'zoom2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'lasso2d',
+
+            ]}
+            ),className='data-fig'),
             ]),
 
             html.Div(id='daily-cases-container', children=[
@@ -251,7 +293,21 @@ layout_data = html.Div(className="data-page-container",
                         ]),
                     ]),
                 ]),
-                html.Div(dcc.Graph(id='daily-cases-plot'),className='data-fig'),
+                html.Div(dcc.Graph(id='daily-cases-plot',
+            config = {'modeBarButtonsToRemove': [
+                'pan2d',
+                'toImage',
+                'select2d',
+                'toggleSpikelines',
+                'hoverCompareCartesian',
+                'hoverClosestCartesian',
+                'zoom2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'lasso2d',
+
+            ]}
+            ),className='data-fig'),
             ]),
 
             html.Div(id='daily-deaths-container', children=[
@@ -283,14 +339,56 @@ layout_data = html.Div(className="data-page-container",
                         ]),
                     ]),
                 ]),
-                html.Div(dcc.Graph(id='daily-deaths-plot'),className='data-fig'),
+                html.Div(dcc.Graph(id='daily-deaths-plot',
+            config = {'modeBarButtonsToRemove': [
+                'pan2d',
+                'toImage',
+                'select2d',
+                'toggleSpikelines',
+                'hoverCompareCartesian',
+                'hoverClosestCartesian',
+                'zoom2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'lasso2d',
+
+            ]}
+            ),className='data-fig'),
             ]),
 
             html.H3(children='New Cases vs Total Cases', className="plot-title"),
-            html.Div(dcc.Graph(id='new-vs-total-cases'),className='data-fig'),
+            html.Div(dcc.Graph(id='new-vs-total-cases',
+            config = {'modeBarButtonsToRemove': [
+                'pan2d',
+                'toImage',
+                'select2d',
+                'toggleSpikelines',
+                'hoverCompareCartesian',
+                'hoverClosestCartesian',
+                'zoom2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'lasso2d',
+
+            ]}
+            ),className='data-fig'),
 
             html.H3(children='New Deaths vs Total Deaths', className="plot-title"),
-            html.Div(dcc.Graph(id='new-vs-total-deaths'),className='data-fig'),
+            html.Div(dcc.Graph(id='new-vs-total-deaths',
+            config = {'modeBarButtonsToRemove': [
+                'pan2d',
+                'toImage',
+                'select2d',
+                'toggleSpikelines',
+                'hoverCompareCartesian',
+                'hoverClosestCartesian',
+                'zoom2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'lasso2d',
+
+            ]}
+            ),className='data-fig'),
 
             html.Div([
                 html.Li(html.I(

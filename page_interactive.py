@@ -623,7 +623,20 @@ dpc_content = dbc.Card([
             html.H4('What might happen if strategy "Lockdown" were used for 2 months in the UK?', id='graph-title', className="fig-title"),
             
             html.Div([
-            dcc.Graph(figure=dummy_figure,id='line-plot-2'),
+            dcc.Graph(figure=dummy_figure, id='line-plot-2',
+            config = {'modeBarButtonsToRemove': [
+                'pan2d',
+                'toImage',
+                'select2d',
+                'toggleSpikelines',
+                'hoverCompareCartesian',
+                'hoverClosestCartesian',
+                'zoom2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'lasso2d',
+                ]}
+                ),
             
             ],
             className='figure-container'
@@ -657,7 +670,20 @@ barChart_content =  dbc.Col([
                                 ],
                                 id='bar-plot-1-title',style={ 'display':'block', 'textAlign': 'left'}),
 
-                                dcc.Graph(id='bar-plot-1',style=bar_non_crit_style),
+                                dcc.Graph(id='bar-plot-1', style=bar_non_crit_style,
+                                    config = {'modeBarButtonsToRemove': [
+                                        'pan2d',
+                                        'toImage',
+                                        'select2d',
+                                        'toggleSpikelines',
+                                        'hoverCompareCartesian',
+                                        'hoverClosestCartesian',
+                                        'zoom2d',
+                                        'zoomIn2d',
+                                        'zoomOut2d',
+                                        'lasso2d',
+                                    ]}
+                                    ),
                         
                                 dcc.Markdown('''
 
@@ -690,7 +716,20 @@ barChart_content =  dbc.Col([
                                                 ],
                                                 id='bar-plot-3-title', style={'display':'block'}),
 
-                                                dcc.Graph(id='bar-plot-3',style=bar_non_crit_style),
+                                                dcc.Graph(id='bar-plot-3', style=bar_non_crit_style,
+                                                    config = {'modeBarButtonsToRemove': [
+                                                        'pan2d',
+                                                        'toImage',
+                                                        'select2d',
+                                                        'toggleSpikelines',
+                                                        'hoverCompareCartesian',
+                                                        'hoverClosestCartesian',
+                                                        'zoom2d',
+                                                        'zoomIn2d',
+                                                        'zoomOut2d',
+                                                        'lasso2d',
+                                                    ]}
+                                                    ),
                                             
                                                 dcc.Markdown('''
 
@@ -719,7 +758,20 @@ barChart_content =  dbc.Col([
                                                     ],
                                             id='bar-plot-4-title',style={'display':'block'}),
 
-                                            dcc.Graph(id='bar-plot-4',style=bar_non_crit_style),
+                                            dcc.Graph(id='bar-plot-4', style=bar_non_crit_style,
+                                                config = {'modeBarButtonsToRemove': [
+                                                    'pan2d',
+                                                    'toImage',
+                                                    'select2d',
+                                                    'toggleSpikelines',
+                                                    'hoverCompareCartesian',
+                                                    'hoverClosestCartesian',
+                                                    'zoom2d',
+                                                    'zoomIn2d',
+                                                    'zoomOut2d',
+                                                    'lasso2d',
+                                                ]}
+                                                ),
                             
                                             dcc.Markdown('''
 
@@ -751,7 +803,20 @@ barChart_content =  dbc.Col([
                                         ],
                                 id='bar-plot-2-title',style={ 'display':'block'}),
 
-                                dcc.Graph(id='bar-plot-2',style=bar_non_crit_style),
+                                dcc.Graph(id='bar-plot-2', style=bar_non_crit_style,
+                                    config = {'modeBarButtonsToRemove': [
+                                        'pan2d',
+                                        'toImage',
+                                        'select2d',
+                                        'toggleSpikelines',
+                                        'hoverCompareCartesian',
+                                        'hoverClosestCartesian',
+                                        'zoom2d',
+                                        'zoomIn2d',
+                                        'zoomOut2d',
+                                        'lasso2d',
+                                    ]}
+                                    ),
                                 
 
                                 dcc.Markdown('''
@@ -784,7 +849,20 @@ barChart_content =  dbc.Col([
                                     ],
                             id='bar-plot-5-title',style={ 'display':'block'}),
 
-                            dcc.Graph(id='bar-plot-5',style=bar_non_crit_style),
+                            dcc.Graph(id='bar-plot-5', style=bar_non_crit_style,
+                                config = {'modeBarButtonsToRemove': [
+                                    'pan2d',
+                                    'toImage',
+                                    'select2d',
+                                    'toggleSpikelines',
+                                    'hoverCompareCartesian',
+                                    'hoverClosestCartesian',
+                                    'zoom2d',
+                                    'zoomIn2d',
+                                    'zoomOut2d',
+                                    'lasso2d',
+                                ]}
+                                ),
                             
                             dcc.Markdown(
                                 """

@@ -440,7 +440,8 @@ def yaxis_function(Yrange,population_plot,country_name):
     LogText = [human_format(0.01*ll) for ll in logTicks]
 
 
-    yAxisPopLinear = {'title': f'Population ({country_name})', 
+    yAxisPopLinear = {
+    # 'title': f'Population ({country_name})', 
     'fixedrange': True,
     'type': 'linear', 
     'range': Yrange,
@@ -448,7 +449,8 @@ def yaxis_function(Yrange,population_plot,country_name):
     'tickvals': pop_vec_lin,
     'automargin': True}
 
-    yAxisPopLog    = {'title': f'Population ({country_name})',
+    yAxisPopLog    = {
+    # 'title': f'Population ({country_name})',
     'fixedrange': True,
     'type': 'log',
     'range': log_range,
@@ -1194,14 +1196,22 @@ def vaccine_plot(df, c_names):
 
     layout = go.Layout(
                 template="plotly_white",
-                title=", ".join(c_names),
+                # title=", ".join(c_names),
+                height=450,
                 xaxis=dict(
-                        title='Date',
                         fixedrange= True,
                         ),
                 yaxis=dict(title= 'Doses',
                     fixedrange= True),
-        )
+                legend= dict(
+                    x = 0.5,
+                    font=dict(size=11),
+                    y = 1.03,
+                    xanchor= 'center',
+                    yanchor= 'bottom'
+                ),
+                margin= {'l': 0, 'b': 10, 't': 10, 'r': 10, 'pad': 0},
+            )
 
     
     return {'data': traces, 'layout': layout}

@@ -67,7 +67,18 @@ layout_vaccine = html.Div(className="data-page-container",
             html.H3(children='Total vaccinations', className="plot-title"),
 
             
-            html.Div(dcc.Graph(id='vaccine-plot'),className='data-fig'),
+            html.Div(dcc.Graph(id='vaccine-plot',
+                config = {'modeBarButtonsToRemove': [
+                    'pan2d',
+                    'toImage',
+                    'select2d',
+                    'toggleSpikelines',
+                    'hoverCompareCartesian',
+                    'hoverClosestCartesian',
+                    'lasso2d',
+
+                ]}
+                ),className='data-fig'),
         
 
 ])

@@ -1159,7 +1159,6 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
             axis_title = f"{title} (% of population)"
         else:
             axis_title = title
-
         if title == 'Cases':
             align_countries = align_cases_check
             align_input = align_cases_input
@@ -1196,9 +1195,8 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                 xanchor= 'center',
                 yanchor= 'bottom'
             ),
-            'height': '450px',
-            # 'margin': {'l': '15px', 'b': '20px', 't': '100px', 'r': '0px', 'pad': '0px'},
-            'margin': {'l': '0px', 'b': '0px', 't': '0px', 'r': '0px', 'pad': '0px'},
+            'height': 450,
+            'margin': {'l': 50, 'b': 10, 't': 10, 'r': 10, 'pad': 0},
 
             'updatemenus': [
                 dict(
@@ -1434,7 +1432,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
             'yaxis': {'title': yaxis_title, 'type': 'log', 'showgrid': True, 'automargin': True}, # , 'fixedrange': True
             'xaxis': {'title': xaxis_title, 'type': 'log', 'showgrid': True, 'automargin': True}, # , 'fixedrange': True
             'showlegend': True,
-            'height': '450px',
+            'height': 450,
             'legend': dict(
                         x = 0.5,
                         font=dict(size=11),
@@ -1442,8 +1440,8 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                         xanchor= 'center',
                         yanchor= 'bottom'
                     ),
-            # 'margin': {'l': '15px', 'b': '20px', 't': '100px', 'r': '0px', 'pad': '0px'},
-            'margin': {'l': '0px', 'b': '0px', 't': '0px', 'r': '0px', 'pad': '0px'},
+            'margin': {'l': 50, 'b': 10, 't': 10, 'r': 10, 'pad': 0},
+
 
 
         }
@@ -1532,5 +1530,5 @@ def vaccine_callback(plot_button,*c_names):
 
 ########################################################################################################################
 if __name__ == '__main__':
-    app.run_server(debug=False)
-    # app.run_server(debug=True)
+    # app.run_server(debug=False)
+    app.run_server(debug=True)
