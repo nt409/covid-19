@@ -27,7 +27,7 @@ layout_vaccine = html.Div(className="data-page-container",
                         id=f"{c_name}-v-data",
                         options=[{'label': c_name.title(),
                                 'value': c_name}],
-                        value=[c_name] if c_name in ['United Kingdom', 'United States'] else [],
+                        value=[c_name] if c_name in ['United Kingdom', 'Germany'] else [],
                         )
                     for i, c_name in enumerate(VACCINE_COUNTRY_LIST)]),
         
