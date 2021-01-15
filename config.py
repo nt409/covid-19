@@ -69,7 +69,7 @@ noth = 10
 preset_dict_high = {'Q': ld, 'MSD': sd, 'LC': ld, 'HL': ld,  'H': ld,  'N':noth}
 preset_dict_low  = {'Q': ld, 'MSD': sd, 'LC': ld, 'HL': sd, 'H': noth, 'N':noth}
 
-initial_strat = 'MSD'
+initial_strat = 'Q'
 
 initial_hr = preset_dict_high[initial_strat]
 initial_lr = preset_dict_low[initial_strat]

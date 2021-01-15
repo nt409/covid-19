@@ -1171,21 +1171,20 @@ def test_bar_plot2(outputs, title):
 
 
 def vaccine_plot(df, c_names, normalise_by_pop):
-    # print(df,c_names)
+    
+    yaxis_title = "People"
+
     if normalise_by_pop:
-        yaxis_title = f"Doses (% of population)"
-    else:
-        yaxis_title = "Doses"
+        yaxis_title += " (% of population)"
 
     traces = []
 
     for country in c_names:
         this_country = df[df['location']==country]
-        df_plot = this_country[this_country['total_vaccinations']!=""]
-        # print(df_plot)
+        df_plot = this_country[this_country['people_vaccinated']!=""]
 
         xx = df_plot['date']
-        yy = df_plot['total_vaccinations'].astype(int)
+        yy = df_plot['people_vaccinated'].astype(int)
         if normalise_by_pop:
             yy = yy/POPULATIONS[country.lower()] * 100
 
@@ -1194,7 +1193,6 @@ def vaccine_plot(df, c_names, normalise_by_pop):
                 y=yy,
                 name=country,
                 mode='lines+markers'
-                # marker_color = colors,
             )
 
         traces.append(line)

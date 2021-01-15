@@ -113,7 +113,7 @@ control_choices_main = html.Div(children=[
                 max=floor(params.max_months_controlling),
                 step=1,
                 marks={i: f'{str(i)} months' if i==9 else str(i) if i!=0 else 'Now' for i in range(0,floor(params.max_months_controlling)+1,3)},
-                value=[0,3],
+                value=[0,2],
     ),
 
 
@@ -204,8 +204,6 @@ dbc.Popover(
 dbc.PopoverHeader('Vaccination'),
 dbc.PopoverBody(dcc.Markdown(
 '''
-
-We assume a vaccine will not be available for 3 months.
 
 See how the introduction of a vaccine can drastically reduce the death toll if a sufficiently small proportion of the population have been infected.
 

@@ -55,7 +55,7 @@ layout_vaccine = html.Div(className="data-page-container",
                     id="button-plot-vd"),
             ]),
 
-            html.Div(["This section enables you to compare different countries' vaccination data in real-time. Use the checkboxes on the left to select the countries to plot. Data will automatically update as they are published. The data are doses administered, which is not the same as number of people vaccinated, which depends on the dose regime. Data source: ",
+            html.Div(["This section enables you to compare different countries' vaccination data in real-time. Use the checkboxes on the left to select the countries to plot. Data will automatically update as they are published. Data source: ",
             html.A('OWID', href='https://github.com/owid/covid-19-data/blob/master/public/data/vaccinations/vaccinations.csv '),
                     "."],
             className="this-section"),
@@ -64,7 +64,7 @@ layout_vaccine = html.Div(className="data-page-container",
 
             html.Hr(),
 
-            html.H3(children='Total vaccinations', className="plot-title"),
+            html.H3(children='People vaccinated', className="plot-title"),
 
             html.Div(
                 dcc.Checklist(

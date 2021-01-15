@@ -292,7 +292,7 @@ app.index_string = """<!DOCTYPE html>
         </script>
 
         {%metas%}
-        <title>Covid data and modelling HQ - LowHighCovid</title>
+        <title>LowHighCovid - covid data and modelling HQ</title>
         <link rel="icon" href="assets/favicon.ico">
         {%css%}
         
@@ -509,7 +509,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         # vaccine = None
 
     if init_stored is None or date!=init_stored[5] or country!=init_stored[6]:
-        I0, R0, H0, C0, D0, worked, min_date, max_date, _ = begin_date(date,country)
+        I0, R0, H0, C0, D0, worked, min_date, max_date, _ = begin_date(date, vaccine_df, country)
         initial_conds = [I0, R0, H0, C0, D0, date, country, min_date, max_date]
     else:
         initial_conds = init_stored
@@ -630,7 +630,7 @@ def find_sol_do_noth(ICU_grow,date,country_num):
     except:
         country = 'uk'
 
-    I0, R0, H0, C0, D0, _, _, _, prev_deaths = begin_date(date,country)
+    I0, R0, H0, C0, D0, _, _, _, prev_deaths = begin_date(date, vaccine_df, country)
 
     sol_do_nothing = run_model(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
                                     beta_L_factor=1,beta_H_factor=1,

@@ -17,7 +17,8 @@ def get_vaccine_data():
     headings=soup.find_all('th')
 
     cols = {}
-    categories = ['location', 'date', 'total_vaccinations']
+    categories = ['location', 'date', 'people_vaccinated']
+    # 'total_vaccinations',
 
     for category in categories:
         is_this_col = [True if category in hh else False for hh in headings]
@@ -48,7 +49,6 @@ def get_vaccine_data():
         df[category] = lists[category]
     
     return df
-
 
 
 VACCINE_COUNTRY_LIST = [

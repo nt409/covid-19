@@ -311,10 +311,25 @@ def test_probs(have_it,sens,spec):
 
 
 
-def begin_date(date,country='uk'):
+def begin_date(date, vaccine_df, country='uk'):
 
     date = datetime.datetime.strptime(date.split('T')[0], '%Y-%m-%d').date()
     pre_defined = False
+
+    try:
+        if country=='uk':
+            country_vaccine = 'United Kingdom'
+        else:
+            country_vaccine = country.capitalize()
+
+        this_country = vaccine_df[vaccine_df['location']==country_vaccine]
+        n_vaccinated = this_country.people_vaccinated
+        n_vaccinated = np.asarray(n_vaccinated)
+        
+        number_R_from_vaccine = 0.7*float(n_vaccinated[-1])
+
+    except:
+        number_R_from_vaccine = 0
 
 
 
@@ -398,7 +413,11 @@ def begin_date(date,country='uk'):
         R0 = R0/population_country
         D0 = D0/population_country
 
-        factor_infections_underreported = 1.5*2
+        R0 += number_R_from_vaccine/population_country
+        
+
+        
+        factor_infections_underreported = 2
         # only small fraction of cases reported (and usually only symptomatic) symptomatic is 50%
 
         I0           = factor_infections_underreported*I0/population_country
