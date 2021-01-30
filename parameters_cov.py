@@ -77,7 +77,7 @@ ICU_capacity = 25000/UK_population
 vaccinate_percent = 0.9 # vaccinate this many
 
 # million per 7 days with 70% efficacy
-vaccinate_rate = 0.7* ((10**6) / UK_population) / 7
+vaccinate_rate = 0.7* (2 * (10**6) / UK_population) / 7
 
 # 0.55/(365*2/3)
 # https://journals.plos.org/plosntds/article/file?rev=2&id=10.1371/journal.pntd.0006158&type=printable

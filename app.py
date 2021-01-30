@@ -509,8 +509,8 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         # vaccine = None
 
     if init_stored is None or date!=init_stored[5] or country!=init_stored[6]:
-        I0, R0, H0, C0, D0, worked, min_date, max_date, _ = begin_date(date, vaccine_df, country)
-        initial_conds = [I0, R0, H0, C0, D0, date, country, min_date, max_date]
+        I0, R0, H0, C0, D0, worked, min_date, max_date, _, n_vacc = begin_date(date, vaccine_df, country)
+        initial_conds = [I0, R0, H0, C0, D0, date, country, min_date, max_date, n_vacc]
     else:
         initial_conds = init_stored
         I0 = init_stored[0]
@@ -522,6 +522,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
         country=init_stored[6]
         min_date = init_stored[7]
         max_date = init_stored[8]
+        n_vacc = init_stored[9]
 
     if worked is None:
         worked = False
@@ -569,7 +570,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
                             t_control=months_controlled,
                             vaccine_time=vaccine,
                             date=date,
-                            I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
+                            I0=I0, R0=R0, H0=H0, C0=C0, D0=D0, n_vacc=n_vacc,
                             ICU_grow=ICU_grow,let_HR_out=let_HR_out))
     if num_strat=='two':
         lr2 = params.fact_v[int(lr2_in)]
@@ -578,7 +579,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
                                 t_control=months_controlled,
                                 vaccine_time=vaccine,
                                 date=date,
-                                I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
+                                I0=I0,R0=R0,H0=H0,C0=C0,D0=D0, n_vacc=n_vacc,
                                 ICU_grow=ICU_grow,let_HR_out=let_HR_out))
     
     sols_upper_lower = []
@@ -607,7 +608,7 @@ def find_sol(preset,month,lr_in,hr_in,lr2_in,hr2_in,num_strat,vaccine,ICU_grow,d
                                 t_control=months_controlled,
                                 vaccine_time=vaccine,
                                 date=date,
-                                I0=I0_new,R0=R0_new,H0=H0_new,C0=C0_new,D0=D0_new,
+                                I0=I0_new,R0=R0_new,H0=H0_new,C0=C0_new,D0=D0_new, n_vacc=n_vacc,
                                 ICU_grow=ICU_grow,let_HR_out=let_HR_out)
 
         sols_upper_lower.append(upp_low)
@@ -630,9 +631,9 @@ def find_sol_do_noth(ICU_grow,date,country_num):
     except:
         country = 'uk'
 
-    I0, R0, H0, C0, D0, _, _, _, prev_deaths = begin_date(date, vaccine_df, country)
+    I0, R0, H0, C0, D0, _, _, _, prev_deaths, n_vacc = begin_date(date, vaccine_df, country)
 
-    sol_do_nothing = run_model(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0,
+    sol_do_nothing = run_model(I0=I0,R0=R0,H0=H0,C0=C0,D0=D0, n_vacc=n_vacc,
                                     beta_L_factor=1,beta_H_factor=1,
                                     t_control=None,
                                     date=date,

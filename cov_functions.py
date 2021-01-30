@@ -87,7 +87,7 @@ def ode_system(t, y,
 #--------------------------------------------------------------------
 ##
 
-def set_initial_condition(I0,R0,H0,C0,D0):
+def set_initial_condition(I0, R0, H0, C0, D0, n_vacc):
 
     prop_hosp_H = (params.hr_frac*params.frac_hosp_H)   /( (1-params.hr_frac)*params.frac_hosp_L   +    params.hr_frac*params.frac_hosp_H  )
 
@@ -103,7 +103,7 @@ def set_initial_condition(I0,R0,H0,C0,D0):
     S0_L = (1-params.hr_frac)*params.N - I0_L - R0_L - C0_L - H0_L - D0_L
     
     I0_H = params.hr_frac*params.N*I0
-    R0_H = prop_rec_H    *params.N*R0
+    R0_H = prop_rec_H    *params.N*R0 + n_vacc
     H0_H = prop_hosp_H   *params.N*H0
     C0_H = prop_crit_H   *params.N*C0
     D0_H = prop_crit_H   *params.N*D0
@@ -263,7 +263,7 @@ def solve_it(y0,
 ##
 #--------------------------------------------------------------------
 ##
-def run_model(I0,R0,H0,C0,D0,
+def run_model(I0,R0,H0,C0,D0,n_vacc,
                 beta_L_factor=1,
                 beta_H_factor=1,
                 t_control=None,
@@ -274,7 +274,7 @@ def run_model(I0,R0,H0,C0,D0,
 
     print('running model')
 
-    y0 = set_initial_condition(I0,R0,H0,C0,D0)
+    y0 = set_initial_condition(I0, R0, H0, C0, D0, n_vacc)
 
     otherArgs = beta_L_factor, beta_H_factor, t_control, vaccine_time, ICU_grow, let_HR_out, date
 
@@ -332,21 +332,27 @@ def begin_date(date, vaccine_df, country='uk'):
         number_R_from_vaccine = 0
 
 
+    # country_data = None
 
-    try:
-        country_data = get_data(country)
-        min_date = country_data['Cases']['dates'][0]
-        max_date = country_data['Cases']['dates'][-1]
-        min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
-        max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
-    except:
-        print("Cannnot get country data from:",country)
-        pre_defined = True
-        min_date = '2020-2-15' # first day of data
-        min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
+    country_data = get_data(country)
+    min_date = country_data['Cases']['dates'][0]
+    max_date = country_data['Cases']['dates'][-1]
+    min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
+    max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
+    # try:
+    #     country_data = get_data(country)
+    #     min_date = country_data['Cases']['dates'][0]
+    #     max_date = country_data['Cases']['dates'][-1]
+    #     min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
+    #     max_date = datetime.datetime.strptime(max_date, '%Y-%m-%d' )
+    # except:
+    #     print("Cannot get country data from:",country)
+    #     pre_defined = True
+    #     min_date = '2020-2-15' # first day of data
+    #     min_date = datetime.datetime.strptime(min_date, '%Y-%m-%d' )
 
-        max_date = datetime.datetime.today() - datetime.timedelta(days=2)
-        max_date = str(max_date).split(' ')[0]
+    #     max_date = datetime.datetime.today() - datetime.timedelta(days=2)
+    #     max_date = str(max_date).split(' ')[0]
 
     if country_data is None:
         print("Country data none")
@@ -413,7 +419,7 @@ def begin_date(date, vaccine_df, country='uk'):
         R0 = R0/population_country
         D0 = D0/population_country
 
-        R0 += number_R_from_vaccine/population_country
+        # R0 += number_R_from_vaccine/population_country
         
 
         
@@ -436,9 +442,9 @@ def begin_date(date, vaccine_df, country='uk'):
         # print(H0,C0)
 
         I0 = I0 - H0 - C0 # since those in hosp/crit will be counted in current numbers
-        return I0, R0, H0, C0, D0, worked, min_date, max_date, prev_deaths
+        return I0, R0, H0, C0, D0, worked, min_date, max_date, prev_deaths, number_R_from_vaccine/population_country
     else:
-        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False, min_date, max_date, prev_deaths # if data collection fails, use UK on 8th April as default
+        return 0.0015526616816533823, 0.011511334132676547, 1.6477539091227494e-05, 7.061802467668927e-06, 0.00010454289323318761, False, min_date, max_date, 0, 0 # if data collection fails, use UK on 8th April as default
 
 
 

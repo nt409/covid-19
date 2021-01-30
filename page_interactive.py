@@ -965,7 +965,7 @@ textCard = html.Div([
         className="interactive-text"),
 
     html.P(
-        'The vaccination will happen is assumed to happen at a rate of 1 million per week, with 70% efficacy. In reality all vaccinated people are less likely to die from covid, even if they can still transmit the virus.',
+        'The vaccination will happen is assumed to happen at a rate of 2 million per week, with 70% efficacy. In reality all vaccinated people are less likely to die from covid, even if they can still transmit the virus.',
         className="interactive-text"),
 
     

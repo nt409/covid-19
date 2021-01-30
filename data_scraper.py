@@ -99,24 +99,17 @@ def get_data_from_api(country_name):
 
 def convert_dates(dates):
     """
-    Convert array of dates in format "MMM DD" to "YYYY-M-DD"
+    Convert array of dates in format "MMM DD" OR "yyyy" to "YYYY-M-DD"
     """
-    year = 2020
-    last_month = 0
+    out = []
 
     for i, date in enumerate(dates):
-        month, day = date.split()
-        
-        this_month = MONTHS_DICT[month]
-        if last_month==12 and this_month==1:
-            # if going from Dec into Jan, change year
-            year+=1
+        if len(date.split())==1:
+            yr = dates[i].strip()
+            month, day = dates[i-1].split()
+            out.append(f"{yr}-{MONTHS_DICT[month]}-{day}")
 
-        dates[i] = f"{year}-{MONTHS_DICT[month]}-{day}"
-
-        last_month = this_month
-    
-    return dates
+    return out
 
 
 def get_data_from_worldometer(country_name):
@@ -125,6 +118,7 @@ def get_data_from_worldometer(country_name):
         url = 'https://www.worldometers.info/coronavirus/'
     else:
         url = base_url + country_name
+
     req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     webpage = urlopen(req).read()
 
@@ -149,5 +143,5 @@ def get_data_from_worldometer(country_name):
                 done += 1
             if done == 2:
                 break
-
+    
     return data
