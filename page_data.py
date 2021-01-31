@@ -139,7 +139,7 @@ layout_data = html.Div(className="data-page-container",
                         ),
                         ),
                     html.Li(html.I(
-                        "It is for the first country selected"
+                        "It is for the first country selected, and both lines are a 7 day average"
                         ),
                         ),
                     html.Li(html.I(
