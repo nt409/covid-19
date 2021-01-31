@@ -1,4 +1,4 @@
-import time
+# import time
 from dash import Dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -9,7 +9,7 @@ from dash.exceptions import PreventUpdate
 
 from gevent.pywsgi import WSGIServer
 
-import pandas as pd
+# import pandas as pd
 from math import ceil, exp
 import numpy as np
 import plotly.graph_objects as go
@@ -26,7 +26,7 @@ from config import preset_dict_high, preset_dict_low, \
     presets_dict_dropdown, dummy_figure
 
 from cov_functions import run_model, test_probs, begin_date, \
-    outcome_fn
+    outcome_fn, death_projection_traces
 
 from plotting import Bar_chart_generator, MultiFigureGenerator, \
     month_len, extract_info, test_bar_plot, test_bar_plot2, \
@@ -1099,6 +1099,7 @@ def update_align_options(normalise_by_pop):
                Output('active-plot', 'figure'),
                Output('daily-cases-plot', 'figure'),
                Output('daily-deaths-plot', 'figure'),
+               Output('death-projection-plot', 'figure'),
                Output('new-vs-total-cases', 'figure'),
                Output('new-vs-total-deaths', 'figure'),
                Output('hidden-stored-data', 'children'),
@@ -1152,7 +1153,7 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                 print(e)
                 country_names.remove(country)
                 continue
-
+    
     out = []
     layout_out = []
     for title in ['Cases', 'Deaths', 'Currently Infected', 'Daily New Cases', 'Daily New Deaths']:
@@ -1384,6 +1385,48 @@ def update_plots(n_clicks, start_date, end_date, show_exponential, normalise_by_
                 layout_out = copy.copy(layout_normal)
 
         out.append({'data': figs, 'layout': layout_out})
+
+
+    # death projection plot
+    date_objs = []
+    data_to_plot = []
+    names = []
+        
+    for to_plot in ['Cases', 'Deaths']:
+
+        dp_c = country_names[0]
+        data_out = np.array(country_data[dp_c][to_plot]['data']).astype('float')
+        
+        my_dates = country_data[dp_c][to_plot]['dates']
+        date_objects = []
+        for date in my_dates:
+            date_objects.append(datetime.datetime.strptime(date, '%Y-%m-%d').date())
+        date_objects = np.asarray(date_objects)
+        
+        data_to_plot.append(data_out)
+        date_objs.append(date_objects)
+
+        if to_plot=='Cases':
+            plot_str = "2% of cases, 15 days later"
+        else:
+            plot_str = "daily deaths"
+
+
+        names.append(f"{dp_c.upper()} - {plot_str}")
+        
+    traces = death_projection_traces(date_objs, data_to_plot, names)
+    dp_layout = copy.copy(layout_normal)
+
+    dp_layout.pop('updatemenus', None)
+    dp_layout['yaxis'] = {'showgrid': True}
+    dp_layout['xaxis'] = {'showgrid': True}
+    dp_layout['margin'] = {'l': 50, 'b': 50, 't': 10, 'r': 10, 'pad': 0}
+
+    dp_fig = dict(data=traces, layout=dp_layout)
+
+    out.append(dp_fig)
+
+
 
     # Plot 'New Cases vs Total Cases' and 'New Deaths vs Total Deaths'
     for title in ['Cases', 'Deaths']:

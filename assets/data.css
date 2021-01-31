@@ -41,6 +41,10 @@
     color: rgb(80, 80, 80);
 }
 
+.dp-text {
+    padding: 0 0 1.5em;
+}
+
 .date-and-text.checklist {
     max-width: 400px;
     justify-self: left;

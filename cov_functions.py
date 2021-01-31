@@ -720,3 +720,28 @@ def outcome_fn(month,beta_L,beta_H,death_stat_1st,herd_stat_1st,dat3_1st,death_s
 
 
 
+def death_projection_traces(dates_list, data_list, name_list):
+    
+    traces = []  
+    colours = ['rgb(100,100,100)', 'red']
+    dashes = ['dot', 'solid']
+    
+    for ii in range(2):
+        dates = dates_list[ii]
+        
+        xdata = dates[7:]
+        
+        data = data_list[ii]
+        daily = np.diff(data)
+        
+        ydata = [np.mean(daily[i:i+7]) for i in range(len(daily)-7)]
+
+        if "cases" in name_list[ii]:
+            ydata = 0.02*np.asarray(ydata)
+            xdata = [x + datetime.timedelta(days=15) for x in xdata]
+
+        line = dict(x = xdata, y=ydata, name=name_list[ii], line={'color': colours[ii], 'dash': dashes[ii]})
+
+        traces.append(line)
+
+    return traces

@@ -125,10 +125,59 @@ layout_data = html.Div(className="data-page-container",
             
             dcc.Loading(id="loading-icon", children=[], type="default"), # html.Div(id="loading-output-1")
 
+
+
+
+            html.Hr(),
+
+            html.H3(children='Projected Deaths', className="plot-title"),
+            
+
+            html.Div([
+                    html.Li(html.I(
+                        "Plot shows daily deaths compared to a shifted cases line (2% of confirmed positive cases, shifted to 15 days later)"
+                        ),
+                        ),
+                    html.Li(html.I(
+                        "It is for the first country selected"
+                        ),
+                        ),
+                    html.Li(html.I(
+                        "The two lines roughly match up, since "
+                        "there is a delay from infection to death and only a fraction of cases lead to death"
+                        ),
+                        ),
+                    html.Li(html.I(
+                        "Not all cases are picked up by testing, which is particularly notable earlier in the pandemic"
+                        ),
+                        ),
+                    html.Li(html.I(
+                        "A significant deviation from the case line in 2021 would suggest that the vaccine is starting to work"
+                        ),
+                        ),
+                ], className='data-text dp-text'),
+            
+            html.Div(dcc.Graph(id='death-projection-plot',
+            config = {'modeBarButtonsToRemove': [
+                'pan2d',
+                'toImage',
+                'select2d',
+                'toggleSpikelines',
+                'hoverCompareCartesian',
+                'hoverClosestCartesian',
+                'zoom2d',
+                'zoomIn2d',
+                'zoomOut2d',
+                'lasso2d',
+
+            ]}
+            ), className='data-fig'),
+
+
             html.Hr(),
 
             html.H3(children='Total Cases', className="plot-title"),
-
+            
             html.Div(className="align-countries", children=[
                 html.Div([
                     dbc.Checklist(
@@ -171,8 +220,10 @@ layout_data = html.Div(className="data-page-container",
 
             ]}
             ),className='data-fig'),
+            
+            html.Hr(),
 
-
+            
             html.H3(children='Total Deaths', className="plot-title"),
             html.Div(className="align-countries", children=[
                 html.Div([
